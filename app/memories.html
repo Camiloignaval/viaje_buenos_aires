@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Aurora — Debug de Memory Engine</title>
+    <style>
+      body { font-family: system-ui, sans-serif; max-width: 720px; margin: 2rem auto; padding: 0 1rem; color: #222; }
+      h1 { font-size: 1.25rem; }
+      .note { background: #fff3cd; border: 1px solid #f0c36d; padding: 0.75rem 1rem; border-radius: 6px; font-size: 0.9rem; margin-bottom: 1.5rem; }
+      fieldset { margin-bottom: 1.5rem; border: 1px solid #ddd; border-radius: 6px; }
+      label { display: block; margin: 0.5rem 0; }
+      select, textarea, button { font: inherit; padding: 0.4rem; }
+      textarea { width: 100%; box-sizing: border-box; }
+      ul#memories-list { list-style: none; padding: 0; margin: 0; }
+      ul#memories-list li { border: 1px solid #ddd; border-radius: 6px; padding: 0.75rem; margin-bottom: 0.5rem; }
+      ul#memories-list li.archived { opacity: 0.6; }
+      .meta { font-size: 0.8rem; color: #666; margin: 0 0 0.25rem; }
+      .note-text { margin: 0 0 0.4rem; }
+      .date { font-size: 0.75rem; color: #999; margin: 0 0 0.5rem; }
+      .row-actions button { margin-right: 0.5rem; }
+      .archived-label { font-size: 0.8rem; color: #999; }
+      .empty { border: none !important; color: #999; }
+    </style>
+  </head>
+  <body>
+    <h1>Aurora — Debug de Memory Engine</h1>
+    <p class="note">
+      Esto no es la aplicación de Aurora. Es una herramienta interna para crear, favoritear y archivar Memorias
+      de verdad contra <code>memoryStore.js</code>, sin depender de fechas ni de progreso. No respeta el orden
+      narrativo de capítulos — es para probar el motor libremente.
+    </p>
+
+    <fieldset>
+      <legend>Crear una nota</legend>
+      <label>
+        Capítulo:
+        <select id="chapter-select"></select>
+      </label>
+      <label>
+        Actividad (opcional):
+        <select id="activity-select"></select>
+      </label>
+      <label>
+        Nota:
+        <textarea id="note-input" rows="3"></textarea>
+      </label>
+      <button type="button" id="create-button">Crear nota</button>
+    </fieldset>
+
+    <fieldset>
+      <legend>Memorias guardadas</legend>
+      <label><input type="checkbox" id="show-archived" /> Mostrar archivadas</label>
+      <ul id="memories-list"></ul>
+    </fieldset>
+
+    <script type="module" src="/src/memoriesView/memoriesView.js"></script>
+  </body>
+</html>

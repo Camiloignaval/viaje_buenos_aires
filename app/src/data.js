@@ -166,6 +166,25 @@ export const ALBUM_PHOTOS = [
   },
 ];
 
+// Los 10 videos — mismos IDs que usa la guía (index.html) para mostrarlos
+// en modo solo-lectura una vez subidos acá.
+export const VIDEO_MOMENTS = [
+  { id: "video-1", emoji: "🎥", title: "Caminando por Av. Corrientes de noche", day: 1 },
+  { id: "video-2", emoji: "🎥", title: "Los pétalos de la Floralis moviéndose", day: 2 },
+  { id: "video-3", emoji: "🎥", title: "El tango bailándose en Plaza Dorrego", day: 3 },
+  { id: "video-4", emoji: "🎥", title: "Un brindis en Puerto Madero", day: 2 },
+  { id: "video-5", emoji: "🎥", title: "El primer corte del bife en La Cabrera", day: 2 },
+  { id: "video-6", emoji: "🎥", title: "Kari probando una medialuna", day: 4 },
+  { id: "video-7", emoji: "🎥", title: "Entrando a El Ateneo Grand Splendid", day: 4 },
+  { id: "video-8", emoji: "🎥", title: "Caminando por Caminito", day: 3 },
+  { id: "video-9", emoji: "🎥", title: "El helado de Rapanui", day: 1 },
+  { id: "video-10", emoji: "🎥", title: "Un mensaje juntos antes de subir al avión de regreso", day: 4 },
+];
+
+export const VIDEO_LIMITS = {
+  maxSizeMB: 60,
+};
+
 export const IMAGE_LIMITS = {
   maxSizeMB: 5,
   acceptedTypes: ["image/jpeg", "image/jpg", "image/png", "image/webp"],

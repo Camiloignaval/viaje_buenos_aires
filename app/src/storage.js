@@ -12,7 +12,7 @@
 // Forma de un "Memory":
 // { id, title, day, category, completed, note, imageUrl, cloudinaryPublicId, createdAt, updatedAt }
 
-import { IMAGE_LIMITS } from "./data.js";
+import { IMAGE_LIMITS, VIDEO_LIMITS } from "./data.js";
 import { compressImage } from "./image.js";
 
 const STORAGE_KEY = "ba-trip-memories";
@@ -151,6 +151,52 @@ export async function uploadImage(file, password) {
   }
 
   return { imageUrl: compressedDataUrl, cloudinaryPublicId: null };
+}
+
+/**
+ * Sube un video directo a Cloudinary usando una firma temporal (el archivo
+ * nunca pasa por nuestra función serverless — evita el límite de tamaño de Vercel).
+ * Requiere backend: no hay forma razonable de guardar un video en localStorage.
+ */
+export async function uploadVideo(file, password) {
+  if (file.type.indexOf("video/") !== 0) {
+    throw new Error("Eso no parece un video.");
+  }
+  const maxBytes = VIDEO_LIMITS.maxSizeMB * 1024 * 1024;
+  if (file.size > maxBytes) {
+    throw new Error(`El video pesa más de ${VIDEO_LIMITS.maxSizeMB}MB.`);
+  }
+  if (!(await checkBackend())) {
+    throw new Error("Necesitás el backend desplegado para subir videos.");
+  }
+
+  const sigRes = await fetch("/api/video-upload-signature", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ password }),
+  });
+  const sig = await sigRes.json();
+  if (!sigRes.ok) {
+    const err = new Error(sig.error || "No se pudo firmar la subida.");
+    if (sigRes.status === 401) err.unauthorized = true;
+    throw err;
+  }
+
+  const form = new FormData();
+  form.append("file", file);
+  form.append("api_key", sig.apiKey);
+  form.append("timestamp", sig.timestamp);
+  form.append("signature", sig.signature);
+  form.append("folder", sig.folder);
+
+  const uploadRes = await fetch(`https://api.cloudinary.com/v1_1/${sig.cloudName}/video/upload`, {
+    method: "POST",
+    body: form,
+  });
+  const result = await uploadRes.json();
+  if (result.error) throw new Error(result.error.message || "No se pudo subir el video.");
+
+  return { videoUrl: result.secure_url, cloudinaryPublicId: result.public_id };
 }
 
 /** Progreso global: cuántos ítems del viaje ya están completados */

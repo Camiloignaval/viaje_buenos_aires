@@ -2466,7 +2466,7 @@ section{padding-block:var(--spacing-2xl);}
    Mientras esté vacío, todo sigue funcionando igual, pero solo en este
    navegador (localStorage) — nada se pierde, simplemente no queda en Mongo.
 */
-var API_BASE = ""; // ej: "https://ba-trip-2026.vercel.app"
+var API_BASE = "https://viaje-buenos-aires.vercel.app";
 
 var apiAvailable = null;
 function checkApi(){
@@ -3054,49 +3054,18 @@ if(souvenirsList){
    ============================================================ */
 var albumGrid = document.getElementById('album-grid');
 if(albumGrid){
-  var albumSaved = {};
-  try{ albumSaved = JSON.parse(localStorage.getItem('ba-album-photos') || '{}'); }catch(e){}
-
-  function albumEntry(i){
-    var raw = albumSaved[i];
-    if(raw === true) return { done:true, imageUrl:null };
-    return raw || { done:false, imageUrl:null };
-  }
-  function saveAlbum(){
-    localStorage.setItem('ba-album-photos', JSON.stringify(albumSaved));
-  }
-
-  // Comprime la foto en el navegador antes de guardarla (máx. 1600px, JPEG 0.82)
-  // — evita llenar el localStorage con fotos de celular sin comprimir.
-  function compressImage(file){
-    return new Promise(function(resolve, reject){
-      var img = new Image();
-      var objectUrl = URL.createObjectURL(file);
-      img.onload = function(){
-        URL.revokeObjectURL(objectUrl);
-        var w = img.width, h = img.height, max = 1600;
-        if(w > h && w > max){ h = Math.round(h * max / w); w = max; }
-        else if(h > max){ w = Math.round(w * max / h); h = max; }
-        var canvas = document.createElement('canvas');
-        canvas.width = w; canvas.height = h;
-        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-        resolve(canvas.toDataURL('image/jpeg', 0.82));
-      };
-      img.onerror = function(){ URL.revokeObjectURL(objectUrl); reject(new Error('No se pudo procesar la imagen.')); };
-      img.src = objectUrl;
-    });
-  }
-
-  var ACCEPTED_TYPES = ['image/jpeg','image/jpg','image/png','image/webp'];
-  var MAX_MB = 5;
-
-  function renderAlbum(){
+  // Solo lectura: la guía ya no sube fotos. Si ya se subió desde la mini app
+  // (mismo id "foto-N"), se muestra la real; si no, un placeholder discreto.
+  function renderAlbum(remote){
     albumGrid.innerHTML = ALBUM_PHOTOS.map(function(p,i){
-      var entry = albumEntry(i);
-      var media = entry.imageUrl
-        ? '<img src="'+entry.imageUrl+'" alt="'+p[1]+'"><button type="button" class="remove-photo" data-remove-photo="'+i+'" title="Quitar foto">✕</button>'
-        : '<div class="img-placeholder" style="display:flex;"><span style="font-size:40px;">'+p[0]+'</span></div>';
-      return '<article class="album-card reveal">'+
+      var doc = remote ? remote['foto-' + (i+1)] : null;
+      var media = (doc && doc.imageUrl)
+        ? '<img src="'+doc.imageUrl+'" alt="'+p[1]+'">'
+        : '<div class="img-placeholder" style="display:flex;"><span style="font-size:40px;">'+p[0]+'</span><span>Foto pendiente</span></div>';
+      var statusChip = doc && doc.completed
+        ? '<span class="chip" style="background:var(--primary-light);color:var(--primary);">✓ Ya la tomamos</span>'
+        : '<span class="chip chip-wc">Pendiente</span>';
+      return '<article class="album-card reveal in-view">'+
         '<div class="album-media">'+media+'</div>'+
         '<div class="album-body">'+
           '<h3>'+p[0]+' '+p[1]+'</h3>'+
@@ -3106,143 +3075,16 @@ if(albumGrid){
             '<div><b>Mejor ángulo</b>'+p[4]+'</div>'+
             '<div><b>Tipo</b>'+p[5]+'</div>'+
           '</div>'+
-          '<div class="album-upload-row">'+
-            '<div class="photo-actions">'+
-              '<button type="button" class="photo-check'+(entry.done ? ' checked' : '')+'" data-photo-index="'+i+'" aria-pressed="'+(entry.done?'true':'false')+'">'+
-                '<span class="box"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></span> Ya la tomamos'+
-              '</button>'+
-              '<button type="button" class="photo-upload-btn" data-upload-trigger="'+i+'">📷 Subir foto</button>'+
-            '</div>'+
-            '<input type="file" accept="image/jpeg,image/jpg,image/png,image/webp" data-upload-input="'+i+'" hidden>'+
-          '</div>'+
-          '<div class="album-upload-error" data-upload-error="'+i+'" hidden></div>'+
+          statusChip+
         '</div>'+
       '</article>';
     }).join('');
-    albumGrid.querySelectorAll('.reveal').forEach(function(el){ el.classList.add('in-view'); });
-    attachAlbumEvents();
   }
 
-  function attachAlbumEvents(){
-    albumGrid.querySelectorAll('.photo-actions').forEach(function(actions){
-      lockPillIfNeeded(actions);
-      guardLockedPill(actions);
-    });
-    albumGrid.querySelectorAll('.photo-check').forEach(function(btn){
-      btn.addEventListener('click', function(){
-        var idx = btn.getAttribute('data-photo-index');
-        var entry = albumEntry(idx);
-        entry.done = !entry.done;
-        albumSaved[idx] = entry;
-        saveAlbum();
-        renderAlbum();
-        checkApi().then(function(ok){
-          if(ok) remoteUpsert('guide-album-' + idx, { completed: entry.done, title: ALBUM_PHOTOS[idx][1], category: 'guide-album' }).catch(function(){});
-        });
-      });
-    });
-    albumGrid.querySelectorAll('[data-upload-trigger]').forEach(function(btn){
-      btn.addEventListener('click', function(){
-        var idx = btn.getAttribute('data-upload-trigger');
-        getUploadPassword().then(function(password){
-          if(password === null) return;
-          albumGrid.querySelector('[data-upload-input="'+idx+'"]').click();
-        });
-      });
-    });
-    albumGrid.querySelectorAll('[data-upload-input]').forEach(function(input){
-      input.addEventListener('change', function(){
-        var idx = input.dataset.uploadInput;
-        var file = input.files[0];
-        var errorEl = albumGrid.querySelector('[data-upload-error="'+idx+'"]');
-        errorEl.hidden = true;
-        if(!file) return;
-        if(ACCEPTED_TYPES.indexOf(file.type) === -1){
-          errorEl.textContent = 'Formato no permitido. Usar JPG, PNG o WEBP.';
-          errorEl.hidden = false;
-          return;
-        }
-        if(file.size > MAX_MB * 1024 * 1024){
-          errorEl.textContent = 'La imagen pesa más de '+MAX_MB+'MB.';
-          errorEl.hidden = false;
-          return;
-        }
-        compressImage(file).then(function(dataUrl){
-          return checkApi().then(function(ok){
-            if(!ok){
-              // Sin backend: se guarda solo en este navegador.
-              var entry = albumEntry(idx);
-              entry.imageUrl = dataUrl;
-              albumSaved[idx] = entry;
-              saveAlbum();
-              renderAlbum();
-              return;
-            }
-            return getUploadPassword().then(function(password){
-              if(password === null) return;
-              errorEl.textContent = 'Subiendo foto...';
-              errorEl.hidden = false;
-              return remoteUploadImage(dataUrl, password).then(function(result){
-                var entry = albumEntry(idx);
-                entry.imageUrl = result.imageUrl; // URL real de Cloudinary
-                entry.done = true;
-                albumSaved[idx] = entry;
-                saveAlbum();
-                errorEl.hidden = true;
-                renderAlbum();
-                remoteUpsert('guide-album-' + idx, {
-                  completed: true,
-                  title: ALBUM_PHOTOS[idx][1],
-                  category: 'guide-album',
-                  imageUrl: result.imageUrl,
-                  cloudinaryPublicId: result.cloudinaryPublicId
-                }).catch(function(){});
-              }).catch(function(err){
-                if(err.unauthorized) clearSavedPassword();
-                throw err;
-              });
-            });
-          });
-        }).catch(function(err){
-          errorEl.textContent = err.message;
-          errorEl.hidden = false;
-        });
-      });
-    });
-    albumGrid.querySelectorAll('[data-remove-photo]').forEach(function(btn){
-      btn.addEventListener('click', function(e){
-        e.stopPropagation();
-        var idx = btn.getAttribute('data-remove-photo');
-        var entry = albumEntry(idx);
-        entry.imageUrl = null;
-        albumSaved[idx] = entry;
-        saveAlbum();
-        renderAlbum();
-        checkApi().then(function(ok){
-          if(ok) remoteUpsert('guide-album-' + idx, { imageUrl: null, cloudinaryPublicId: null }).catch(function(){});
-        });
-      });
-    });
-  }
-
-  renderAlbum();
-
-  // Si hay backend, el estado remoto (hecho/no hecho + foto real) manda.
+  renderAlbum(null);
   checkApi().then(function(ok){
     if(!ok) return;
-    remoteGetAll().then(function(all){
-      var changed = false;
-      ALBUM_PHOTOS.forEach(function(p, i){
-        var doc = all['guide-album-' + i];
-        if(!doc) return;
-        var entry = albumEntry(i);
-        if(!!doc.completed !== !!entry.done || (doc.imageUrl || null) !== entry.imageUrl){
-          albumSaved[i] = { done: !!doc.completed, imageUrl: doc.imageUrl || null };
-          changed = true;
-        }
-      });
-      if(changed){ saveAlbum(); renderAlbum(); }
-    }).catch(function(){});
+    remoteGetAll().then(function(all){ renderAlbum(all); }).catch(function(){});
   });
 }
 

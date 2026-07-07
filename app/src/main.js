@@ -3,15 +3,20 @@ import {
   CHECKLIST_CATEGORIES,
   CHECKLIST_ITEMS,
   ALBUM_PHOTOS,
+  VIDEO_MOMENTS,
   IMAGE_LIMITS,
 } from "./data.js";
-import { getMemories, upsertMemory, uploadImage, isUsingBackend } from "./storage.js";
+import { getMemories, upsertMemory, uploadImage, uploadVideo, isUsingBackend } from "./storage.js";
 import { getUploadPassword, clearSavedPassword } from "./auth.js";
 
 const app = document.querySelector("#app");
 
-// Todos los ids que cuentan para el progreso global (checklist + fotos)
-const ALL_IDS = [...CHECKLIST_ITEMS.map((i) => i.id), ...ALBUM_PHOTOS.map((p) => p.id)];
+// Todos los ids que cuentan para el progreso global (checklist + fotos + videos)
+const ALL_IDS = [
+  ...CHECKLIST_ITEMS.map((i) => i.id),
+  ...ALBUM_PHOTOS.map((p) => p.id),
+  ...VIDEO_MOMENTS.map((v) => v.id),
+];
 
 let memories = {}; // { [id]: Memory } — se recarga en cada render()
 let usingBackend = false; // se resuelve una vez al arrancar, ver refresh()
@@ -121,12 +126,57 @@ function renderPhotoCard(photo) {
   `;
 }
 
+function renderVideoSection() {
+  return `
+    <section class="section">
+      <div class="section-title">
+        <h2>🎥 Los 10 videos que no pueden faltar</h2>
+        <span class="count">${VIDEO_MOMENTS.filter((v) => memories[v.id]?.completed).length}/${VIDEO_MOMENTS.length}</span>
+      </div>
+      <p class="section-subtitle">Videos cortos (10-15 segundos) — en unos años van a valer más que cien fotos.</p>
+      <div class="album-grid">
+        ${VIDEO_MOMENTS.map(renderVideoCard).join("")}
+      </div>
+    </section>
+  `;
+}
+
+function renderVideoCard(video) {
+  const mem = memories[video.id] || {};
+  const done = !!mem.completed;
+  const url = mem.videoUrl || null;
+
+  return `
+    <article class="photo-card ${done ? "done" : ""}" data-video="${video.id}">
+      <div class="photo-preview">
+        ${
+          url
+            ? `<video src="${url}" controls playsinline></video><button type="button" class="remove-photo" data-remove-video="${video.id}" title="Quitar video">✕</button>`
+            : `<span>${video.emoji}</span>`
+        }
+      </div>
+      <div class="photo-body">
+        <h3>${video.emoji} ${video.title}</h3>
+        <div class="upload-error" data-video-error="${video.id}" hidden></div>
+        <div class="photo-actions">
+          <button type="button" class="btn btn-primary ${done ? "is-done" : ""}" data-mark-video="${video.id}">
+            ${done ? "✓ Grabado" : "Marcar como grabado"}
+          </button>
+          <button type="button" class="btn" data-video-upload-trigger="${video.id}">🎬 Subir video</button>
+          <input type="file" accept="video/*" data-video-upload-input="${video.id}" hidden>
+        </div>
+      </div>
+    </article>
+  `;
+}
+
 function render() {
   app.innerHTML = `
     ${renderHeader()}
     <main class="wrap">
       ${CHECKLIST_CATEGORIES.map(renderChecklistSection).join("")}
       ${renderAlbumSection()}
+      ${renderVideoSection()}
       <footer class="app-footer">
         Buenos Aires 2026 · Camilo &amp; Kari — todo se guarda automáticamente en este navegador.
       </footer>
@@ -224,6 +274,66 @@ function attachEvents() {
       e.stopPropagation();
       const id = btn.dataset.removePhoto;
       await upsertMemory(id, { imageUrl: null, cloudinaryPublicId: null });
+      await refresh();
+    });
+  });
+
+  // Video: marcar como grabado
+  app.querySelectorAll("[data-mark-video]").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const id = btn.dataset.markVideo;
+      const video = VIDEO_MOMENTS.find((v) => v.id === id);
+      const current = !!memories[id]?.completed;
+      await upsertMemory(id, { completed: !current, title: video.title, category: "videos", day: video.day });
+      await refresh();
+    });
+  });
+
+  // Video: pedir contraseña antes de abrir el selector de archivo
+  app.querySelectorAll("[data-video-upload-trigger]").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const id = btn.dataset.videoUploadTrigger;
+      const password = await getUploadPassword();
+      if (password === null) return;
+      app.querySelector(`[data-video-upload-input="${id}"]`).click();
+    });
+  });
+
+  // Video: subir
+  app.querySelectorAll("[data-video-upload-input]").forEach((input) => {
+    input.addEventListener("change", async () => {
+      const id = input.dataset.videoUploadInput;
+      const file = input.files[0];
+      const errorEl = app.querySelector(`[data-video-error="${id}"]`);
+      errorEl.hidden = true;
+      if (!file) return;
+      try {
+        const video = VIDEO_MOMENTS.find((v) => v.id === id);
+        const password = await getUploadPassword();
+        errorEl.textContent = "Subiendo video...";
+        errorEl.hidden = false;
+        const { videoUrl, cloudinaryPublicId } = await uploadVideo(file, password);
+        await upsertMemory(id, { videoUrl, cloudinaryPublicId, completed: true, title: video.title, category: "videos", day: video.day });
+        errorEl.hidden = true;
+        await refresh();
+      } catch (err) {
+        if (err.unauthorized) {
+          clearSavedPassword();
+          errorEl.textContent = "Contraseña incorrecta — probá de nuevo.";
+        } else {
+          errorEl.textContent = err.message;
+        }
+        errorEl.hidden = false;
+      }
+    });
+  });
+
+  // Video: quitar
+  app.querySelectorAll("[data-remove-video]").forEach((btn) => {
+    btn.addEventListener("click", async (e) => {
+      e.stopPropagation();
+      const id = btn.dataset.removeVideo;
+      await upsertMemory(id, { videoUrl: null, cloudinaryPublicId: null });
       await refresh();
     });
   });
