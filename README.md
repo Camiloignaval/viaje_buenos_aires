@@ -14,8 +14,9 @@ Las fotos van en la carpeta `images/`, con estos nombres exactos (si falta algun
 - `hotel.jpg` — Cyan Américas Towers Hotel
 - `dia1-hero.jpg`, `dia1-cuartito.jpg`, `dia1-colon.jpg`, `dia1-obelisco.jpg`, `dia1-corrientes.jpg`, `dia1-rapanui.jpg`, `dia1-cena.jpg`
 - `dia2-hero.jpg`, `dia2-floralis.jpg`, `dia2-cementerio.jpg`, `dia2-almuerzo.jpg`, `dia2-rosedal.jpg`, `dia2-cafepalermo.jpg`, `dia2-puertomadero.jpg`, `dia2-cena.jpg`
-- `dia3-hero.jpg`, `dia3-mercado.jpg`, `dia3-dorrego.jpg`, `dia3-caminito.jpg`, `dia3-almuerzo.jpg`, `dia3-galerias.jpg`, `dia3-cafe.jpg`, `dia3-floreria.jpg`
+- `dia3-hero.jpg`, `dia3-mercado.jpg`, `dia3-dorrego.jpg`, `dia3-caminito.jpg`, `dia3-almuerzo.jpg`, `dia3-galerias.jpg`, `dia3-cafe.jpg`, `dia3-floreria.jpg`, `dia3-mafalda.jpg`
 - `dia4-hero.jpg`, `dia4-ateneo.jpg`, `dia4-almuerzo.jpg`, `dia4-cafe.jpg`
+- `medialunas-hero.jpg`, `prep-avion-vertical.jpg` (versión vertical de `prep-avion.jpg`, se usa en mobile)
 
 Para reemplazar una foto: sobrescribí el archivo con el mismo nombre en `images/`.
 
@@ -45,3 +46,11 @@ Cambiando esas dos líneas, se actualiza toda la guía (botones, iconos, barras 
 ## Estructura
 
 Un único archivo `index.html` (HTML + CSS + JS inline). Sin build, sin npm, sin frameworks.
+
+## App complementaria (opcional)
+
+La carpeta `app/` tiene una mini app aparte (Vite + MongoDB + Cloudinary) para
+checklists interactivos y álbum de fotos con backend real. `index.html` puede
+conectarse a ella completando `API_BASE` en su `<script>` — mientras esa
+línea quede vacía, la guía sigue funcionando 100% local. Detalle completo en
+[`app/README.md`](app/README.md).
