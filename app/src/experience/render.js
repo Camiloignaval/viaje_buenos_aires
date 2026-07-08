@@ -418,11 +418,12 @@ function renderActivityCard({ activity, place, suggestedMemories }, chapterId, m
 
   return `
     <li class="activity-card">
+      ${activity.image ? `<img class="activity-photo" src="/${activity.image}" alt="${activity.moment ?? activity.title}" loading="lazy" />` : ''}
       <div class="activity-head">
         ${activity.timeWindow ? `<span class="time">${activity.timeWindow}</span>` : ''}
         ${activity.category ? `<span class="category">${activity.category}</span>` : ''}
       </div>
-      <p class="activity-title">${activity.title}</p>
+      <p class="activity-title">${activity.moment ? `<em>${activity.moment}.</em> ` : ''}${activity.title}</p>
       ${activity.description ? `<p class="activity-description">${activity.description}</p>` : ''}
       ${location?.name ? `<p class="location">${location.name}</p>` : ''}
       ${place?.recommendation ? `<p class="recommendation">${place.recommendation}</p>` : ''}
@@ -473,16 +474,53 @@ function renderCollectionItems(items) {
     return '';
   }
   const rendered = items
-    .map(
-      (item) => `
+    .map((item) => {
+      const priceLine = [item.suggestedWhereToBuy, item.estimatedPrice].filter(Boolean).join(' — ');
+      return `
         <li>
           <p class="item-name">${item.name}</p>
           ${item.description ? `<p class="item-description">${item.description}</p>` : ''}
+          ${priceLine ? `<p class="item-description">${priceLine}</p>` : ''}
+        </li>
+      `;
+    })
+    .join('');
+  return `<section class="collection-items"><p class="section-title">Para hoy también</p><ul>${rendered}</ul></section>`;
+}
+
+/** Bloques editoriales cortos que no pertenecen a un lugar puntual (E-narrativa). */
+function renderTraditions(traditions) {
+  if (!traditions || traditions.length === 0) {
+    return '';
+  }
+  const items = traditions
+    .map(
+      (tradition) => `
+        <li>
+          <p class="item-name">${tradition.title}</p>
+          <p class="item-description">${tradition.body}</p>
         </li>
       `
     )
     .join('');
-  return `<section class="collection-items"><p class="section-title">Para hoy también</p><ul>${rendered}</ul></section>`;
+  return `<section class="traditions"><p class="section-title">Pequeñas tradiciones</p><ul>${items}</ul></section>`;
+}
+
+/** Asides breves tipo "si miran hacia arriba..." — vivas, no una lista de datos (E-narrativa). */
+function renderMicroDiscoveries(discoveries) {
+  if (!discoveries || discoveries.length === 0) {
+    return '';
+  }
+  const items = discoveries.map((discovery) => `<li><p class="item-description">${discovery}</p></li>`).join('');
+  return `<section class="micro-discoveries"><p class="section-title">Pequeños descubrimientos</p><ul>${items}</ul></section>`;
+}
+
+/** Cierre privado y fijo del día (E-narrativa): nunca logística, nunca turístico — solo para ellos dos. */
+function renderNightNote(nightNote) {
+  if (!nightNote) {
+    return '';
+  }
+  return `<section class="night-note"><p class="section-title">🌙 Antes de terminar el día</p><p class="item-description">${nightNote}</p></section>`;
 }
 
 /**
@@ -815,6 +853,8 @@ function renderInProgress(view, storyPackage, interactive, memories, confirmingC
           ${renderRelatedPlaces(content.relatedPlaces)}
           ${renderPhotoSpots(content.photoSpots)}
           ${renderCollectionItems(content.collectionItems)}
+          ${renderTraditions(chapter.traditions)}
+          ${renderMicroDiscoveries(chapter.microDiscoveries)}
           ${renderChapterAlbum(memories, photoUrls, interactive)}
           ${renderGeneralMemories({
             chapterId: chapter.id,
@@ -824,6 +864,7 @@ function renderInProgress(view, storyPackage, interactive, memories, confirmingC
             photoUrls,
             staged: generalStaged,
           })}
+          ${renderNightNote(chapter.nightNote)}
           ${renderActionButton(chapter.id, chapter.status, interactive, { confirmingClose })}
         </div>
         ${renderAlbumLink(interactive)}

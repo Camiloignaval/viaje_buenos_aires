@@ -26,12 +26,16 @@ function fixturePackage() {
             description: 'Una descripción de prueba.',
             category: 'gastronomía',
             relatedPlaceId: 'place-1',
+            moment: 'El primer momento de prueba',
           },
         ],
         suggestedMemories: [
           { id: 'mem-sug-1', relatedActivityId: 'act-1', type: 'photo', prompt: 'Un recuerdo sugerido de prueba.' },
           { id: 'mem-sug-2', relatedActivityId: null, type: 'note', prompt: 'Un recuerdo libre de prueba.' },
         ],
+        traditions: [{ title: 'Tradición de prueba', body: 'Cómo se hace la tradición de prueba.' }],
+        microDiscoveries: ['Un descubrimiento de prueba, escondido a la vista.'],
+        nightNote: 'Antes de dormir, caminen un rato más sin rumbo.',
       },
       { id: 'chapter-2', order: 2, title: 'Día 2', activities: [{ id: 'act-2', title: 'Actividad sin extras' }] },
     ],
@@ -263,11 +267,12 @@ test('in_progress con interactive:false no muestra ningún botón de acción', (
   assert.doesNotMatch(html, /data-action/);
 });
 
-test('in_progress muestra la tarjeta de actividad enriquecida: descripción, categoría, lugar y links', () => {
+test('in_progress muestra la tarjeta de actividad enriquecida: momento, descripción, categoría, lugar y links', () => {
   const pkg = fixturePackage();
   const now = new Date('2027-01-10T00:00:00Z');
   const view = getStoryView(pkg, { now });
   const html = renderExperience(view, pkg, now);
+  assert.match(html, /<em>El primer momento de prueba\.<\/em>/);
   assert.match(html, /Una descripción de prueba\./);
   assert.match(html, /gastronomía/);
   assert.match(html, /Dirección de prueba/);
@@ -285,6 +290,19 @@ test('in_progress muestra photo spots, ítems de colección y memorias sugeridas
   assert.match(html, /Un recuerdo sugerido de prueba\./);
 });
 
+test('in_progress muestra tradiciones, microdescubrimientos y la nota nocturna del capítulo', () => {
+  const pkg = fixturePackage();
+  const now = new Date('2027-01-10T00:00:00Z');
+  const view = getStoryView(pkg, { now });
+  const html = renderExperience(view, pkg, now);
+  assert.match(html, /Pequeñas tradiciones/);
+  assert.match(html, /Tradición de prueba/);
+  assert.match(html, /Pequeños descubrimientos/);
+  assert.match(html, /Un descubrimiento de prueba, escondido a la vista\./);
+  assert.match(html, /Antes de terminar el día/);
+  assert.match(html, /Antes de dormir, caminen un rato más sin rumbo\./);
+});
+
 test('in_progress no muestra secciones vacías cuando el capítulo no tiene contenido relacionado', () => {
   const pkg = fixturePackage();
   const now = new Date('2027-01-11T00:00:00Z');
@@ -294,6 +312,9 @@ test('in_progress no muestra secciones vacías cuando el capítulo no tiene cont
   assert.doesNotMatch(html, /Lugares para hoy/);
   assert.doesNotMatch(html, /Photo spots de hoy/);
   assert.doesNotMatch(html, /Para hoy también/);
+  assert.doesNotMatch(html, /Pequeñas tradiciones/);
+  assert.doesNotMatch(html, /Pequeños descubrimientos/);
+  assert.doesNotMatch(html, /Antes de terminar el día/);
 });
 
 test('E-3: la invitación a guardar un recuerdo aparece pegada a su actividad, no en una lista aparte', () => {

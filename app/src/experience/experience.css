@@ -756,6 +756,18 @@ body:has(.cover-index-stage.is-index-writing) {
   padding: var(--space-3) 0 !important;
 }
 
+/* Una foto real del lugar, no un ícono — apenas un lead editorial antes del
+   horario/categoría, del mismo tamaño en todas las tarjetas para que la
+   lista siga leyéndose pareja. */
+.activity-photo {
+  display: block;
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: var(--radius-soft);
+  margin-bottom: var(--space-2);
+}
+
 /* El ritual de apertura de capítulo (E-2): un color propio por capítulo, nunca una foto todavía. */
 .chapter-hero {
   padding: var(--space-5) var(--space-4);
@@ -834,14 +846,19 @@ body:has(.cover-index-stage.is-index-writing) {
 
 .related-places,
 .photo-spots,
-.collection-items {
+.collection-items,
+.traditions,
+.micro-discoveries,
+.night-note {
   text-align: left;
   margin-bottom: 1.5rem;
 }
 
 .related-places ul,
 .photo-spots ul,
-.collection-items ul {
+.collection-items ul,
+.traditions ul,
+.micro-discoveries ul {
   list-style: none;
   padding: 0;
   margin: 0;
@@ -849,7 +866,9 @@ body:has(.cover-index-stage.is-index-writing) {
 
 .related-places li,
 .photo-spots li,
-.collection-items li {
+.collection-items li,
+.traditions li,
+.micro-discoveries li {
   padding: 0.5rem 0;
   border-bottom: 1px solid #ece4d8;
   font-size: 0.9rem;
