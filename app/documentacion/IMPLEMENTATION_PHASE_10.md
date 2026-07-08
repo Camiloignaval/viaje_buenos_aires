@@ -2,7 +2,7 @@
 
 **Autor:** Lead Software Architect / Lead Frontend Engineer
 **Alcance:** Décima fase de implementación — traducir E-1, E-2 y E-3 a `experience.html`.
-**Estado:** Propuesta — sin código escrito todavía. A la espera de aprobación.
+**Estado:** Implementado y validado (Playwright). Ver `PROJECT_STATUS_V1.md` y `EPIC_2_PRECHECK.md` para el estado consolidado del proyecto — este documento queda como registro del plan original de la fase.
 
 ---
 

@@ -2,6 +2,7 @@
   "storyId": "story-ba-2026",
   "schemaVersion": "1.4",
   "metadata": {
+    "origin": "Santiago",
     "destination": "Buenos Aires",
     "title": "Buenos Aires, 2026",
     "travelDates": { "start": "2026-07-18", "end": "2026-07-21" },

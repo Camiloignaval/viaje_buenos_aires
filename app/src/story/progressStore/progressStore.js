@@ -26,8 +26,13 @@ export function loadProgress(storyId, storage = getDefaultStorage()) {
   }
 }
 
+/** Guarda el progreso. Si el storage no acepta la escritura (privado, cuota llena), falla en silencio. */
 export function saveProgress(storyId, chapterStatuses, storage = getDefaultStorage()) {
-  storage.setItem(progressKey(storyId), JSON.stringify(chapterStatuses));
+  try {
+    storage.setItem(progressKey(storyId), JSON.stringify(chapterStatuses));
+  } catch {
+    // Nunca romper la experiencia por un storage que no acepta escrituras.
+  }
 }
 
 /** Marca un capítulo como iniciado — nunca degrada uno que ya está finalizado. */

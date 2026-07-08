@@ -58,6 +58,16 @@ test('markChapterCompleted se permite aunque nunca haya pasado por started', () 
   assert.equal(updated['chapter-1'], ChapterStatus.COMPLETED);
 });
 
+test('Épica 2: si el storage no acepta escrituras (privado, cuota llena), saveProgress no rompe', () => {
+  const storage = {
+    getItem: () => null,
+    setItem: () => {
+      throw new Error('QuotaExceededError');
+    },
+  };
+  assert.doesNotThrow(() => markChapterStarted('story-a', 'chapter-1', storage));
+});
+
 test('dos storyId distintos no se pisan entre sí', () => {
   const storage = fakeStorage();
   markChapterStarted('story-a', 'chapter-1', storage);

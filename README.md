@@ -20,7 +20,7 @@ Las fotos van en la carpeta `images/`, con estos nombres exactos (si falta algun
 
 Para reemplazar una foto: sobrescribí el archivo con el mismo nombre en `images/`.
 
-> `dia2-desayuno.jpg` y `dia3-desayuno.jpg` quedaron sin usar — el hotel incluye desayuno, así que esas fichas de cafetería se sacaron de la guía.
+> `dia2-desayuno.jpg` quedó sin usar — el hotel incluye desayuno, así que esa ficha de cafetería se sacó de la guía.
 
 ## Imprimir
 

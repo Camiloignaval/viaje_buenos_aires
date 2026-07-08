@@ -3,7 +3,22 @@
 Mini app web para vivir el viaje, no solo leerlo: checklists interactivos y un
 álbum de recuerdos donde subir las fotos reales y escribir notas.
 
-**Estado actual: Fase 2 — código del backend listo, falta desplegar.** El
+> **Esta carpeta contiene dos apps distintas, sin relación entre sí.** Todo lo
+> de abajo (`index.html`, `main.js`, `data.js`, `storage.js`, `image.js`,
+> `auth.js`, `style.css`, `api/memories.js`, `api/upload.js`, `lib/mongodb.js`,
+> `lib/cloudinary.js`) es el prototipo original descrito en esta página.
+> **Aurora** — el motor narrativo del viaje, con Story Engine, Memory Engine y
+> (desde la Épica 5) backend propio de sincronización — vive en `src/story/`,
+> `src/memory/`, `src/experience/`, `src/sync/`, `api/aurora/*` y
+> `lib/aurora*.js`, y se abre desde `experience.html` (más `admin.html` como
+> Aurora Studio, y `debug.html`/`memories.html` como herramientas internas).
+> Aurora usa su propia base de datos (`AURORA_MONGODB_URI`, distinta de
+> `MONGODB_URI`) y sus propias claves de `localStorage`
+> (`aurora:progress:*`, `aurora:memories:*`) — nunca las del prototipo. Ver
+> `src/sync/README.md` para el detalle de la sincronización y
+> `documentacion/PROJECT_STATUS_V1.md` para el estado consolidado de Aurora.
+
+**Estado actual del prototipo original: Fase 2 — código del backend listo, falta desplegar.** El
 código para MongoDB + Cloudinary ya está escrito (`api/`, `lib/`). La app
 detecta sola si el backend responde:
 
@@ -241,6 +256,20 @@ vercel dev
 Esto sí ejecuta las funciones de `api/` de verdad (a diferencia de
 `npm run dev`, que solo sirve el frontend). Si `MONGODB_URI` o las de
 Cloudinary están mal cargadas, vas a ver el error apenas abras la app.
+
+---
+
+## Épica 5 — Backend de Aurora (variables de entorno)
+
+Separado por completo del backend del prototipo viejo (arriba). Variables necesarias en `.env.local`/Vercel:
+
+| Variable | Qué es | ¿Nueva o reusada? |
+|---|---|---|
+| `AURORA_MONGODB_URI` | Connection string a una base **distinta** de `buenos_aires` (ej. `.../aurora?...`) — mismo cluster de Atlas sirve, solo hace falta crear la base nueva | Nueva |
+| `CLOUDINARY_CLOUD_NAME` / `CLOUDINARY_API_KEY` / `CLOUDINARY_API_SECRET` | Las fotos de Aurora van a la carpeta `aurora/<storyId>`, en la misma cuenta | Reusada |
+| `AURORA_ADMIN_PASSWORD` | Contraseña para publicar historias desde Aurora Studio (`admin.html`) | Nueva |
+
+Sin `AURORA_MONGODB_URI`, `/api/aurora/*` responde `503` (nunca crashea) y Aurora sigue funcionando 100% local — ver `src/sync/README.md`.
 
 ---
 
