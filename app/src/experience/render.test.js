@@ -273,14 +273,64 @@ test('pre_trip numera los capítulos como índice de libro (romanos), no como ch
   assert.match(html, /chapter-index-number">II</);
 });
 
+test('pre_trip mantiene portada e índice en Aurora Noche aunque exista preferencia light', () => {
+  const pkg = fixturePackage();
+  const now = new Date('2027-01-08T00:00:00Z');
+  const view = getStoryView(pkg, { now });
+  const html = renderExperience(view, pkg, now, { theme: 'light', coverIntroState: 'done' });
+  assert.match(html, /class="aurora-experience aurora-theme-dark"/);
+  assert.doesNotMatch(html, /class="theme-switch"/);
+  assert.match(html, /page-index/);
+});
+
 test('in_progress muestra el visibleChapter con su copy y actividades', () => {
   const pkg = fixturePackage();
   const now = new Date('2027-01-10T00:00:00Z');
   const view = getStoryView(pkg, { now });
   const html = renderExperience(view, pkg, now);
+  assert.match(html, /class="aurora-experience aurora-theme-dark"/);
+  assert.match(html, /class="theme-switch theme-switch-inline"[\s\S]*data-next-theme="light"[\s\S]*class="theme-switch-label"[^>]*>Aurora Día</);
+  assert.match(html, /class="chapter-hero"/);
+  assert.match(html, /src="\/dia1-hero\.jpg"/);
+  assert.match(html, /chapter-hero-frame[\s\S]*chapter-hero-copy[\s\S]*CAPÍTULO I · 10 DE ENERO/);
+  assert.match(html, /class="activity-card" data-reveal-on-scroll data-reveal-key="chapter-chapter-1-activity-act-1"/);
   assert.match(html, /Abrimos el día 1\./);
   assert.match(html, /Actividad de prueba/);
   assert.match(html, /Hoy/);
+});
+
+test('in_progress incorpora navegación editorial superior hacia Capítulos sin cambiar el avance inferior', () => {
+  const pkg = fixturePackage();
+  const now = new Date('2027-01-10T00:00:00Z');
+  const view = getStoryView(pkg, { now });
+  const html = renderExperience(view, pkg, now);
+  assert.match(html, /<div class="chapter-hero">[\s\S]*<div class="chapter-hero-frame reveal reveal-1">\s*<div class="reading-topbar chapter-topbar">[\s\S]*class="book-back-link book-back-chapters" data-action="open-index">← Volver al índice<\/button>[\s\S]*class="theme-switch theme-switch-inline"/);
+  assert.match(html, /data-action="resume-reading" data-chapter-id="chapter-1"/);
+  assert.equal(html.match(/<section class="book-page page-index/g)?.length ?? 0, 1);
+});
+
+test('el índice distingue capítulos completados, actual y bloqueados con jerarquía editorial', () => {
+  const pkg = fixturePackage();
+  pkg.chapters.push({ id: 'chapter-3', order: 3, title: 'Día 3', activities: [] });
+  const now = new Date('2027-01-11T00:00:00Z');
+  const view = getStoryView(pkg, { now, chapterStatuses: { 'chapter-1': 'completed' } });
+  const html = renderExperience(view, pkg, now);
+  assert.match(html, /chapter-index-item-completed/);
+  assert.match(html, /chapter-index-item-current/);
+  assert.match(html, /chapter-index-item-locked/);
+  assert.match(html, /chapter-index-marker[^>]*>✓</);
+});
+
+test('renderExperience aplica la preferencia visual light sin tocar la historia', () => {
+  const pkg = fixturePackage();
+  const now = new Date('2027-01-10T00:00:00Z');
+  const view = getStoryView(pkg, { now });
+  const html = renderExperience(view, pkg, now, { theme: 'light' });
+  assert.match(html, /class="aurora-experience aurora-theme-light"/);
+  assert.match(html, /data-theme="light"/);
+  assert.match(html, /data-next-theme="dark"/);
+  assert.match(html, /class="theme-switch-label"[^>]*>Aurora Noche</);
+  assert.match(html, /Actividad de prueba/);
 });
 
 test('in_progress con un capítulo disponible muestra el botón de "iniciado"', () => {
@@ -360,12 +410,12 @@ test('E-4: si el capítulo cerrado no tiene copy.close propio, usa el genérico 
   assert.match(html, /Cerramos con calma, genérico\./);
 });
 
-test('in_progress con interactive:false no muestra ningún botón de acción', () => {
+test('in_progress con interactive:false mantiene solo controles editoriales de lectura', () => {
   const pkg = fixturePackage();
   const now = new Date('2027-01-10T00:00:00Z');
   const view = getStoryView(pkg, { now });
   const html = renderExperience(view, pkg, now, { interactive: false });
-  assert.doesNotMatch(html, /data-action/);
+  assert.doesNotMatch(html, /data-action="(?!(open-index|toggle-theme)")/);
 });
 
 test('in_progress muestra la tarjeta de actividad enriquecida: momento, descripción, categoría, lugar y links', () => {
@@ -518,7 +568,8 @@ test('epilogue bloqueado muestra un mensaje de espera, sin revelar los prompts',
   assert.match(html, /15 de enero/);
   assert.doesNotMatch(html, /Todavía no/);
   assert.doesNotMatch(html, /Reflexión/);
-  assert.doesNotMatch(html, /data-action/);
+  assert.match(html, /data-action="open-index"/);
+  assert.doesNotMatch(html, /data-action="start"|data-action="complete"|data-action="create-memory"/);
 });
 
 test('epilogue disponible muestra el botón de "iniciado", y ninguno si interactive:false', () => {
@@ -722,7 +773,9 @@ test('Épica 3: el Álbum del viaje agrupa los recuerdos por capítulo, en orden
   assert.match(html, /Día 1/);
   assert.match(html, /Del día 1\./);
   assert.doesNotMatch(html, /Día 2/); // chapter-2 no tiene memorias — no se muestra
-  assert.match(html, /data-action="close-album"/);
+  assert.match(html, /data-action="open-index"/);
+  assert.match(html, /Capítulos/);
+  assert.match(html, /page-index/);
 });
 
 test('Épica 3: el Álbum del viaje vacío muestra un estado neutral, sin culpa', () => {

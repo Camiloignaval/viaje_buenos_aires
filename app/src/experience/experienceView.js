@@ -22,6 +22,51 @@ import { registerSW } from 'virtual:pwa-register';
 
 const storyPackage = loadStoryPackage(rawStoryPackage);
 const appEl = document.getElementById('app');
+const THEME_STORAGE_KEY = `aurora:${storyPackage.storyId}:theme`;
+
+function loadThemePreference() {
+  try {
+    return localStorage.getItem(THEME_STORAGE_KEY) === 'light' ? 'light' : 'dark';
+  } catch {
+    return 'dark';
+  }
+}
+
+function saveThemePreference(theme) {
+  try {
+    localStorage.setItem(THEME_STORAGE_KEY, theme);
+  } catch {
+    // La preferencia visual no debe romper Aurora si el storage no está disponible.
+  }
+}
+
+let visualTheme = loadThemePreference();
+
+function applyThemePreferenceInPlace(theme) {
+  const normalizedTheme = theme === 'light' ? 'light' : 'dark';
+  const root = appEl.querySelector('.aurora-experience');
+  if (!root) {
+    return false;
+  }
+
+  root.classList.toggle('aurora-theme-light', normalizedTheme === 'light');
+  root.classList.toggle('aurora-theme-dark', normalizedTheme === 'dark');
+  root.dataset.theme = normalizedTheme;
+
+  const nextTheme = normalizedTheme === 'light' ? 'dark' : 'light';
+  const nextLabel = nextTheme === 'light' ? 'Aurora Día' : 'Aurora Noche';
+  const nextIcon = nextTheme === 'light' ? '☀' : '☾';
+
+  root.querySelectorAll('[data-action="toggle-theme"]').forEach((button) => {
+    button.dataset.nextTheme = nextTheme;
+    button.setAttribute('aria-label', `Cambiar a ${nextLabel}`);
+    button.setAttribute('aria-pressed', String(normalizedTheme === 'light'));
+    button.querySelector('.theme-switch-icon')?.replaceChildren(document.createTextNode(nextIcon));
+    button.querySelector('.theme-switch-label')?.replaceChildren(document.createTextNode(nextLabel));
+  });
+
+  return true;
+}
 
 registerSW({ immediate: true });
 
@@ -157,9 +202,12 @@ let confirmingClose = false;
 let justTransformed = false;
 let showingTripAlbum = false;
 let showingPreparations = false;
+let indexNavigationOpen = false;
+let readingReturnScrollTop = null;
 let stagedPhotosBySlot = new Map();
 let lockedChapterNotice = null;
 let cleanupPreparationReveal = null;
+const revealedScrollKeys = new Set();
 
 const LOCKED_CHAPTER_MESSAGES = [
   {
@@ -393,6 +441,32 @@ function prefersReducedMotion() {
   return window.matchMedia?.('(prefers-reduced-motion: reduce)').matches === true;
 }
 
+function scrollCurrentBookTo(target) {
+  const book = appEl.querySelector('.book');
+  if (!book || !target) {
+    return false;
+  }
+  book.scrollTo({
+    top: target.offsetTop,
+    behavior: prefersReducedMotion() ? 'auto' : 'smooth',
+  });
+  return true;
+}
+
+function scrollToChapterIndex() {
+  const book = appEl.querySelector('.book');
+  const indexPage = book ? [...book.children].find((child) => child.classList?.contains('page-index')) : null;
+  return scrollCurrentBookTo(indexPage);
+}
+
+function scrollToReadingPage() {
+  const book = appEl.querySelector('.book');
+  const readingPage = book
+    ? [...book.children].find((child) => child.classList?.contains('book-page') && !child.classList.contains('page-index'))
+    : null;
+  return scrollCurrentBookTo(readingPage);
+}
+
 function updatePreparationProgressDom() {
   const buttons = [...appEl.querySelectorAll('[data-action="toggle-preparation"]')];
   const total = buttons.length;
@@ -451,13 +525,26 @@ function observePreparationGroups() {
     return;
   }
 
+  groups.forEach((group) => {
+    const key = group.dataset.revealKey;
+    if (key && revealedScrollKeys.has(key)) {
+      group.classList.add('is-visible');
+    }
+  });
+
   if (prefersReducedMotion()) {
-    groups.forEach((group) => group.classList.add('is-visible'));
+    groups.forEach((group) => {
+      if (group.dataset.revealKey) {
+        revealedScrollKeys.add(group.dataset.revealKey);
+      }
+      group.classList.add('is-visible');
+    });
     return;
   }
 
-  const root = appEl.querySelector('.book-preparations-mode');
-  let pending = [...groups];
+  const root = appEl.querySelector('.book-preparations-mode') ?? appEl.querySelector('.book');
+  const isPreparationsReveal = root?.classList.contains('book-preparations-mode') ?? false;
+  let pending = groups.filter((group) => !group.classList.contains('is-visible'));
   let firstRevealBatch = true;
 
   const revealVisibleGroups = () => {
@@ -479,9 +566,13 @@ function observePreparationGroups() {
         // El primer batch de categorías espera esa coreografía para no aparecer
         // antes que el texto superior. Los batches posteriores, ya por scroll,
         // entran casi inmediato pero todavía escalonados.
-        const baseDelay = firstRevealBatch ? 4600 : 80;
+        const baseDelay = isPreparationsReveal && firstRevealBatch ? 4600 : 80;
         const delay = baseDelay + index * 150;
         group.style.setProperty('--preparation-reveal-delay', `${delay}ms`);
+        group.style.setProperty('--scroll-reveal-delay', `${delay}ms`);
+        if (group.dataset.revealKey) {
+          revealedScrollKeys.add(group.dataset.revealKey);
+        }
         group.classList.add('is-visible');
       });
 
@@ -610,6 +701,8 @@ async function renderNow() {
 
   if (view.currentMode !== StoryMode.PRE_TRIP) {
     showingPreparations = false;
+  } else if (!showingPreparations) {
+    indexNavigationOpen = false;
   }
 
   // El prefijo `director:` viene del panel de Director Mode, que ya muestra esta
@@ -684,6 +777,7 @@ async function renderNow() {
       stagedPhotosBySlot,
       availableTripPhotos: tripWidePhotoIds(tripMemories),
       showingTripAlbum,
+      indexNavigationOpen,
       tripMemories,
       installBanner: devScenario ? null : resolveInstallBanner(),
       pendingNotification: devScenario ? null : currentPendingNotification,
@@ -691,6 +785,7 @@ async function renderNow() {
       lockedChapterNotice,
       showingPreparations,
       preparationCompletedIds,
+      theme: visualTheme,
     });
 
   if (shouldFocusIndexAfterRender) {
@@ -814,7 +909,7 @@ appEl.addEventListener('click', async (event) => {
   if (!button) {
     return;
   }
-  const { action, chapterId, memoryId, activityId, tempId, photoId, preparationId } = button.dataset;
+  const { action, chapterId, memoryId, activityId, tempId, photoId, preparationId, nextTheme } = button.dataset;
   const key = chapterId !== undefined ? photoSlotKey(chapterId, activityId || null) : null;
 
   // Director Mode (QA): cualquier navegación real mientras el recorrido
@@ -826,10 +921,44 @@ appEl.addEventListener('click', async (event) => {
 
   if (action === 'start') {
     markChapterStarted(storyPackage.storyId, chapterId);
+  } else if (action === 'toggle-theme') {
+    visualTheme = nextTheme === 'light' ? 'light' : 'dark';
+    saveThemePreference(visualTheme);
+    if (!applyThemePreferenceInPlace(visualTheme)) {
+      await renderNow();
+    }
+    return;
   } else if (action === 'open-preparations') {
     showingPreparations = true;
+    indexNavigationOpen = false;
   } else if (action === 'close-preparations') {
     showingPreparations = false;
+  } else if (action === 'open-index') {
+    confirmingClose = false;
+    lockedChapterNotice = null;
+    readingReturnScrollTop = appEl.querySelector('.book')?.scrollTop ?? null;
+    indexNavigationOpen = true;
+    await renderNow();
+    return;
+  } else if (action === 'resume-reading') {
+    lockedChapterNotice = null;
+    indexNavigationOpen = false;
+    if (showingTripAlbum) {
+      showingTripAlbum = false;
+      await renderNow();
+      return;
+    }
+    await renderNow();
+    if (readingReturnScrollTop !== null) {
+      appEl.querySelector('.book')?.scrollTo({
+        top: readingReturnScrollTop,
+        behavior: prefersReducedMotion() ? 'auto' : 'smooth',
+      });
+      readingReturnScrollTop = null;
+    } else {
+      scrollToReadingPage();
+    }
+    return;
   } else if (action === 'toggle-preparation') {
     const completed = button.dataset.completed !== 'true';
     await upsertChecklistMemory(preparationId, {
@@ -910,8 +1039,10 @@ appEl.addEventListener('click', async (event) => {
     archiveMemory(storyPackage.storyId, memoryId);
   } else if (action === 'open-album') {
     showingTripAlbum = true;
+    indexNavigationOpen = false;
   } else if (action === 'close-album') {
     showingTripAlbum = false;
+    indexNavigationOpen = false;
   } else if (action === 'install-app') {
     await dismissInstallBannerWithFade();
     if (deferredInstallPrompt) {

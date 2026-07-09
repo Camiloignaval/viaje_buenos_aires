@@ -1,4 +1,4 @@
-// Traduce un StoryView + Story Package a HTML (string). Función pura: mismo input,
+﻿// Traduce un StoryView + Story Package a HTML (string). Función pura: mismo input,
 // mismo output siempre. No toca `document`, no lee el reloj — `now` se recibe como
 // parámetro para poder calcular la cuenta regresiva de pre_trip sin dejar de ser pura.
 // Ver IMPLEMENTATION_PHASE_4.md.
@@ -14,6 +14,13 @@ const STATUS_LABEL = {
   [ChapterStatus.AVAILABLE]: 'Hoy',
   [ChapterStatus.STARTED]: 'Hoy',
   [ChapterStatus.COMPLETED]: 'Vivido',
+};
+
+const CHAPTER_INDEX_MARKER = {
+  [ChapterStatus.AVAILABLE]: '•',
+  [ChapterStatus.STARTED]: '•',
+  [ChapterStatus.COMPLETED]: '✓',
+  [ChapterStatus.LOCKED]: '—',
 };
 
 /**
@@ -52,6 +59,10 @@ function formatChapterDate(date) {
 }
 
 const DAY_IN_MS = 24 * 60 * 60 * 1000;
+
+function normalizeTheme(theme) {
+  return theme === 'light' ? 'light' : 'dark';
+}
 
 /**
  * Identifica el "cajón" de fotos en curso (todavía sin guardar) de una actividad,
@@ -106,6 +117,22 @@ function renderNotificationPrompt(pendingNotification) {
   `;
 }
 
+function renderThemeSwitch(theme, interactive, extraClass = '') {
+  if (!interactive) {
+    return '';
+  }
+  const nextTheme = theme === 'light' ? 'dark' : 'light';
+  const icon = nextTheme === 'light' ? '☀' : '☾';
+  const label = nextTheme === 'light' ? 'Aurora Día' : 'Aurora Noche';
+  const classes = ['theme-switch', extraClass].filter(Boolean).join(' ');
+  return `
+    <button type="button" class="${classes}" data-action="toggle-theme" data-next-theme="${nextTheme}" aria-label="Cambiar a ${label}" aria-pressed="${theme === 'light'}">
+      <span class="theme-switch-icon" aria-hidden="true">${icon}</span>
+      <span class="theme-switch-label">${label}</span>
+    </button>
+  `;
+}
+
 function buildChapterSummary(view, storyPackage) {
   return storyPackage.chapters.map((chapter) => {
     let status = ChapterStatus.LOCKED;
@@ -155,25 +182,73 @@ function renderChapterList(view, storyPackage, { extraClass = '', interactive = 
   const items = buildChapterSummary(view, storyPackage)
     .map(({ id, title, order, status, referenceDate }) => {
       const isLocked = status === ChapterStatus.LOCKED;
+      const isCurrent = status === ChapterStatus.AVAILABLE || status === ChapterStatus.STARTED;
       const label = isLocked ? formatChapterDate(referenceDate) : title;
       const statusLine = isLocked ? teaserForChapter(order) : STATUS_LABEL[status];
       const content = `
+        <span class="chapter-index-marker" aria-hidden="true">${CHAPTER_INDEX_MARKER[status]}</span>
         <span class="chapter-index-number">${toRoman(order)}</span>
         <span class="chapter-index-text">
           <span class="chapter-index-title">${label}</span>
           <span class="chapter-index-status">${statusLine}</span>
         </span>
       `;
+      const className = [
+        'chapter-index-item',
+        `chapter-index-item-${status}`,
+        isCurrent ? 'chapter-index-item-current' : '',
+      ]
+        .filter(Boolean)
+        .join(' ');
+      const currentAttr = isCurrent ? ' aria-current="step"' : '';
       return `
-      <li class="chapter-index-item${isLocked ? ' chapter-index-item-locked' : ''}">
+      <li class="${className}"${currentAttr}>
         ${isLocked && interactive
-          ? `<button type="button" class="chapter-index-lock" data-action="open-locked-chapter" data-chapter-id="${id}" data-unlock-label="${label}" aria-label="Cap?tulo ${toRoman(order)} estar? disponible el ${label}">${content}</button>`
+          ? `<button type="button" class="chapter-index-lock" data-action="open-locked-chapter" data-chapter-id="${id}" data-unlock-label="${label}" aria-label="Capítulo ${toRoman(order)} estará disponible el ${label}">${content}</button>`
+          : isCurrent && interactive
+            ? `<button type="button" class="chapter-index-open" data-action="resume-reading" data-chapter-id="${id}" aria-label="Volver al capítulo ${toRoman(order)}">${content}</button>`
           : content}
       </li>
     `;
     })
     .join('');
   return `<ol class="chapter-index ${extraClass}">${items}</ol>`;
+}
+
+function renderBackToChaptersLink(interactive, label = '← Capítulos') {
+  if (!interactive) {
+    return '';
+  }
+  return `<button type="button" class="book-back-link book-back-chapters" data-action="open-index">${label}</button>`;
+}
+
+function renderReadingTopbar(interactive, theme, { label = '← Capítulos', action = 'open-index', extraClass = '' } = {}) {
+  if (!interactive) {
+    return '';
+  }
+  const classes = ['reading-topbar', extraClass].filter(Boolean).join(' ');
+  const backClass = action === 'open-index' ? 'book-back-link book-back-chapters' : 'book-back-link';
+  return `
+    <div class="${classes}">
+      <button type="button" class="${backClass}" data-action="${action}">${label}</button>
+      ${renderThemeSwitch(theme, true, 'theme-switch-inline')}
+    </div>
+  `;
+}
+
+function renderChapterTopbar(interactive, theme) {
+  if (!interactive) {
+    return '';
+  }
+  return renderReadingTopbar(true, theme, {
+    label: '← Volver al índice',
+    action: 'open-index',
+    extraClass: 'chapter-topbar',
+  });
+}
+
+function revealAttrs(key) {
+  return `data-reveal-on-scroll data-reveal-key="${key}"`;
 }
 
 function getPreparationGroups(storyPackage) {
@@ -278,18 +353,18 @@ function renderPreparationGroup(group, completedIds, interactive) {
   `;
 }
 
-function renderPreparationsPage(storyPackage, completedIds, interactive) {
+function renderPreparationsPage(storyPackage, completedIds, interactive, theme) {
   const groups = getPreparationGroups(storyPackage);
   const progress = computePreparationProgress(storyPackage, completedIds);
   const completeCopy = `<p class="preparation-complete-copy${progress.complete ? '' : ' is-hidden'}" data-preparation-complete-copy>Ahora solo queda esperar el comienzo del viaje.</p>`;
   return `
     <div class="book book-pretrip book-preparations-mode">
       <section class="book-page page-preparations">
-        ${
-          interactive
-            ? '<button type="button" class="book-back-link" data-action="close-preparations">← Volver al índice</button>'
-            : ''
-        }
+        ${renderReadingTopbar(interactive, theme, {
+          label: '← Volver al índice',
+          action: 'close-preparations',
+          extraClass: 'preparation-topbar',
+        })}
         <p class="eyebrow reveal reveal-1">Antes del viaje</p>
         <h1 class="reveal reveal-2">Preparativos</h1>
         <p class="open preparation-intro reveal reveal-3">
@@ -319,7 +394,7 @@ function renderPreparationsPage(storyPackage, completedIds, interactive) {
  * invisibles y `experienceView.js` los revela (clase `is-revealing`) cuando
  * termina el video y el último frame ya fundió al carbón cálido.
  */
-function renderIndexPage(view, storyPackage, { pendingReveal = false, revealing = false, extraClass = '', showParticles = false, interactive = true, preparationCompletedIds = [] } = {}) {
+function renderIndexPage(view, storyPackage, { pendingReveal = false, revealing = false, extraClass = '', showParticles = false, interactive = true, preparationCompletedIds = [], returnMode = false } = {}) {
   const classes = ['book-page', 'page-index', extraClass, pendingReveal ? 'page-index-pending' : '', revealing ? 'is-revealing' : '']
     .filter(Boolean)
     .join(' ');
@@ -334,6 +409,11 @@ function renderIndexPage(view, storyPackage, { pendingReveal = false, revealing 
       ${preparationEntry}
       <h2 class="page-index-title">Capítulos</h2>
       ${renderChapterList(view, storyPackage, { interactive })}
+      ${
+        returnMode && interactive
+          ? '<p class="index-current-return"><button type="button" data-action="resume-reading">Volver a la lectura →</button></p>'
+          : ''
+      }
     </section>
   `;
 }
@@ -344,6 +424,19 @@ function renderIndexPage(view, storyPackage, { pendingReveal = false, revealing 
  * — es un campo opcional, así que su ausencia nunca se resalta (nunca un guion
  * vacío ni un placeholder).
  */
+function renderJourneyIndex(view, storyPackage, interactive, preparationCompletedIds) {
+  return `
+    <div class="book book-index-return">
+      ${renderIndexPage(view, storyPackage, {
+        interactive,
+        preparationCompletedIds,
+        extraClass: 'page-index-return',
+        returnMode: view.currentMode !== StoryMode.PRE_TRIP,
+      })}
+    </div>
+  `;
+}
+
 function renderTravelLine(origin, destination) {
   if (!origin) {
     return '';
@@ -570,7 +663,7 @@ function renderActivityCard({ activity, place, suggestedMemories }, chapterId, m
   const staged = stagedPhotosBySlot.get(photoSlotKey(chapterId, activity.id)) ?? [];
 
   return `
-    <li class="activity-card">
+    <li class="activity-card" ${revealAttrs(`chapter-${chapterId}-activity-${activity.id}`)}>
       ${activity.image ? `<img class="activity-photo" src="/${activity.image}" alt="${activity.moment ?? activity.title}" loading="lazy" />` : ''}
       <div class="activity-head">
         ${activity.timeWindow ? `<span class="time">${activity.timeWindow}</span>` : ''}
@@ -586,7 +679,7 @@ function renderActivityCard({ activity, place, suggestedMemories }, chapterId, m
   `;
 }
 
-function renderRelatedPlaces(relatedPlaces) {
+function renderRelatedPlaces(relatedPlaces, chapterId) {
   if (relatedPlaces.length === 0) {
     return '';
   }
@@ -601,10 +694,10 @@ function renderRelatedPlaces(relatedPlaces) {
       `
     )
     .join('');
-  return `<section class="related-places"><p class="section-title">Lugares para hoy</p><ul>${items}</ul></section>`;
+  return `<section class="related-places" ${revealAttrs(`chapter-${chapterId}-related-places`)}><p class="section-title">Lugares para hoy</p><ul>${items}</ul></section>`;
 }
 
-function renderPhotoSpots(photoSpots) {
+function renderPhotoSpots(photoSpots, chapterId) {
   if (photoSpots.length === 0) {
     return '';
   }
@@ -619,10 +712,10 @@ function renderPhotoSpots(photoSpots) {
       `
     )
     .join('');
-  return `<section class="photo-spots"><p class="section-title">Photo spots de hoy</p><ul>${items}</ul></section>`;
+  return `<section class="photo-spots" ${revealAttrs(`chapter-${chapterId}-photo-spots`)}><p class="section-title">Photo spots de hoy</p><ul>${items}</ul></section>`;
 }
 
-function renderCollectionItems(items) {
+function renderCollectionItems(items, chapterId) {
   if (items.length === 0) {
     return '';
   }
@@ -638,11 +731,11 @@ function renderCollectionItems(items) {
       `;
     })
     .join('');
-  return `<section class="collection-items"><p class="section-title">Para hoy también</p><ul>${rendered}</ul></section>`;
+  return `<section class="collection-items" ${revealAttrs(`chapter-${chapterId}-collection-items`)}><p class="section-title">Para hoy también</p><ul>${rendered}</ul></section>`;
 }
 
 /** Bloques editoriales cortos que no pertenecen a un lugar puntual (E-narrativa). */
-function renderTraditions(traditions) {
+function renderTraditions(traditions, chapterId) {
   if (!traditions || traditions.length === 0) {
     return '';
   }
@@ -656,24 +749,24 @@ function renderTraditions(traditions) {
       `
     )
     .join('');
-  return `<section class="traditions"><p class="section-title">Pequeñas tradiciones</p><ul>${items}</ul></section>`;
+  return `<section class="traditions" ${revealAttrs(`chapter-${chapterId}-traditions`)}><p class="section-title">Pequeñas tradiciones</p><ul>${items}</ul></section>`;
 }
 
 /** Asides breves tipo "si miran hacia arriba..." — vivas, no una lista de datos (E-narrativa). */
-function renderMicroDiscoveries(discoveries) {
+function renderMicroDiscoveries(discoveries, chapterId) {
   if (!discoveries || discoveries.length === 0) {
     return '';
   }
   const items = discoveries.map((discovery) => `<li><p class="item-description">${discovery}</p></li>`).join('');
-  return `<section class="micro-discoveries"><p class="section-title">Pequeños descubrimientos</p><ul>${items}</ul></section>`;
+  return `<section class="micro-discoveries" ${revealAttrs(`chapter-${chapterId}-micro-discoveries`)}><p class="section-title">Pequeños descubrimientos</p><ul>${items}</ul></section>`;
 }
 
 /** Cierre privado y fijo del día (E-narrativa): nunca logística, nunca turístico — solo para ellos dos. */
-function renderNightNote(nightNote) {
+function renderNightNote(nightNote, chapterId) {
   if (!nightNote) {
     return '';
   }
-  return `<section class="night-note"><p class="section-title">🌙 Antes de terminar el día</p><p class="item-description">${nightNote}</p></section>`;
+  return `<section class="night-note" ${revealAttrs(`chapter-${chapterId}-night-note`)}><p class="section-title">🌙 Antes de terminar el día</p><p class="item-description">${nightNote}</p></section>`;
 }
 
 /**
@@ -719,7 +812,7 @@ function renderGeneralMemories({ chapterId, unassignedSuggestedMemories, general
   });
 
   return `
-    <section class="chapter-memories-general">
+    <section class="chapter-memories-general" ${revealAttrs(`chapter-${chapterId}-general-memories`)}>
       <p class="section-title">Algo más de hoy</p>
       ${hints}
       ${saved}
@@ -750,7 +843,7 @@ function byCreatedAt(a, b) {
  * solo se muestra la más reciente (una Memoria activa por actividad, no un historial).
  * Si todavía no hay nada, no se muestra (nunca se resalta una ausencia).
  */
-function renderChapterAlbum(memories, photoUrls, interactive) {
+function renderChapterAlbum(memories, photoUrls, interactive, chapterId) {
   if (!interactive) {
     return '';
   }
@@ -764,7 +857,7 @@ function renderChapterAlbum(memories, photoUrls, interactive) {
     .sort(byCreatedAt)
     .map((memory) => renderMemoryCard(memory, photoUrls))
     .join('');
-  return `<section class="chapter-album"><p class="section-title">Tus recuerdos</p><ul class="memory-cards">${cards}</ul></section>`;
+  return `<section class="chapter-album" ${revealAttrs(`chapter-${chapterId}-album`)}><p class="section-title">Tus recuerdos</p><ul class="memory-cards">${cards}</ul></section>`;
 }
 
 /** Una invitación quieta a ver el viaje completo — nunca compite con el momento actual. */
@@ -772,22 +865,27 @@ function renderAlbumLink(interactive) {
   if (!interactive) {
     return '';
   }
-  return '<p class="album-link"><button type="button" data-action="open-album">Ver el álbum del viaje</button></p>';
+  return `<p class="album-link" ${revealAttrs('chapter-album-link')}><button type="button" data-action="open-album">Ver el álbum del viaje</button></p>`;
 }
 
-/** El ritual de apertura de un capítulo (E-2): color propio, título, pausa, frase de apertura. */
-const HERO_PALETTE = ['hero-amber', 'hero-clay', 'hero-moss', 'hero-dusk'];
-
-function heroClassForChapter(chapter) {
-  const index = ((chapter.order ?? 1) - 1) % HERO_PALETTE.length;
-  return HERO_PALETTE[index];
+function heroImageForChapter(chapter) {
+  const day = Math.min(Math.max(Number(chapter.order ?? 1), 1), 4);
+  return `/dia${day}-hero.jpg`;
 }
 
-function renderChapterHero(chapter, openLine) {
+function renderChapterHero(chapter, storyPackage, openLine, interactive, theme) {
+  const chapterDate = formatChapterDate(getChapterReferenceDate(chapter, storyPackage)).toUpperCase();
   return `
-    <div class="chapter-hero ${heroClassForChapter(chapter)}">
-      <h1 class="reveal reveal-1">${chapter.title}</h1>
-      <p class="open reveal reveal-2">${openLine}</p>
+    <div class="chapter-hero">
+      <div class="chapter-hero-frame reveal reveal-1">
+        ${renderChapterTopbar(true, theme)}
+        <img class="chapter-hero-image" src="${heroImageForChapter(chapter)}" alt="" loading="eager" />
+        <div class="chapter-hero-copy reveal reveal-2">
+          <p class="chapter-hero-kicker">CAPÍTULO ${toRoman(chapter.order)} · ${chapterDate}</p>
+          <h1>${chapter.title}</h1>
+          <p class="open">${openLine}</p>
+        </div>
+      </div>
     </div>
   `;
 }
@@ -960,9 +1058,9 @@ function renderIntroIndexStage(view, storyPackage, now, coverIntroState, interac
   `;
 }
 
-function renderPreTrip(view, storyPackage, now, coverIntroState, interactive, showingPreparations, preparationCompletedIds) {
+function renderPreTrip(view, storyPackage, now, coverIntroState, interactive, showingPreparations, preparationCompletedIds, theme) {
   if (showingPreparations) {
-    return renderPreparationsPage(storyPackage, new Set(preparationCompletedIds), interactive);
+    return renderPreparationsPage(storyPackage, new Set(preparationCompletedIds), interactive, theme);
   }
 
   if (coverIntroState === 'video' || coverIntroState === 'revealing' || coverIntroState === 'done') {
@@ -978,7 +1076,7 @@ function renderPreTrip(view, storyPackage, now, coverIntroState, interactive, sh
   `;
 }
 
-function renderInProgress(view, storyPackage, interactive, memories, confirmingClose, photoUrls, stagedPhotosBySlot) {
+function renderInProgress(view, storyPackage, interactive, memories, confirmingClose, photoUrls, stagedPhotosBySlot, theme) {
   const chapter = view.visibleChapter;
 
   if (!chapter) {
@@ -1007,14 +1105,14 @@ function renderInProgress(view, storyPackage, interactive, memories, confirmingC
     <div class="book">
       <section class="book-page page-chapter">
         <div class="chapter">
-          ${renderChapterHero(chapter, openLine)}
+          ${renderChapterHero(chapter, storyPackage, openLine, interactive, theme)}
           <ul class="activities">${activities}</ul>
-          ${renderRelatedPlaces(content.relatedPlaces)}
-          ${renderPhotoSpots(content.photoSpots)}
-          ${renderCollectionItems(content.collectionItems)}
-          ${renderTraditions(chapter.traditions)}
-          ${renderMicroDiscoveries(chapter.microDiscoveries)}
-          ${renderChapterAlbum(memories, photoUrls, interactive)}
+          ${renderRelatedPlaces(content.relatedPlaces, chapter.id)}
+          ${renderPhotoSpots(content.photoSpots, chapter.id)}
+          ${renderCollectionItems(content.collectionItems, chapter.id)}
+          ${renderTraditions(chapter.traditions, chapter.id)}
+          ${renderMicroDiscoveries(chapter.microDiscoveries, chapter.id)}
+          ${renderChapterAlbum(memories, photoUrls, interactive, chapter.id)}
           ${renderGeneralMemories({
             chapterId: chapter.id,
             unassignedSuggestedMemories: content.unassignedSuggestedMemories,
@@ -1023,7 +1121,7 @@ function renderInProgress(view, storyPackage, interactive, memories, confirmingC
             photoUrls,
             staged: generalStaged,
           })}
-          ${renderNightNote(chapter.nightNote)}
+          ${renderNightNote(chapter.nightNote, chapter.id)}
           ${renderActionButton(chapter.id, chapter.status, interactive, { confirmingClose })}
         </div>
         ${renderAlbumLink(interactive)}
@@ -1122,7 +1220,7 @@ function renderPromptSlot(prompt, chapterId, existingMemory, storyPackage, photo
   return renderTextPrompt(prompt, chapterId);
 }
 
-function renderEpilogue(view, storyPackage, interactive, memories, confirmingClose, photoUrls, availableTripPhotos) {
+function renderEpilogue(view, storyPackage, interactive, memories, confirmingClose, photoUrls, availableTripPhotos, theme) {
   const specialChapter = storyPackage.specialChapter;
 
   if (view.specialChapterStatus === ChapterStatus.LOCKED) {
@@ -1130,6 +1228,7 @@ function renderEpilogue(view, storyPackage, interactive, memories, confirmingClo
     return `
       <div class="book">
         <section class="book-page page-epilogue epilogue-waiting">
+          ${renderReadingTopbar(interactive, theme)}
           <p class="eyebrow">${date}</p>
           <p class="open">Nos espera.</p>
         </section>
@@ -1151,6 +1250,7 @@ function renderEpilogue(view, storyPackage, interactive, memories, confirmingClo
   return `
     <div class="book">
       <section class="book-page page-epilogue">
+        ${renderReadingTopbar(interactive, theme)}
         <h1 class="reveal reveal-1">${specialChapter.title}</h1>
         <p class="open reveal reveal-2">${specialChapter.copy?.open ?? ''}</p>
         <ul class="prompts">${prompts}</ul>
@@ -1168,7 +1268,7 @@ function renderEpilogue(view, storyPackage, interactive, memories, confirmingClo
 }
 
 /** La primera pantalla de Memory Mode (E-6): si se acaba de transformar, una línea breve lo acompaña — una única vez, nunca anunciada de antemano. */
-function renderMemoryMode(view, storyPackage, justTransformed, interactive) {
+function renderMemoryMode(view, storyPackage, justTransformed, interactive, theme) {
   const content = justTransformed
     ? `
       <p class="transformation-line reveal reveal-1">Esta historia se convirtió en un recuerdo.</p>
@@ -1182,6 +1282,7 @@ function renderMemoryMode(view, storyPackage, justTransformed, interactive) {
   return `
     <div class="book">
       <section class="book-page page-memory">
+        ${renderReadingTopbar(interactive, theme)}
         ${content}
         ${renderAlbumLink(interactive)}
       </section>
@@ -1195,7 +1296,7 @@ function renderMemoryMode(view, storyPackage, justTransformed, interactive) {
  * orden narrativo — no es Memory Mode, es simplemente poder verlos todos juntos.
  * Solo se muestran los capítulos que ya tienen algo — nunca se resalta una ausencia.
  */
-function renderTripAlbum(storyPackage, tripMemories, photoUrls) {
+function renderTripAlbum(view, storyPackage, tripMemories, photoUrls, interactive, preparationCompletedIds, theme) {
   const allChapters = [...storyPackage.chapters, ...(storyPackage.specialChapter ? [storyPackage.specialChapter] : [])];
   const byChapter = new Map();
   for (const memory of tripMemories) {
@@ -1223,11 +1324,12 @@ function renderTripAlbum(storyPackage, tripMemories, photoUrls) {
   return `
     <div class="book">
       <section class="book-page page-album">
+        ${renderReadingTopbar(interactive, theme)}
         <p class="eyebrow reveal reveal-1">${storyPackage.metadata.title}</p>
         <h1 class="reveal reveal-2">Tu álbum del viaje</h1>
         ${sections || '<p class="album-empty">El álbum espera sus primeros recuerdos.</p>'}
-        <p class="album-back"><button type="button" data-action="close-album">Volver</button></p>
       </section>
+      ${renderIndexPage(view, storyPackage, { interactive, preparationCompletedIds, returnMode: true })}
     </div>
   `;
 }
@@ -1283,6 +1385,8 @@ function renderLockedChapterModal(lockedChapterNotice) {
  *   la página editorial de Preparativos en vez del índice.
  * @param {string[]} [options.preparationCompletedIds=[]] - Ítems de Preparativos ya
  *   marcados como listos. La persistencia vive fuera de `render.js`.
+ * @param {'dark'|'light'} [options.theme='dark'] - Tema visual de Aurora. Es presentación
+ *   pura: la preferencia se guarda fuera de `render.js`.
  * @returns {string} HTML listo para inyectar.
  */
 export function renderExperience(view, storyPackage, now, options = {}) {
@@ -1299,32 +1403,60 @@ export function renderExperience(view, storyPackage, now, options = {}) {
   const lockedChapterNotice = interactive ? options.lockedChapterNotice ?? null : null;
   const showingPreparations = interactive ? options.showingPreparations ?? false : false;
   const preparationCompletedIds = options.preparationCompletedIds ?? [];
+  const requestedTheme = normalizeTheme(options.theme);
+  const readingIndexOpen =
+    options.indexNavigationOpen &&
+    !showingTripAlbum &&
+    !showingPreparations &&
+    view.currentMode !== StoryMode.PRE_TRIP;
+  const themeablePage =
+    showingTripAlbum || showingPreparations || view.currentMode !== StoryMode.PRE_TRIP;
+  const theme = readingIndexOpen ? 'dark' : themeablePage ? requestedTheme : 'dark';
   const installBanner = interactive && !showingPreparations ? options.installBanner ?? null : null;
   const pendingNotification = interactive && !showingPreparations ? options.pendingNotification ?? null : null;
+  const rootClasses = [
+    'aurora-experience',
+    `aurora-theme-${theme}`,
+    options.indexNavigationOpen ? 'is-reading-index' : '',
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   const banners = `${renderInstallBanner(installBanner)}${renderNotificationPrompt(pendingNotification)}`;
   const lockedModal = renderLockedChapterModal(lockedChapterNotice);
+  const usesReadingTopbar =
+    showingTripAlbum ||
+    showingPreparations ||
+    (view.currentMode === StoryMode.IN_PROGRESS && Boolean(view.visibleChapter)) ||
+    view.currentMode === StoryMode.EPILOGUE ||
+    view.currentMode === StoryMode.MEMORY_MODE;
+  const themeSwitch = renderThemeSwitch(theme, interactive && themeablePage && !usesReadingTopbar);
+
+  if (readingIndexOpen) {
+    return `<div class="${rootClasses}" data-theme="${theme}">${banners}${renderJourneyIndex(view, storyPackage, interactive, preparationCompletedIds)}${lockedModal}</div>`;
+  }
 
   if (showingTripAlbum) {
-    return banners + renderTripAlbum(storyPackage, tripMemories, photoUrls) + lockedModal;
+    return `<div class="${rootClasses}" data-theme="${theme}">${themeSwitch}${banners}${renderTripAlbum(view, storyPackage, tripMemories, photoUrls, interactive, preparationCompletedIds, theme)}${lockedModal}</div>`;
   }
 
   let content = '';
   switch (view.currentMode) {
     case StoryMode.PRE_TRIP:
-      content = renderPreTrip(view, storyPackage, now, coverIntroState, interactive, showingPreparations, preparationCompletedIds);
+      content = renderPreTrip(view, storyPackage, now, coverIntroState, interactive, showingPreparations, preparationCompletedIds, theme);
       break;
     case StoryMode.IN_PROGRESS:
-      content = renderInProgress(view, storyPackage, interactive, memories, confirmingClose, photoUrls, stagedPhotosBySlot);
+      content = renderInProgress(view, storyPackage, interactive, memories, confirmingClose, photoUrls, stagedPhotosBySlot, theme);
       break;
     case StoryMode.EPILOGUE:
-      content = renderEpilogue(view, storyPackage, interactive, memories, confirmingClose, photoUrls, availableTripPhotos);
+      content = renderEpilogue(view, storyPackage, interactive, memories, confirmingClose, photoUrls, availableTripPhotos, theme);
       break;
     case StoryMode.MEMORY_MODE:
-      content = renderMemoryMode(view, storyPackage, justTransformed, interactive);
+      content = renderMemoryMode(view, storyPackage, justTransformed, interactive, theme);
       break;
     default:
       throw new Error(`currentMode desconocido: ${view.currentMode}`);
   }
-  return banners + content + lockedModal;
+  return `<div class="${rootClasses}" data-theme="${theme}">${themeSwitch}${banners}${content}${lockedModal}</div>`;
 }
+

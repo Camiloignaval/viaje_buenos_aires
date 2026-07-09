@@ -19,7 +19,10 @@
       "id": "chapter-1",
       "order": 1,
       "title": "Bienvenidos a Buenos Aires",
-      "unlockRule": { "requiresDateReached": true, "requiresPreviousChapterCompleted": false },
+      "unlockRule": {
+        "requiresDateReached": true,
+        "requiresPreviousChapterCompleted": false
+      },
       "copy": {
         "open": "No importa cuántas veces viajemos. Siempre voy a recordar este como el viaje en que celebramos tu cumpleaños. Hoy no hay nada planeado todavía — solo la ciudad, esperándonos, y las maletas recién dejadas en el hotel.",
         "close": "Hoy probablemente estaremos cansados. Pero también felices. Hoy comenzó una aventura que llevábamos mucho tiempo esperando. Quizás no recordemos exactamente todo lo que hicimos — pero sí cómo nos sentimos. Y eso siempre será lo más importante."
@@ -93,10 +96,30 @@
       "extraTime": "Corrientes no se termina en el Obelisco. Una cuadra más suele alcanzar para encontrar una librería con la luz todavía prendida a esa hora — no hace falta buscarla, casi siempre aparece.",
       "ourMoment": "Probablemente lo que más quede de hoy no sea el Obelisco ni la cena — va a ser la vuelta caminando por Corrientes, con el helado a medio comer, sin apuro por llegar a ningún lado. El primer día de un viaje casi nunca se recuerda por lo planeado, sino por ese rato de más.",
       "suggestedMemories": [
-        { "id": "mem-1-1", "relatedActivityId": "act-1-3", "type": "photo", "prompt": "El símbolo de la ciudad, con el movimiento de la 9 de Julio de fondo — la primera postal clásica del primer viaje juntos. Mejor entre 09:00 y 10:30, desde Corrientes con 9 de Julio." },
-        { "id": "mem-1-2", "relatedActivityId": "act-1-3", "type": "photo", "prompt": "La misma postal, de noche — la avenida iluminada le da otra vida. Entre 20:30 y 22:00, esperando el cambio de luces del Obelisco." },
-        { "id": "mem-1-3", "relatedActivityId": "act-1-3", "type": "video", "prompt": "Caminar de noche por Av. Corrientes — el cierre de la primera caminata juntos en la ciudad." },
-        { "id": "mem-1-4", "relatedActivityId": "act-1-4", "type": "video", "prompt": "El helado de Rapanui, compartido caminando — un momento simple que va a valer la pena recordar." }
+        {
+          "id": "mem-1-1",
+          "relatedActivityId": "act-1-3",
+          "type": "photo",
+          "prompt": "El símbolo de la ciudad, con el movimiento de la 9 de Julio de fondo — la primera postal clásica del primer viaje juntos. Mejor entre 09:00 y 10:30, desde Corrientes con 9 de Julio."
+        },
+        {
+          "id": "mem-1-2",
+          "relatedActivityId": "act-1-3",
+          "type": "photo",
+          "prompt": "La misma postal, de noche — la avenida iluminada le da otra vida. Entre 20:30 y 22:00, esperando el cambio de luces del Obelisco."
+        },
+        {
+          "id": "mem-1-3",
+          "relatedActivityId": "act-1-3",
+          "type": "video",
+          "prompt": "Caminar de noche por Av. Corrientes — el cierre de la primera caminata juntos en la ciudad."
+        },
+        {
+          "id": "mem-1-4",
+          "relatedActivityId": "act-1-4",
+          "type": "video",
+          "prompt": "El helado de Rapanui, compartido caminando — un momento simple que va a valer la pena recordar."
+        }
       ]
     },
     {
@@ -140,7 +163,8 @@
           "category": "café",
           "relatedPlaceId": "la-biela",
           "moment": "El primer café con medialunas de Kari",
-          "insight": "Bajo ese gomero nadie apura la mesa — es de los pocos lugares del viaje donde quedarse un rato de más no necesita excusa."
+          "insight": "Bajo ese gomero nadie apura la mesa — es de los pocos lugares del viaje donde quedarse un rato de más no necesita excusa.",
+          "image": "images/la-biela.jpg"
         },
         {
           "id": "act-2-5",
@@ -206,13 +230,48 @@
       "extraTime": "Si después de Lattente todavía sobra tiempo antes de Puerto Madero, el Jardín Japonés queda cerca y tiene esa calma que no estaba en el plan, pero que a veces es justo lo que hace falta.",
       "ourMoment": "De todo lo de hoy — la Floralis, La Cabrera, el Rosedal — lo que probablemente quede grabado es el final: caminando el dique de noche, sin ningún plan puntual, solo mirando las luces reflejadas en el agua antes de entrar a cenar.",
       "suggestedMemories": [
-        { "id": "mem-2-1", "relatedActivityId": "act-2-2", "type": "photo", "prompt": "Sus pétalos de acero reflejados en el agua — una de las imágenes más lindas del viaje. Desde el espejo de agua, abrazados si es posible, a las 10:00." },
-        { "id": "mem-2-2", "relatedActivityId": "act-2-2", "type": "video", "prompt": "Los pétalos de la Floralis moviéndose — su movimiento hidráulico es único." },
-        { "id": "mem-2-3", "relatedActivityId": "act-2-5", "type": "video", "prompt": "El primer corte del bife en La Cabrera." },
-        { "id": "mem-2-4", "relatedActivityId": "act-2-6", "type": "photo", "prompt": "Miles de rosas y un puente blanco — el rincón más romántico del día, a las 17:30." },
-        { "id": "mem-2-5", "relatedActivityId": "act-2-8", "type": "photo", "prompt": "El Puente de la Mujer de noche, con las luces reflejadas en el dique — a las 20:30." },
-        { "id": "mem-2-6", "relatedActivityId": "act-2-8", "type": "photo", "prompt": "Los diques iluminados — un cierre elegante para el día, a las 21:00." },
-        { "id": "mem-2-7", "relatedActivityId": "act-2-9", "type": "video", "prompt": "Un brindis en Puerto Madero, antes o durante la cena." }
+        {
+          "id": "mem-2-1",
+          "relatedActivityId": "act-2-2",
+          "type": "photo",
+          "prompt": "Sus pétalos de acero reflejados en el agua — una de las imágenes más lindas del viaje. Desde el espejo de agua, abrazados si es posible, a las 10:00."
+        },
+        {
+          "id": "mem-2-2",
+          "relatedActivityId": "act-2-2",
+          "type": "video",
+          "prompt": "Los pétalos de la Floralis moviéndose — su movimiento hidráulico es único."
+        },
+        {
+          "id": "mem-2-3",
+          "relatedActivityId": "act-2-5",
+          "type": "video",
+          "prompt": "El primer corte del bife en La Cabrera."
+        },
+        {
+          "id": "mem-2-4",
+          "relatedActivityId": "act-2-6",
+          "type": "photo",
+          "prompt": "Miles de rosas y un puente blanco — el rincón más romántico del día, a las 17:30."
+        },
+        {
+          "id": "mem-2-5",
+          "relatedActivityId": "act-2-8",
+          "type": "photo",
+          "prompt": "El Puente de la Mujer de noche, con las luces reflejadas en el dique — a las 20:30."
+        },
+        {
+          "id": "mem-2-6",
+          "relatedActivityId": "act-2-8",
+          "type": "photo",
+          "prompt": "Los diques iluminados — un cierre elegante para el día, a las 21:00."
+        },
+        {
+          "id": "mem-2-7",
+          "relatedActivityId": "act-2-9",
+          "type": "video",
+          "prompt": "Un brindis en Puerto Madero, antes o durante la cena."
+        }
       ]
     },
     {
@@ -225,15 +284,90 @@
         "close": "Hoy probablemente conocimos la Buenos Aires más auténtica. La que tiene historia. La que tiene música. La que tiene olor a café. Y quizás también la que más recordaremos."
       },
       "activities": [
-        { "id": "act-3-1", "title": "Desayuno en el hotel", "description": "Otra mañana tranquila con el desayuno incluido, antes de salir a caminar San Telmo.", "timeWindow": "09:00", "category": "gastronomía" },
-        { "id": "act-3-2", "title": "Mercado de San Telmo", "description": "Antigüedades, ropa vintage y comida bajo un techo de hierro y vidrio de 1897.", "timeWindow": "10:00", "category": "cultura", "location": { "name": "Mercado de San Telmo", "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Mercado+de+San+Telmo,+Buenos+Aires" }, "insight": "Lo que más termina gustando casi nunca está en el primer puesto — suele aparecer en el último pasillo, cuando ya se bajó la guardia de estar buscando algo puntual.", "image": "images/dia3-mercado.jpg" },
-        { "id": "act-3-3", "title": "Escultura de Mafalda", "timeWindow": "11:15", "category": "cultura", "location": { "name": "Defensa 700, San Telmo", "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Escultura+de+Mafalda,+Defensa+700,+San+Telmo,+Buenos+Aires" }, "insight": "Sentarse junto a Mafalda un momento, aunque sea la foto que se sacan todos, tiene algo propio: es una nena de bronce que lleva más de sesenta años preguntando por qué el mundo no funciona mejor — y ahí, en el banco, cuesta no sonreírle de vuelta.", "image": "images/dia3-mafalda.jpg" },
-        { "id": "act-3-4", "title": "Plaza Dorrego", "timeWindow": "11:30", "category": "cultura", "location": { "name": "Plaza Dorrego" }, "moment": "El primer tango visto de casualidad", "image": "images/dia3-dorrego.jpg" },
-        { "id": "act-3-5", "title": "Caminito", "description": "Permanecer solo dentro del circuito turístico; al terminar, pedir Uber directamente.", "timeWindow": "13:00", "category": "cultura", "location": { "name": "Caminito, La Boca" }, "image": "images/dia3-caminito.jpg" },
-        { "id": "act-3-6", "title": "Almuerzo en Desnivel", "timeWindow": "14:00", "category": "gastronomía", "relatedPlaceId": "desnivel", "image": "images/dia3-almuerzo.jpg" },
-        { "id": "act-3-7", "title": "Compras en Galerías Pacífico", "timeWindow": "17:00", "category": "compras", "location": { "name": "Galerías Pacífico" } },
-        { "id": "act-3-8", "title": "Café en Confitería Ideal", "description": "La favorita de Kari — salón belle époque de 1912, cuna histórica del tango.", "timeWindow": "19:00", "category": "café", "relatedPlaceId": "confiteria-ideal" },
-        { "id": "act-3-9", "title": "Florería Atlántico", "description": "Se entra por una florería y se baja a un bar ambientado como un barco de inmigrantes.", "timeWindow": "21:00", "category": "experiencia nocturna", "relatedPlaceId": "floreria-atlantico", "moment": "La primera vez que entramos a un bar escondido", "insight": "Entre las flores, antes de bajar la escalera, hay un segundo de duda que es parte del truco del lugar — de afuera, nadie sabe lo que hay abajo.", "image": "images/dia3-floreria.jpg" }
+        {
+          "id": "act-3-1",
+          "title": "Desayuno en el hotel",
+          "description": "Otra mañana tranquila con el desayuno incluido, antes de salir a caminar San Telmo.",
+          "timeWindow": "09:00",
+          "category": "gastronomía"
+        },
+        {
+          "id": "act-3-2",
+          "title": "Mercado de San Telmo",
+          "description": "Antigüedades, ropa vintage y comida bajo un techo de hierro y vidrio de 1897.",
+          "timeWindow": "10:00",
+          "category": "cultura",
+          "location": {
+            "name": "Mercado de San Telmo",
+            "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Mercado+de+San+Telmo,+Buenos+Aires"
+          },
+          "insight": "Lo que más termina gustando casi nunca está en el primer puesto — suele aparecer en el último pasillo, cuando ya se bajó la guardia de estar buscando algo puntual.",
+          "image": "images/dia3-mercado.jpg"
+        },
+        {
+          "id": "act-3-3",
+          "title": "Escultura de Mafalda",
+          "timeWindow": "11:15",
+          "category": "cultura",
+          "location": {
+            "name": "Defensa 700, San Telmo",
+            "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Escultura+de+Mafalda,+Defensa+700,+San+Telmo,+Buenos+Aires"
+          },
+          "insight": "Sentarse junto a Mafalda un momento, aunque sea la foto que se sacan todos, tiene algo propio: es una nena de bronce que lleva más de sesenta años preguntando por qué el mundo no funciona mejor — y ahí, en el banco, cuesta no sonreírle de vuelta.",
+          "image": "images/dia3-mafalda.jpg"
+        },
+        {
+          "id": "act-3-4",
+          "title": "Plaza Dorrego",
+          "timeWindow": "11:30",
+          "category": "cultura",
+          "location": { "name": "Plaza Dorrego" },
+          "moment": "El primer tango visto de casualidad",
+          "image": "images/dia3-dorrego.jpg"
+        },
+        {
+          "id": "act-3-5",
+          "title": "Caminito",
+          "description": "Permanecer solo dentro del circuito turístico; al terminar, pedir Uber directamente.",
+          "timeWindow": "13:00",
+          "category": "cultura",
+          "location": { "name": "Caminito, La Boca" },
+          "image": "images/dia3-caminito.jpg"
+        },
+        {
+          "id": "act-3-6",
+          "title": "Almuerzo en Desnivel",
+          "timeWindow": "14:00",
+          "category": "gastronomía",
+          "relatedPlaceId": "desnivel",
+          "image": "images/dia3-almuerzo.jpg"
+        },
+        {
+          "id": "act-3-7",
+          "title": "Compras en Galerías Pacífico",
+          "timeWindow": "17:00",
+          "category": "compras",
+          "location": { "name": "Galerías Pacífico" }
+        },
+        {
+          "id": "act-3-8",
+          "title": "Café en Confitería Ideal",
+          "description": "La favorita de Kari — salón belle époque de 1912, cuna histórica del tango.",
+          "timeWindow": "19:00",
+          "category": "café",
+          "relatedPlaceId": "confiteria-ideal"
+        },
+        {
+          "id": "act-3-9",
+          "title": "Florería Atlántico",
+          "description": "Se entra por una florería y se baja a un bar ambientado como un barco de inmigrantes.",
+          "timeWindow": "21:00",
+          "category": "experiencia nocturna",
+          "relatedPlaceId": "floreria-atlantico",
+          "moment": "La primera vez que entramos a un bar escondido",
+          "insight": "Entre las flores, antes de bajar la escalera, hay un segundo de duda que es parte del truco del lugar — de afuera, nadie sabe lo que hay abajo.",
+          "image": "images/dia3-floreria.jpg"
+        }
       ],
       "traditions": [
         {
@@ -251,10 +385,30 @@
       "extraTime": "Si todavía queda energía después de la florería, cruzar de nuevo el Puente de la Mujer de noche no estaba en el plan de hoy, pero tampoco hace falta que lo esté.",
       "ourMoment": "Si hoy aparece una pareja bailando tango en Plaza Dorrego sin que nadie lo haya planeado, ese va a ser probablemente el recuerdo que quede de todo el día — más que el mercado, más que Caminito.",
       "suggestedMemories": [
-        { "id": "mem-3-1", "relatedActivityId": "act-3-3", "type": "photo", "prompt": "Un clásico infaltable en una primera visita — sentados junto a Mafalda en el banco, ángulo lateral, con la calle de fondo. Mejor en la mañana, con poca fila." },
-        { "id": "mem-3-2", "relatedActivityId": "act-3-4", "type": "video", "prompt": "Si hay una pareja bailando tango en Plaza Dorrego, vale la pena detenerse y grabarlo." },
-        { "id": "mem-3-3", "relatedActivityId": "act-3-5", "type": "photo", "prompt": "Casas de colores que parecen pintadas para una foto — buscar una pared colorida con poca gente alrededor, a las 13:00." },
-        { "id": "mem-3-4", "relatedActivityId": "act-3-5", "type": "video", "prompt": "Caminando por Caminito, entre las casas de colores." }
+        {
+          "id": "mem-3-1",
+          "relatedActivityId": "act-3-3",
+          "type": "photo",
+          "prompt": "Un clásico infaltable en una primera visita — sentados junto a Mafalda en el banco, ángulo lateral, con la calle de fondo. Mejor en la mañana, con poca fila."
+        },
+        {
+          "id": "mem-3-2",
+          "relatedActivityId": "act-3-4",
+          "type": "video",
+          "prompt": "Si hay una pareja bailando tango en Plaza Dorrego, vale la pena detenerse y grabarlo."
+        },
+        {
+          "id": "mem-3-3",
+          "relatedActivityId": "act-3-5",
+          "type": "photo",
+          "prompt": "Casas de colores que parecen pintadas para una foto — buscar una pared colorida con poca gente alrededor, a las 13:00."
+        },
+        {
+          "id": "mem-3-4",
+          "relatedActivityId": "act-3-5",
+          "type": "video",
+          "prompt": "Caminando por Caminito, entre las casas de colores."
+        }
       ]
     },
     {
@@ -267,11 +421,49 @@
         "close": "Gracias Buenos Aires. Quizás este viaje terminó. Pero ahora comienza otra etapa. Porque desde hoy Buenos Aires ya no será solamente una ciudad — será el lugar donde celebramos un cumpleaños, donde caminamos durante horas, donde nos reímos, donde comimos increíble, y donde escribimos un recuerdo que nos acompañará siempre."
       },
       "activities": [
-        { "id": "act-4-1", "title": "Desayuno especial en Las Violetas", "description": "Los otros días desayunamos en el hotel — hoy, el último, vale la pena romper la rutina. Confitería emblemática desde 1884.", "timeWindow": "10:15", "category": "gastronomía", "relatedPlaceId": "las-violetas", "moment": "El último desayuno con tiempo de sobra", "insight": "Esta medialuna se rompe con las manos, no con el cuchillo — se derrite igual, pero se siente distinto." },
-        { "id": "act-4-2", "title": "El Ateneo Grand Splendid", "description": "Antiguo teatro de 1919 convertido en librería.", "timeWindow": "11:30", "category": "cultura", "location": { "name": "El Ateneo Grand Splendid" }, "insight": "En un lugar así, el libro correcto casi siempre aparece antes de que lo estén buscando — pocas veces es el primero que se mira.", "image": "images/dia4-ateneo.jpg" },
-        { "id": "act-4-3", "title": "Almuerzo en El Correo", "timeWindow": "13:00", "category": "gastronomía", "relatedPlaceId": "el-correo", "image": "images/dia4-almuerzo.jpg" },
-        { "id": "act-4-4", "title": "Últimas compras y último café", "description": "No se trata de apurarse — pensar juntos cuál fue el momento favorito del viaje.", "timeWindow": "15:00–17:30", "category": "compras", "moment": "La última medialuna del viaje" },
-        { "id": "act-4-5", "title": "Regreso al hotel y traslado a Aeroparque", "timeWindow": "18:30–19:00", "category": "logística", "insight": "Ese segundo antes de subir al auto, mirando la calle una vez más sin decir nada, es de esos que después se recuerdan más que muchos otros del viaje." }
+        {
+          "id": "act-4-1",
+          "title": "Desayuno especial en Las Violetas",
+          "description": "Los otros días desayunamos en el hotel — hoy, el último, vale la pena romper la rutina. Confitería emblemática desde 1884.",
+          "timeWindow": "10:15",
+          "category": "gastronomía",
+          "relatedPlaceId": "las-violetas",
+          "moment": "El último desayuno con tiempo de sobra",
+          "insight": "Esta medialuna se rompe con las manos, no con el cuchillo — se derrite igual, pero se siente distinto."
+        },
+        {
+          "id": "act-4-2",
+          "title": "El Ateneo Grand Splendid",
+          "description": "Antiguo teatro de 1919 convertido en librería.",
+          "timeWindow": "11:30",
+          "category": "cultura",
+          "location": { "name": "El Ateneo Grand Splendid" },
+          "insight": "En un lugar así, el libro correcto casi siempre aparece antes de que lo estén buscando — pocas veces es el primero que se mira.",
+          "image": "images/dia4-ateneo.jpg"
+        },
+        {
+          "id": "act-4-3",
+          "title": "Almuerzo en El Correo",
+          "timeWindow": "13:00",
+          "category": "gastronomía",
+          "relatedPlaceId": "el-correo",
+          "image": "images/dia4-almuerzo.jpg"
+        },
+        {
+          "id": "act-4-4",
+          "title": "Últimas compras y último café",
+          "description": "No se trata de apurarse — pensar juntos cuál fue el momento favorito del viaje.",
+          "timeWindow": "15:00–17:30",
+          "category": "compras",
+          "moment": "La última medialuna del viaje"
+        },
+        {
+          "id": "act-4-5",
+          "title": "Regreso al hotel y traslado a Aeroparque",
+          "timeWindow": "18:30–19:00",
+          "category": "logística",
+          "insight": "Ese segundo antes de subir al auto, mirando la calle una vez más sin decir nada, es de esos que después se recuerdan más que muchos otros del viaje."
+        }
       ],
       "traditions": [
         {
@@ -288,11 +480,36 @@
       "extraTime": "Si el último café deja ganas de una vuelta más, el Jardín Botánico queda cerca y es un cierre tranquilo — pero tampoco hace falta ir a ningún lado más. A veces lo mejor de un último día es no intentar completarlo.",
       "ourMoment": "Puede que lo que más se recuerde de hoy no sea El Ateneo ni la última medialuna, sino ese momento justo antes de subir al auto hacia el aeropuerto — cuando el viaje todavía no había terminado del todo, pero ya se sentía que estaba terminando.",
       "suggestedMemories": [
-        { "id": "mem-4-1", "relatedActivityId": "act-4-1", "type": "video", "prompt": "Kari probando una medialuna de las mejores de la ciudad." },
-        { "id": "mem-4-2", "relatedActivityId": "act-4-2", "type": "photo", "prompt": "Un teatro convertido en librería, hay que subir para verlo completo — desde el segundo piso, mirando al escenario, a las 11:30." },
-        { "id": "mem-4-3", "relatedActivityId": "act-4-2", "type": "video", "prompt": "Entrando a El Ateneo Grand Splendid." },
-        { "id": "mem-4-4", "relatedActivityId": "act-4-5", "type": "video", "prompt": "Un mensaje juntos antes de subir al avión de regreso." },
-        { "id": "mem-4-5", "relatedActivityId": null, "type": "photo", "prompt": "No importa cuál cafetería. Lo importante es recordar ese momento — una selfie juntos, sin mirar el teléfono, cuando surja durante el viaje." }
+        {
+          "id": "mem-4-1",
+          "relatedActivityId": "act-4-1",
+          "type": "video",
+          "prompt": "Kari probando una medialuna de las mejores de la ciudad."
+        },
+        {
+          "id": "mem-4-2",
+          "relatedActivityId": "act-4-2",
+          "type": "photo",
+          "prompt": "Un teatro convertido en librería, hay que subir para verlo completo — desde el segundo piso, mirando al escenario, a las 11:30."
+        },
+        {
+          "id": "mem-4-3",
+          "relatedActivityId": "act-4-2",
+          "type": "video",
+          "prompt": "Entrando a El Ateneo Grand Splendid."
+        },
+        {
+          "id": "mem-4-4",
+          "relatedActivityId": "act-4-5",
+          "type": "video",
+          "prompt": "Un mensaje juntos antes de subir al avión de regreso."
+        },
+        {
+          "id": "mem-4-5",
+          "relatedActivityId": null,
+          "type": "photo",
+          "prompt": "No importa cuál cafetería. Lo importante es recordar ese momento — una selfie juntos, sin mirar el teléfono, cuando surja durante el viaje."
+        }
       ]
     }
   ],
@@ -302,46 +519,249 @@
     "title": "Feliz cumpleaños",
     "kind": "epilogue",
     "date": "2026-07-22",
-    "unlockRule": { "requiresDateReached": true, "requiresPreviousChapterCompleted": true },
-    "breaksNarrativeRules": { "hasSchedule": false, "hasMap": false, "hasItinerary": false },
+    "unlockRule": {
+      "requiresDateReached": true,
+      "requiresPreviousChapterCompleted": true
+    },
+    "breaksNarrativeRules": {
+      "hasSchedule": false,
+      "hasMap": false,
+      "hasItinerary": false
+    },
     "copy": {
       "open": "Hoy no hay itinerario. Hoy es, simplemente, tu día. Estas preguntas no tienen una respuesta correcta — solo la que hoy les salga primero, sin apurarse."
     },
     "prompts": [
-      { "id": "prompt-1", "label": "Mejor momento", "type": "retrospective", "retrospectiveSource": "memory", "sourceCategory": "photo", "selectionPrompt": "De estos cuatro días, ¿cuál fue el mejor momento?" },
-      { "id": "prompt-2", "label": "Mejor fotografía", "type": "retrospective", "retrospectiveSource": "memory", "sourceCategory": "photo", "selectionPrompt": "¿Cuál fue la fotografía que más te gustó?" },
-      { "id": "prompt-3", "label": "Restaurante favorito", "type": "retrospective", "retrospectiveSource": "place", "sourceCategory": "restaurants", "selectionPrompt": "¿Cuál fue tu restaurante favorito del viaje?" },
-      { "id": "prompt-4", "label": "Cafetería favorita", "type": "retrospective", "retrospectiveSource": "place", "sourceCategory": "cafes", "selectionPrompt": "¿Y tu cafetería favorita?" },
-      { "id": "prompt-5", "label": "Reflexión final", "type": "creation", "memoryType": "note", "creationPrompt": "¿Qué te gustaría recordar de este viaje dentro de diez años?" },
-      { "id": "prompt-6", "label": "Carta", "type": "creation", "memoryType": "note", "creationPrompt": "Una carta para leer de nuevo cada aniversario.", "resurfaceOnAnniversary": true },
-      { "id": "prompt-7", "label": "Foto o video del cumpleaños", "type": "creation", "memoryType": "photo", "creationPrompt": "Un recuerdo de hoy, tal como es — sin pose, sin apuro." }
+      {
+        "id": "prompt-1",
+        "label": "Mejor momento",
+        "type": "retrospective",
+        "retrospectiveSource": "memory",
+        "sourceCategory": "photo",
+        "selectionPrompt": "De estos cuatro días, ¿cuál fue el mejor momento?"
+      },
+      {
+        "id": "prompt-2",
+        "label": "Mejor fotografía",
+        "type": "retrospective",
+        "retrospectiveSource": "memory",
+        "sourceCategory": "photo",
+        "selectionPrompt": "¿Cuál fue la fotografía que más te gustó?"
+      },
+      {
+        "id": "prompt-3",
+        "label": "Restaurante favorito",
+        "type": "retrospective",
+        "retrospectiveSource": "place",
+        "sourceCategory": "restaurants",
+        "selectionPrompt": "¿Cuál fue tu restaurante favorito del viaje?"
+      },
+      {
+        "id": "prompt-4",
+        "label": "Cafetería favorita",
+        "type": "retrospective",
+        "retrospectiveSource": "place",
+        "sourceCategory": "cafes",
+        "selectionPrompt": "¿Y tu cafetería favorita?"
+      },
+      {
+        "id": "prompt-5",
+        "label": "Reflexión final",
+        "type": "creation",
+        "memoryType": "note",
+        "creationPrompt": "¿Qué te gustaría recordar de este viaje dentro de diez años?"
+      },
+      {
+        "id": "prompt-6",
+        "label": "Carta",
+        "type": "creation",
+        "memoryType": "note",
+        "creationPrompt": "Una carta para leer de nuevo cada aniversario.",
+        "resurfaceOnAnniversary": true
+      },
+      {
+        "id": "prompt-7",
+        "label": "Foto o video del cumpleaños",
+        "type": "creation",
+        "memoryType": "photo",
+        "creationPrompt": "Un recuerdo de hoy, tal como es — sin pose, sin apuro."
+      }
     ]
   },
   "placesCatalog": {
     "restaurants": [
-      { "id": "cuartito", "name": "El Cuartito", "location": { "name": "Talcahuano 937, CABA", "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=El+Cuartito,+Talcahuano+937,+CABA,+Buenos+Aires", "uberDeepLink": "https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[formatted_address]=Talcahuano+937,+CABA,+Buenos+Aires" }, "recommendation": "Elegimos El Cuartito a propósito para la primera comida del viaje: pizzería porteña desde 1934, de esas que no cambiaron el mostrador ni el mármol en décadas — mozos de toda la vida, mesas altas, cero pretensión. Pedí fugazzeta y una de jamón; entre las dos, con algo para tomar, calculá unos $40.000 CLP. Acá la pizza se come parada, apoyada en el mostrador — nadie se sienta a esperar." },
-      { "id": "la-estancia-asador-criollo", "name": "La Estancia, Asador Criollo", "location": { "name": "Lavalle 941, CABA", "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=La+Estancia+Asador+Criollo,+Lavalle+941,+CABA,+Buenos+Aires", "uberDeepLink": "https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[formatted_address]=Lavalle+941,+CABA,+Buenos+Aires" }, "recommendation": "Para la primera noche buscamos algo que se sintiera genuinamente porteño sin depender de una reserva. Este asador tiene el fogón a la vista desde 1962 — se nota que el fuego manda, no el menú. Pedí empanadas criollas para empezar y el asado de fogón; entre los dos, unos $55.000–$70.000 CLP. Llegando temprano casi no hay espera." },
-      { "id": "la-cabrera", "name": "La Cabrera", "location": { "name": "José A. Cabrera 5099, Palermo", "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=La+Cabrera,+José+A.+Cabrera+5099,+Palermo,+Buenos+Aires", "uberDeepLink": "https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[formatted_address]=José+A.+Cabrera+5099,+Palermo,+Buenos+Aires" }, "recommendation": "Si hay una comida que no se puede saltar en este viaje, es esta. La Cabrera tiene todo lo que se espera de una parrilla porteña — mesas llenas, guarniciones que no paran de llegar — pero sin la fila interminable de otras parrillas famosas. Pedí provoleta para empezar y bife de chorizo para compartir; calculá unos $95.000 CLP. Reservá con unos días de anticipación, y guardá espacio: las guarniciones solas ya llenan." },
-      { "id": "cabana-las-lilas", "name": "Cabaña Las Lilas", "location": { "name": "Av. Alicia M. de Justo 516, Puerto Madero", "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Cabaña+Las+Lilas,+Av.+Alicia+M.+de+Justo+516,+Puerto+Madero,+Buenos+Aires", "uberDeepLink": "https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[formatted_address]=Av.+Alicia+M.+de+Justo+516,+Puerto+Madero,+Buenos+Aires" }, "recommendation": "La reservamos para la noche que cierra el día más lindo del viaje: mesa con vista directa al dique de Puerto Madero, carne de cabañas propias. Probablemente la cena más especial de los cuatro días — aprox. $80.000 CLP para dos. Reservá con tiempo y pedí mesa junto a la ventana; las luces del dique de noche valen tanto como el asado." },
-      { "id": "desnivel", "name": "Desnivel", "location": { "name": "Defensa 855, San Telmo", "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Desnivel+Parrilla,+Defensa+855,+San+Telmo,+Buenos+Aires", "uberDeepLink": "https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[formatted_address]=Defensa+855,+San+Telmo,+Buenos+Aires" }, "recommendation": "Después de una mañana caminando San Telmo, esto es lo opuesto a un restaurante de guía turística: parrilla ruidosa, mesas pegadas, mozos que gritan los pedidos desde 1993. Pedí milanesa napolitana o vacío; unos $55.000 CLP para dos. Si el lugar está lleno y hay que esperar afuera un rato, es buena señal — significa que vale la pena." },
-      { "id": "el-correo", "name": "El Correo", "location": { "name": "Cerca del Cementerio de Recoleta", "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=El+Correo,+Recoleta,+Buenos+Aires", "uberDeepLink": "https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[formatted_address]=El+Correo,+Recoleta,+Buenos+Aires" }, "recommendation": "Para el último almuerzo elegimos algo tranquilo, lejos de cualquier circuito turístico — un rincón rústico, casi escondido, cerca de Recoleta. Pedí un sándwich de milanesa o una tarta salada; unos $45.000 CLP para dos. Es el tipo de lugar donde da gusto quedarse un rato de más, sin nada más planeado después." },
-      { "id": "floreria-atlantico", "name": "Florería Atlántico", "location": { "name": "Arroyo 872, Recoleta", "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Florería+Atlántico,+Arroyo+872,+Buenos+Aires", "uberDeepLink": "https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[formatted_address]=Arroyo+872,+Buenos+Aires" }, "recommendation": "Se entra literalmente por una florería — nadie que pase por la vereda sabe que abajo hay uno de los bares más premiados del mundo. Pedí el cóctel de autor de temporada; unos $25.000 CLP para dos. No hace falta quedarse hasta tarde, pero sí hace falta quedarse un rato — es de esos lugares que se disfrutan más despacio." }
+      {
+        "id": "cuartito",
+        "name": "El Cuartito",
+        "location": {
+          "name": "Talcahuano 937, CABA",
+          "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=El+Cuartito,+Talcahuano+937,+CABA,+Buenos+Aires",
+          "uberDeepLink": "https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[formatted_address]=Talcahuano+937,+CABA,+Buenos+Aires"
+        },
+        "recommendation": "Elegimos El Cuartito a propósito para la primera comida del viaje: pizzería porteña desde 1934, de esas que no cambiaron el mostrador ni el mármol en décadas — mozos de toda la vida, mesas altas, cero pretensión. Pedí fugazzeta y una de jamón; entre las dos, con algo para tomar, calculá unos $40.000 CLP. Acá la pizza se come parada, apoyada en el mostrador — nadie se sienta a esperar."
+      },
+      {
+        "id": "la-estancia-asador-criollo",
+        "name": "La Estancia, Asador Criollo",
+        "location": {
+          "name": "Lavalle 941, CABA",
+          "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=La+Estancia+Asador+Criollo,+Lavalle+941,+CABA,+Buenos+Aires",
+          "uberDeepLink": "https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[formatted_address]=Lavalle+941,+CABA,+Buenos+Aires"
+        },
+        "recommendation": "Para la primera noche buscamos algo que se sintiera genuinamente porteño sin depender de una reserva. Este asador tiene el fogón a la vista desde 1962 — se nota que el fuego manda, no el menú. Pedí empanadas criollas para empezar y el asado de fogón; entre los dos, unos $55.000–$70.000 CLP. Llegando temprano casi no hay espera."
+      },
+      {
+        "id": "la-cabrera",
+        "name": "La Cabrera",
+        "location": {
+          "name": "José A. Cabrera 5099, Palermo",
+          "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=La+Cabrera,+José+A.+Cabrera+5099,+Palermo,+Buenos+Aires",
+          "uberDeepLink": "https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[formatted_address]=José+A.+Cabrera+5099,+Palermo,+Buenos+Aires"
+        },
+        "recommendation": "Si hay una comida que no se puede saltar en este viaje, es esta. La Cabrera tiene todo lo que se espera de una parrilla porteña — mesas llenas, guarniciones que no paran de llegar — pero sin la fila interminable de otras parrillas famosas. Pedí provoleta para empezar y bife de chorizo para compartir; calculá unos $95.000 CLP. Reservá con unos días de anticipación, y guardá espacio: las guarniciones solas ya llenan."
+      },
+      {
+        "id": "cabana-las-lilas",
+        "name": "Cabaña Las Lilas",
+        "location": {
+          "name": "Av. Alicia M. de Justo 516, Puerto Madero",
+          "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Cabaña+Las+Lilas,+Av.+Alicia+M.+de+Justo+516,+Puerto+Madero,+Buenos+Aires",
+          "uberDeepLink": "https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[formatted_address]=Av.+Alicia+M.+de+Justo+516,+Puerto+Madero,+Buenos+Aires"
+        },
+        "recommendation": "La reservamos para la noche que cierra el día más lindo del viaje: mesa con vista directa al dique de Puerto Madero, carne de cabañas propias. Probablemente la cena más especial de los cuatro días — aprox. $80.000 CLP para dos. Reservá con tiempo y pedí mesa junto a la ventana; las luces del dique de noche valen tanto como el asado."
+      },
+      {
+        "id": "desnivel",
+        "name": "Desnivel",
+        "location": {
+          "name": "Defensa 855, San Telmo",
+          "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Desnivel+Parrilla,+Defensa+855,+San+Telmo,+Buenos+Aires",
+          "uberDeepLink": "https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[formatted_address]=Defensa+855,+San+Telmo,+Buenos+Aires"
+        },
+        "recommendation": "Después de una mañana caminando San Telmo, esto es lo opuesto a un restaurante de guía turística: parrilla ruidosa, mesas pegadas, mozos que gritan los pedidos desde 1993. Pedí milanesa napolitana o vacío; unos $55.000 CLP para dos. Si el lugar está lleno y hay que esperar afuera un rato, es buena señal — significa que vale la pena."
+      },
+      {
+        "id": "el-correo",
+        "name": "El Correo",
+        "location": {
+          "name": "Cerca del Cementerio de Recoleta",
+          "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=El+Correo,+Recoleta,+Buenos+Aires",
+          "uberDeepLink": "https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[formatted_address]=El+Correo,+Recoleta,+Buenos+Aires"
+        },
+        "recommendation": "Para el último almuerzo elegimos algo tranquilo, lejos de cualquier circuito turístico — un rincón rústico, casi escondido, cerca de Recoleta. Pedí un sándwich de milanesa o una tarta salada; unos $45.000 CLP para dos. Es el tipo de lugar donde da gusto quedarse un rato de más, sin nada más planeado después."
+      },
+      {
+        "id": "floreria-atlantico",
+        "name": "Florería Atlántico",
+        "location": {
+          "name": "Arroyo 872, Recoleta",
+          "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Florería+Atlántico,+Arroyo+872,+Buenos+Aires",
+          "uberDeepLink": "https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[formatted_address]=Arroyo+872,+Buenos+Aires"
+        },
+        "recommendation": "Se entra literalmente por una florería — nadie que pase por la vereda sabe que abajo hay uno de los bares más premiados del mundo. Pedí el cóctel de autor de temporada; unos $25.000 CLP para dos. No hace falta quedarse hasta tarde, pero sí hace falta quedarse un rato — es de esos lugares que se disfrutan más despacio."
+      }
     ],
     "cafes": [
-      { "id": "rapanui", "name": "Rapanui", "location": { "name": "Av. Corrientes, CABA", "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Rapanui,+Av.+Corrientes,+CABA,+Buenos+Aires", "uberDeepLink": "https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[formatted_address]=Rapanui,+Av.+Corrientes,+CABA,+Buenos+Aires" }, "recommendation": "Nada elegante, nada de fotos perfectas — solo una heladería de barrio en plena Corrientes, ideal para cerrar la primera caminata. Pedí chocolate, dulce de leche y frambuesa; con dos gustos cada uno, unos $10.000 CLP. Cómanselo caminando, no hace falta sentarse." },
-      { "id": "la-biela", "name": "La Biela", "location": { "name": "Av. Quintana 596, Recoleta", "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=La+Biela,+Av.+Quintana+596,+Recoleta,+Buenos+Aires" }, "recommendation": "La favorita de Kari, y no por casualidad: mesas bajo un gomero centenario, justo frente a Plaza Francia, en uno de los cafés notables más icónicos de la ciudad. Pedí café con leche y medialunas de manteca; unos $12.000 CLP para dos. Este es el lugar para no mirar el reloj — quedarse una hora de más es, literalmente, el plan." },
-      { "id": "lattente", "name": "Lattente", "location": { "name": "Palermo Soho", "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Lattente,+Palermo+Soho,+Buenos+Aires", "uberDeepLink": "https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[formatted_address]=Lattente,+Palermo+Soho,+Buenos+Aires" }, "recommendation": "La otra favorita de Kari, esta vez en Palermo Soho: moderna, con buena pastelería y varios métodos de extracción para elegir. Pedí un flat white; unos $18.000 CLP para dos. Ideal para una pausa corta antes de seguir caminando hacia Puerto Madero." },
-      { "id": "confiteria-ideal", "name": "Confitería Ideal", "location": { "name": "Suipacha 384, Microcentro", "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Confitería+Ideal,+Suipacha+384,+Buenos+Aires", "uberDeepLink": "https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[formatted_address]=Suipacha+384,+Buenos+Aires" }, "recommendation": "Otra favorita de Kari: un salón belle époque de 1912 que fue, literalmente, cuna del tango — todavía se siente. Ventanales enormes, mármoles gastados por más de un siglo de mesas. Pedí un café con medialunas o alguna torta clásica. No hace falta saber bailar tango para sentir que el lugar todavía respira esa época." },
-      { "id": "las-violetas", "name": "Las Violetas", "location": { "name": "Av. Rivadavia 3899, Almagro", "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Las+Violetas,+Av.+Rivadavia+3899,+Almagro,+Buenos+Aires", "uberDeepLink": "https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[formatted_address]=Av.+Rivadavia+3899,+Almagro,+Buenos+Aires" }, "recommendation": "Los otros días desayunamos en el hotel — el último, vale la pena romper la rutina en esta confitería emblemática desde 1884, con vitrales y mármoles italianos que no cambiaron en más de un siglo. Pedí café con leche y medialunas de manteca — están entre las mejores de la ciudad; unos $20.000 CLP para dos. Es el desayuno con el que conviene despedirse de Buenos Aires." }
+      {
+        "id": "rapanui",
+        "name": "Rapanui",
+        "location": {
+          "name": "Av. Corrientes, CABA",
+          "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Rapanui,+Av.+Corrientes,+CABA,+Buenos+Aires",
+          "uberDeepLink": "https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[formatted_address]=Rapanui,+Av.+Corrientes,+CABA,+Buenos+Aires"
+        },
+        "recommendation": "Nada elegante, nada de fotos perfectas — solo una heladería de barrio en plena Corrientes, ideal para cerrar la primera caminata. Pedí chocolate, dulce de leche y frambuesa; con dos gustos cada uno, unos $10.000 CLP. Cómanselo caminando, no hace falta sentarse."
+      },
+      {
+        "id": "la-biela",
+        "name": "La Biela",
+        "location": {
+          "name": "Av. Quintana 596, Recoleta",
+          "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=La+Biela,+Av.+Quintana+596,+Recoleta,+Buenos+Aires"
+        },
+        "recommendation": "La favorita de Kari, y no por casualidad: mesas bajo un gomero centenario, justo frente a Plaza Francia, en uno de los cafés notables más icónicos de la ciudad. Pedí café con leche y medialunas de manteca; unos $12.000 CLP para dos. Este es el lugar para no mirar el reloj — quedarse una hora de más es, literalmente, el plan."
+      },
+      {
+        "id": "lattente",
+        "name": "Lattente",
+        "location": {
+          "name": "Palermo Soho",
+          "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Lattente,+Palermo+Soho,+Buenos+Aires",
+          "uberDeepLink": "https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[formatted_address]=Lattente,+Palermo+Soho,+Buenos+Aires"
+        },
+        "recommendation": "La otra favorita de Kari, esta vez en Palermo Soho: moderna, con buena pastelería y varios métodos de extracción para elegir. Pedí un flat white; unos $18.000 CLP para dos. Ideal para una pausa corta antes de seguir caminando hacia Puerto Madero."
+      },
+      {
+        "id": "confiteria-ideal",
+        "name": "Confitería Ideal",
+        "location": {
+          "name": "Suipacha 384, Microcentro",
+          "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Confitería+Ideal,+Suipacha+384,+Buenos+Aires",
+          "uberDeepLink": "https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[formatted_address]=Suipacha+384,+Buenos+Aires"
+        },
+        "recommendation": "Otra favorita de Kari: un salón belle époque de 1912 que fue, literalmente, cuna del tango — todavía se siente. Ventanales enormes, mármoles gastados por más de un siglo de mesas. Pedí un café con medialunas o alguna torta clásica. No hace falta saber bailar tango para sentir que el lugar todavía respira esa época."
+      },
+      {
+        "id": "las-violetas",
+        "name": "Las Violetas",
+        "location": {
+          "name": "Av. Rivadavia 3899, Almagro",
+          "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Las+Violetas,+Av.+Rivadavia+3899,+Almagro,+Buenos+Aires",
+          "uberDeepLink": "https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[formatted_address]=Av.+Rivadavia+3899,+Almagro,+Buenos+Aires"
+        },
+        "recommendation": "Los otros días desayunamos en el hotel — el último, vale la pena romper la rutina en esta confitería emblemática desde 1884, con vitrales y mármoles italianos que no cambiaron en más de un siglo. Pedí café con leche y medialunas de manteca — están entre las mejores de la ciudad; unos $20.000 CLP para dos. Es el desayuno con el que conviene despedirse de Buenos Aires."
+      }
     ]
   },
   "photoSpots": [
-    { "id": "spot-obelisco", "title": "Obelisco", "location": { "name": "Corrientes y 9 de Julio, vereda norponiente" }, "bestTime": "17:00, hora dorada", "tip": "Lo que hace especial esta foto no es el Obelisco — es la escala: la avenida más ancha del mundo achicándolos a los dos. Párense en la vereda norponiente, de cuerpo entero, con el Obelisco detrás. Esperen a que pase un colectivo para que la toma tenga movimiento — quieta, la 9 de Julio no se siente real.", "relatedChapterId": "chapter-1" },
-    { "id": "spot-floralis", "title": "Floralis Genérica", "location": { "name": "Espejo de agua, de frente" }, "bestTime": "10:30, mañana", "tip": "Lo que hace especial esta foto es el reflejo: la flor de acero completa duplicada en el agua, como si hubiera dos. Párense frente al espejo de agua, abrazados si quieren, y agáchense un poco para que el reflejo ocupe la mitad del encuadre. A las 10:30 la luz todavía es suave.", "relatedChapterId": "chapter-2" },
-    { "id": "spot-rosedal", "title": "El Rosedal", "location": { "name": "Puente blanco sobre el lago" }, "bestTime": "17:00–18:00, atardecer", "tip": "El puente blanco sobre el lago es la postal, pero lo que la hace especial es caminarlo, no solo pararse en él — que les tomen la foto a mitad de camino, en movimiento. Entre las 17:00 y las 18:00 el atardecer le da al lago un color que no dura mucho.", "relatedChapterId": "chapter-2" },
-    { "id": "spot-puente-mujer", "title": "Puente de la Mujer", "location": { "name": "Mitad del puente, mirando hacia Catalinas" }, "bestTime": "20:30, de noche", "tip": "De noche, el puente entero se refleja en el agua quieta del dique — esa simetría es lo que hace especial la foto. Párense en la mitad, mirando hacia Catalinas, y apoyen el celular en la baranda para que no salga movida.", "relatedChapterId": "chapter-2" },
-    { "id": "spot-caminito", "title": "Caminito", "location": { "name": "Esquina de las casas multicolores" }, "bestTime": "Antes de las 12:00", "tip": "Lo que hace especial esta foto es el color, no la pose — las fachadas parecen pintadas para una postal. Busquen una esquina con pocas casas de souvenirs a la vista y esperen un segundo entre grupos de turistas. Antes de las 12:00 hay bastante menos gente.", "relatedChapterId": "chapter-3" },
-    { "id": "spot-ateneo", "title": "El Ateneo Grand Splendid", "location": { "name": "Primer piso, apoyados en el palco" }, "bestTime": "Cualquier hora, evitando el mediodía", "tip": "Lo que hace especial esta foto es que están parados en lo que era un palco de teatro, en 1919, hoy lleno de libros. Suban al primer piso y apóyense mirando hacia el escenario y la cúpula pintada. La luz interior ya es cálida — sáquenla sin flash.", "relatedChapterId": "chapter-4" }
+    {
+      "id": "spot-obelisco",
+      "title": "Obelisco",
+      "location": { "name": "Corrientes y 9 de Julio, vereda norponiente" },
+      "bestTime": "17:00, hora dorada",
+      "tip": "Lo que hace especial esta foto no es el Obelisco — es la escala: la avenida más ancha del mundo achicándolos a los dos. Párense en la vereda norponiente, de cuerpo entero, con el Obelisco detrás. Esperen a que pase un colectivo para que la toma tenga movimiento — quieta, la 9 de Julio no se siente real.",
+      "relatedChapterId": "chapter-1"
+    },
+    {
+      "id": "spot-floralis",
+      "title": "Floralis Genérica",
+      "location": { "name": "Espejo de agua, de frente" },
+      "bestTime": "10:30, mañana",
+      "tip": "Lo que hace especial esta foto es el reflejo: la flor de acero completa duplicada en el agua, como si hubiera dos. Párense frente al espejo de agua, abrazados si quieren, y agáchense un poco para que el reflejo ocupe la mitad del encuadre. A las 10:30 la luz todavía es suave.",
+      "relatedChapterId": "chapter-2"
+    },
+    {
+      "id": "spot-rosedal",
+      "title": "El Rosedal",
+      "location": { "name": "Puente blanco sobre el lago" },
+      "bestTime": "17:00–18:00, atardecer",
+      "tip": "El puente blanco sobre el lago es la postal, pero lo que la hace especial es caminarlo, no solo pararse en él — que les tomen la foto a mitad de camino, en movimiento. Entre las 17:00 y las 18:00 el atardecer le da al lago un color que no dura mucho.",
+      "relatedChapterId": "chapter-2"
+    },
+    {
+      "id": "spot-puente-mujer",
+      "title": "Puente de la Mujer",
+      "location": { "name": "Mitad del puente, mirando hacia Catalinas" },
+      "bestTime": "20:30, de noche",
+      "tip": "De noche, el puente entero se refleja en el agua quieta del dique — esa simetría es lo que hace especial la foto. Párense en la mitad, mirando hacia Catalinas, y apoyen el celular en la baranda para que no salga movida.",
+      "relatedChapterId": "chapter-2"
+    },
+    {
+      "id": "spot-caminito",
+      "title": "Caminito",
+      "location": { "name": "Esquina de las casas multicolores" },
+      "bestTime": "Antes de las 12:00",
+      "tip": "Lo que hace especial esta foto es el color, no la pose — las fachadas parecen pintadas para una postal. Busquen una esquina con pocas casas de souvenirs a la vista y esperen un segundo entre grupos de turistas. Antes de las 12:00 hay bastante menos gente.",
+      "relatedChapterId": "chapter-3"
+    },
+    {
+      "id": "spot-ateneo",
+      "title": "El Ateneo Grand Splendid",
+      "location": { "name": "Primer piso, apoyados en el palco" },
+      "bestTime": "Cualquier hora, evitando el mediodía",
+      "tip": "Lo que hace especial esta foto es que están parados en lo que era un palco de teatro, en 1919, hoy lleno de libros. Suban al primer piso y apóyense mirando hacia el escenario y la cúpula pintada. La luz interior ya es cálida — sáquenla sin flash.",
+      "relatedChapterId": "chapter-4"
+    }
   ],
   "collections": [
     {
@@ -350,45 +770,234 @@
       "description": "Veinte ideas para no volver con las manos vacías, sin que se sienta una lista de compras.",
       "icon": "ic-gift",
       "items": [
-        { "id": "sh-1", "name": "Alfajores Havanna", "category": "gastronomía", "description": "El clásico que nunca falla.", "suggestedWhereToBuy": "Cualquier local de la cadena o el shopping", "estimatedPrice": "$8.000", "currency": "CLP" },
-        { "id": "sh-2", "name": "Chocolate Rapanui", "category": "gastronomía", "description": "Una parada dulce que ya es parte del Día 1.", "suggestedWhereToBuy": "Rapanui, Av. Corrientes", "estimatedPrice": "$10.000", "currency": "CLP", "relatedChapterId": "chapter-1" },
-        { "id": "sh-3", "name": "Dulce de leche", "category": "gastronomía", "description": "El infaltable para llevar.", "suggestedWhereToBuy": "Cualquier supermercado", "estimatedPrice": "$5.000", "currency": "CLP" },
-        { "id": "sh-4", "name": "Mate y bombilla", "category": "tradición", "description": "El set completo para llevarse un ritual, no solo un objeto.", "suggestedWhereToBuy": "Casas de artículos regionales, San Telmo o Florida", "estimatedPrice": "$15.000–$25.000", "currency": "CLP" },
-        { "id": "sh-5", "name": "Vino Malbec", "category": "bebida", "description": "Para brindar de nuevo ya en casa.", "suggestedWhereToBuy": "Vinotecas del centro o supermercado", "estimatedPrice": "$8.000–$15.000", "currency": "CLP" },
-        { "id": "sh-6", "name": "Perfumes", "category": "moda", "description": "Variedad de marcas y precios.", "suggestedWhereToBuy": "Galerías Pacífico o Florida", "estimatedPrice": "Variable", "currency": "CLP" },
-        { "id": "sh-7", "name": "Libro en español", "category": "colección", "description": "Algo con el sello de una librería única en el mundo.", "suggestedWhereToBuy": "El Ateneo Grand Splendid", "estimatedPrice": "$10.000–$18.000", "currency": "CLP", "relatedChapterId": "chapter-4" },
-        { "id": "sh-8", "name": "Artículos de cuero", "category": "moda", "description": "Según la pieza elegida.", "suggestedWhereToBuy": "Talabarterías del Microcentro o San Telmo", "estimatedPrice": "Variable", "currency": "CLP" },
-        { "id": "sh-9", "name": "Alpargatas", "category": "moda", "description": "Un clásico cómodo y económico.", "suggestedWhereToBuy": "Locales de calzado del Microcentro", "estimatedPrice": "$12.000", "currency": "CLP" },
-        { "id": "sh-10", "name": "Fernet", "category": "bebida", "description": "El favorito local.", "suggestedWhereToBuy": "Cualquier supermercado", "estimatedPrice": "$9.000", "currency": "CLP" },
-        { "id": "sh-11", "name": "Yerba mate", "category": "tradición", "description": "Para preparar el mate en casa.", "suggestedWhereToBuy": "Cualquier supermercado", "estimatedPrice": "$6.000", "currency": "CLP" },
-        { "id": "sh-12", "name": "Termo", "category": "tradición", "description": "El complemento del mate.", "suggestedWhereToBuy": "Casas de artículos regionales", "estimatedPrice": "$18.000–$30.000", "currency": "CLP" },
-        { "id": "sh-13", "name": "Dulce de batata o membrillo", "category": "gastronomía", "description": "Un clásico para acompañar quesos.", "suggestedWhereToBuy": "Cualquier supermercado o feria", "estimatedPrice": "$6.000", "currency": "CLP" },
-        { "id": "sh-14", "name": "Chocolates Cachafaz", "category": "gastronomía", "description": "Otra opción dulce para llevar.", "suggestedWhereToBuy": "Locales propios o shopping", "estimatedPrice": "$9.000", "currency": "CLP" },
-        { "id": "sh-15", "name": "Vinilos de colección", "category": "colección", "description": "Para quienes coleccionan música.", "suggestedWhereToBuy": "Mercado de San Telmo", "estimatedPrice": "Variable", "currency": "CLP", "relatedChapterId": "chapter-3" },
-        { "id": "sh-16", "name": "Antigüedades pequeñas", "category": "colección", "description": "Piezas únicas del mercado.", "suggestedWhereToBuy": "Mercado de San Telmo", "estimatedPrice": "Variable", "currency": "CLP", "relatedChapterId": "chapter-3" },
-        { "id": "sh-17", "name": "Ropa de diseño argentino", "category": "moda", "description": "Diseño local, fuera de lo genérico.", "suggestedWhereToBuy": "Palermo Soho o Galerías Pacífico", "estimatedPrice": "Variable", "currency": "CLP" },
-        { "id": "sh-18", "name": "Camiseta de fútbol (River o Boca)", "category": "moda", "description": "Un recuerdo deportivo clásico.", "suggestedWhereToBuy": "Tiendas oficiales del Microcentro", "estimatedPrice": "$25.000–$40.000", "currency": "CLP" },
-        { "id": "sh-19", "name": "Imán o postal de recuerdo", "category": "recuerdo", "description": "El souvenir más simple y efectivo.", "suggestedWhereToBuy": "Cualquier feria o kiosco turístico", "estimatedPrice": "$2.000–$4.000", "currency": "CLP" },
-        { "id": "sh-20", "name": "Medialunas para llevar (Las Violetas)", "category": "gastronomía", "description": "El leitmotiv del viaje, en versión para el avión de vuelta.", "suggestedWhereToBuy": "Las Violetas, Almagro", "estimatedPrice": "$8.000 la docena", "currency": "CLP", "relatedChapterId": "chapter-4" }
+        {
+          "id": "sh-1",
+          "name": "Alfajores Havanna",
+          "category": "gastronomía",
+          "description": "El clásico que nunca falla.",
+          "suggestedWhereToBuy": "Cualquier local de la cadena o el shopping",
+          "estimatedPrice": "$8.000",
+          "currency": "CLP"
+        },
+        {
+          "id": "sh-2",
+          "name": "Chocolate Rapanui",
+          "category": "gastronomía",
+          "description": "Una parada dulce que ya es parte del Día 1.",
+          "suggestedWhereToBuy": "Rapanui, Av. Corrientes",
+          "estimatedPrice": "$10.000",
+          "currency": "CLP",
+          "relatedChapterId": "chapter-1"
+        },
+        {
+          "id": "sh-3",
+          "name": "Dulce de leche",
+          "category": "gastronomía",
+          "description": "El infaltable para llevar.",
+          "suggestedWhereToBuy": "Cualquier supermercado",
+          "estimatedPrice": "$5.000",
+          "currency": "CLP"
+        },
+        {
+          "id": "sh-4",
+          "name": "Mate y bombilla",
+          "category": "tradición",
+          "description": "El set completo para llevarse un ritual, no solo un objeto.",
+          "suggestedWhereToBuy": "Casas de artículos regionales, San Telmo o Florida",
+          "estimatedPrice": "$15.000–$25.000",
+          "currency": "CLP"
+        },
+        {
+          "id": "sh-5",
+          "name": "Vino Malbec",
+          "category": "bebida",
+          "description": "Para brindar de nuevo ya en casa.",
+          "suggestedWhereToBuy": "Vinotecas del centro o supermercado",
+          "estimatedPrice": "$8.000–$15.000",
+          "currency": "CLP"
+        },
+        {
+          "id": "sh-6",
+          "name": "Perfumes",
+          "category": "moda",
+          "description": "Variedad de marcas y precios.",
+          "suggestedWhereToBuy": "Galerías Pacífico o Florida",
+          "estimatedPrice": "Variable",
+          "currency": "CLP"
+        },
+        {
+          "id": "sh-7",
+          "name": "Libro en español",
+          "category": "colección",
+          "description": "Algo con el sello de una librería única en el mundo.",
+          "suggestedWhereToBuy": "El Ateneo Grand Splendid",
+          "estimatedPrice": "$10.000–$18.000",
+          "currency": "CLP",
+          "relatedChapterId": "chapter-4"
+        },
+        {
+          "id": "sh-8",
+          "name": "Artículos de cuero",
+          "category": "moda",
+          "description": "Según la pieza elegida.",
+          "suggestedWhereToBuy": "Talabarterías del Microcentro o San Telmo",
+          "estimatedPrice": "Variable",
+          "currency": "CLP"
+        },
+        {
+          "id": "sh-9",
+          "name": "Alpargatas",
+          "category": "moda",
+          "description": "Un clásico cómodo y económico.",
+          "suggestedWhereToBuy": "Locales de calzado del Microcentro",
+          "estimatedPrice": "$12.000",
+          "currency": "CLP"
+        },
+        {
+          "id": "sh-10",
+          "name": "Fernet",
+          "category": "bebida",
+          "description": "El favorito local.",
+          "suggestedWhereToBuy": "Cualquier supermercado",
+          "estimatedPrice": "$9.000",
+          "currency": "CLP"
+        },
+        {
+          "id": "sh-11",
+          "name": "Yerba mate",
+          "category": "tradición",
+          "description": "Para preparar el mate en casa.",
+          "suggestedWhereToBuy": "Cualquier supermercado",
+          "estimatedPrice": "$6.000",
+          "currency": "CLP"
+        },
+        {
+          "id": "sh-12",
+          "name": "Termo",
+          "category": "tradición",
+          "description": "El complemento del mate.",
+          "suggestedWhereToBuy": "Casas de artículos regionales",
+          "estimatedPrice": "$18.000–$30.000",
+          "currency": "CLP"
+        },
+        {
+          "id": "sh-13",
+          "name": "Dulce de batata o membrillo",
+          "category": "gastronomía",
+          "description": "Un clásico para acompañar quesos.",
+          "suggestedWhereToBuy": "Cualquier supermercado o feria",
+          "estimatedPrice": "$6.000",
+          "currency": "CLP"
+        },
+        {
+          "id": "sh-14",
+          "name": "Chocolates Cachafaz",
+          "category": "gastronomía",
+          "description": "Otra opción dulce para llevar.",
+          "suggestedWhereToBuy": "Locales propios o shopping",
+          "estimatedPrice": "$9.000",
+          "currency": "CLP"
+        },
+        {
+          "id": "sh-15",
+          "name": "Vinilos de colección",
+          "category": "colección",
+          "description": "Para quienes coleccionan música.",
+          "suggestedWhereToBuy": "Mercado de San Telmo",
+          "estimatedPrice": "Variable",
+          "currency": "CLP",
+          "relatedChapterId": "chapter-3"
+        },
+        {
+          "id": "sh-16",
+          "name": "Antigüedades pequeñas",
+          "category": "colección",
+          "description": "Piezas únicas del mercado.",
+          "suggestedWhereToBuy": "Mercado de San Telmo",
+          "estimatedPrice": "Variable",
+          "currency": "CLP",
+          "relatedChapterId": "chapter-3"
+        },
+        {
+          "id": "sh-17",
+          "name": "Ropa de diseño argentino",
+          "category": "moda",
+          "description": "Diseño local, fuera de lo genérico.",
+          "suggestedWhereToBuy": "Palermo Soho o Galerías Pacífico",
+          "estimatedPrice": "Variable",
+          "currency": "CLP"
+        },
+        {
+          "id": "sh-18",
+          "name": "Camiseta de fútbol (River o Boca)",
+          "category": "moda",
+          "description": "Un recuerdo deportivo clásico.",
+          "suggestedWhereToBuy": "Tiendas oficiales del Microcentro",
+          "estimatedPrice": "$25.000–$40.000",
+          "currency": "CLP"
+        },
+        {
+          "id": "sh-19",
+          "name": "Imán o postal de recuerdo",
+          "category": "recuerdo",
+          "description": "El souvenir más simple y efectivo.",
+          "suggestedWhereToBuy": "Cualquier feria o kiosco turístico",
+          "estimatedPrice": "$2.000–$4.000",
+          "currency": "CLP"
+        },
+        {
+          "id": "sh-20",
+          "name": "Medialunas para llevar (Las Violetas)",
+          "category": "gastronomía",
+          "description": "El leitmotiv del viaje, en versión para el avión de vuelta.",
+          "suggestedWhereToBuy": "Las Violetas, Almagro",
+          "estimatedPrice": "$8.000 la docena",
+          "currency": "CLP",
+          "relatedChapterId": "chapter-4"
+        }
       ]
     }
   ],
   "checklist": [
-    { "id": "doc-1", "category": "Documentos", "label": "Cédula o pasaporte vigente" },
+    {
+      "id": "doc-1",
+      "category": "Documentos",
+      "label": "Cédula o pasaporte vigente"
+    },
     { "id": "doc-2", "category": "Documentos", "label": "Tarjetas de crédito" },
     { "id": "doc-3", "category": "Documentos", "label": "Tarjeta de débito" },
-    { "id": "doc-4", "category": "Documentos", "label": "Seguro de viaje (si aplica)" },
-    { "id": "doc-5", "category": "Documentos", "label": "Reserva del hotel a mano" },
+    {
+      "id": "doc-4",
+      "category": "Documentos",
+      "label": "Seguro de viaje (si aplica)"
+    },
+    {
+      "id": "doc-5",
+      "category": "Documentos",
+      "label": "Reserva del hotel a mano"
+    },
     { "id": "eq-1", "category": "Equipaje", "label": "Cargador del celular" },
     { "id": "eq-2", "category": "Equipaje", "label": "Power bank" },
     { "id": "eq-3", "category": "Equipaje", "label": "Audífonos" },
-    { "id": "eq-4", "category": "Equipaje", "label": "Adaptador (si fuera necesario)" },
-    { "id": "eq-5", "category": "Equipaje", "label": "Medicamentos personales" },
+    {
+      "id": "eq-4",
+      "category": "Equipaje",
+      "label": "Adaptador (si fuera necesario)"
+    },
+    {
+      "id": "eq-5",
+      "category": "Equipaje",
+      "label": "Medicamentos personales"
+    },
     { "id": "eq-6", "category": "Equipaje", "label": "Chaqueta" },
     { "id": "eq-7", "category": "Equipaje", "label": "Zapatillas cómodas" },
     { "id": "eq-8", "category": "Equipaje", "label": "Lentes de sol" },
     { "id": "eq-9", "category": "Equipaje", "label": "Paraguas pequeño" },
-    { "id": "eq-10", "category": "Equipaje", "label": "Mochila para recorrer la ciudad" },
+    {
+      "id": "eq-10",
+      "category": "Equipaje",
+      "label": "Mochila para recorrer la ciudad"
+    },
     { "id": "app-1", "category": "Apps instaladas", "label": "Google Maps" },
     { "id": "app-2", "category": "Apps instaladas", "label": "Uber" },
     { "id": "app-3", "category": "Apps instaladas", "label": "Cabify" },
@@ -396,31 +1005,115 @@
     { "id": "app-5", "category": "Apps instaladas", "label": "Airalo (eSIM)" },
     { "id": "app-6", "category": "Apps instaladas", "label": "Google Lens" },
     { "id": "app-7", "category": "Apps instaladas", "label": "Mercado Pago" },
-    { "id": "din-1", "category": "Dinero", "label": "Avisar al banco del viaje" },
-    { "id": "din-2", "category": "Dinero", "label": "Activar tarjetas para uso internacional" },
-    { "id": "din-3", "category": "Dinero", "label": "Cambiar algo de efectivo (80% tarjeta / 20% efectivo)" },
-    { "id": "din-4", "category": "Dinero", "label": "Guardar el efectivo en dos lugares distintos" },
+    {
+      "id": "din-1",
+      "category": "Dinero",
+      "label": "Avisar al banco del viaje"
+    },
+    {
+      "id": "din-2",
+      "category": "Dinero",
+      "label": "Activar tarjetas para uso internacional"
+    },
+    {
+      "id": "din-3",
+      "category": "Dinero",
+      "label": "Cambiar algo de efectivo (80% tarjeta / 20% efectivo)"
+    },
+    {
+      "id": "din-4",
+      "category": "Dinero",
+      "label": "Guardar el efectivo en dos lugares distintos"
+    },
     { "id": "lug-1", "category": "Lugares visitados", "label": "El Cuartito" },
-    { "id": "lug-2", "category": "Lugares visitados", "label": "Teatro Colón y Obelisco" },
-    { "id": "lug-3", "category": "Lugares visitados", "label": "Floralis Genérica" },
-    { "id": "lug-4", "category": "Lugares visitados", "label": "Cementerio de Recoleta" },
+    {
+      "id": "lug-2",
+      "category": "Lugares visitados",
+      "label": "Teatro Colón y Obelisco"
+    },
+    {
+      "id": "lug-3",
+      "category": "Lugares visitados",
+      "label": "Floralis Genérica"
+    },
+    {
+      "id": "lug-4",
+      "category": "Lugares visitados",
+      "label": "Cementerio de Recoleta"
+    },
     { "id": "lug-5", "category": "Lugares visitados", "label": "La Cabrera" },
-    { "id": "lug-6", "category": "Lugares visitados", "label": "Rosedal de Palermo" },
-    { "id": "lug-7", "category": "Lugares visitados", "label": "Puerto Madero" },
-    { "id": "lug-8", "category": "Lugares visitados", "label": "Mercado de San Telmo" },
+    {
+      "id": "lug-6",
+      "category": "Lugares visitados",
+      "label": "Rosedal de Palermo"
+    },
+    {
+      "id": "lug-7",
+      "category": "Lugares visitados",
+      "label": "Puerto Madero"
+    },
+    {
+      "id": "lug-8",
+      "category": "Lugares visitados",
+      "label": "Mercado de San Telmo"
+    },
     { "id": "lug-9", "category": "Lugares visitados", "label": "Mafalda" },
     { "id": "lug-10", "category": "Lugares visitados", "label": "Caminito" },
-    { "id": "lug-11", "category": "Lugares visitados", "label": "Galerías Pacífico" },
-    { "id": "lug-12", "category": "Lugares visitados", "label": "El Ateneo Grand Splendid" },
-    { "id": "lug-13", "category": "Lugares visitados", "label": "Las Violetas" },
-    { "id": "mom-1", "category": "Momentos especiales", "label": "Helado caminando por Corrientes" },
-    { "id": "mom-2", "category": "Momentos especiales", "label": "Una hora en una cafetería sin mirar el reloj" },
-    { "id": "mom-3", "category": "Momentos especiales", "label": "Caminar sin rumbo por Palermo" },
-    { "id": "mom-4", "category": "Momentos especiales", "label": "Medialunas en un parque" },
-    { "id": "mom-5", "category": "Momentos especiales", "label": "Atardecer en Puerto Madero" },
-    { "id": "mom-6", "category": "Momentos especiales", "label": "Abrazo frente a la Floralis" },
-    { "id": "mom-7", "category": "Momentos especiales", "label": "Sentarse a conversar sin sacar fotos" },
-    { "id": "mom-8", "category": "Momentos especiales", "label": "Un rato en El Ateneo sin el celular" }
+    {
+      "id": "lug-11",
+      "category": "Lugares visitados",
+      "label": "Galerías Pacífico"
+    },
+    {
+      "id": "lug-12",
+      "category": "Lugares visitados",
+      "label": "El Ateneo Grand Splendid"
+    },
+    {
+      "id": "lug-13",
+      "category": "Lugares visitados",
+      "label": "Las Violetas"
+    },
+    {
+      "id": "mom-1",
+      "category": "Momentos especiales",
+      "label": "Helado caminando por Corrientes"
+    },
+    {
+      "id": "mom-2",
+      "category": "Momentos especiales",
+      "label": "Una hora en una cafetería sin mirar el reloj"
+    },
+    {
+      "id": "mom-3",
+      "category": "Momentos especiales",
+      "label": "Caminar sin rumbo por Palermo"
+    },
+    {
+      "id": "mom-4",
+      "category": "Momentos especiales",
+      "label": "Medialunas en un parque"
+    },
+    {
+      "id": "mom-5",
+      "category": "Momentos especiales",
+      "label": "Atardecer en Puerto Madero"
+    },
+    {
+      "id": "mom-6",
+      "category": "Momentos especiales",
+      "label": "Abrazo frente a la Floralis"
+    },
+    {
+      "id": "mom-7",
+      "category": "Momentos especiales",
+      "label": "Sentarse a conversar sin sacar fotos"
+    },
+    {
+      "id": "mom-8",
+      "category": "Momentos especiales",
+      "label": "Un rato en El Ateneo sin el celular"
+    }
   ],
   "budget": {
     "currency": "CLP",
