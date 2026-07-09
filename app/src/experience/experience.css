@@ -74,6 +74,12 @@
   }
 }
 
+html {
+  background: #16110e;
+  overflow-x: hidden;
+  overscroll-behavior-x: none;
+}
+
 body {
   margin: 0;
   min-height: 100vh;
@@ -84,6 +90,9 @@ body {
   background: var(--color-ivory);
   color: var(--color-charcoal);
   font-family: var(--font-body);
+  overflow-x: hidden;
+  overscroll-behavior-x: none;
+  touch-action: pan-y;
 }
 
 /*
@@ -101,6 +110,7 @@ body:has(.book) {
   max-width: 560px;
   width: 100%;
   text-align: center;
+  overflow-x: hidden;
 }
 
 #app:has(.book),
@@ -108,14 +118,17 @@ body:has(.book) {
   max-width: none;
   width: 100%;
   height: 100dvh;
+  background: #16110e;
 }
 
 .book {
   height: 100dvh;
   overflow-y: auto;
+  overflow-x: hidden;
   scroll-snap-type: y mandatory;
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
 }
 
 .book-page {
@@ -191,6 +204,8 @@ body:has(.cover):not(:has(.book)) {
 
 body:has(.cover-index-stage) {
   padding: 0;
+  background:
+    linear-gradient(180deg, #1b130f 0%, #16110e 48%, #100d0b 100%), #16110e;
 }
 
 body:has(.cover-index-stage.is-video-running),
@@ -202,6 +217,8 @@ body:has(.cover-index-stage.is-index-writing) {
   position: relative;
   width: 100%;
   min-height: 100dvh;
+  overflow-x: hidden;
+  touch-action: pan-y;
   background:
     linear-gradient(180deg, #1b130f 0%, #16110e 48%, #100d0b 100%), #16110e;
 }
