@@ -1,0 +1,9 @@
+{
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "/experience.html",
+      "permanent": false
+    }
+  ]
+}
