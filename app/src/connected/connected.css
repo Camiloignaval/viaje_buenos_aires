@@ -67,3 +67,114 @@ body {
 .connected-logout:hover {
   background: rgba(242, 237, 230, 0.08);
 }
+
+.connected-card-wide {
+  max-width: 480px;
+}
+
+.connected-error {
+  margin: 0.35rem 0;
+  font-size: 0.85rem;
+  color: #e2a293;
+}
+
+.connected-link-button {
+  padding: 0;
+  font: inherit;
+  font-size: 0.9rem;
+  color: #f2ede6;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+/* "Mis viajes" como un índice — una biblioteca personal, no una tabla administrativa. */
+.trips-index {
+  list-style: none;
+  margin: 0 0 1.25rem;
+  padding: 0;
+  border-top: 1px solid rgba(242, 237, 230, 0.14);
+}
+
+.trips-index li {
+  border-bottom: 1px solid rgba(242, 237, 230, 0.14);
+}
+
+.trip-entry {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.15rem;
+  width: 100%;
+  padding: 0.85rem 0.25rem;
+  font: inherit;
+  text-align: left;
+  color: #f2ede6;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.trip-entry:hover .trip-entry-title {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.trip-entry-title {
+  font-size: 1rem;
+}
+
+.trip-entry-destination {
+  font-size: 0.8rem;
+  color: rgba(242, 237, 230, 0.55);
+}
+
+.create-trip-form {
+  margin-top: 0.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(242, 237, 230, 0.14);
+}
+
+.create-trip-form label {
+  display: block;
+  margin-bottom: 0.75rem;
+  font-size: 0.8rem;
+  color: rgba(242, 237, 230, 0.6);
+}
+
+.create-trip-form input {
+  display: block;
+  width: 100%;
+  margin-top: 0.3rem;
+  padding: 0.45rem 0.5rem;
+  font: inherit;
+  font-size: 0.9rem;
+  color: #f2ede6;
+  background: rgba(242, 237, 230, 0.05);
+  border: 1px solid rgba(242, 237, 230, 0.2);
+  border-radius: 6px;
+}
+
+.create-trip-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.create-trip-actions button {
+  padding: 0.45rem 0.9rem;
+  font: inherit;
+  font-size: 0.85rem;
+  color: #f2ede6;
+  background: transparent;
+  border: 1px solid rgba(242, 237, 230, 0.24);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.create-trip-actions button[type="submit"]:disabled {
+  opacity: 0.6;
+  cursor: default;
+}

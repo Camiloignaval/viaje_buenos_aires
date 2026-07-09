@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { requestCode, verifyCode, getSession, logout, PlatformApiError } from './platformApi.js';
+import { requestCode, verifyCode, getSession, logout, listTrips, createTrip, PlatformApiError } from './platformApi.js';
 
 function fakeFetch(status, body) {
   const calls = [];
@@ -46,6 +46,23 @@ test('logout postea sin body', async () => {
   await logout({ fetchImpl });
   assert.equal(fetchImpl.calls[0].path, '/api/auth/logout');
   assert.equal(fetchImpl.calls[0].options.method, 'POST');
+});
+
+test('listTrips hace GET sin body', async () => {
+  const fetchImpl = fakeFetch(200, { trips: [{ id: '1', title: 'Buenos Aires' }] });
+  const result = await listTrips({ fetchImpl });
+  assert.deepEqual(result.trips, [{ id: '1', title: 'Buenos Aires' }]);
+  assert.equal(fetchImpl.calls[0].path, '/api/trips');
+  assert.equal(fetchImpl.calls[0].options.method, 'GET');
+});
+
+test('createTrip postea title y destination', async () => {
+  const fetchImpl = fakeFetch(201, { trip: { id: '1', title: 'Buenos Aires', destination: 'CABA' } });
+  const result = await createTrip({ title: 'Buenos Aires', destination: 'CABA' }, { fetchImpl });
+  assert.deepEqual(result.trip, { id: '1', title: 'Buenos Aires', destination: 'CABA' });
+  assert.equal(fetchImpl.calls[0].path, '/api/trips');
+  assert.equal(fetchImpl.calls[0].options.method, 'POST');
+  assert.deepEqual(JSON.parse(fetchImpl.calls[0].options.body), { title: 'Buenos Aires', destination: 'CABA' });
 });
 
 test('respuesta no-ok lanza PlatformApiError con el mensaje del server', async () => {

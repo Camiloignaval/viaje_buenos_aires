@@ -45,3 +45,13 @@ export function getSession({ fetchImpl } = {}) {
 export function logout({ fetchImpl } = {}) {
   return request('/api/auth/logout', { method: 'POST', fetchImpl });
 }
+
+/** Lista los viajes del usuario autenticado. Resuelve `{trips: [...]}`, ya ordenados por updatedAt desc. */
+export function listTrips({ fetchImpl } = {}) {
+  return request('/api/trips', { fetchImpl });
+}
+
+/** Crea un viaje. Resuelve `{trip}`. `title` y `destination` son los únicos campos que exige la API. */
+export function createTrip({ title, destination }, { fetchImpl } = {}) {
+  return request('/api/trips', { method: 'POST', body: { title, destination }, fetchImpl });
+}
