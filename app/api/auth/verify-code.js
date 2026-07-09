@@ -1,6 +1,7 @@
 import { applyCors } from '../../lib/cors.js';
 import { createSessionToken, setSessionCookie, verifySessionToken } from '../../lib/platformAuth.js';
 import { getAuthCodesCollection, getUsersCollection } from '../../lib/platformMongo.js';
+import { sendPlatformError } from '../../lib/platformErrors.js';
 import { normalizeEmail, verifyAuthCodeHash } from '../../lib/platformAuthCodes.js';
 
 function readBody(req) {
@@ -54,6 +55,6 @@ export default async function handler(req, res) {
     setSessionCookie(res, token);
     return res.status(200).json({ user: publicUser(user), expiresAt: session.expiresAt });
   } catch (error) {
-    return res.status(400).json({ error: error.message });
+    return sendPlatformError(res, error);
   }
 }

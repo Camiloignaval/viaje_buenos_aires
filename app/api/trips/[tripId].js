@@ -1,6 +1,7 @@
 import { applyCors } from '../../lib/cors.js';
 import { requireTripMember, requireTripRole } from '../../lib/platformAuth.js';
 import { getTripsCollection, toObjectId } from '../../lib/platformMongo.js';
+import { sendPlatformError } from '../../lib/platformErrors.js';
 import { normalizeTripPatch, publicTripDetail } from '../../lib/platformTrips.js';
 
 function readBody(req) {
@@ -43,6 +44,6 @@ export default async function handler(req, res) {
     res.setHeader('Allow', ['GET', 'PATCH']);
     return res.status(405).json({ error: 'Método no permitido' });
   } catch (error) {
-    return res.status(400).json({ error: error.message });
+    return sendPlatformError(res, error);
   }
 }

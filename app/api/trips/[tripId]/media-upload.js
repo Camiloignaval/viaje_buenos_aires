@@ -1,6 +1,7 @@
 ﻿import { applyCors } from '../../../lib/cors.js';
 import { requireTripRole } from '../../../lib/platformAuth.js';
 import { getMediaAssetsCollection, toObjectId } from '../../../lib/platformMongo.js';
+import { sendPlatformError } from '../../../lib/platformErrors.js';
 import { getCloudinary, isCloudinaryConfigured } from '../../../lib/auroraCloudinary.js';
 import {
   cloudinaryUploadOptions,
@@ -29,15 +30,15 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Método no permitido' });
   }
 
-  if (!isCloudinaryConfigured()) {
-    return res.status(503).json({ error: 'Aurora no tiene Cloudinary configurado.' });
-  }
-
   const tripId = tripIdFrom(req);
 
   try {
     const context = await requireTripRole(req, res, tripId, ['owner', 'editor']);
     if (!context) return;
+
+    if (!isCloudinaryConfigured()) {
+      return res.status(503).json({ error: 'Aurora no tiene Cloudinary configurado.' });
+    }
 
     const input = normalizeMediaUploadInput(readBody(req));
     const tripObjectId = toObjectId(tripId, 'tripId');
@@ -56,6 +57,6 @@ export default async function handler(req, res) {
     return res.status(201).json({ mediaAsset: publicMediaAsset({ ...doc, _id: result.insertedId }) });
   } catch (error) {
     console.error('api/trips/[tripId]/media-upload error:', error);
-    return res.status(400).json({ error: error.message });
+    return sendPlatformError(res, error);
   }
 }

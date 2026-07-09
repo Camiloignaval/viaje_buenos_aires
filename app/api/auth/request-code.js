@@ -1,5 +1,6 @@
 import { applyCors } from '../../lib/cors.js';
 import { getAuthCodesCollection } from '../../lib/platformMongo.js';
+import { sendPlatformError } from '../../lib/platformErrors.js';
 import { authCodeExpiresAt, deliverAuthCode, generateAuthCode, hashAuthCode, normalizeEmail } from '../../lib/platformAuthCodes.js';
 
 function readBody(req) {
@@ -39,6 +40,6 @@ export default async function handler(req, res) {
     await deliverAuthCode(email, code);
     return res.status(200).json({ ok: true });
   } catch (error) {
-    return res.status(400).json({ error: error.message });
+    return sendPlatformError(res, error);
   }
 }

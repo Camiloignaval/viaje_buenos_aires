@@ -1,6 +1,7 @@
 ﻿import { applyCors } from '../../../lib/cors.js';
 import { requireTripRole } from '../../../lib/platformAuth.js';
 import { getMemoriesCollection, getTripStatesCollection, toObjectId } from '../../../lib/platformMongo.js';
+import { sendPlatformError } from '../../../lib/platformErrors.js';
 import { clientMemoryToDocument, ensureTripSyncIndexes, mergeTripSyncState, publicTripSyncState } from '../../../lib/platformSync.js';
 
 function readBody(req) {
@@ -61,6 +62,6 @@ export default async function handler(req, res) {
 
     return res.status(200).json(publicTripSyncState(merged));
   } catch (error) {
-    return res.status(400).json({ error: error.message });
+    return sendPlatformError(res, error);
   }
 }
