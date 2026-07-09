@@ -14,7 +14,7 @@ function stripManifestFromLegacyHtml() {
     transformIndexHtml: {
       order: "post",
       handler(html, ctx) {
-        if (ctx.filename?.endsWith("index.html") || ctx.filename?.endsWith("admin.html")) {
+        if (ctx.filename?.endsWith("index.html") || ctx.filename?.endsWith("admin.html") || ctx.filename?.endsWith("app.html")) {
           return html.replace(/<link rel="manifest"[^>]*>\n?/, "");
         }
         return html;
@@ -53,6 +53,7 @@ export default defineConfig({
         main: resolve(__dirname, "index.html"),
         experience: resolve(__dirname, "experience.html"),
         admin: resolve(__dirname, "admin.html"),
+        app: resolve(__dirname, "app.html"),
       },
     },
   },
@@ -83,6 +84,7 @@ export default defineConfig({
           "debug.html",
           "memories.html",
           "admin.html",
+          "app.html",
           // Export bruto de íconos: no forma parte de la experiencia y duplica
           // assets ya curados bajo /icons.
           "AppAssets_2026-07-09/**/*",
