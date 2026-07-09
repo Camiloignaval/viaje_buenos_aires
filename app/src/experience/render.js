@@ -30,6 +30,13 @@ const CHAPTER_TEASERS = [
   'Un último regalo antes de volver.',
 ];
 
+const PREPARATION_CATEGORY_LABELS = new Map([
+  ['Documentos', 'Documentos'],
+  ['Equipaje', 'Equipaje'],
+  ['Apps instaladas', 'Apps'],
+  ['Dinero', 'Dinero'],
+]);
+
 function teaserForChapter(order) {
   return CHAPTER_TEASERS[order - 1] ?? 'Un nuevo capítulo se acerca.';
 }
@@ -144,24 +151,200 @@ function toRoman(number) {
  * no chips — y nunca un spoiler. Un capítulo futuro solo muestra su fecha, nunca
  * su título real; el capítulo actual y los ya vividos sí lo muestran.
  */
-function renderChapterList(view, storyPackage, extraClass = '') {
+function renderChapterList(view, storyPackage, { extraClass = '', interactive = true } = {}) {
   const items = buildChapterSummary(view, storyPackage)
-    .map(({ title, order, status, referenceDate }) => {
+    .map(({ id, title, order, status, referenceDate }) => {
       const isLocked = status === ChapterStatus.LOCKED;
       const label = isLocked ? formatChapterDate(referenceDate) : title;
       const statusLine = isLocked ? teaserForChapter(order) : STATUS_LABEL[status];
-      return `
-      <li class="chapter-index-item${isLocked ? ' chapter-index-item-locked' : ''}">
+      const content = `
         <span class="chapter-index-number">${toRoman(order)}</span>
         <span class="chapter-index-text">
           <span class="chapter-index-title">${label}</span>
           <span class="chapter-index-status">${statusLine}</span>
         </span>
+      `;
+      return `
+      <li class="chapter-index-item${isLocked ? ' chapter-index-item-locked' : ''}">
+        ${isLocked && interactive
+          ? `<button type="button" class="chapter-index-lock" data-action="open-locked-chapter" data-chapter-id="${id}" data-unlock-label="${label}" aria-label="Cap?tulo ${toRoman(order)} estar? disponible el ${label}">${content}</button>`
+          : content}
       </li>
     `;
     })
     .join('');
   return `<ol class="chapter-index ${extraClass}">${items}</ol>`;
+}
+
+function getPreparationGroups(storyPackage) {
+  const groups = new Map();
+  for (const item of storyPackage.checklist ?? []) {
+    const label = PREPARATION_CATEGORY_LABELS.get(item.category);
+    if (!label) {
+      continue;
+    }
+    if (!groups.has(item.category)) {
+      groups.set(item.category, { sourceCategory: item.category, label, items: [] });
+    }
+    groups.get(item.category).items.push(item);
+  }
+  return [...groups.values()];
+}
+
+function computePreparationProgress(storyPackage, completedIds) {
+  const total = getPreparationGroups(storyPackage).reduce((sum, group) => sum + group.items.length, 0);
+  const done = getPreparationGroups(storyPackage).reduce(
+    (sum, group) => sum + group.items.filter((item) => completedIds.has(item.id)).length,
+    0
+  );
+  return { done, total, pct: total ? Math.round((done / total) * 100) : 0, complete: total > 0 && done === total };
+}
+
+function renderPreparationProgress(progress, className = 'preparation-progress') {
+  const label = progress.complete ? '✓ Todo listo' : `${progress.done} de ${progress.total} listos`;
+  return `
+    <div class="${className}" aria-label="${label}" data-preparation-progress>
+      <span data-preparation-progress-label>${label}</span>
+      <span class="preparation-progress-line" aria-hidden="true">
+        <span data-preparation-progress-fill style="width:${progress.pct}%"></span>
+      </span>
+    </div>
+  `;
+}
+
+function renderPreparationIcon(sourceCategory) {
+  const icons = {
+    Documentos: `
+      <svg class="preparation-category-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M7 4.5h6.5L17 8v11.5H7z" />
+        <path d="M13.5 4.5V8H17" />
+        <path d="M9.5 12h5" />
+        <path d="M9.5 15h4" />
+      </svg>
+    `,
+    Equipaje: `
+      <svg class="preparation-category-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M9 8V6.8c0-.7.5-1.3 1.3-1.3h3.4c.8 0 1.3.6 1.3 1.3V8" />
+        <path d="M6.5 8.5h11v10h-11z" />
+        <path d="M9 11v5" />
+        <path d="M15 11v5" />
+      </svg>
+    `,
+    'Apps instaladas': `
+      <svg class="preparation-category-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <rect x="8" y="4.5" width="8" height="15" rx="2" />
+        <path d="M11 17h2" />
+      </svg>
+    `,
+    Dinero: `
+      <svg class="preparation-category-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <rect x="5" y="7" width="14" height="10" rx="1.8" />
+        <path d="M5 10h14" />
+        <path d="M8 14h3" />
+      </svg>
+    `,
+  };
+  return `<span class="preparation-category-mark">${icons[sourceCategory] ?? ''}</span>`;
+}
+
+function renderPreparationIndexEntry(storyPackage, completedIds, interactive) {
+  const progress = computePreparationProgress(storyPackage, completedIds);
+  if (progress.total === 0) {
+    return '';
+  }
+  const statusLine = progress.complete ? 'Todo está listo.' : 'Todo comienza antes del viaje.';
+  const actionLabel = progress.complete ? 'Revisar →' : 'Continuar →';
+  const content = `
+    <span class="preparation-index-title">Preparativos</span>
+    <span class="preparation-index-status">${statusLine}</span>
+    ${renderPreparationProgress(progress, 'preparation-index-progress')}
+    <span class="preparation-index-action">${actionLabel}</span>
+  `;
+  return `
+    <section class="preparation-index-entry" aria-label="Preparativos">
+      ${
+        interactive
+          ? `<button type="button" class="preparation-index-link" data-action="open-preparations">${content}</button>`
+          : content
+      }
+    </section>
+    <span class="index-section-divider" aria-hidden="true"></span>
+  `;
+}
+
+function renderPreparationItem(item, completedIds, interactive) {
+  const checked = completedIds.has(item.id);
+  const content = `
+    <span class="preparation-check-mark" aria-hidden="true">${checked ? '✓' : ''}</span>
+    <span class="preparation-check-label">${item.label}</span>
+  `;
+  if (!interactive) {
+    return `<li><div class="preparation-check-row${checked ? ' is-complete' : ''}">${content}</div></li>`;
+  }
+  return `
+    <li>
+      <button
+        type="button"
+        class="preparation-check-row${checked ? ' is-complete' : ''}"
+        data-action="toggle-preparation"
+        data-preparation-id="${item.id}"
+        data-title="${item.label}"
+        data-category="${item.category}"
+        data-completed="${checked}"
+        aria-pressed="${checked}"
+      >${content}</button>
+    </li>
+  `;
+}
+
+function renderPreparationGroup(group, completedIds, interactive) {
+  const done = group.items.filter((item) => completedIds.has(item.id)).length;
+  const complete = done === group.items.length;
+  return `
+    <section class="preparation-group${complete ? ' is-complete' : ''}" data-preparation-group data-reveal-on-scroll data-total="${group.items.length}">
+      <div class="preparation-group-head">
+        <h2>${renderPreparationIcon(group.sourceCategory)}<span class="preparation-group-title">${group.label}</span></h2>
+        <span data-preparation-group-count>${complete ? '✓' : `${done}/${group.items.length}`}</span>
+      </div>
+      <ul class="preparation-checklist">
+        ${group.items.map((item) => renderPreparationItem(item, completedIds, interactive)).join('')}
+      </ul>
+    </section>
+  `;
+}
+
+function renderPreparationsPage(storyPackage, completedIds, interactive) {
+  const groups = getPreparationGroups(storyPackage);
+  const progress = computePreparationProgress(storyPackage, completedIds);
+  const completeCopy = `<p class="preparation-complete-copy${progress.complete ? '' : ' is-hidden'}" data-preparation-complete-copy>Ahora solo queda esperar el comienzo del viaje.</p>`;
+  return `
+    <div class="book book-pretrip book-preparations-mode">
+      <section class="book-page page-preparations">
+        ${
+          interactive
+            ? '<button type="button" class="book-back-link" data-action="close-preparations">← Volver al índice</button>'
+            : ''
+        }
+        <p class="eyebrow reveal reveal-1">Antes del viaje</p>
+        <h1 class="reveal reveal-2">Preparativos</h1>
+        <p class="open preparation-intro reveal reveal-3">
+          Todo viaje empieza antes del avión.<br />
+          Antes de salir, revisen lo esencial para que la historia pueda comenzar tranquila.
+        </p>
+        <div class="reveal reveal-4">
+          ${renderPreparationProgress(progress, 'preparation-page-progress')}
+          ${completeCopy}
+        </div>
+        <div class="preparation-groups">
+          ${groups.map((group) => renderPreparationGroup(group, completedIds, interactive)).join('')}
+        </div>
+        <section class="preparation-afterword">
+          <p>Algunas páginas todavía esperan su momento.</p>
+          <p>Aurora las abrirá cuando empiece el viaje.</p>
+        </section>
+      </section>
+    </div>
+  `;
 }
 
 /**
@@ -171,16 +354,21 @@ function renderChapterList(view, storyPackage, extraClass = '') {
  * invisibles y `experienceView.js` los revela (clase `is-revealing`) cuando
  * termina el video y el último frame ya fundió al carbón cálido.
  */
-function renderIndexPage(view, storyPackage, { pendingReveal = false, revealing = false, extraClass = '', showParticles = false } = {}) {
+function renderIndexPage(view, storyPackage, { pendingReveal = false, revealing = false, extraClass = '', showParticles = false, interactive = true, preparationCompletedIds = [] } = {}) {
   const classes = ['book-page', 'page-index', extraClass, pendingReveal ? 'page-index-pending' : '', revealing ? 'is-revealing' : '']
     .filter(Boolean)
     .join(' ');
+  const completedIds = new Set(preparationCompletedIds);
+  const preparationEntry = view.currentMode === StoryMode.PRE_TRIP
+    ? renderPreparationIndexEntry(storyPackage, completedIds, interactive)
+    : '';
   return `
     <section class="${classes}">
       ${showParticles ? renderIntroParticles('index-particles') : ''}
       <p class="eyebrow">Tu viaje</p>
+      ${preparationEntry}
       <h2 class="page-index-title">Capítulos</h2>
-      ${renderChapterList(view, storyPackage)}
+      ${renderChapterList(view, storyPackage, { interactive })}
     </section>
   `;
 }
@@ -785,7 +973,7 @@ function renderIntroVideo(view, storyPackage, now) {
   `;
 }
 
-function renderIntroIndexStage(view, storyPackage, now, coverIntroState) {
+function renderIntroIndexStage(view, storyPackage, now, coverIntroState, interactive, preparationCompletedIds) {
   const stateClass = {
     video: 'is-video-running',
     revealing: 'is-index-writing',
@@ -798,6 +986,8 @@ function renderIntroIndexStage(view, storyPackage, now, coverIntroState) {
         revealing: coverIntroState === 'revealing',
         extraClass: 'page-index-ritual',
         showParticles: true,
+        interactive,
+        preparationCompletedIds,
       })}
       ${coverIntroState === 'video' ? renderIntroVideo(view, storyPackage, now) : ''}
       ${coverIntroState === 'done' ? renderReplayIntroButton() : ''}
@@ -805,16 +995,20 @@ function renderIntroIndexStage(view, storyPackage, now, coverIntroState) {
   `;
 }
 
-function renderPreTrip(view, storyPackage, now, coverIntroState) {
+function renderPreTrip(view, storyPackage, now, coverIntroState, interactive, showingPreparations, preparationCompletedIds) {
+  if (showingPreparations) {
+    return renderPreparationsPage(storyPackage, new Set(preparationCompletedIds), interactive);
+  }
+
   if (coverIntroState === 'video' || coverIntroState === 'revealing' || coverIntroState === 'done') {
-    return renderIntroIndexStage(view, storyPackage, now, coverIntroState);
+    return renderIntroIndexStage(view, storyPackage, now, coverIntroState, interactive, preparationCompletedIds);
   }
 
   return `
     <div class="book book-pretrip">
       ${renderReplayIntroButton()}
       ${renderStaticCover(view, storyPackage, now)}
-      ${renderIndexPage(view, storyPackage)}
+      ${renderIndexPage(view, storyPackage, { interactive, preparationCompletedIds })}
     </div>
   `;
 }
@@ -830,7 +1024,7 @@ function renderInProgress(view, storyPackage, interactive, memories, confirmingC
         <section class="book-page page-chapter page-closing">
           ${renderClosingMessage(view, storyPackage)}
         </section>
-        ${renderIndexPage(view, storyPackage)}
+        ${renderIndexPage(view, storyPackage, { interactive })}
       </div>
     `;
   }
@@ -869,7 +1063,7 @@ function renderInProgress(view, storyPackage, interactive, memories, confirmingC
         </div>
         ${renderAlbumLink(interactive)}
       </section>
-      ${renderIndexPage(view, storyPackage)}
+      ${renderIndexPage(view, storyPackage, { interactive })}
     </div>
   `;
 }
@@ -974,7 +1168,7 @@ function renderEpilogue(view, storyPackage, interactive, memories, confirmingClo
           <p class="eyebrow">${date}</p>
           <p class="open">Nos espera.</p>
         </section>
-        ${renderIndexPage(view, storyPackage)}
+        ${renderIndexPage(view, storyPackage, { interactive })}
       </div>
     `;
   }
@@ -1003,7 +1197,7 @@ function renderEpilogue(view, storyPackage, interactive, memories, confirmingClo
         })}
         ${renderAlbumLink(interactive)}
       </section>
-      ${renderIndexPage(view, storyPackage)}
+      ${renderIndexPage(view, storyPackage, { interactive })}
     </div>
   `;
 }
@@ -1026,7 +1220,7 @@ function renderMemoryMode(view, storyPackage, justTransformed, interactive) {
         ${content}
         ${renderAlbumLink(interactive)}
       </section>
-      ${renderIndexPage(view, storyPackage)}
+      ${renderIndexPage(view, storyPackage, { interactive })}
     </div>
   `;
 }
@@ -1073,6 +1267,24 @@ function renderTripAlbum(storyPackage, tripMemories, photoUrls) {
   `;
 }
 
+function renderLockedChapterModal(lockedChapterNotice) {
+  if (!lockedChapterNotice) {
+    return '';
+  }
+  const detail = lockedChapterNotice.detail ?? `Este capítulo estará disponible el ${lockedChapterNotice.unlockLabel}.`;
+  const actionLabel = lockedChapterNotice.actionLabel ?? 'Seguir explorando';
+  return `
+    <div class="locked-chapter-backdrop" role="presentation">
+      <section class="locked-chapter-modal" role="dialog" aria-modal="true" aria-labelledby="locked-chapter-title" aria-describedby="locked-chapter-copy">
+        <p class="locked-chapter-eyebrow">Aurora</p>
+        <h2 id="locked-chapter-title">${lockedChapterNotice.line}</h2>
+        <p id="locked-chapter-copy">${detail}</p>
+        <button type="button" data-action="close-locked-chapter">${actionLabel}</button>
+      </section>
+    </div>
+  `;
+}
+
 /**
  * @param {object} view - Resultado de getStoryView.
  * @param {object} storyPackage - Story Package ya validado.
@@ -1102,6 +1314,10 @@ function renderTripAlbum(storyPackage, tripMemories, photoUrls) {
  *   hoy todavía sin permiso mostrado, o `null` (Épica 4). Ver `notifications.js`.
  * @param {'video'|'revealing'|'done'} [options.coverIntroState='done'] - Estado visual de
  *   la intro de video→índice. `render.js` no maneja tiempos; solo pinta el estado recibido.
+ * @param {boolean} [options.showingPreparations=false] - Si en pre-viaje se está leyendo
+ *   la página editorial de Preparativos en vez del índice.
+ * @param {string[]} [options.preparationCompletedIds=[]] - Ítems de Preparativos ya
+ *   marcados como listos. La persistencia vive fuera de `render.js`.
  * @returns {string} HTML listo para inyectar.
  */
 export function renderExperience(view, storyPackage, now, options = {}) {
@@ -1114,26 +1330,36 @@ export function renderExperience(view, storyPackage, now, options = {}) {
   const availableTripPhotos = options.availableTripPhotos ?? [];
   const showingTripAlbum = options.showingTripAlbum ?? false;
   const tripMemories = options.tripMemories ?? [];
-  const installBanner = interactive ? options.installBanner ?? null : null;
-  const pendingNotification = interactive ? options.pendingNotification ?? null : null;
   const coverIntroState = options.coverIntroState ?? 'done';
+  const lockedChapterNotice = interactive ? options.lockedChapterNotice ?? null : null;
+  const showingPreparations = interactive ? options.showingPreparations ?? false : false;
+  const preparationCompletedIds = options.preparationCompletedIds ?? [];
+  const installBanner = interactive && !showingPreparations ? options.installBanner ?? null : null;
+  const pendingNotification = interactive && !showingPreparations ? options.pendingNotification ?? null : null;
 
   const banners = `${renderInstallBanner(installBanner)}${renderNotificationPrompt(pendingNotification)}`;
+  const lockedModal = renderLockedChapterModal(lockedChapterNotice);
 
   if (showingTripAlbum) {
-    return banners + renderTripAlbum(storyPackage, tripMemories, photoUrls);
+    return banners + renderTripAlbum(storyPackage, tripMemories, photoUrls) + lockedModal;
   }
 
+  let content = '';
   switch (view.currentMode) {
     case StoryMode.PRE_TRIP:
-      return banners + renderPreTrip(view, storyPackage, now, coverIntroState);
+      content = renderPreTrip(view, storyPackage, now, coverIntroState, interactive, showingPreparations, preparationCompletedIds);
+      break;
     case StoryMode.IN_PROGRESS:
-      return banners + renderInProgress(view, storyPackage, interactive, memories, confirmingClose, photoUrls, stagedPhotosBySlot);
+      content = renderInProgress(view, storyPackage, interactive, memories, confirmingClose, photoUrls, stagedPhotosBySlot);
+      break;
     case StoryMode.EPILOGUE:
-      return banners + renderEpilogue(view, storyPackage, interactive, memories, confirmingClose, photoUrls, availableTripPhotos);
+      content = renderEpilogue(view, storyPackage, interactive, memories, confirmingClose, photoUrls, availableTripPhotos);
+      break;
     case StoryMode.MEMORY_MODE:
-      return banners + renderMemoryMode(view, storyPackage, justTransformed, interactive);
+      content = renderMemoryMode(view, storyPackage, justTransformed, interactive);
+      break;
     default:
       throw new Error(`currentMode desconocido: ${view.currentMode}`);
   }
+  return banners + content + lockedModal;
 }

@@ -60,6 +60,13 @@ function fixturePackage() {
         items: [{ id: 'item-1', name: 'Ítem de prueba', description: 'Descripción del ítem.', relatedChapterId: 'chapter-1' }],
       },
     ],
+    checklist: [
+      { id: 'doc-1', category: 'Documentos', label: 'Cédula o pasaporte vigente' },
+      { id: 'eq-1', category: 'Equipaje', label: 'Cargador del celular' },
+      { id: 'app-1', category: 'Apps instaladas', label: 'Google Maps' },
+      { id: 'din-1', category: 'Dinero', label: 'Avisar al banco del viaje' },
+      { id: 'lug-1', category: 'Lugares visitados', label: 'Lugar con spoiler' },
+    ],
     specialChapter: {
       id: 'chapter-epilogue',
       order: 3,
@@ -125,6 +132,100 @@ test('pre_trip: cada capítulo futuro tiene su propia promesa breve, nunca la mi
   const chapter1Teaser = html.match(/10 de enero<\/span>\s*<span class="chapter-index-status">([^<]+)</)[1];
   const chapter2Teaser = html.match(/11 de enero<\/span>\s*<span class="chapter-index-status">([^<]+)</)[1];
   assert.notStrictEqual(chapter1Teaser, chapter2Teaser);
+});
+
+test('pre_trip: el índice ofrece Preparativos como sección previa, no como capítulo', () => {
+  const pkg = fixturePackage();
+  const now = new Date('2027-01-08T00:00:00Z');
+  const view = getStoryView(pkg, { now });
+  const html = renderExperience(view, pkg, now, { preparationCompletedIds: ['doc-1'] });
+  assert.match(html, /preparation-index-entry/);
+  assert.match(html, />Preparativos</);
+  assert.match(html, /Todo comienza antes del viaje\./);
+  assert.match(html, /1 de 4 listos/);
+  assert.match(html, /data-action="open-preparations"/);
+  assert.equal(html.match(/chapter-index-number">I<\/span>/g)?.length ?? 0, 1);
+  assert.doesNotMatch(html, /PRÓLOGO|Prólogo/);
+});
+
+test('pre_trip: Preparativos empieza con introducción editorial y continúa con checklist sin spoilers', () => {
+  const pkg = fixturePackage();
+  const now = new Date('2027-01-08T00:00:00Z');
+  const view = getStoryView(pkg, { now });
+  const html = renderExperience(view, pkg, now, {
+    showingPreparations: true,
+    preparationCompletedIds: ['doc-1', 'eq-1'],
+  });
+  assert.match(html, /page-preparations/);
+  assert.match(html, /Todo viaje empieza antes del avión\./);
+  assert.match(html, /Antes de salir, revisen lo esencial/);
+  assert.match(html, />Documentos</);
+  assert.match(html, />Equipaje</);
+  assert.match(html, />Apps</);
+  assert.match(html, />Dinero</);
+  assert.match(html, /2 de 4 listos/);
+  assert.match(html, /preparation-category-icon/);
+  assert.match(html, /data-preparation-progress/);
+  assert.match(html, /data-preparation-progress-fill/);
+  assert.equal(html.match(/data-reveal-on-scroll/g)?.length ?? 0, 4);
+  assert.equal(html.match(/data-preparation-group-count/g)?.length ?? 0, 4);
+  assert.match(html, /data-action="toggle-preparation"/);
+  assert.match(html, /data-action="close-preparations"/);
+  assert.doesNotMatch(html, /Lugar con spoiler|Lugares visitados|Momentos especiales/);
+});
+
+test('pre_trip: Preparativos no renderiza banners flotantes que compitan con la checklist', () => {
+  const pkg = fixturePackage();
+  const now = new Date('2027-01-08T00:00:00Z');
+  const view = getStoryView(pkg, { now });
+  const html = renderExperience(view, pkg, now, {
+    showingPreparations: true,
+    installBanner: { platform: 'android' },
+    pendingNotification: { title: 'x', body: 'x' },
+  });
+  assert.doesNotMatch(html, /install-banner/);
+  assert.doesNotMatch(html, /notification-prompt/);
+});
+
+test('pre_trip: Preparativos completos cambian el índice a Todo listo', () => {
+  const pkg = fixturePackage();
+  const now = new Date('2027-01-08T00:00:00Z');
+  const view = getStoryView(pkg, { now });
+  const html = renderExperience(view, pkg, now, {
+    preparationCompletedIds: ['doc-1', 'eq-1', 'app-1', 'din-1'],
+  });
+  assert.match(html, /✓ Todo listo/);
+  assert.match(html, /Todo está listo\./);
+  assert.doesNotMatch(html, /4 de 4 listos/);
+});
+
+test('pre_trip: un capítulo bloqueado se puede tocar y prepara un gesto narrativo, no un error', () => {
+  const pkg = fixturePackage();
+  const now = new Date('2027-01-08T00:00:00Z');
+  const view = getStoryView(pkg, { now });
+  const html = renderExperience(view, pkg, now);
+  assert.match(html, /data-action="open-locked-chapter"/);
+  assert.match(html, /data-chapter-id="chapter-1"/);
+  assert.match(html, /data-unlock-label="10 de enero"/);
+  assert.doesNotMatch(html, /Acceso denegado|No disponible|error/i);
+});
+
+test('pre_trip: el modal de capítulo bloqueado habla con voz editorial e incluye la fecha', () => {
+  const pkg = fixturePackage();
+  const now = new Date('2027-01-08T00:00:00Z');
+  const view = getStoryView(pkg, { now });
+  const html = renderExperience(view, pkg, now, {
+    lockedChapterNotice: {
+      line: 'Cada día merece vivirse en su momento.',
+      detail: 'Este capítulo se abrirá el 10 de enero.',
+      actionLabel: 'Seguir explorando',
+    },
+  });
+  assert.match(html, /role="dialog"/);
+  assert.match(html, /Cada día merece vivirse en su momento\./);
+  assert.match(html, /Este capítulo se abrirá el 10 de enero\./);
+  assert.match(html, /data-action="close-locked-chapter"/);
+  assert.match(html, />Seguir explorando<\/button>/);
 });
 
 test('pre_trip: durante la intro existe un solo índice real, oculto bajo el video', () => {
@@ -247,7 +348,7 @@ test('E-4: el hueco entre "cerré hoy" y "mañana no amanece" muestra la frase d
   const html = renderExperience(view, pkg, now);
   assert.match(html, /Cerramos el día 1 con calma\./);
   assert.doesNotMatch(html, /Actividad sin extras/); // el contenido del Día 2 nunca se revela
-  assert.doesNotMatch(html, /data-action/); // sin botones de acción en este hueco
+  assert.doesNotMatch(html, /data-action="start"|data-action="complete"/); // sin acciones de avance en este hueco
 });
 
 test('E-4: si el capítulo cerrado no tiene copy.close propio, usa el genérico de baseCopy', () => {
@@ -711,7 +812,3 @@ test('Épica 4: con una notificación pendiente, se pide permiso solo cuando hay
   assert.match(conPendiente, /data-action="allow-notifications"/);
   assert.match(conPendiente, /data-action="dismiss-notification-prompt"/);
 });
-
-
-
-

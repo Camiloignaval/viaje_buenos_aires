@@ -77,7 +77,7 @@ export default defineConfig({
       registerType: "autoUpdate",
       injectRegister: null, // registro manual, solo desde experienceView.js
       workbox: {
-        globPatterns: ["**/*.{js,css,html,svg,png,jpg,mp4,webmanifest}"],
+        globPatterns: ["**/*.{js,css,html,svg,png,jpg,mp4,webmanifest,ico}"],
         globIgnores: ["index.html", "debug.html", "memories.html", "admin.html"],
         navigateFallback: null,
         // Los assets emocionales de Aurora (cover-hero.jpg y video_intro_2.mp4)
@@ -85,7 +85,15 @@ export default defineConfig({
         // "offline completo" dejaría afuera justo la primera impresión.
         maximumFileSizeToCacheInBytes: 50 * 1024 * 1024,
       },
-      includeAssets: ["icons/*.png"],
+      includeAssets: [
+        "icons/Web/favicon.ico",
+        "icons/Web/favicon-16x16.png",
+        "icons/Web/favicon-32x32.png",
+        "icons/Web/apple-touch-icon.png",
+        "icons/Web/android-chrome-192x192.png",
+        "icons/Web/android-chrome-512x512.png",
+        "icons/Web/og.png",
+      ],
       manifest: {
         id: "/experience.html",
         name: "Aurora — Buenos Aires 2026",
@@ -94,14 +102,12 @@ export default defineConfig({
         start_url: "/experience.html",
         scope: "/",
         display: "standalone",
-        background_color: "#fdfaf6",
-        theme_color: "#c9a876",
+        background_color: "#16110e",
+        theme_color: "#16110e",
         lang: "es",
         icons: [
-          { src: "/icons/icon-192.png", sizes: "192x192", type: "image/png", purpose: "any" },
-          { src: "/icons/icon-512.png", sizes: "512x512", type: "image/png", purpose: "any" },
-          { src: "/icons/icon-maskable-192.png", sizes: "192x192", type: "image/png", purpose: "maskable" },
-          { src: "/icons/icon-maskable-512.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
+          { src: "/icons/Web/android-chrome-192x192.png", sizes: "192x192", type: "image/png", purpose: "any" },
+          { src: "/icons/Web/android-chrome-512x512.png", sizes: "512x512", type: "image/png", purpose: "any" },
         ],
       },
     }),

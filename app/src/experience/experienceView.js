@@ -12,6 +12,7 @@ import { renderExperience, photoSlotKey } from './render.js';
 import { resolveSignificantNotification } from './notifications.js';
 import { extractTokenFromUrl, saveSyncToken, syncNow } from '../sync/syncClient.js';
 import { isDirectorModeEnabled, DIRECTOR_STAGES, findDirectorStage, renderDirectorPanel } from './directorMode.js';
+import { getMemories as loadChecklistMemories, upsertMemory as upsertChecklistMemory } from '../storage.js';
 // Módulo virtual de vite-plugin-pwa (Épica 4). Bajo `npm run dev` sin
 // `devOptions.enabled` resuelve a una función que no hace nada — el Service
 // Worker real solo existe en un build de producción (`npm run build`).
@@ -155,7 +156,98 @@ function tripWidePhotoIds(tripMemories) {
 let confirmingClose = false;
 let justTransformed = false;
 let showingTripAlbum = false;
+let showingPreparations = false;
 let stagedPhotosBySlot = new Map();
+let lockedChapterNotice = null;
+let preparationRevealObserver = null;
+
+const LOCKED_CHAPTER_MESSAGES = [
+  {
+    line: 'Algunas historias no se apuran.',
+    detail: 'Este capítulo estará disponible el {fecha}.',
+  },
+  {
+    line: 'Aurora todavía guarda algunas sorpresas.',
+    detail: 'Este capítulo se abrirá el {fecha}.',
+  },
+  {
+    line: 'Todavía no es tiempo de pasar esta página.',
+    detail: 'Vuelve el {fecha}.',
+  },
+  {
+    line: 'La espera también forma parte del viaje.',
+    detail: 'Este capítulo estará disponible el {fecha}.',
+  },
+  {
+    line: 'Cada día merece vivirse en su momento.',
+    detail: 'Este capítulo se abrirá el {fecha}.',
+  },
+  {
+    line: 'Algunas páginas prefieren esperar.',
+    detail: 'La siguiente se abrirá el {fecha}.',
+  },
+  {
+    line: 'No todas las historias quieren contarse de inmediato.',
+    detail: 'Este capítulo estará listo el {fecha}.',
+  },
+  {
+    line: 'Hay recuerdos que todavía no existen.',
+    detail: 'Este capítulo comenzará el {fecha}.',
+  },
+  {
+    line: 'Los buenos libros también saben esperar.',
+    detail: 'La siguiente página llegará el {fecha}.',
+  },
+  {
+    line: 'No adelantes la historia.',
+    detail: 'Todavía queda mucho por vivir antes de llegar aquí.',
+  },
+  {
+    line: 'Cada recuerdo llega cuando tiene que llegar.',
+    detail: 'Nos vemos el {fecha}.',
+  },
+  {
+    line: 'Buenos Aires todavía guarda algunas sorpresas.',
+    detail: 'Este capítulo estará disponible el {fecha}.',
+  },
+  {
+    line: 'La ciudad aún no ha llegado hasta aquí.',
+    detail: 'Vuelve el {fecha}.',
+  },
+  {
+    line: 'No hace falta correr.',
+    detail: 'Este capítulo se abrirá el {fecha}.',
+  },
+  {
+    line: 'Cada amanecer trae una página nueva.',
+    detail: 'La próxima aparecerá el {fecha}.',
+  },
+];
+
+const LOCKED_CHAPTER_ACTIONS = [
+  'Seguir explorando',
+  'Volver',
+  'Continuar',
+  'De acuerdo',
+  'Nos vemos pronto',
+];
+
+function randomFrom(list) {
+  return list[Math.floor(Math.random() * list.length)];
+}
+
+function withUnlockDate(text, unlockLabel) {
+  return text.replaceAll('{fecha}', unlockLabel);
+}
+
+function chooseLockedChapterNotice(unlockLabel) {
+  const message = randomFrom(LOCKED_CHAPTER_MESSAGES);
+  return {
+    line: withUnlockDate(message.line, unlockLabel),
+    detail: withUnlockDate(message.detail, unlockLabel),
+    actionLabel: randomFrom(LOCKED_CHAPTER_ACTIONS),
+  };
+}
 
 // La intro emocional es un evento de sesión, no de historia: ocurre una sola
 // vez por sesión del navegador. Mientras corre el video el índice real existe
@@ -267,7 +359,7 @@ function resolveNotificationState(view, now) {
       lastNotifiedKey = window.localStorage.getItem(notifiedKey);
     }
     if (lastNotifiedKey !== significant.key) {
-      new Notification(significant.title, { body: significant.body, icon: '/icons/icon-192.png' });
+      new Notification(significant.title, { body: significant.body, icon: '/icons/Web/android-chrome-192x192.png' });
       lastNotifiedKey = significant.key;
       window.localStorage.setItem(notifiedKey, significant.key);
     }
@@ -299,6 +391,84 @@ function clearCoverIntroTimers() {
 
 function prefersReducedMotion() {
   return window.matchMedia?.('(prefers-reduced-motion: reduce)').matches === true;
+}
+
+function updatePreparationProgressDom() {
+  const buttons = [...appEl.querySelectorAll('[data-action="toggle-preparation"]')];
+  const total = buttons.length;
+  const done = buttons.filter((item) => item.dataset.completed === 'true').length;
+  const complete = total > 0 && done === total;
+  const label = complete ? '✓ Todo listo' : `${done} de ${total} listos`;
+  const pct = total ? Math.round((done / total) * 100) : 0;
+
+  for (const progress of appEl.querySelectorAll('[data-preparation-progress]')) {
+    progress.setAttribute('aria-label', label);
+    const labelEl = progress.querySelector('[data-preparation-progress-label]');
+    if (labelEl) {
+      labelEl.textContent = label;
+    }
+    const fill = progress.querySelector('[data-preparation-progress-fill]');
+    if (fill) {
+      fill.style.width = `${pct}%`;
+    }
+  }
+
+  appEl.querySelector('[data-preparation-complete-copy]')?.classList.toggle('is-hidden', !complete);
+}
+
+function updatePreparationGroupsDom() {
+  for (const group of appEl.querySelectorAll('[data-preparation-group]')) {
+    const buttons = [...group.querySelectorAll('[data-action="toggle-preparation"]')];
+    const total = Number(group.dataset.total) || buttons.length;
+    const done = buttons.filter((item) => item.dataset.completed === 'true').length;
+    const complete = total > 0 && done === total;
+    group.classList.toggle('is-complete', complete);
+    const count = group.querySelector('[data-preparation-group-count]');
+    if (count) {
+      count.textContent = complete ? '✓' : `${done}/${total}`;
+    }
+  }
+}
+
+function updatePreparationToggleDom(button, completed) {
+  button.dataset.completed = String(completed);
+  button.setAttribute('aria-pressed', String(completed));
+  button.classList.toggle('is-complete', completed);
+  const mark = button.querySelector('.preparation-check-mark');
+  if (mark) {
+    mark.textContent = completed ? '✓' : '';
+  }
+  updatePreparationGroupsDom();
+  updatePreparationProgressDom();
+}
+
+function observePreparationGroups() {
+  preparationRevealObserver?.disconnect();
+  preparationRevealObserver = null;
+
+  const groups = [...appEl.querySelectorAll('[data-reveal-on-scroll]')];
+  if (groups.length === 0) {
+    return;
+  }
+
+  if (prefersReducedMotion() || typeof IntersectionObserver === 'undefined') {
+    groups.forEach((group) => group.classList.add('is-visible'));
+    return;
+  }
+
+  preparationRevealObserver = new IntersectionObserver(
+    (entries, observer) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) {
+          continue;
+        }
+        entry.target.classList.add('is-visible');
+        observer.unobserve(entry.target);
+      }
+    },
+    { rootMargin: '0px 0px -12% 0px', threshold: 0.12 }
+  );
+  groups.forEach((group) => preparationRevealObserver.observe(group));
 }
 
 function hasSeenIntroThisSession() {
@@ -402,6 +572,10 @@ async function renderNow() {
   const { now, chapterStatuses, devScenario } = resolveContext();
   const view = getStoryView(storyPackage, { now, chapterStatuses });
 
+  if (view.currentMode !== StoryMode.PRE_TRIP) {
+    showingPreparations = false;
+  }
+
   // El prefijo `director:` viene del panel de Director Mode, que ya muestra esta
   // misma información (fecha simulada/modo) de forma más integrada — se evita
   // duplicarla como banner suelto encima de la escena que se está revisando.
@@ -414,6 +588,12 @@ async function renderNow() {
   // incluso la lectura de datos reales mientras se simula un momento distinto.
   // En EPILOGUE, visibleChapter es el capítulo especial (storyEngine ya lo resuelve así).
   const memories = devScenario ? [] : loadChapterMemories(view.visibleChapter);
+  const checklistMemories = !devScenario && view.currentMode === StoryMode.PRE_TRIP
+    ? await loadChecklistMemories()
+    : {};
+  const preparationCompletedIds = Object.entries(checklistMemories)
+    .filter(([, memory]) => memory?.completed)
+    .map(([id]) => id);
 
   // Las fotos ya capturadas en todo el viaje solo hacen falta para el selector del
   // epílogo y para el Álbum del viaje — el resto del tiempo no se leen de más.
@@ -472,6 +652,9 @@ async function renderNow() {
       installBanner: devScenario ? null : resolveInstallBanner(),
       pendingNotification: devScenario ? null : currentPendingNotification,
       coverIntroState: view.currentMode === StoryMode.PRE_TRIP ? coverIntroState : 'done',
+      lockedChapterNotice,
+      showingPreparations,
+      preparationCompletedIds,
     });
 
   if (shouldFocusIndexAfterRender) {
@@ -484,7 +667,12 @@ async function renderNow() {
 
   attachIntroVideoEvents();
 
-  applyPageTransition(showingTripAlbum ? 'trip-album' : view.currentMode);
+  if (lockedChapterNotice) {
+    appEl.querySelector('[data-action="close-locked-chapter"]')?.focus({ preventScroll: true });
+  }
+
+  observePreparationGroups();
+  applyPageTransition(showingTripAlbum ? 'trip-album' : showingPreparations ? 'preparations' : view.currentMode);
 
   // Se muestra una única vez: si algo más dispara un renderNow() más tarde, ya no vuelve a aparecer.
   justTransformed = false;
@@ -590,7 +778,7 @@ appEl.addEventListener('click', async (event) => {
   if (!button) {
     return;
   }
-  const { action, chapterId, memoryId, activityId, tempId, photoId } = button.dataset;
+  const { action, chapterId, memoryId, activityId, tempId, photoId, preparationId } = button.dataset;
   const key = chapterId !== undefined ? photoSlotKey(chapterId, activityId || null) : null;
 
   // Director Mode (QA): cualquier navegación real mientras el recorrido
@@ -602,6 +790,23 @@ appEl.addEventListener('click', async (event) => {
 
   if (action === 'start') {
     markChapterStarted(storyPackage.storyId, chapterId);
+  } else if (action === 'open-preparations') {
+    showingPreparations = true;
+  } else if (action === 'close-preparations') {
+    showingPreparations = false;
+  } else if (action === 'toggle-preparation') {
+    const completed = button.dataset.completed !== 'true';
+    await upsertChecklistMemory(preparationId, {
+      completed,
+      title: button.dataset.title,
+      category: button.dataset.category,
+    });
+    updatePreparationToggleDom(button, completed);
+    return;
+  } else if (action === 'open-locked-chapter') {
+    lockedChapterNotice = chooseLockedChapterNotice(button.dataset.unlockLabel);
+  } else if (action === 'close-locked-chapter') {
+    lockedChapterNotice = null;
   } else if (action === 'replay-intro') {
     clearCoverIntroTimers();
     forgetIntroSeenThisSession();
@@ -743,6 +948,13 @@ appEl.addEventListener('click', async (event) => {
     return;
   }
   await renderNow();
+});
+
+document.addEventListener('keydown', async (event) => {
+  if (event.key === 'Escape' && lockedChapterNotice) {
+    lockedChapterNotice = null;
+    await renderNow();
+  }
 });
 
 // Sincroniza en segundo plano si hay un accessToken guardado (Épica 5) — nunca
