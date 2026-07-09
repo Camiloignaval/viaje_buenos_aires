@@ -11,6 +11,7 @@ import { savePhotoBlob, loadPhotoBlob } from '../memory/photoStore.js';
 import { renderExperience, photoSlotKey } from './render.js';
 import { resolveSignificantNotification } from './notifications.js';
 import { extractTokenFromUrl, saveSyncToken, syncNow } from '../sync/syncClient.js';
+import { connectedContext } from '../connected/connectedContext.js';
 import { isDirectorModeEnabled, DIRECTOR_STAGES, findDirectorStage, renderDirectorPanel } from './directorMode.js';
 import { getMemories as loadChecklistMemories, upsertMemory as upsertChecklistMemory } from '../storage.js';
 // Módulo virtual de vite-plugin-pwa (Épica 4). Bajo `npm run dev` sin
@@ -84,6 +85,13 @@ registerSW({ immediate: true });
     window.history.replaceState({}, '', url);
   }
 }
+
+// ---- Etapa 4 — Experiencia Conectada ----
+// Si la URL trae `?tripId=...`, resuelve el contexto del viaje contra la
+// plataforma (Etapa 3) y lo deja disponible en `connectedContext` para
+// bloques futuros (sync/media por viaje). Sin tripId, no toca la red y
+// Aurora sigue exactamente en modo local — no bloquea ni cambia el render.
+connectedContext.resolve();
 
 // ============================================================================
 // SOLO DESARROLLO — override de fecha/progreso por ?scenario= en la URL.

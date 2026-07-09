@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { requestCode, verifyCode, getSession, logout, listTrips, createTrip, PlatformApiError } from './platformApi.js';
+import { requestCode, verifyCode, getSession, logout, listTrips, createTrip, getTrip, PlatformApiError } from './platformApi.js';
 
 function fakeFetch(status, body) {
   const calls = [];
@@ -63,6 +63,14 @@ test('createTrip postea title y destination', async () => {
   assert.equal(fetchImpl.calls[0].path, '/api/trips');
   assert.equal(fetchImpl.calls[0].options.method, 'POST');
   assert.deepEqual(JSON.parse(fetchImpl.calls[0].options.body), { title: 'Buenos Aires', destination: 'CABA' });
+});
+
+test('getTrip hace GET al detalle del viaje', async () => {
+  const fetchImpl = fakeFetch(200, { trip: { id: '1', title: 'Buenos Aires', destination: 'CABA' } });
+  const result = await getTrip('1', { fetchImpl });
+  assert.deepEqual(result.trip, { id: '1', title: 'Buenos Aires', destination: 'CABA' });
+  assert.equal(fetchImpl.calls[0].path, '/api/trips/1');
+  assert.equal(fetchImpl.calls[0].options.method, 'GET');
 });
 
 test('respuesta no-ok lanza PlatformApiError con el mensaje del server', async () => {

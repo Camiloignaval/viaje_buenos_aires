@@ -55,3 +55,8 @@ export function listTrips({ fetchImpl } = {}) {
 export function createTrip({ title, destination }, { fetchImpl } = {}) {
   return request('/api/trips', { method: 'POST', body: { title, destination }, fetchImpl });
 }
+
+/** Trae el detalle de un viaje. Resuelve `{trip}`; 403 si no existe o no sos miembro (ver requireTripMember). */
+export function getTrip(tripId, { fetchImpl } = {}) {
+  return request(`/api/trips/${encodeURIComponent(tripId)}`, { fetchImpl });
+}
