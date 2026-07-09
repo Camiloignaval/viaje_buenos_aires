@@ -159,7 +159,7 @@ let showingTripAlbum = false;
 let showingPreparations = false;
 let stagedPhotosBySlot = new Map();
 let lockedChapterNotice = null;
-let preparationRevealObserver = null;
+let cleanupPreparationReveal = null;
 
 const LOCKED_CHAPTER_MESSAGES = [
   {
@@ -443,32 +443,68 @@ function updatePreparationToggleDom(button, completed) {
 }
 
 function observePreparationGroups() {
-  preparationRevealObserver?.disconnect();
-  preparationRevealObserver = null;
+  cleanupPreparationReveal?.();
+  cleanupPreparationReveal = null;
 
   const groups = [...appEl.querySelectorAll('[data-reveal-on-scroll]')];
   if (groups.length === 0) {
     return;
   }
 
-  if (prefersReducedMotion() || typeof IntersectionObserver === 'undefined') {
+  if (prefersReducedMotion()) {
     groups.forEach((group) => group.classList.add('is-visible'));
     return;
   }
 
-  preparationRevealObserver = new IntersectionObserver(
-    (entries, observer) => {
-      for (const entry of entries) {
-        if (!entry.isIntersecting) {
-          continue;
-        }
-        entry.target.classList.add('is-visible');
-        observer.unobserve(entry.target);
+  const root = appEl.querySelector('.book-preparations-mode');
+  let pending = [...groups];
+  let firstRevealBatch = true;
+
+  const revealVisibleGroups = () => {
+    const rootRect = root?.getBoundingClientRect() ?? { top: 0, bottom: window.innerHeight };
+    const visibleGroups = [];
+    pending = pending.filter((group) => {
+      const rect = group.getBoundingClientRect();
+      const visible = rect.top <= rootRect.bottom - 24 && rect.bottom >= rootRect.top + 24;
+      if (visible) {
+        visibleGroups.push({ group, top: rect.top });
       }
-    },
-    { rootMargin: '0px 0px -12% 0px', threshold: 0.12 }
-  );
-  groups.forEach((group) => preparationRevealObserver.observe(group));
+      return !visible;
+    });
+
+    visibleGroups
+      .sort((a, b) => a.top - b.top)
+      .forEach(({ group }, index) => {
+        // La cabecera de Preparativos llega hasta `.reveal-4` (progreso/copy).
+        // El primer batch de categorías espera esa coreografía para no aparecer
+        // antes que el texto superior. Los batches posteriores, ya por scroll,
+        // entran casi inmediato pero todavía escalonados.
+        const baseDelay = firstRevealBatch ? 4600 : 80;
+        const delay = baseDelay + index * 150;
+        group.style.setProperty('--preparation-reveal-delay', `${delay}ms`);
+        group.classList.add('is-visible');
+      });
+
+    if (visibleGroups.length > 0) {
+      firstRevealBatch = false;
+    }
+
+    if (pending.length === 0) {
+      cleanupPreparationReveal?.();
+      cleanupPreparationReveal = null;
+    }
+  };
+
+  const scheduleRevealCheck = () => requestAnimationFrame(revealVisibleGroups);
+  root?.addEventListener('scroll', scheduleRevealCheck, { passive: true });
+  window.addEventListener('resize', scheduleRevealCheck);
+  cleanupPreparationReveal = () => {
+    root?.removeEventListener('scroll', scheduleRevealCheck);
+    window.removeEventListener('resize', scheduleRevealCheck);
+  };
+
+  scheduleRevealCheck();
+  setTimeout(revealVisibleGroups, 120);
 }
 
 function hasSeenIntroThisSession() {

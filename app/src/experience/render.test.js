@@ -164,7 +164,7 @@ test('pre_trip: Preparativos empieza con introducción editorial y continúa con
   assert.match(html, />Apps</);
   assert.match(html, />Dinero</);
   assert.match(html, /2 de 4 listos/);
-  assert.match(html, /preparation-category-icon/);
+  assert.doesNotMatch(html, /preparation-category-icon|preparation-category-mark/);
   assert.match(html, /data-preparation-progress/);
   assert.match(html, /data-preparation-progress-fill/);
   assert.equal(html.match(/data-reveal-on-scroll/g)?.length ?? 0, 4);

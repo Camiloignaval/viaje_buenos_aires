@@ -1694,6 +1694,7 @@ body:has(.cover-index-stage.is-index-writing) {
   transition:
     opacity 0.5s ease,
     transform 0.5s ease;
+  transition-delay: var(--preparation-reveal-delay, 0ms);
 }
 
 .preparation-group[data-reveal-on-scroll].is-visible {
@@ -1722,28 +1723,6 @@ body:has(.cover-index-stage.is-index-writing) {
 
 .preparation-group-title {
   line-height: 1.1;
-}
-
-.preparation-category-mark {
-  display: inline-grid;
-  place-items: center;
-  width: 1rem;
-  height: 1rem;
-  color: rgba(230, 217, 191, 0.7);
-}
-
-.preparation-category-icon {
-  width: 1rem;
-  height: 1rem;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.35;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.preparation-group.is-complete .preparation-category-mark {
-  color: rgba(230, 217, 191, 0.82);
 }
 
 .preparation-group-head [data-preparation-group-count] {

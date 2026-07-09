@@ -212,41 +212,6 @@ function renderPreparationProgress(progress, className = 'preparation-progress')
   `;
 }
 
-function renderPreparationIcon(sourceCategory) {
-  const icons = {
-    Documentos: `
-      <svg class="preparation-category-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-        <path d="M7 4.5h6.5L17 8v11.5H7z" />
-        <path d="M13.5 4.5V8H17" />
-        <path d="M9.5 12h5" />
-        <path d="M9.5 15h4" />
-      </svg>
-    `,
-    Equipaje: `
-      <svg class="preparation-category-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-        <path d="M9 8V6.8c0-.7.5-1.3 1.3-1.3h3.4c.8 0 1.3.6 1.3 1.3V8" />
-        <path d="M6.5 8.5h11v10h-11z" />
-        <path d="M9 11v5" />
-        <path d="M15 11v5" />
-      </svg>
-    `,
-    'Apps instaladas': `
-      <svg class="preparation-category-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-        <rect x="8" y="4.5" width="8" height="15" rx="2" />
-        <path d="M11 17h2" />
-      </svg>
-    `,
-    Dinero: `
-      <svg class="preparation-category-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-        <rect x="5" y="7" width="14" height="10" rx="1.8" />
-        <path d="M5 10h14" />
-        <path d="M8 14h3" />
-      </svg>
-    `,
-  };
-  return `<span class="preparation-category-mark">${icons[sourceCategory] ?? ''}</span>`;
-}
-
 function renderPreparationIndexEntry(storyPackage, completedIds, interactive) {
   const progress = computePreparationProgress(storyPackage, completedIds);
   if (progress.total === 0) {
@@ -303,7 +268,7 @@ function renderPreparationGroup(group, completedIds, interactive) {
   return `
     <section class="preparation-group${complete ? ' is-complete' : ''}" data-preparation-group data-reveal-on-scroll data-total="${group.items.length}">
       <div class="preparation-group-head">
-        <h2>${renderPreparationIcon(group.sourceCategory)}<span class="preparation-group-title">${group.label}</span></h2>
+        <h2><span class="preparation-group-title">${group.label}</span></h2>
         <span data-preparation-group-count>${complete ? '✓' : `${done}/${group.items.length}`}</span>
       </div>
       <ul class="preparation-checklist">
