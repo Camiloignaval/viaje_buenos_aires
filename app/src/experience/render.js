@@ -86,16 +86,16 @@ function renderInstallBanner(installBanner) {
   if (installBanner.platform === 'ios') {
     return `
       <div class="install-banner">
-        <button type="button" class="install-dismiss" data-action="dismiss-install" aria-label="Después">×</button>
+        <button type="button" class="install-dismiss" data-action="dismiss-install" aria-label="Más tarde">×</button>
         <p>Para guardar Aurora en tu pantalla de inicio, toca <strong>Compartir</strong> y luego <strong>"Agregar a inicio"</strong>.</p>
       </div>
     `;
   }
   return `
     <div class="install-banner">
-      <button type="button" class="install-dismiss" data-action="dismiss-install" aria-label="Después">×</button>
+      <button type="button" class="install-dismiss" data-action="dismiss-install" aria-label="Más tarde">×</button>
       <p>Aurora puede quedarse contigo, en tu pantalla de inicio.</p>
-      <button type="button" data-action="install-app">Guardar</button>
+      <button type="button" data-action="install-app">Dejarla en inicio</button>
     </div>
   `;
 }
@@ -276,7 +276,7 @@ function computePreparationProgress(storyPackage, completedIds) {
 }
 
 function renderPreparationProgress(progress, className = 'preparation-progress') {
-  const label = progress.complete ? '✓ Todo listo' : `${progress.done} de ${progress.total} listos`;
+  const label = progress.complete ? '✓ Todo preparado' : 'Preparando el viaje';
   return `
     <div class="${className}" aria-label="${label}" data-preparation-progress>
       <span data-preparation-progress-label>${label}</span>
@@ -292,8 +292,8 @@ function renderPreparationIndexEntry(storyPackage, completedIds, interactive) {
   if (progress.total === 0) {
     return '';
   }
-  const statusLine = progress.complete ? 'Todo está listo.' : 'Todo comienza antes del viaje.';
-  const actionLabel = progress.complete ? 'Revisar →' : 'Continuar →';
+  const statusLine = progress.complete ? 'Todo quedó tranquilo.' : 'Nos estamos acercando al viaje.';
+  const actionLabel = progress.complete ? 'Volver a mirar →' : 'Entrar →';
   const content = `
     <span class="preparation-index-title">Preparativos</span>
     <span class="preparation-index-status">${statusLine}</span>
@@ -344,7 +344,7 @@ function renderPreparationGroup(group, completedIds, interactive) {
     <section class="preparation-group${complete ? ' is-complete' : ''}" data-preparation-group data-reveal-on-scroll data-total="${group.items.length}">
       <div class="preparation-group-head">
         <h2><span class="preparation-group-title">${group.label}</span></h2>
-        <span data-preparation-group-count>${complete ? '✓' : `${done}/${group.items.length}`}</span>
+        <span data-preparation-group-count>${complete ? '✓' : 'en calma'}</span>
       </div>
       <ul class="preparation-checklist">
         ${group.items.map((item) => renderPreparationItem(item, completedIds, interactive)).join('')}
@@ -369,7 +369,7 @@ function renderPreparationsPage(storyPackage, completedIds, interactive, theme) 
         <h1 class="reveal reveal-2">Preparativos</h1>
         <p class="open preparation-intro reveal reveal-3">
           Todo viaje empieza antes del avión.<br />
-          Antes de salir, revisen lo esencial para que la historia pueda comenzar tranquila.
+          Antes de salir, dejemos cerca lo esencial para que la historia pueda comenzar tranquila.
         </p>
         <div class="reveal reveal-4">
           ${renderPreparationProgress(progress, 'preparation-page-progress')}
@@ -462,6 +462,8 @@ function renderTravelLine(origin, destination) {
  * @param {string} [options.confirmQuestion] - Pregunta de la confirmación cálida (distinta para el epílogo).
  * @param {string} [options.confirmLabel] - Texto del botón que sí cierra.
  * @param {string} [options.cancelLabel] - Texto del botón que sigue sin cerrar.
+ * @param {string} [options.startLabel] - Texto del botón que abre el capítulo.
+ * @param {string} [options.closeLabel] - Texto del botón que inicia el cierre.
  */
 function renderActionButton(chapterId, status, interactive, options = {}) {
   const {
@@ -470,17 +472,19 @@ function renderActionButton(chapterId, status, interactive, options = {}) {
     confirmQuestion = '¿Querés cerrar el día así como fue?',
     confirmLabel = 'Sí, cerrar por hoy',
     cancelLabel = 'Seguir un rato más',
+    startLabel = 'Abrir este día',
+    closeLabel = 'Dejar el día así',
   } = options;
 
   if (!interactive) {
     return '';
   }
   if (status === ChapterStatus.AVAILABLE) {
-    return `<div class="actions"><button type="button" data-action="start" data-chapter-id="${chapterId}">Marcar como iniciado</button></div>`;
+    return `<div class="actions"><button type="button" data-action="start" data-chapter-id="${chapterId}">${startLabel}</button></div>`;
   }
   if (status === ChapterStatus.STARTED) {
     if (!useConfirmation) {
-      return `<div class="actions"><button type="button" data-action="complete" data-chapter-id="${chapterId}">Cerrar capítulo</button></div>`;
+      return `<div class="actions"><button type="button" data-action="complete" data-chapter-id="${chapterId}">${closeLabel}</button></div>`;
     }
     if (confirmingClose) {
       return `
@@ -493,7 +497,7 @@ function renderActionButton(chapterId, status, interactive, options = {}) {
         </div>
       `;
     }
-    return `<div class="actions"><button type="button" data-action="ask-close" data-chapter-id="${chapterId}">Cerrar capítulo</button></div>`;
+    return `<div class="actions"><button type="button" data-action="ask-close" data-chapter-id="${chapterId}">${closeLabel}</button></div>`;
   }
   return '';
 }
@@ -577,9 +581,9 @@ function renderSavedMemory(memory, photoUrls = {}) {
       ${memory.note ? `<p class="memory-note">${memory.note}</p>` : ''}
       <div class="memory-actions">
         <button type="button" data-action="favorite-memory" data-memory-id="${memory.id}">
-          ${memory.favorite ? '♥ Recuerdo favorito' : '♥ Marcar como favorito'}
+          ${memory.favorite ? '♥ Recuerdo favorito' : '♥ Dejar como favorito'}
         </button>
-        <button type="button" data-action="archive-memory" data-memory-id="${memory.id}">Guardar aparte</button>
+        <button type="button" data-action="archive-memory" data-memory-id="${memory.id}">Dejar aparte</button>
       </div>
     </div>
   `;
@@ -600,9 +604,9 @@ function renderPhotoStaging(chapterId, activityId, staged) {
             ${
               index === 0
                 ? '<span class="staged-photo-label">Principal</span>'
-                : `<button type="button" data-action="set-primary-photo" data-chapter-id="${chapterId}" data-activity-id="${activityId ?? ''}" data-temp-id="${photo.tempId}">Hacer principal</button>`
+                : `<button type="button" data-action="set-primary-photo" data-chapter-id="${chapterId}" data-activity-id="${activityId ?? ''}" data-temp-id="${photo.tempId}">Elegir como principal</button>`
             }
-            <button type="button" data-action="remove-staged-photo" data-chapter-id="${chapterId}" data-activity-id="${activityId ?? ''}" data-temp-id="${photo.tempId}">Quitar</button>
+            <button type="button" data-action="remove-staged-photo" data-chapter-id="${chapterId}" data-activity-id="${activityId ?? ''}" data-temp-id="${photo.tempId}">Sacar</button>
           </div>
         </li>
       `
@@ -612,7 +616,7 @@ function renderPhotoStaging(chapterId, activityId, staged) {
     <div class="photo-staging">
       ${thumbs ? `<ul class="staged-photos">${thumbs}</ul>` : ''}
       <label class="add-photos-label">
-        + Agregar fotos
+        + Sumar fotos
         <input type="file" accept="image/*" multiple class="add-photos-input" data-chapter-id="${chapterId}" data-activity-id="${activityId ?? ''}" hidden />
       </label>
     </div>
@@ -665,12 +669,12 @@ function renderActivityCard({ activity, place, suggestedMemories }, chapterId, m
   return `
     <li class="activity-card" ${revealAttrs(`chapter-${chapterId}-activity-${activity.id}`)}>
       ${activity.image ? `<img class="activity-photo" src="/${activity.image}" alt="${activity.moment ?? activity.title}" loading="lazy" />` : ''}
+      <p class="activity-title">${activity.moment ? `<em>${activity.moment}.</em> ` : ''}${activity.title}</p>
+      ${activity.description ? `<p class="activity-description">${activity.description}</p>` : ''}
       <div class="activity-head">
         ${activity.timeWindow ? `<span class="time">${activity.timeWindow}</span>` : ''}
         ${activity.category ? `<span class="category">${activity.category}</span>` : ''}
       </div>
-      <p class="activity-title">${activity.moment ? `<em>${activity.moment}.</em> ` : ''}${activity.title}</p>
-      ${activity.description ? `<p class="activity-description">${activity.description}</p>` : ''}
       ${location?.name ? `<p class="location">${location.name}</p>` : ''}
       ${place?.recommendation ? `<p class="recommendation">${place.recommendation}</p>` : ''}
       ${renderLinks(location, websiteUrl)}
@@ -694,7 +698,7 @@ function renderRelatedPlaces(relatedPlaces, chapterId) {
       `
     )
     .join('');
-  return `<section class="related-places" ${revealAttrs(`chapter-${chapterId}-related-places`)}><p class="section-title">Lugares para hoy</p><ul>${items}</ul></section>`;
+  return `<section class="related-places" ${revealAttrs(`chapter-${chapterId}-related-places`)}><p class="section-title">En el camino</p><ul>${items}</ul></section>`;
 }
 
 function renderPhotoSpots(photoSpots, chapterId) {
@@ -712,7 +716,7 @@ function renderPhotoSpots(photoSpots, chapterId) {
       `
     )
     .join('');
-  return `<section class="photo-spots" ${revealAttrs(`chapter-${chapterId}-photo-spots`)}><p class="section-title">Photo spots de hoy</p><ul>${items}</ul></section>`;
+  return `<section class="photo-spots" ${revealAttrs(`chapter-${chapterId}-photo-spots`)}><p class="section-title">Postales posibles</p><ul>${items}</ul></section>`;
 }
 
 function renderCollectionItems(items, chapterId) {
@@ -731,7 +735,7 @@ function renderCollectionItems(items, chapterId) {
       `;
     })
     .join('');
-  return `<section class="collection-items" ${revealAttrs(`chapter-${chapterId}-collection-items`)}><p class="section-title">Para hoy también</p><ul>${rendered}</ul></section>`;
+  return `<section class="collection-items" ${revealAttrs(`chapter-${chapterId}-collection-items`)}><p class="section-title">Para llevar del día</p><ul>${rendered}</ul></section>`;
 }
 
 /** Bloques editoriales cortos que no pertenecen a un lugar puntual (E-narrativa). */
@@ -759,6 +763,23 @@ function renderMicroDiscoveries(discoveries, chapterId) {
   }
   const items = discoveries.map((discovery) => `<li><p class="item-description">${discovery}</p></li>`).join('');
   return `<section class="micro-discoveries" ${revealAttrs(`chapter-${chapterId}-micro-discoveries`)}><p class="section-title">Pequeños descubrimientos</p><ul>${items}</ul></section>`;
+}
+
+/**
+ * Bisagra editorial del capítulo: aparece cuando el día ya fue recorrido, antes
+ * de guardar/cerrar nada. No decide por las personas; solo baja la voz y propone
+ * una pausa para notar qué podría quedar.
+ */
+function renderOurMoment(ourMoment, chapterId) {
+  if (!ourMoment) {
+    return '';
+  }
+  return `
+    <section class="our-moment" ${revealAttrs(`chapter-${chapterId}-our-moment`)}>
+      <p class="section-title">Nuestro momento</p>
+      <p class="our-moment-copy">${ourMoment}</p>
+    </section>
+  `;
 }
 
 /** Cierre privado y fijo del día (E-narrativa): nunca logística, nunca turístico — solo para ellos dos. */
@@ -857,15 +878,15 @@ function renderChapterAlbum(memories, photoUrls, interactive, chapterId) {
     .sort(byCreatedAt)
     .map((memory) => renderMemoryCard(memory, photoUrls))
     .join('');
-  return `<section class="chapter-album" ${revealAttrs(`chapter-${chapterId}-album`)}><p class="section-title">Tus recuerdos</p><ul class="memory-cards">${cards}</ul></section>`;
+  return `<section class="chapter-album" ${revealAttrs(`chapter-${chapterId}-album`)}><p class="section-title">Lo que ya quedó</p><ul class="memory-cards">${cards}</ul></section>`;
 }
 
 /** Una invitación quieta a ver el viaje completo — nunca compite con el momento actual. */
-function renderAlbumLink(interactive) {
+function renderAlbumLink(interactive, label = 'Ver recuerdos del viaje') {
   if (!interactive) {
     return '';
   }
-  return `<p class="album-link" ${revealAttrs('chapter-album-link')}><button type="button" data-action="open-album">Ver el álbum del viaje</button></p>`;
+  return `<p class="album-link" ${revealAttrs('chapter-album-link')}><button type="button" data-action="open-album">${label}</button></p>`;
 }
 
 function heroImageForChapter(chapter) {
@@ -1112,6 +1133,7 @@ function renderInProgress(view, storyPackage, interactive, memories, confirmingC
           ${renderCollectionItems(content.collectionItems, chapter.id)}
           ${renderTraditions(chapter.traditions, chapter.id)}
           ${renderMicroDiscoveries(chapter.microDiscoveries, chapter.id)}
+          ${renderOurMoment(chapter.ourMoment, chapter.id)}
           ${renderChapterAlbum(memories, photoUrls, interactive, chapter.id)}
           ${renderGeneralMemories({
             chapterId: chapter.id,
@@ -1167,7 +1189,7 @@ function renderPlacePrompt(prompt, chapterId, storyPackage) {
       <p class="section-title">${prompt.label}</p>
       <p class="memory-invitation-question">${prompt.selectionPrompt ?? ''}</p>
       <select class="memory-place-select">${options}</select>
-      <button type="button" data-action="select-place" data-chapter-id="${chapterId}" data-activity-id="${prompt.id}">Guardar esta elección</button>
+      <button type="button" data-action="select-place" data-chapter-id="${chapterId}" data-activity-id="${prompt.id}">Quedarme con esta</button>
     </div>
   `;
 }
@@ -1259,6 +1281,8 @@ function renderEpilogue(view, storyPackage, interactive, memories, confirmingClo
           confirmQuestion: 'Esto va a cerrar el viaje. ¿Querés guardarlo así, tal como fue?',
           confirmLabel: 'Sí, guardar así',
           cancelLabel: 'Seguir un poco más',
+          startLabel: 'Abrir el cierre',
+          closeLabel: 'Cerrar el viaje',
         })}
         ${renderAlbumLink(interactive)}
       </section>
@@ -1284,7 +1308,7 @@ function renderMemoryMode(view, storyPackage, justTransformed, interactive, them
       <section class="book-page page-memory">
         ${renderReadingTopbar(interactive, theme)}
         ${content}
-        ${renderAlbumLink(interactive)}
+        ${renderAlbumLink(interactive, 'Ver lo que quedó de Buenos Aires')}
       </section>
       ${renderIndexPage(view, storyPackage, { interactive })}
     </div>
@@ -1326,8 +1350,9 @@ function renderTripAlbum(view, storyPackage, tripMemories, photoUrls, interactiv
       <section class="book-page page-album">
         ${renderReadingTopbar(interactive, theme)}
         <p class="eyebrow reveal reveal-1">${storyPackage.metadata.title}</p>
-        <h1 class="reveal reveal-2">Tu álbum del viaje</h1>
-        ${sections || '<p class="album-empty">El álbum espera sus primeros recuerdos.</p>'}
+        <h1 class="reveal reveal-2">Nuestro Buenos Aires</h1>
+        <p class="open reveal reveal-3">Lo que quedó del viaje, tal como decidió quedarse.</p>
+        ${sections || '<p class="album-empty">Todavía no hay recuerdos guardados. Buenos Aires igual ya quedó en la historia.</p>'}
       </section>
       ${renderIndexPage(view, storyPackage, { interactive, preparationCompletedIds, returnMode: true })}
     </div>

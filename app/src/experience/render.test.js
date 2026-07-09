@@ -33,6 +33,7 @@ function fixturePackage() {
           { id: 'mem-sug-1', relatedActivityId: 'act-1', type: 'photo', prompt: 'Un recuerdo sugerido de prueba.' },
           { id: 'mem-sug-2', relatedActivityId: null, type: 'note', prompt: 'Un recuerdo libre de prueba.' },
         ],
+        ourMoment: 'Lo que probablemente quede de este día de prueba.',
         traditions: [{ title: 'Tradición de prueba', body: 'Cómo se hace la tradición de prueba.' }],
         microDiscoveries: ['Un descubrimiento de prueba, escondido a la vista.'],
         nightNote: 'Antes de dormir, caminen un rato más sin rumbo.',
@@ -141,8 +142,9 @@ test('pre_trip: el índice ofrece Preparativos como sección previa, no como cap
   const html = renderExperience(view, pkg, now, { preparationCompletedIds: ['doc-1'] });
   assert.match(html, /preparation-index-entry/);
   assert.match(html, />Preparativos</);
-  assert.match(html, /Todo comienza antes del viaje\./);
-  assert.match(html, /1 de 4 listos/);
+  assert.match(html, /Nos estamos acercando al viaje\./);
+  assert.match(html, /Preparando el viaje/);
+  assert.doesNotMatch(html, /1 de 4 listos/);
   assert.match(html, /data-action="open-preparations"/);
   assert.equal(html.match(/chapter-index-number">I<\/span>/g)?.length ?? 0, 1);
   assert.doesNotMatch(html, /PRÓLOGO|Prólogo/);
@@ -158,12 +160,13 @@ test('pre_trip: Preparativos empieza con introducción editorial y continúa con
   });
   assert.match(html, /page-preparations/);
   assert.match(html, /Todo viaje empieza antes del avión\./);
-  assert.match(html, /Antes de salir, revisen lo esencial/);
+  assert.match(html, /Antes de salir, dejemos cerca lo esencial/);
   assert.match(html, />Documentos</);
   assert.match(html, />Equipaje</);
   assert.match(html, />Apps</);
   assert.match(html, />Dinero</);
-  assert.match(html, /2 de 4 listos/);
+  assert.match(html, /Preparando el viaje/);
+  assert.doesNotMatch(html, /2 de 4 listos/);
   assert.doesNotMatch(html, /preparation-category-icon|preparation-category-mark/);
   assert.match(html, /data-preparation-progress/);
   assert.match(html, /data-preparation-progress-fill/);
@@ -194,8 +197,8 @@ test('pre_trip: Preparativos completos cambian el índice a Todo listo', () => {
   const html = renderExperience(view, pkg, now, {
     preparationCompletedIds: ['doc-1', 'eq-1', 'app-1', 'din-1'],
   });
-  assert.match(html, /✓ Todo listo/);
-  assert.match(html, /Todo está listo\./);
+  assert.match(html, /✓ Todo preparado/);
+  assert.match(html, /Todo quedó tranquilo\./);
   assert.doesNotMatch(html, /4 de 4 listos/);
 });
 
@@ -333,21 +336,25 @@ test('renderExperience aplica la preferencia visual light sin tocar la historia'
   assert.match(html, /Actividad de prueba/);
 });
 
-test('in_progress con un capítulo disponible muestra el botón de "iniciado"', () => {
+test('in_progress con un capítulo disponible abre el día sin lenguaje administrativo', () => {
   const pkg = fixturePackage();
   const now = new Date('2027-01-10T00:00:00Z');
   const view = getStoryView(pkg, { now });
   const html = renderExperience(view, pkg, now);
   assert.match(html, /data-action="start" data-chapter-id="chapter-1"/);
+  assert.match(html, /Abrir este día/);
+  assert.doesNotMatch(html, /Marcar como iniciado/);
   assert.doesNotMatch(html, /data-action="complete"/);
 });
 
-test('in_progress con un capítulo iniciado muestra el botón de "cerrar" (E-4: pide confirmación, no cierra directo)', () => {
+test('in_progress con un capítulo iniciado muestra un cierre editorial (E-4: pide confirmación, no cierra directo)', () => {
   const pkg = fixturePackage();
   const now = new Date('2027-01-10T00:00:00Z');
   const view = getStoryView(pkg, { now, chapterStatuses: { 'chapter-1': 'started' } });
   const html = renderExperience(view, pkg, now);
   assert.match(html, /data-action="ask-close" data-chapter-id="chapter-1"/);
+  assert.match(html, /Dejar el día así/);
+  assert.doesNotMatch(html, /Cerrar capítulo/);
   assert.doesNotMatch(html, /data-action="start"/);
   assert.doesNotMatch(html, /data-action="complete"/);
 });
@@ -431,11 +438,35 @@ test('in_progress muestra la tarjeta de actividad enriquecida: momento, descripc
   assert.match(html, /href="https:\/\/maps\.example\/place-1"[^>]*>Mapa</);
 });
 
-test('in_progress muestra photo spots, ítems de colección y memorias sugeridas del capítulo', () => {
+test('Fase 1: la actividad abre como escena antes de mostrar horario y categoría', () => {
   const pkg = fixturePackage();
   const now = new Date('2027-01-10T00:00:00Z');
   const view = getStoryView(pkg, { now });
   const html = renderExperience(view, pkg, now);
+  const titleIndex = html.indexOf('<em>El primer momento de prueba.</em>');
+  const metaIndex = html.indexOf('<span class="time">10:00</span>');
+
+  assert.ok(titleIndex > -1);
+  assert.ok(metaIndex > -1);
+  assert.ok(titleIndex < metaIndex);
+});
+
+test('in_progress muestra photo spots, ítems de colección y memorias sugeridas del capítulo', () => {
+  const pkg = fixturePackage();
+  pkg.placesCatalog.cafes.push({
+    id: 'place-2',
+    name: 'Café de paso',
+    relatedChapterId: 'chapter-1',
+    recommendation: 'Un lugar tranquilo para bajar el ritmo.',
+  });
+  const now = new Date('2027-01-10T00:00:00Z');
+  const view = getStoryView(pkg, { now });
+  const html = renderExperience(view, pkg, now);
+  assert.match(html, /En el camino/);
+  assert.match(html, /Postales posibles/);
+  assert.doesNotMatch(html, /Photo spots de hoy/);
+  assert.match(html, /Para llevar del día/);
+  assert.doesNotMatch(html, /Para hoy también/);
   assert.match(html, /Spot de prueba/);
   assert.match(html, /Ítem de prueba/);
   assert.match(html, /Un recuerdo sugerido de prueba\./);
@@ -454,17 +485,31 @@ test('in_progress muestra tradiciones, microdescubrimientos y la nota nocturna d
   assert.match(html, /Antes de dormir, caminen un rato más sin rumbo\./);
 });
 
+test('Fase 1: nuestro momento aparece como bisagra antes de recuerdos y nota nocturna', () => {
+  const pkg = fixturePackage();
+  const now = new Date('2027-01-10T00:00:00Z');
+  const view = getStoryView(pkg, { now });
+  const html = renderExperience(view, pkg, now);
+
+  assert.match(html, /Nuestro momento/);
+  assert.match(html, /Lo que probablemente quede de este día de prueba\./);
+  assert.ok(html.indexOf('Lo que probablemente quede de este día de prueba.') > html.indexOf('Un descubrimiento de prueba'));
+  assert.ok(html.indexOf('Lo que probablemente quede de este día de prueba.') < html.indexOf('Algo más de hoy'));
+  assert.ok(html.indexOf('Lo que probablemente quede de este día de prueba.') < html.indexOf('Antes de terminar el día'));
+});
+
 test('in_progress no muestra secciones vacías cuando el capítulo no tiene contenido relacionado', () => {
   const pkg = fixturePackage();
   const now = new Date('2027-01-11T00:00:00Z');
   const view = getStoryView(pkg, { now, chapterStatuses: { 'chapter-1': 'completed' } });
   const html = renderExperience(view, pkg, now);
   assert.match(html, /Actividad sin extras/); // confirma que estamos viendo el Día 2
-  assert.doesNotMatch(html, /Lugares para hoy/);
-  assert.doesNotMatch(html, /Photo spots de hoy/);
-  assert.doesNotMatch(html, /Para hoy también/);
+  assert.doesNotMatch(html, /En el camino/);
+  assert.doesNotMatch(html, /Postales posibles/);
+  assert.doesNotMatch(html, /Para llevar del día/);
   assert.doesNotMatch(html, /Pequeñas tradiciones/);
   assert.doesNotMatch(html, /Pequeños descubrimientos/);
+  assert.doesNotMatch(html, /Nuestro momento/);
   assert.doesNotMatch(html, /Antes de terminar el día/);
 });
 
@@ -488,7 +533,8 @@ test('E-3: una invitación ya usada se transforma en su lugar, mostrando la nota
   assert.doesNotMatch(html, /¿Hay algo de esto que quieras guardar\?/);
   assert.match(html, /data-action="favorite-memory" data-memory-id="mem-1"/);
   assert.match(html, /data-action="archive-memory" data-memory-id="mem-1"/);
-  assert.match(html, /Guardar aparte/);
+  assert.match(html, /Dejar aparte/);
+  assert.doesNotMatch(html, /Guardar aparte/);
 });
 
 test('con más de una Memoria para la misma actividad, se muestra solo la más reciente', () => {
@@ -540,7 +586,8 @@ test('E-3: las Memorias sin actividad se muestran en el espacio libre del final,
   assert.match(html, /Una nota guardada\./);
   assert.match(html, /Una nota favorita\./);
   assert.doesNotMatch(html, /Una nota archivada\./);
-  assert.match(html, /♥ Marcar como favorito/);
+  assert.match(html, /♥ Dejar como favorito/);
+  assert.doesNotMatch(html, /Marcar como favorito/);
   assert.match(html, /♥ Recuerdo favorito/);
 });
 
@@ -572,7 +619,7 @@ test('epilogue bloqueado muestra un mensaje de espera, sin revelar los prompts',
   assert.doesNotMatch(html, /data-action="start"|data-action="complete"|data-action="create-memory"/);
 });
 
-test('epilogue disponible muestra el botón de "iniciado", y ninguno si interactive:false', () => {
+test('epilogue disponible abre el cierre con lenguaje editorial, y ninguno si interactive:false', () => {
   const pkg = fixturePackage();
   const now = new Date('2027-01-15T00:00:00Z');
   const view = getStoryView(pkg, {
@@ -581,6 +628,8 @@ test('epilogue disponible muestra el botón de "iniciado", y ninguno si interact
   });
   const interactiveHtml = renderExperience(view, pkg, now);
   assert.match(interactiveHtml, /data-action="start" data-chapter-id="chapter-epilogue"/);
+  assert.match(interactiveHtml, /Abrir el cierre/);
+  assert.doesNotMatch(interactiveHtml, /Marcar como iniciado/);
 
   const readOnlyHtml = renderExperience(view, pkg, now, { interactive: false });
   assert.doesNotMatch(readOnlyHtml, /data-action/);
@@ -624,6 +673,8 @@ test('El Final del Viaje: un prompt retrospectivo sobre un lugar real ofrece un 
   const html = renderExperience(view, pkg, now, { memories: [] });
   assert.match(html, /<select class="memory-place-select"><option value="Lugar de prueba">Lugar de prueba<\/option><\/select>/);
   assert.match(html, /data-action="select-place" data-chapter-id="chapter-epilogue" data-activity-id="p3"/);
+  assert.match(html, /Quedarme con esta/);
+  assert.doesNotMatch(html, /Guardar esta elección/);
 });
 
 test('El Final del Viaje: sin catálogo para esa categoría, el prompt de lugar degrada a texto libre', () => {
@@ -660,6 +711,8 @@ test('memory_mode muestra la carta final', () => {
   });
   const html = renderExperience(view, pkg, now);
   assert.match(html, /Esta es la carta final de prueba\./);
+  assert.match(html, /Ver lo que quedó de Buenos Aires/);
+  assert.doesNotMatch(html, /Ver el álbum del viaje/);
 });
 
 test('El Final del Viaje: recién transformada, Memory Mode incluye una línea breve, una única vez', () => {
@@ -698,16 +751,17 @@ test('Épica 3: una actividad con foto en curso (sin guardar todavía) se "engan
   assert.match(html, /data-action="create-memory" data-chapter-id="chapter-2" data-activity-id="act-2"/);
 });
 
-test('Épica 3: sin fotos en curso, la actividad sin recuerdo sugerido solo muestra "Agregar fotos", sin botón de guardar', () => {
+test('Épica 3: sin fotos en curso, la actividad sin recuerdo sugerido solo muestra "Sumar fotos", sin botón de guardar', () => {
   const pkg = fixturePackage();
   const now = new Date('2027-01-11T00:00:00Z');
   const view = getStoryView(pkg, { now, chapterStatuses: { 'chapter-1': 'completed' } });
   const html = renderExperience(view, pkg, now);
-  assert.match(html, /\+ Agregar fotos/);
+  assert.match(html, /\+ Sumar fotos/);
+  assert.doesNotMatch(html, /Agregar fotos/);
   assert.doesNotMatch(html, /data-action="create-memory" data-chapter-id="chapter-2" data-activity-id="act-2"/);
 });
 
-test('Épica 3: con dos fotos en curso, la segunda ofrece "Hacer principal" y ambas "Quitar"', () => {
+test('Épica 3: con dos fotos en curso, la segunda ofrece elegir principal y ambas se pueden sacar', () => {
   const pkg = fixturePackage();
   const now = new Date('2027-01-10T00:00:00Z');
   const view = getStoryView(pkg, { now });
@@ -719,8 +773,12 @@ test('Épica 3: con dos fotos en curso, la segunda ofrece "Hacer principal" y am
   ]);
   const html = renderExperience(view, pkg, now, { memories: [], stagedPhotosBySlot });
   assert.match(html, /data-action="set-primary-photo"[^>]*data-temp-id="temp-2"/);
+  assert.match(html, /Elegir como principal/);
+  assert.doesNotMatch(html, /Hacer principal/);
   assert.match(html, /data-action="remove-staged-photo"[^>]*data-temp-id="temp-1"/);
   assert.match(html, /data-action="remove-staged-photo"[^>]*data-temp-id="temp-2"/);
+  assert.match(html, /Sacar/);
+  assert.doesNotMatch(html, /Quitar/);
 });
 
 test('Épica 3: una Memoria guardada con fotos muestra la principal y las secundarias', () => {
@@ -736,19 +794,20 @@ test('Épica 3: una Memoria guardada con fotos muestra la principal y las secund
   assert.match(html, /<img class="memory-photo-thumb" src="blob:b"/);
 });
 
-test('Épica 3: "Tus recuerdos" aparece con lo ya guardado del capítulo (foto, nota, favorito) y no aparece si no hay nada', () => {
+test('Épica 3: "Lo que ya quedó" aparece con lo ya guardado del capítulo (foto, nota, favorito) y no aparece si no hay nada', () => {
   const pkg = fixturePackage();
   const now = new Date('2027-01-10T00:00:00Z');
   const view = getStoryView(pkg, { now });
 
   const vacio = renderExperience(view, pkg, now, { memories: [] });
-  assert.doesNotMatch(vacio, /Tus recuerdos/);
+  assert.doesNotMatch(vacio, /Lo que ya quedó/);
 
   const memories = [
     { id: 'mem-1', activityId: 'act-1', note: 'Las medialunas.', photos: ['photo-a'], favorite: true, archived: false, createdAt: '2027-01-10T09:00:00Z' },
   ];
   const conRecuerdos = renderExperience(view, pkg, now, { memories, photoUrls: { 'photo-a': 'blob:a' } });
-  assert.match(conRecuerdos, /Tus recuerdos/);
+  assert.match(conRecuerdos, /Lo que ya quedó/);
+  assert.doesNotMatch(conRecuerdos, /Tus recuerdos/);
   assert.match(conRecuerdos, /memory-card-favorite/);
   assert.match(conRecuerdos, /Las medialunas\./);
 });
@@ -757,7 +816,10 @@ test('Épica 3: el link al Álbum del viaje aparece cuando es interactivo, y no 
   const pkg = fixturePackage();
   const now = new Date('2027-01-10T00:00:00Z');
   const view = getStoryView(pkg, { now });
-  assert.match(renderExperience(view, pkg, now), /data-action="open-album"/);
+  const html = renderExperience(view, pkg, now);
+  assert.match(html, /data-action="open-album"/);
+  assert.match(html, /Ver recuerdos del viaje/);
+  assert.doesNotMatch(html, /Ver el álbum del viaje/);
   assert.doesNotMatch(renderExperience(view, pkg, now, { interactive: false }), /data-action="open-album"/);
 });
 
@@ -769,7 +831,9 @@ test('Épica 3: el Álbum del viaje agrupa los recuerdos por capítulo, en orden
     { id: 'mem-1', chapterId: 'chapter-1', activityId: 'act-1', note: 'Del día 1.', photos: [], favorite: false, archived: false, createdAt: '2027-01-10T09:00:00Z' },
   ];
   const html = renderExperience(view, pkg, now, { showingTripAlbum: true, tripMemories });
-  assert.match(html, /Tu álbum del viaje/);
+  assert.match(html, /Nuestro Buenos Aires/);
+  assert.match(html, /Lo que quedó del viaje, tal como decidió quedarse\./);
+  assert.doesNotMatch(html, /Tu álbum del viaje/);
   assert.match(html, /Día 1/);
   assert.match(html, /Del día 1\./);
   assert.doesNotMatch(html, /Día 2/); // chapter-2 no tiene memorias — no se muestra
@@ -783,7 +847,8 @@ test('Épica 3: el Álbum del viaje vacío muestra un estado neutral, sin culpa'
   const now = new Date('2027-01-10T00:00:00Z');
   const view = getStoryView(pkg, { now });
   const html = renderExperience(view, pkg, now, { showingTripAlbum: true, tripMemories: [] });
-  assert.match(html, /El álbum espera sus primeros recuerdos\./);
+  assert.match(html, /Todavía no hay recuerdos guardados\. Buenos Aires igual ya quedó en la historia\./);
+  assert.doesNotMatch(html, /El álbum espera sus primeros recuerdos\./);
 });
 
 test('Épica 3: un prompt de foto del epílogo, habiendo fotos del viaje, ofrece elegir una real en vez de degradar a texto', () => {
@@ -826,6 +891,7 @@ test('Épica 4: en Android/Chrome, el banner de instalación ofrece el botón re
   const view = getStoryView(pkg, { now });
   const html = renderExperience(view, pkg, now, { installBanner: { platform: 'android' } });
   assert.match(html, /data-action="install-app"/);
+  assert.match(html, /Dejarla en inicio/);
   assert.match(html, /data-action="dismiss-install"/);
 });
 

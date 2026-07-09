@@ -78,7 +78,38 @@ export default defineConfig({
       injectRegister: null, // registro manual, solo desde experienceView.js
       workbox: {
         globPatterns: ["**/*.{js,css,html,svg,png,jpg,mp4,webmanifest,ico}"],
-        globIgnores: ["index.html", "debug.html", "memories.html", "admin.html"],
+        globIgnores: [
+          "index.html",
+          "debug.html",
+          "memories.html",
+          "admin.html",
+          // Export bruto de íconos: no forma parte de la experiencia y duplica
+          // assets ya curados bajo /icons.
+          "AppAssets_2026-07-09/**/*",
+          // Copias legacy en la raíz: la historia carga estas fotos desde
+          // /images/*. Mantenerlas fuera del precache evita una primera
+          // instalación/sincronización mucho más pesada sin tocar calidad visual.
+          "dia1-cena.jpg",
+          "dia1-corrientes.jpg",
+          "dia1-cuartito.jpg",
+          "dia1-rapanui.jpg",
+          "dia2-almuerzo.jpg",
+          "dia2-cafepalermo.jpg",
+          "dia2-cementerio.jpg",
+          "dia2-cena.jpg",
+          "dia2-floralis.jpg",
+          "dia2-puertomadero.jpg",
+          "dia2-rosedal.jpg",
+          "dia3-almuerzo.jpg",
+          "dia3-caminito.jpg",
+          "dia3-dorrego.jpg",
+          "dia3-floreria.jpg",
+          "dia3-mafalda.jpg",
+          "dia3-mercado.jpg",
+          "dia4-almuerzo.jpg",
+          "dia4-ateneo.jpg",
+          "hotel.jpg",
+        ],
         navigateFallback: null,
         // Los assets emocionales de Aurora (cover-hero.jpg y video_intro_2.mp4)
         // pesan más que el límite por defecto de Workbox (2 MiB). Sin esto,

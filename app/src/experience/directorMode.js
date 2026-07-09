@@ -123,17 +123,29 @@ export function renderDirectorPanel(state) {
   return `
     <div class="director-panel" aria-label="Director Mode (QA)">
       <button type="button" class="director-panel-close" data-action="director-toggle-panel" aria-label="Ocultar panel">×</button>
-      <p class="director-title">Director Mode</p>
-
-      <div class="director-row director-stage-grid">${stageButtons}</div>
-
-      ${playthroughControls}
-      ${playthroughStatus}
-
-      <div class="director-row">
-        <button type="button" data-action="replay-intro">Reiniciar experiencia</button>
-        <button type="button" data-action="director-new-user">Usuario nuevo</button>
+      <div class="director-heading">
+        <p class="director-title">Director Mode</p>
+        <p class="director-subtitle">QA ? demos ? recorrido controlado</p>
       </div>
+
+      <section class="director-section" aria-label="Escenarios">
+        <p class="director-section-label">Escenarios</p>
+        <div class="director-row director-stage-grid">${stageButtons}</div>
+      </section>
+
+      <section class="director-section" aria-label="Recorrido autom?tico">
+        <p class="director-section-label">Recorrido</p>
+        ${playthroughControls}
+        ${playthroughStatus}
+      </section>
+
+      <section class="director-section" aria-label="Sesi?n">
+        <p class="director-section-label">Sesi?n</p>
+        <div class="director-row">
+          <button type="button" data-action="replay-intro">Reiniciar experiencia</button>
+          <button type="button" data-action="director-new-user">Usuario nuevo</button>
+        </div>
+      </section>
 
       <dl class="director-status">
         <dt>Fecha simulada</dt>
