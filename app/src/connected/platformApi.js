@@ -60,3 +60,13 @@ export function createTrip({ title, destination }, { fetchImpl } = {}) {
 export function getTrip(tripId, { fetchImpl } = {}) {
   return request(`/api/trips/${encodeURIComponent(tripId)}`, { fetchImpl });
 }
+
+/** Trae el contenido de una story por su id (ver lib/platformStories.js). Resuelve `{story}`; 404 si no existe. */
+export function getStory(storyId, { fetchImpl } = {}) {
+  return request(`/api/stories/${encodeURIComponent(storyId)}`, { fetchImpl });
+}
+
+/** Lista la media (fotos/videos) subida al viaje. Resuelve `{media: [...]}`, más reciente primero. */
+export function getTripMedia(tripId, { fetchImpl } = {}) {
+  return request(`/api/trips/${encodeURIComponent(tripId)}/media`, { fetchImpl });
+}

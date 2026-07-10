@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { requestCode, verifyCode, getSession, logout, listTrips, createTrip, getTrip, PlatformApiError } from './platformApi.js';
+import { requestCode, verifyCode, getSession, logout, listTrips, createTrip, getTrip, getStory, getTripMedia, PlatformApiError } from './platformApi.js';
 
 function fakeFetch(status, body) {
   const calls = [];
@@ -70,6 +70,22 @@ test('getTrip hace GET al detalle del viaje', async () => {
   const result = await getTrip('1', { fetchImpl });
   assert.deepEqual(result.trip, { id: '1', title: 'Buenos Aires', destination: 'CABA' });
   assert.equal(fetchImpl.calls[0].path, '/api/trips/1');
+  assert.equal(fetchImpl.calls[0].options.method, 'GET');
+});
+
+test('getStory hace GET al contenido de la story', async () => {
+  const fetchImpl = fakeFetch(200, { story: { storyId: 'ba-2026', title: 'Buenos Aires' } });
+  const result = await getStory('ba-2026', { fetchImpl });
+  assert.deepEqual(result.story, { storyId: 'ba-2026', title: 'Buenos Aires' });
+  assert.equal(fetchImpl.calls[0].path, '/api/stories/ba-2026');
+  assert.equal(fetchImpl.calls[0].options.method, 'GET');
+});
+
+test('getTripMedia hace GET a la media del viaje', async () => {
+  const fetchImpl = fakeFetch(200, { media: [{ id: '1', type: 'image', url: 'https://example.com/a.jpg' }] });
+  const result = await getTripMedia('trip-1', { fetchImpl });
+  assert.deepEqual(result.media, [{ id: '1', type: 'image', url: 'https://example.com/a.jpg' }]);
+  assert.equal(fetchImpl.calls[0].path, '/api/trips/trip-1/media');
   assert.equal(fetchImpl.calls[0].options.method, 'GET');
 });
 

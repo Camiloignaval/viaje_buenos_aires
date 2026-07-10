@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createSessionStore, SessionStatus } from './sessionStore.js';
+import { PlatformApiError } from './platformApi.js';
 
 function fakeApi(overrides = {}) {
   return {
@@ -28,6 +29,26 @@ test('getSession con sesión pasa a authenticated con el user', async () => {
   const store = createSessionStore(fakeApi({ getSession: async () => ({ user }) }));
   const state = await store.getSession();
   assert.deepEqual(state, { status: SessionStatus.AUTHENTICATED, user });
+});
+
+test('getSession que lanza PlatformApiError (ej. 404 sin backend en npm run dev) pasa a anonymous', async () => {
+  const store = createSessionStore(
+    fakeApi({ getSession: async () => { throw new PlatformApiError('Error de la plataforma.', 404); } })
+  );
+  const state = await store.getSession();
+  assert.deepEqual(state, { status: SessionStatus.ANONYMOUS, user: null });
+});
+
+test('getSession que lanza cualquier otro error (sin red, backend caído) también pasa a anonymous', async () => {
+  const store = createSessionStore(fakeApi({ getSession: async () => { throw new Error('sin conexión'); } }));
+  const state = await store.getSession();
+  assert.deepEqual(state, { status: SessionStatus.ANONYMOUS, user: null });
+});
+
+test('getSession nunca deja el estado en checking, ni siquiera tras un error', async () => {
+  const store = createSessionStore(fakeApi({ getSession: async () => { throw new Error('falla'); } }));
+  await store.getSession();
+  assert.notEqual(store.getState().status, SessionStatus.CHECKING);
 });
 
 test('verifyCode pasa a authenticated y devuelve el user', async () => {

@@ -1,5 +1,6 @@
 // Estado de sesión de Aurora Platform: checking -> anonymous | authenticated.
-// No toca DOM ni UI — eso llega en ConnectedShell/LoginPanel (siguiente commit).
+// No toca DOM ni UI — eso lo hace ConnectedShell (connectedShell.js). El login
+// real todavía no está implementado (ver placeholder en modo anonymous).
 // Delega toda llamada de red a platformApi.js; acá solo se guarda y notifica el estado.
 
 import * as platformApi from './platformApi.js';
@@ -29,10 +30,19 @@ export function createSessionStore(api = platformApi) {
     return () => listeners.delete(listener);
   }
 
-  /** Se llama al montar la app: consulta la cookie de sesión y resuelve a anonymous o authenticated. */
+  /**
+   * Se llama al montar la app: consulta la cookie de sesión y resuelve a
+   * anonymous o authenticated. Cualquier falla (404, sin red, backend caído)
+   * también resuelve a anonymous — nunca debe quedar en checking para
+   * siempre, porque mount() la llama fire-and-forget (connectedShell.js).
+   */
   async function getSession() {
-    const { user } = await api.getSession();
-    setState(user ? { status: SessionStatus.AUTHENTICATED, user } : { status: SessionStatus.ANONYMOUS, user: null });
+    try {
+      const { user } = await api.getSession();
+      setState(user ? { status: SessionStatus.AUTHENTICATED, user } : { status: SessionStatus.ANONYMOUS, user: null });
+    } catch {
+      setState({ status: SessionStatus.ANONYMOUS, user: null });
+    }
     return getState();
   }
 
