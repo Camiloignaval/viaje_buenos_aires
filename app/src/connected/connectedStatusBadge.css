@@ -1,10 +1,14 @@
 /* Insignia mínima y discreta de estado conectado (Etapa 4, Bloque 4). Archivo
-   propio a propósito: no toca experience.css ni la dirección visual de Aurora. */
-
+   propio a propósito: no toca experience.css ni la dirección visual de Aurora.
+   Abajo-derecha (no arriba-derecha): ese rincón ya lo ocupan .theme-switch y
+   .intro-replay-button de experience.css, además del .chapter-topbar que
+   cubre todo el ancho superior — con top:12px esta insignia les tapaba
+   encima en mobile. env(safe-area-inset-*) para no quedar bajo el home
+   indicator de iOS. */
 .connected-status-badge {
   position: fixed;
-  top: 12px;
-  right: 12px;
+  bottom: max(12px, env(safe-area-inset-bottom));
+  right: max(12px, env(safe-area-inset-right));
   z-index: 40;
   padding: 0.35rem 0.75rem;
   font: 0.75rem/1.2 "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
