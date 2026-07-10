@@ -2,8 +2,8 @@
 // connectedContext + storyContentStore + connectedMediaStore en una sola
 // señal de observabilidad (local/loading/ready/partial/empty/error). Solo
 // LEE el estado de esos tres stores (getState/subscribe) — nunca dispara
-// una llamada de red propia ni los modifica. No es UI: nadie todavía lo
-// consume para pintar nada.
+// una llamada de red propia ni los modifica. No es UI en sí mismo: lo único
+// que lo consume es la insignia discreta de connectedStatusBadge.js.
 
 import { connectedContext, TripContextStatus } from './connectedContext.js';
 import { storyContentStore } from './storyContentStore.js';

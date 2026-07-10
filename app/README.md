@@ -12,8 +12,8 @@ Mini app web para vivir el viaje, no solo leerlo: checklists interactivos y un
 > `src/memory/`, `src/experience/`, `src/sync/`, `api/aurora/*` y
 > `lib/aurora*.js`, y se abre desde `experience.html` (más `admin.html` como
 > Aurora Studio, y `debug.html`/`memories.html` como herramientas internas).
-> Aurora usa su propia base de datos (`AURORA_MONGODB_URI`, distinta de
-> `MONGODB_URI`) y sus propias claves de `localStorage`
+> Aurora comparte la misma `MONGODB_URI` que el prototipo viejo (una sola
+> variable de entorno) y usa sus propias claves de `localStorage`
 > (`aurora:progress:*`, `aurora:memories:*`) — nunca las del prototipo. Ver
 > `src/sync/README.md` para el detalle de la sincronización y
 > `documentacion/PROJECT_STATUS_V1.md` para el estado consolidado de Aurora.
@@ -261,15 +261,15 @@ Cloudinary están mal cargadas, vas a ver el error apenas abras la app.
 
 ## Épica 5 — Backend de Aurora (variables de entorno)
 
-Separado por completo del backend del prototipo viejo (arriba). Variables necesarias en `.env.local`/Vercel:
+Comparte la conexión Mongo del backend del prototipo viejo (`MONGODB_URI`, abajo) — antes usaba una `AURORA_MONGODB_URI` separada, unificada para evitar mantener dos variables para el mismo cluster. Variables necesarias en `.env.local`/Vercel:
 
 | Variable | Qué es | ¿Nueva o reusada? |
 |---|---|---|
-| `AURORA_MONGODB_URI` | Connection string a una base **distinta** de `buenos_aires` (ej. `.../aurora?...`) — mismo cluster de Atlas sirve, solo hace falta crear la base nueva | Nueva |
+| `MONGODB_URI` | Connection string a Mongo Atlas — la misma que usa el prototipo viejo (`lib/mongodb.js`) | Reusada |
 | `CLOUDINARY_CLOUD_NAME` / `CLOUDINARY_API_KEY` / `CLOUDINARY_API_SECRET` | Las fotos de Aurora van a la carpeta `aurora/<storyId>`, en la misma cuenta | Reusada |
 | `AURORA_ADMIN_PASSWORD` | Contraseña para publicar historias desde Aurora Studio (`admin.html`) | Nueva |
 
-Sin `AURORA_MONGODB_URI`, `/api/aurora/*` responde `503` (nunca crashea) y Aurora sigue funcionando 100% local — ver `src/sync/README.md`.
+Sin `MONGODB_URI`, `/api/aurora/*` responde `503` (nunca crashea) y Aurora sigue funcionando 100% local — ver `src/sync/README.md`.
 
 ---
 

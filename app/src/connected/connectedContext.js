@@ -5,7 +5,7 @@
 // mismo principio de "fallo silencioso" que ya usa sync/syncClient.js.
 //
 // El server devuelve 403 tanto para un trip inexistente como para uno del
-// que no sos miembro (requireTripMember, lib/platformAuth.js) — no hay un
+// que no eres miembro (requireTripMember, lib/platformAuth.js) — no hay un
 // 404 propio. Acá ambos casos se tratan como notFound: desde el cliente son
 // indistinguibles y el mensaje correcto es el mismo.
 

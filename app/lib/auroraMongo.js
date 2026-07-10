@@ -1,7 +1,6 @@
-// Conexión a MongoDB para Aurora (Épica 5 — Persistencia Real), separada por
-// completo de `mongodb.js` (el prototipo viejo, con su propia base `buenos_aires`).
-// Usa una variable de entorno propia (`AURORA_MONGODB_URI`) para que nunca haya
-// ambigüedad sobre a qué base se está escribiendo — ver README.md.
+// Conexión a MongoDB para Aurora (Épica 5 — Persistencia Real).
+// Usa la misma `MONGODB_URI` que `mongodb.js` (el prototipo viejo) — decisión
+// explícita para no depender de una variable de entorno separada; ver README.md.
 //
 // A diferencia de `mongodb.js`, acá NUNCA se lanza un error al importar el
 // módulo si falta la variable de entorno: Aurora tiene que poder arrancar y
@@ -11,7 +10,7 @@
 import { MongoClient } from 'mongodb';
 
 export function isAuroraBackendConfigured() {
-  return Boolean(process.env.AURORA_MONGODB_URI);
+  return Boolean(process.env.MONGODB_URI);
 }
 
 let clientPromise = null;
@@ -21,7 +20,7 @@ function getClientPromise() {
     clientPromise = globalThis._auroraMongoClientPromise;
   }
   if (!clientPromise) {
-    const client = new MongoClient(process.env.AURORA_MONGODB_URI);
+    const client = new MongoClient(process.env.MONGODB_URI);
     clientPromise = client.connect();
     globalThis._auroraMongoClientPromise = clientPromise;
   }

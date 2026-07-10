@@ -1,4 +1,5 @@
 import crypto from 'node:crypto';
+import { sendVerifyEmail } from './email/senders/sendVerifyEmail.js';
 
 export const AUTH_CODE_TTL_SECONDS = 60 * 10;
 export const AUTH_CODE_LENGTH = 6;
@@ -44,9 +45,17 @@ export function authCodeExpiresAt({ now = Date.now(), ttlSeconds = AUTH_CODE_TTL
 }
 
 export async function deliverAuthCode(email, code) {
-  // MVP: el transporte real de email se conecta después sin tocar los endpoints.
-  // En desarrollo queda visible en logs; en producción se exige configurar un
-  // proveedor antes de usar auth real con usuarios.
+  // MVP: si hay RESEND_API_KEY configurada, el código sale por mail real con
+  // el template VerifyEmail de Aurora (free tier de Resend: 3000/mes). Sin
+  // esa key, en desarrollo queda visible en logs; en producción se exige
+  // configurar un proveedor antes de usar auth real con usuarios.
+  if (process.env.RESEND_API_KEY) {
+    const result = await sendVerifyEmail({ email, code });
+    if (!result.success) {
+      throw new Error(`Resend rechazó el envío: ${result.error}`);
+    }
+    return { delivery: 'resend' };
+  }
   if (process.env.AURORA_AUTH_CODE_DELIVERY === 'console' || process.env.NODE_ENV !== 'production') {
     console.info(`[aurora-auth] Código de acceso para ${email}: ${code}`);
     return { delivery: 'console' };

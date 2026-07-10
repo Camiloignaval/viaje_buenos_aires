@@ -12,20 +12,20 @@ export const PLATFORM_COLLECTIONS = Object.freeze({
 });
 
 export function isPlatformMongoConfigured() {
-  return Boolean(process.env.AURORA_MONGODB_URI);
+  return Boolean(process.env.MONGODB_URI);
 }
 
 let clientPromise = null;
 
 function getClientPromise() {
   if (!isPlatformMongoConfigured()) {
-    throw new Error('Aurora Platform necesita AURORA_MONGODB_URI configurado.');
+    throw new Error('Aurora Platform necesita MONGODB_URI configurado.');
   }
   if (!clientPromise) {
     clientPromise = globalThis._auroraPlatformMongoClientPromise;
   }
   if (!clientPromise) {
-    const client = new MongoClient(process.env.AURORA_MONGODB_URI);
+    const client = new MongoClient(process.env.MONGODB_URI);
     clientPromise = client.connect();
     globalThis._auroraPlatformMongoClientPromise = clientPromise;
   }

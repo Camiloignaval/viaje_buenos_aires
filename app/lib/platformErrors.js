@@ -1,7 +1,7 @@
 ﻿export function isPlatformConfigurationError(error) {
   const message = String(error?.message ?? '');
   return (
-    message.includes('AURORA_MONGODB_URI') ||
+    message.includes('MONGODB_URI') ||
     message.includes('AURORA_JWT_SECRET') ||
     message.includes('AURORA_AUTH_CODE_SECRET') ||
     message.includes('Cloudinary configurado') ||

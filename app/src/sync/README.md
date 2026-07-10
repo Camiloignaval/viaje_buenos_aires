@@ -20,6 +20,6 @@
 - `api/aurora/sync.js` — `POST`: fusiona y persiste progreso + Memorias.
 - `api/aurora/photo-upload.js` — `POST`: sube una foto a Cloudinary, en la carpeta `aurora/<storyId>`.
 
-Los tres responden `503` si `AURORA_MONGODB_URI` no está configurada — nunca crashean el proceso al arrancar (a diferencia de `lib/mongodb.js`, el del prototipo viejo, que si tira error al importar).
+Los tres responden `503` si `MONGODB_URI` no está configurada — nunca crashean el proceso al arrancar (el chequeo es lazy, dentro del handler, igual que en `lib/mongodb.js`).
 
-**Aislamiento del prototipo viejo:** Aurora usa su propia base de Mongo (`AURORA_MONGODB_URI`, distinta de `MONGODB_URI`) para que nunca haya ambigüedad sobre qué colección se está tocando. Reutiliza la MISMA cuenta de Cloudinary que el prototipo viejo (`CLOUDINARY_*`), pero en su propia carpeta — no hace falta una cuenta nueva.
+**Mongo compartido con el prototipo viejo:** Aurora usa la misma `MONGODB_URI` que `lib/mongodb.js` (antes eran variables separadas, `AURORA_MONGODB_URI` vs `MONGODB_URI` — unificadas para no mantener dos). Reutiliza la MISMA cuenta de Cloudinary que el prototipo viejo (`CLOUDINARY_*`), pero en su propia carpeta — no hace falta una cuenta nueva.

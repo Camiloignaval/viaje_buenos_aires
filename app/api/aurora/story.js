@@ -14,7 +14,7 @@ import { loadStoryPackage, StoryPackageValidationError } from '../../src/story/s
 export default async function handler(req, res) {
   if (applyCors(req, res)) return;
   if (!isAuroraBackendConfigured()) {
-    return res.status(503).json({ error: 'Aurora no tiene backend configurado (falta AURORA_MONGODB_URI).' });
+    return res.status(503).json({ error: 'Aurora no tiene backend configurado (falta MONGODB_URI).' });
   }
 
   try {

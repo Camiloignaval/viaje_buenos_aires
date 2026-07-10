@@ -1,7 +1,8 @@
-// Cliente HTTP delgado hacia los endpoints de autenticación de Aurora Platform
-// (api/auth/*, Etapa 3). No mantiene estado — eso es responsabilidad de sessionStore.js.
-// `credentials: 'include'` es necesario porque la sesión vive en una cookie HttpOnly
-// (aurora_session, ver lib/platformAuth.js) que el JS del browser no puede leer directo.
+// Cliente HTTP delgado hacia Aurora Platform (api/auth/*, api/trips/*,
+// api/stories/*, Etapa 3). No mantiene estado — eso es responsabilidad de
+// sessionStore.js/tripStore.js/etc. `credentials: 'include'` es necesario
+// porque la sesión vive en una cookie HttpOnly (aurora_session, ver
+// lib/platformAuth.js) que el JS del browser no puede leer directo.
 
 export class PlatformApiError extends Error {
   constructor(message, status) {
@@ -56,7 +57,7 @@ export function createTrip({ title, destination }, { fetchImpl } = {}) {
   return request('/api/trips', { method: 'POST', body: { title, destination }, fetchImpl });
 }
 
-/** Trae el detalle de un viaje. Resuelve `{trip}`; 403 si no existe o no sos miembro (ver requireTripMember). */
+/** Trae el detalle de un viaje. Resuelve `{trip}`; 403 si no existe o no eres miembro (ver requireTripMember). */
 export function getTrip(tripId, { fetchImpl } = {}) {
   return request(`/api/trips/${encodeURIComponent(tripId)}`, { fetchImpl });
 }
