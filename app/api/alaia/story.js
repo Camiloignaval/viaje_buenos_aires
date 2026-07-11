@@ -1,6 +1,6 @@
 // GET  /api/alaia/story?storyId=X&token=Y  → devuelve el Story Package publicado
 // POST /api/alaia/story                    → Alaia Studio: publica/actualiza un Story
-//                                              Package (protegido por AURORA_ADMIN_PASSWORD)
+//                                              Package (protegido por ALAIA_ADMIN_PASSWORD)
 //
 // Republicar un `storyId` que ya existe actualiza su contenido pero CONSERVA el
 // `accessToken` ya emitido — un link/QR ya compartido nunca se invalida por
@@ -33,7 +33,7 @@ export default async function handler(req, res) {
     }
 
     if (req.method === 'POST') {
-      const requiredPassword = process.env.AURORA_ADMIN_PASSWORD;
+      const requiredPassword = process.env.ALAIA_ADMIN_PASSWORD;
       const { password, storyPackage: rawStoryPackage } = req.body || {};
       if (requiredPassword && password !== requiredPassword) {
         return res.status(401).json({ error: 'Contraseña incorrecta.' });

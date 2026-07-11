@@ -126,8 +126,8 @@ export function isPlatformConfigurationError(error) {
   const message = String(error?.message ?? '');
   return (
     message.includes('MONGODB_URI') ||
-    message.includes('AURORA_JWT_SECRET') ||
-    message.includes('AURORA_AUTH_CODE_SECRET') ||
+    message.includes('ALAIA_JWT_SECRET') ||
+    message.includes('ALAIA_AUTH_CODE_SECRET') ||
     message.includes('Cloudinary configurado') ||
     message.includes('proveedor de email') ||
     message.includes('CLOUDINARY_') ||

@@ -33,8 +33,8 @@ export function buildPlatformConfig(env = process.env) {
       mongodbUri: readString(env, 'MONGODB_URI', { defaultValue: '' }),
     },
     auth: {
-      jwtSecret: readString(env, 'AURORA_JWT_SECRET', { defaultValue: '' }),
-      authCodeSecret: readString(env, 'AURORA_AUTH_CODE_SECRET', { defaultValue: '' }),
+      jwtSecret: readString(env, 'ALAIA_JWT_SECRET', { defaultValue: '' }),
+      authCodeSecret: readString(env, 'ALAIA_AUTH_CODE_SECRET', { defaultValue: '' }),
     },
     email: {
       resendApiKey: readString(env, 'RESEND_API_KEY', { defaultValue: '' }),

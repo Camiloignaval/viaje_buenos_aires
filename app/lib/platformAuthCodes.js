@@ -18,7 +18,7 @@ export function generateAuthCode() {
 }
 
 function getCodeSecret(secret = getPlatformConfig().auth.authCodeSecret || getPlatformConfig().auth.jwtSecret) {
-  return requireConfigValue(secret, 'AURORA_AUTH_CODE_SECRET o AURORA_JWT_SECRET');
+  return requireConfigValue(secret, 'ALAIA_AUTH_CODE_SECRET o ALAIA_JWT_SECRET');
 }
 
 export function hashAuthCode(email, code, { secret } = {}) {
@@ -54,7 +54,7 @@ export async function deliverAuthCode(email, code) {
     }
     return { delivery: 'resend' };
   }
-  if (process.env.AURORA_AUTH_CODE_DELIVERY === 'console' || process.env.NODE_ENV !== 'production') {
+  if (process.env.ALAIA_AUTH_CODE_DELIVERY === 'console' || process.env.NODE_ENV !== 'production') {
     console.info(`[alaia-auth] Código de acceso para ${email}: ${code}`);
     return { delivery: 'console' };
   }

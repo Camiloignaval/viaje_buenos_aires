@@ -22,7 +22,7 @@ function decodeBase64url(input) {
 }
 
 function getJwtSecret(secret = getPlatformConfig().auth.jwtSecret) {
-  return requireConfigValue(secret, 'AURORA_JWT_SECRET');
+  return requireConfigValue(secret, 'ALAIA_JWT_SECRET');
 }
 
 function sign(value, secret) {

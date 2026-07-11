@@ -4,7 +4,7 @@
 // .env.local distintos (raíz del repo y app/.env.local) y dos proyectos
 // Vercel vinculados distintos (.vercel/project.json en cada carpeta) — este
 // endpoint confirma cuál cwd/.env.local está leyendo realmente `vercel dev`.
-// AURORA_MONGODB_URI/AURORA_JWT_SECRET/AURORA_AUTH_CODE_SECRET fueron
+// ALAIA_MONGODB_URI/ALAIA_JWT_SECRET/ALAIA_AUTH_CODE_SECRET fueron
 // unificadas a un solo MONGODB_URI compartido con el prototipo viejo.
 import { applyCors } from '../lib/cors.js';
 
@@ -20,7 +20,7 @@ export default async function handler(req, res) {
     nodeEnv: process.env.NODE_ENV ?? null,
     vercelEnv: process.env.VERCEL_ENV ?? null,
     MONGODB_URI: describe('MONGODB_URI'),
-    AURORA_JWT_SECRET: describe('AURORA_JWT_SECRET'),
-    AURORA_AUTH_CODE_SECRET: describe('AURORA_AUTH_CODE_SECRET'),
+    ALAIA_JWT_SECRET: describe('ALAIA_JWT_SECRET'),
+    ALAIA_AUTH_CODE_SECRET: describe('ALAIA_AUTH_CODE_SECRET'),
   });
 }
