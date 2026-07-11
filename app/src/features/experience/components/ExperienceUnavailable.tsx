@@ -42,7 +42,7 @@ export function ExperienceUnavailable({
   return (
     <div className="aurora-entrance">
       <div className="aurora-entrance-content">
-        <p className="aurora-eyebrow">Aurora</p>
+        <p className="aurora-eyebrow">Alaia</p>
         <h1 className="aurora-entrance-title">{copy.title}</h1>
         <p className="aurora-entrance-text">{copy.text}</p>
         {variant === "error" ? (

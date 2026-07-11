@@ -38,7 +38,7 @@ export default function TripsPage() {
     <div className="trips-page">
       <AuroraParticles subtle />
       <div className="trips-page-content">
-        <p className="aurora-eyebrow aurora-reveal aurora-reveal-1">Aurora</p>
+        <p className="aurora-eyebrow aurora-reveal aurora-reveal-1">Alaia</p>
         <h1 className="trips-title aurora-reveal aurora-reveal-2">Mis viajes</h1>
         {!isEmpty && (
           <p className="trips-account aurora-reveal aurora-reveal-3">

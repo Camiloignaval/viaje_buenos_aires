@@ -24,7 +24,7 @@ export function EmailStep({ defaultEmail, submitting, submitError, onSubmit }: P
 
   return (
     <>
-      <p className="aurora-eyebrow aurora-reveal aurora-reveal-1">Aurora</p>
+      <p className="aurora-eyebrow aurora-reveal aurora-reveal-1">Alaia</p>
       <h1 className="aurora-entrance-title aurora-reveal aurora-reveal-2">
         Tus viajes empiezan acá.
       </h1>

@@ -9,7 +9,7 @@ export function SessionUnavailable({ onRetry }: { onRetry: () => void }) {
     <div className="aurora-entrance">
       <AuroraParticles subtle />
       <div className="aurora-entrance-content" role="alert" aria-live="polite">
-        <p className="aurora-eyebrow aurora-reveal aurora-reveal-1">Aurora</p>
+        <p className="aurora-eyebrow aurora-reveal aurora-reveal-1">Alaia</p>
         <h1 className="aurora-entrance-title aurora-reveal aurora-reveal-2">
           No pudimos verificar tu sesión.
         </h1>

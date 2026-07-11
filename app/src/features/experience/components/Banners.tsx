@@ -20,7 +20,7 @@ export function InstallBanner() {
           ×
         </button>
         <p>
-          Para guardar Aurora en tu pantalla de inicio, toca <strong>Compartir</strong> y luego{" "}
+          Para guardar Alaia en tu pantalla de inicio, toca <strong>Compartir</strong> y luego{" "}
           <strong>"Agregar a inicio"</strong>.
         </p>
       </div>
@@ -36,7 +36,7 @@ export function InstallBanner() {
       >
         ×
       </button>
-      <p>Aurora puede quedarse contigo, en tu pantalla de inicio.</p>
+      <p>Alaia puede quedarse contigo, en tu pantalla de inicio.</p>
       <button type="button" onClick={() => actions.installApp()}>
         Dejarla en inicio
       </button>
@@ -51,7 +51,7 @@ export function NotificationPrompt() {
   }
   return (
     <div className="notification-prompt">
-      <p>{pendingNotification.body} ¿Querés que Aurora te avise en momentos así?</p>
+      <p>{pendingNotification.body} ¿Querés que Alaia te avise en momentos así?</p>
       <button type="button" onClick={() => actions.allowNotifications()}>
         Avisame
       </button>

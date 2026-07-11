@@ -121,8 +121,8 @@ export default defineConfig({
       ],
       manifest: {
         id: "/",
-        name: "Aurora — Buenos Aires 2026",
-        short_name: "Aurora",
+        name: "Alaia — Buenos Aires 2026",
+        short_name: "Alaia",
         description: "Un compañero de viaje para vivir y recordar Buenos Aires 2026.",
         start_url: "/",
         scope: "/",

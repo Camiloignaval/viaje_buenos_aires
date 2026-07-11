@@ -41,7 +41,7 @@ export function CodeStep({
         Te enviamos seis números.
       </h1>
       <p className="aurora-entrance-text aurora-reveal aurora-reveal-3">
-        Escríbelos acá para abrir Aurora.
+        Escríbelos acá para abrir Alaia.
       </p>
       <p className="aurora-entrance-email aurora-reveal aurora-reveal-4">{email}</p>
       <form
@@ -70,7 +70,7 @@ export function CodeStep({
           }}
         />
         <button type="submit" disabled={submitting}>
-          {submitting ? "Abriendo…" : "Entrar a Aurora →"}
+          {submitting ? "Abriendo…" : "Entrar a Alaia →"}
         </button>
         <p className="aurora-entrance-error" role="alert" aria-live="polite">
           {error ?? ""}
