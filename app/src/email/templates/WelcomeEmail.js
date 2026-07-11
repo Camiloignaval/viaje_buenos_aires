@@ -1,5 +1,5 @@
 ﻿import { createElement as h } from 'react';
-import { AuroraLayout } from '../layouts/AuroraLayout.js';
+import { AlaiaLayout } from '../layouts/AlaiaLayout.js';
 import { EmailCard } from '../components/EmailCard.js';
 import { EmailButton } from '../components/EmailButton.js';
 import { SectionTitle } from '../components/SectionTitle.js';
@@ -10,7 +10,7 @@ const DEFAULT_APP_URL = 'https://Alaia.cl';
 
 export function WelcomeEmail({ name = '', appUrl = DEFAULT_APP_URL } = {}) {
   return h(
-    AuroraLayout,
+    AlaiaLayout,
     { previewText: `Bienvenido a Alaia${name ? `, ${name}` : ''}`, appUrl },
     h(
       EmailCard,

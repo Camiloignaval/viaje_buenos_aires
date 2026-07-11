@@ -16,8 +16,8 @@ test('sendEmail no rompe la app si no hay RESEND_API_KEY configurado', async () 
   process.env.EMAIL_FROM = 'Alaia <noreply@alaia.cl>';
 
   const result = await sendEmail({
-    to: 'test@aurora.cl',
-    subject: 'Bienvenido a Aurora',
+    to: 'test@alaia.cl',
+    subject: 'Bienvenido a Alaia',
     template: WelcomeEmail,
     props: { name: 'Cami' },
   });

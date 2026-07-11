@@ -1,5 +1,5 @@
 export { theme, styles } from './theme.js';
-export { AuroraLayout } from './layouts/AuroraLayout.js';
+export { AlaiaLayout } from './layouts/AlaiaLayout.js';
 export { EmailButton } from './components/EmailButton.js';
 export { EmailHeader } from './components/EmailHeader.js';
 export { EmailFooter } from './components/EmailFooter.js';

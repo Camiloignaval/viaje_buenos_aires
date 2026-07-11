@@ -1,5 +1,5 @@
 ﻿import { createElement as h } from 'react';
-import { AuroraLayout } from '../layouts/AuroraLayout.js';
+import { AlaiaLayout } from '../layouts/AlaiaLayout.js';
 import { EmailCard } from '../components/EmailCard.js';
 import { EmailButton } from '../components/EmailButton.js';
 import { SectionTitle } from '../components/SectionTitle.js';
@@ -25,7 +25,7 @@ export function TripReadyEmail({ name = '', destination, startDate, endDate, tri
   const dateRange = formatDateRange(startDate, endDate);
 
   return h(
-    AuroraLayout,
+    AlaiaLayout,
     { previewText: `Tu viaje a ${destination} ya estÃ¡ listo`, appUrl },
     h(
       EmailCard,

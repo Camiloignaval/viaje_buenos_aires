@@ -1,5 +1,5 @@
 ﻿import { createElement as h } from 'react';
-import { AuroraLayout } from '../layouts/AuroraLayout.js';
+import { AlaiaLayout } from '../layouts/AlaiaLayout.js';
 import { EmailCard } from '../components/EmailCard.js';
 import { EmailButton } from '../components/EmailButton.js';
 import { SectionTitle } from '../components/SectionTitle.js';
@@ -12,7 +12,7 @@ const DEFAULT_APP_URL = 'https://Alaia.cl';
 // quÃ© mecanismo de verificaciÃ³n usar sin tocar este template.
 export function VerifyEmail({ name = '', code, verifyUrl, appUrl = DEFAULT_APP_URL } = {}) {
   return h(
-    AuroraLayout,
+    AlaiaLayout,
     { previewText: 'ConfirmÃ¡ tu correo para seguir con Alaia', appUrl },
     h(
       EmailCard,

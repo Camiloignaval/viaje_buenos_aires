@@ -17,9 +17,9 @@ async function renderHtml(Component, props) {
 }
 
 test('WelcomeEmail interpola el nombre y el link de la app', async () => {
-  const html = await renderHtml(WelcomeEmail, { name: 'Cami', appUrl: 'https://aurora.cl/app' });
+  const html = await renderHtml(WelcomeEmail, { name: 'Cami', appUrl: 'https://alaia.cl/app' });
   assert.match(html, /Hola Cami/);
-  assert.match(html, /href="https:\/\/aurora\.cl\/app"/);
+  assert.match(html, /href="https:\/\/alaia\.cl\/app"/);
 });
 
 test('VerifyEmail muestra el código cuando se pasa', async () => {
@@ -28,13 +28,13 @@ test('VerifyEmail muestra el código cuando se pasa', async () => {
 });
 
 test('VerifyEmail muestra el botón cuando se pasa verifyUrl', async () => {
-  const html = await renderHtml(VerifyEmail, { verifyUrl: 'https://aurora.cl/verify/abc' });
-  assert.match(html, /href="https:\/\/aurora\.cl\/verify\/abc"/);
+  const html = await renderHtml(VerifyEmail, { verifyUrl: 'https://alaia.cl/verify/abc' });
+  assert.match(html, /href="https:\/\/alaia\.cl\/verify\/abc"/);
 });
 
 test('ResetPasswordEmail incluye el link de reseteo', async () => {
-  const html = await renderHtml(ResetPasswordEmail, { resetUrl: 'https://aurora.cl/reset/xyz' });
-  assert.match(html, /href="https:\/\/aurora\.cl\/reset\/xyz"/);
+  const html = await renderHtml(ResetPasswordEmail, { resetUrl: 'https://alaia.cl/reset/xyz' });
+  assert.match(html, /href="https:\/\/alaia\.cl\/reset\/xyz"/);
 });
 
 test('TripReadyEmail muestra destino y link del viaje', async () => {
@@ -42,23 +42,23 @@ test('TripReadyEmail muestra destino y link del viaje', async () => {
     destination: 'Buenos Aires',
     startDate: '2026-08-10',
     endDate: '2026-08-15',
-    tripUrl: 'https://aurora.cl/trip/1',
+    tripUrl: 'https://alaia.cl/trip/1',
   });
   assert.match(html, /Buenos Aires/);
   assert.match(html, /10 de agosto/);
   assert.match(html, /15 de agosto/);
-  assert.match(html, /href="https:\/\/aurora\.cl\/trip\/1"/);
+  assert.match(html, /href="https:\/\/alaia\.cl\/trip\/1"/);
 });
 
 test('DailyMomentEmail muestra el recuerdo y la imagen', async () => {
   const html = await renderHtml(DailyMomentEmail, {
     memoryTitle: 'Tu primer día',
     memoryText: 'Caminamos por Recoleta',
-    imageUrl: 'https://aurora.cl/img/1.jpg',
+    imageUrl: 'https://alaia.cl/img/1.jpg',
   });
   assert.match(html, /Tu primer día/);
   assert.match(html, /Caminamos por Recoleta/);
-  assert.match(html, /src="https:\/\/aurora\.cl\/img\/1\.jpg"/);
+  assert.match(html, /src="https:\/\/alaia\.cl\/img\/1\.jpg"/);
 });
 
 test('FeedbackReceivedEmail confirma el mensaje con tono Alaia', async () => {

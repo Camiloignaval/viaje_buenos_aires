@@ -1,4 +1,4 @@
-// Tokens visuales de Aurora para email. Única fuente de verdad para
+// Tokens visuales de Alaia para email. Única fuente de verdad para
 // colores/tipografía/espaciado — todos los componentes de src/email leen de acá,
 // nunca redefinen un color o una tipografía por su cuenta.
 export const theme = {

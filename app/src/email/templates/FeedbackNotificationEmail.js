@@ -1,5 +1,5 @@
 import { createElement as h } from 'react';
-import { AuroraLayout } from '../layouts/AuroraLayout.js';
+import { AlaiaLayout } from '../layouts/AlaiaLayout.js';
 import { EmailCard } from '../components/EmailCard.js';
 import { SectionTitle } from '../components/SectionTitle.js';
 import { styles, theme } from '../theme.js';
@@ -16,7 +16,7 @@ function row(label, value) {
 
 export function FeedbackNotificationEmail({ feedback = {}, user = {}, appUrl = '' } = {}) {
   return h(
-    AuroraLayout,
+    AlaiaLayout,
     { previewText: 'Nueva sugerencia recibida en Alaia', appUrl },
     h(
       EmailCard,

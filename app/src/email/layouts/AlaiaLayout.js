@@ -6,7 +6,7 @@ import { EmailFooter } from '../components/EmailFooter.js';
 // Shell compartido por todos los templates: head + preview text oculto +
 // contenedor de 600px + header/footer. Cambiar el diseño global de los
 // emails empieza y termina en este archivo (y en theme.js para los tokens).
-export function AuroraLayout({ previewText = '', appUrl, logoUrl, children }) {
+export function AlaiaLayout({ previewText = '', appUrl, logoUrl, children }) {
   return h(
     'html',
     { lang: 'es' },
