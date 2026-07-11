@@ -8,8 +8,8 @@ phases:
   specs: done        # trip-bootstrap, trip-invitations, invitation-auth-return, trip-membership, invitation-sharing-ui
   design: done
   tasks: done
-  apply: in-progress # plan aprobado + D1–D3 cerradas; ejecución autónoma de la Etapa 6
-  verify: pending
+  apply: done        # 8 fases implementadas en commits temáticos; ver tasks.md
+  verify: done       # typecheck + npm test (178) + test:react (296) + build + e2e (84) en verde
   archive: pending   # NO archivar todavía (instrucción explícita del usuario)
 resolved_decisions:
   D1-onboarding-invitado: defer       # aceptar NO exige onboarding; el guard lo fuerza al entrar a /trips/:tripId; no se pierde la invitación
