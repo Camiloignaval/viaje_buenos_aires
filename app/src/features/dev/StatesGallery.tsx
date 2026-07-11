@@ -15,6 +15,11 @@ import { SummaryStep } from "@/features/trips/components/wizard/SummaryStep";
 import { StoryBeginning } from "@/features/trips/components/wizard/StoryBeginning";
 import { INITIAL_WIZARD_DATA } from "@/features/trips/components/wizard/wizardData";
 import type { Trip } from "@/features/trips/types";
+import { InviteUnauthenticated } from "@/features/sharing/components/InviteUnauthenticated";
+import { InviteDecision } from "@/features/sharing/components/InviteDecision";
+import { InviteWrongEmail } from "@/features/sharing/components/InviteWrongEmail";
+import { InviteStatusScreen } from "@/features/sharing/components/InviteStatusScreen";
+import type { InvitationPreview } from "@/features/sharing/types";
 
 // Galería de estados SOLO-DEV. Renderiza cada pantalla de acceso en aislamiento,
 // sin API/Mongo/login real: los componentes presentacionales reciben props fijas.
@@ -81,6 +86,16 @@ const SAMPLE_TRIPS: Trip[] = [
     endDateTime: sampleDateInDays(11),
   },
 ];
+
+// Invitación de muestra para la galería (sin backend): mismos campos que devuelve
+// el preview público sanitizado.
+const SAMPLE_INVITATION: InvitationPreview = {
+  status: "pending",
+  requiresAuthentication: true,
+  trip: { title: "Buenos Aires, 2026", destination: { cityName: "Buenos Aires", countryName: "Argentina" } },
+  ownerDisplayName: "Camilo",
+  invitedEmailMasked: "k•••@mail.com",
+};
 
 // Marco de "Mis viajes" idéntico al de TripsPage, para que el estado se vea igual.
 function TripsFrame({ title, account, children }: { title: string; account?: string; children: ReactNode }) {
@@ -307,6 +322,22 @@ export const GALLERY_STATES: Record<string, GalleryState> = {
   "story-beginning": {
     label: "Alaia · comienza la historia (transición)",
     render: () => <StoryBeginning run={() => new Promise<Trip>(() => {})} onSuccess={noop} onError={noop} />,
+  },
+  "invite-unauthenticated": {
+    label: "Invitación · sin sesión",
+    render: () => <InviteUnauthenticated token="demo-token" invitation={SAMPLE_INVITATION} />,
+  },
+  "invite-decision": {
+    label: "Invitación · decisión (aceptar/rechazar)",
+    render: () => <InviteDecision token="demo-token" invitation={SAMPLE_INVITATION} />,
+  },
+  "invite-wrong-email": {
+    label: "Invitación · otro correo",
+    render: () => <InviteWrongEmail />,
+  },
+  "invite-expired": {
+    label: "Invitación · vencida",
+    render: () => <InviteStatusScreen variant="expired" />,
   },
 };
 

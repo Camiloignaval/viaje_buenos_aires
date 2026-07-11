@@ -22,6 +22,10 @@ const STATES = [
   "trip-style-step",
   "trip-summary",
   "story-beginning",
+  "invite-unauthenticated",
+  "invite-decision",
+  "invite-wrong-email",
+  "invite-expired",
 ] as const;
 
 const SHOTS_DIR = "e2e/__shots__";
