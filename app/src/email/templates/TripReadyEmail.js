@@ -1,4 +1,4 @@
-import { createElement as h } from 'react';
+﻿import { createElement as h } from 'react';
 import { AuroraLayout } from '../layouts/AuroraLayout.js';
 import { EmailCard } from '../components/EmailCard.js';
 import { EmailButton } from '../components/EmailButton.js';
@@ -7,13 +7,18 @@ import { Divider } from '../components/Divider.js';
 import { Spacer } from '../components/Spacer.js';
 import { theme, styles } from '../theme.js';
 
-const DEFAULT_APP_URL = 'https://aurora.cl';
+const DEFAULT_APP_URL = 'https://Alaia.cl';
 
 function formatDateRange(startDate, endDate) {
   if (!startDate) return '';
-  const format = (value) => new Date(value).toLocaleDateString('es-CL', { day: 'numeric', month: 'long' });
+  const format = (value) => {
+    const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(value));
+    if (!match) return '';
+    const date = new Date(Date.UTC(Number(match[1]), Number(match[2]) - 1, Number(match[3]), 12));
+    return date.toLocaleDateString('es-CL', { day: 'numeric', month: 'long', timeZone: 'UTC' });
+  };
   if (!endDate || endDate === startDate) return format(startDate);
-  return `${format(startDate)} – ${format(endDate)}`;
+  return `${format(startDate)} â€“ ${format(endDate)}`;
 }
 
 export function TripReadyEmail({ name = '', destination, startDate, endDate, tripUrl, appUrl = DEFAULT_APP_URL } = {}) {
@@ -21,17 +26,17 @@ export function TripReadyEmail({ name = '', destination, startDate, endDate, tri
 
   return h(
     AuroraLayout,
-    { previewText: `Tu viaje a ${destination} ya está listo`, appUrl },
+    { previewText: `Tu viaje a ${destination} ya estÃ¡ listo`, appUrl },
     h(
       EmailCard,
       null,
-      h(SectionTitle, null, 'Tu viaje ya está listo'),
-      h('p', { style: styles.text }, `Hola${name ? ` ${name}` : ''}, terminamos de armar tu experiencia en Aurora.`),
+      h(SectionTitle, null, 'Tu viaje ya estÃ¡ listo'),
+      h('p', { style: styles.text }, `Hola${name ? ` ${name}` : ''}, terminamos de armar tu experiencia en Alaia.`),
       h(Divider),
       h('p', { style: { margin: 0, fontSize: '20px', fontWeight: 600, color: theme.colors.textPrimary } }, destination),
       dateRange ? h('p', { style: { ...styles.textMuted, margin: '4px 0 0' } }, dateRange) : null,
       h(Spacer, { height: '16px' }),
-      h(EmailButton, { href: tripUrl ?? appUrl }, 'Abrir Aurora'),
+      h(EmailButton, { href: tripUrl ?? appUrl }, 'Abrir Alaia'),
     ),
   );
 }

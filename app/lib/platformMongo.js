@@ -1,4 +1,5 @@
 import { MongoClient, ObjectId } from 'mongodb';
+import { getPlatformConfig, requireConfigValue } from './platformConfig.js';
 
 export const PLATFORM_COLLECTIONS = Object.freeze({
   users: 'users',
@@ -9,23 +10,25 @@ export const PLATFORM_COLLECTIONS = Object.freeze({
   mediaAssets: 'mediaAssets',
   storyMedia: 'storyMedia',
   authCodes: 'authCodes',
+  feedback: 'feedback',
+  notificationDeliveries: 'notificationDeliveries',
 });
 
 export function isPlatformMongoConfigured() {
-  return Boolean(process.env.MONGODB_URI);
+  return Boolean(getPlatformConfig().database.mongodbUri);
 }
 
 let clientPromise = null;
 
 function getClientPromise() {
   if (!isPlatformMongoConfigured()) {
-    throw new Error('Aurora Platform necesita MONGODB_URI configurado.');
+    requireConfigValue('', 'MONGODB_URI');
   }
   if (!clientPromise) {
     clientPromise = globalThis._auroraPlatformMongoClientPromise;
   }
   if (!clientPromise) {
-    const client = new MongoClient(process.env.MONGODB_URI);
+    const client = new MongoClient(requireConfigValue(getPlatformConfig().database.mongodbUri, 'MONGODB_URI'));
     clientPromise = client.connect();
     globalThis._auroraPlatformMongoClientPromise = clientPromise;
   }
@@ -60,3 +63,5 @@ export const getMemoriesCollection = () => getPlatformCollection(PLATFORM_COLLEC
 export const getMediaAssetsCollection = () => getPlatformCollection(PLATFORM_COLLECTIONS.mediaAssets);
 export const getStoryMediaCollection = () => getPlatformCollection(PLATFORM_COLLECTIONS.storyMedia);
 export const getAuthCodesCollection = () => getPlatformCollection(PLATFORM_COLLECTIONS.authCodes);
+export const getFeedbackCollection = () => getPlatformCollection(PLATFORM_COLLECTIONS.feedback);
+export const getNotificationDeliveriesCollection = () => getPlatformCollection(PLATFORM_COLLECTIONS.notificationDeliveries);

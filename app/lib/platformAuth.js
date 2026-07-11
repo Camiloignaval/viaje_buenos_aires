@@ -1,5 +1,6 @@
 import crypto from 'node:crypto';
 import { getTripsCollection, toObjectId } from './platformMongo.js';
+import { getPlatformConfig, requireConfigValue } from './platformConfig.js';
 
 export const SESSION_COOKIE_NAME = 'aurora_session';
 export const SESSION_TTL_SECONDS = 60 * 60 * 24 * 30;
@@ -20,11 +21,8 @@ function decodeBase64url(input) {
   return Buffer.from(input, 'base64url').toString('utf8');
 }
 
-function getJwtSecret(secret = process.env.AURORA_JWT_SECRET) {
-  if (!secret) {
-    throw new Error('Aurora Platform necesita AURORA_JWT_SECRET configurado.');
-  }
-  return secret;
+function getJwtSecret(secret = getPlatformConfig().auth.jwtSecret) {
+  return requireConfigValue(secret, 'AURORA_JWT_SECRET');
 }
 
 function sign(value, secret) {

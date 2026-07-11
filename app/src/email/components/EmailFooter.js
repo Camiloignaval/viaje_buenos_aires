@@ -1,7 +1,7 @@
-import { createElement as h } from 'react';
+﻿import { createElement as h } from 'react';
 import { theme } from '../theme.js';
 
-const DEFAULT_APP_URL = 'https://aurora.cl';
+const DEFAULT_APP_URL = 'https://Alaia.cl';
 
 export function EmailFooter({ appUrl = DEFAULT_APP_URL } = {}) {
   const year = new Date().getFullYear();
@@ -14,14 +14,14 @@ export function EmailFooter({ appUrl = DEFAULT_APP_URL } = {}) {
     h(
       'p',
       { style: { margin: 0, fontFamily: theme.font.sans, fontSize: '12px', lineHeight: '20px', color: theme.colors.textSecondary } },
-      `© ${year} Aurora. Todos los derechos reservados.`,
+      `Â© ${year} Alaia. Todos los derechos reservados.`,
     ),
     h(
       'p',
       { style: { margin: '4px 0 0', fontFamily: theme.font.sans, fontSize: '12px', lineHeight: '20px' } },
       h('a', { href: `${appUrl}/privacidad`, style: linkStyle }, 'Privacidad'),
-      '  ·  ',
-      h('a', { href: `${appUrl}/terminos`, style: linkStyle }, 'Términos'),
+      '  Â·  ',
+      h('a', { href: `${appUrl}/terminos`, style: linkStyle }, 'TÃ©rminos'),
     ),
   );
 }

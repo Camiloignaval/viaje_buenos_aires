@@ -65,7 +65,7 @@ publishButton.addEventListener('click', async () => {
       return;
     }
 
-    const link = `${window.location.origin}/experience.html?token=${body.accessToken}`;
+    const link = `${window.location.origin}/experience?token=${body.accessToken}`;
     linkOutput.value = link;
     resultEl.classList.add('visible');
     qrEl.innerHTML = '';

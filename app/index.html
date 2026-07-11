@@ -2,13 +2,25 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%92%9C%3C/text%3E%3C/svg%3E" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Buenos Aires 2026 — App del viaje</title>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
     <meta name="robots" content="noindex, nofollow" />
+    <title>Aurora</title>
+    <!-- Aurora es ahora una SPA React única (v1.0). El manifest PWA lo inyecta
+         vite-plugin-pwa en el build (ver vite.config.js). -->
+    <meta name="theme-color" content="#0f0e0d" />
+    <link rel="icon" href="/icons/Web/favicon.ico" sizes="32x32" />
+    <link rel="icon" href="/icons/Web/favicon-32x32.png" type="image/png" sizes="32x32" />
+    <link rel="icon" href="/icons/Web/favicon-16x16.png" type="image/png" sizes="16x16" />
+    <link rel="apple-touch-icon" href="/icons/Web/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Aurora" />
   </head>
   <body>
-    <div id="app"></div>
-    <script type="module" src="/src/main.js"></script>
+    <div id="root"></div>
+    <script type="module" src="/src/app/main.tsx"></script>
   </body>
 </html>

@@ -1,9 +1,8 @@
 {
-  "redirects": [
+  "rewrites": [
     {
-      "source": "/",
-      "destination": "/experience.html",
-      "permanent": false
+      "source": "/((?!api/|@vite|@react-refresh|@id/|@fs/|src/|.*\\.[^/]+$).*)",
+      "destination": "/index.html"
     }
   ]
 }

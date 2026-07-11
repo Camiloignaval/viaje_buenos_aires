@@ -1,4 +1,4 @@
-import { createElement as h } from 'react';
+﻿import { createElement as h } from 'react';
 import { theme } from '../theme.js';
 
 export function EmailHeader({ logoUrl } = {}) {
@@ -8,7 +8,7 @@ export function EmailHeader({ logoUrl } = {}) {
     logoUrl
       ? h('img', {
           src: logoUrl,
-          alt: 'Aurora',
+          alt: 'Alaia',
           width: 40,
           height: 40,
           style: { display: 'block', margin: '0 auto' },
@@ -24,7 +24,7 @@ export function EmailHeader({ logoUrl } = {}) {
               color: theme.colors.primary,
             },
           },
-          'Aurora',
+          'Alaia',
         ),
   );
 }

@@ -3,13 +3,10 @@ import { createSessionToken, setSessionCookie, verifySessionToken } from '../../
 import { getAuthCodesCollection, getUsersCollection } from '../../lib/platformMongo.js';
 import { sendPlatformError } from '../../lib/platformErrors.js';
 import { normalizeEmail, verifyAuthCodeHash } from '../../lib/platformAuthCodes.js';
+import { publicUser } from '../../lib/platformUsers.js';
 
 function readBody(req) {
   return typeof req.body === 'string' ? JSON.parse(req.body || '{}') : req.body ?? {};
-}
-
-function publicUser(user) {
-  return { id: String(user._id), email: user.email, name: user.name ?? null };
 }
 
 export default async function handler(req, res) {
@@ -42,7 +39,7 @@ export default async function handler(req, res) {
       { email },
       {
         $setOnInsert: { email, name: null, avatarUrl: null, createdAt: now },
-        $set: { updatedAt: now, lastLoginAt: now },
+        $set: { updatedAt: now, lastLoginAt: now, emailVerifiedAt: now },
       },
       { upsert: true }
     );

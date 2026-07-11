@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { ObjectId } from 'mongodb';
 import { PLATFORM_COLLECTIONS, toObjectId } from './platformMongo.js';
 
-test('PLATFORM_COLLECTIONS expone las colecciones MVP de Etapa 3', () => {
+test('PLATFORM_COLLECTIONS expone colecciones de plataforma y Etapa 5', () => {
   assert.deepEqual(PLATFORM_COLLECTIONS, {
     users: 'users',
     trips: 'trips',
@@ -13,6 +13,8 @@ test('PLATFORM_COLLECTIONS expone las colecciones MVP de Etapa 3', () => {
     mediaAssets: 'mediaAssets',
     storyMedia: 'storyMedia',
     authCodes: 'authCodes',
+    feedback: 'feedback',
+    notificationDeliveries: 'notificationDeliveries',
   });
 });
 

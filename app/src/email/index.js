@@ -12,3 +12,5 @@ export { VerifyEmail } from './templates/VerifyEmail.js';
 export { ResetPasswordEmail } from './templates/ResetPasswordEmail.js';
 export { TripReadyEmail } from './templates/TripReadyEmail.js';
 export { DailyMomentEmail } from './templates/DailyMomentEmail.js';
+export { FeedbackReceivedEmail } from './templates/FeedbackReceivedEmail.js';
+export { FeedbackNotificationEmail } from './templates/FeedbackNotificationEmail.js';

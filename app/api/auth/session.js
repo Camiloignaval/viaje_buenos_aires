@@ -1,10 +1,7 @@
 import { applyCors } from '../../lib/cors.js';
 import { getSessionToken, verifySessionToken } from '../../lib/platformAuth.js';
 import { getUsersCollection, toObjectId } from '../../lib/platformMongo.js';
-
-function publicUser(user) {
-  return { id: String(user._id), email: user.email, name: user.name ?? null };
-}
+import { publicUser } from '../../lib/platformUsers.js';
 
 export default async function handler(req, res) {
   if (applyCors(req, res)) return;

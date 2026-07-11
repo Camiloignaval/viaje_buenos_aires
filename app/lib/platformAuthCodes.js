@@ -1,5 +1,6 @@
 import crypto from 'node:crypto';
 import { sendVerifyEmail } from './email/senders/sendVerifyEmail.js';
+import { getPlatformConfig, requireConfigValue } from './platformConfig.js';
 
 export const AUTH_CODE_TTL_SECONDS = 60 * 10;
 export const AUTH_CODE_LENGTH = 6;
@@ -16,11 +17,8 @@ export function generateAuthCode() {
   return String(crypto.randomInt(0, 1_000_000)).padStart(AUTH_CODE_LENGTH, '0');
 }
 
-function getCodeSecret(secret = process.env.AURORA_AUTH_CODE_SECRET ?? process.env.AURORA_JWT_SECRET) {
-  if (!secret) {
-    throw new Error('Aurora Platform necesita AURORA_AUTH_CODE_SECRET o AURORA_JWT_SECRET configurado.');
-  }
-  return secret;
+function getCodeSecret(secret = getPlatformConfig().auth.authCodeSecret || getPlatformConfig().auth.jwtSecret) {
+  return requireConfigValue(secret, 'AURORA_AUTH_CODE_SECRET o AURORA_JWT_SECRET');
 }
 
 export function hashAuthCode(email, code, { secret } = {}) {
@@ -49,7 +47,7 @@ export async function deliverAuthCode(email, code) {
   // el template VerifyEmail de Aurora (free tier de Resend: 3000/mes). Sin
   // esa key, en desarrollo queda visible en logs; en producción se exige
   // configurar un proveedor antes de usar auth real con usuarios.
-  if (process.env.RESEND_API_KEY) {
+  if (getPlatformConfig().email.resendApiKey) {
     const result = await sendVerifyEmail({ email, code });
     if (!result.success) {
       throw new Error(`Resend rechazó el envío: ${result.error}`);
