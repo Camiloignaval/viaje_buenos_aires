@@ -20,7 +20,7 @@ export interface SyncResult {
 }
 
 function syncTokenKey(storyId: string): string {
-  return `aurora:sync-token:${storyId}`;
+  return `alaia:sync-token:${storyId}`;
 }
 
 export function getSyncToken(storyId: string): string | null {

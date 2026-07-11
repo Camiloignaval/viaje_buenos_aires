@@ -22,7 +22,7 @@ function fakeStorage(): KeyValueStorage {
 
 describe("memoryStore", () => {
   it("memoriesKey namespacea por storyId", () => {
-    expect(memoriesKey("story-a")).toBe("aurora:memories:story-a");
+    expect(memoriesKey("story-a")).toBe("alaia:memories:story-a");
     expect(memoriesKey("story-a")).not.toBe(memoriesKey("story-b"));
   });
 

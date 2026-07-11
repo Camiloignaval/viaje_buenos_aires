@@ -21,7 +21,7 @@ function fakeStorage(): KeyValueStorage {
 
 describe("progressStore", () => {
   it("progressKey namespacea por storyId", () => {
-    expect(progressKey("story-a")).toBe("aurora:progress:story-a");
+    expect(progressKey("story-a")).toBe("alaia:progress:story-a");
     expect(progressKey("story-a")).not.toBe(progressKey("story-b"));
   });
 

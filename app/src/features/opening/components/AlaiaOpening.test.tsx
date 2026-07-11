@@ -102,14 +102,14 @@ describe("AlaiaOpening", () => {
   });
 
   it("sale con Escape sin tocar el intro de Experience", () => {
-    window.sessionStorage.setItem("aurora:intro-video-2-seen:ba-2026", "1");
+    window.sessionStorage.setItem("alaia:intro-video-2-seen:ba-2026", "1");
 
     renderOpening();
     fireEvent.keyDown(window, { key: "Escape" });
     act(() => vi.advanceTimersByTime(200));
 
     expect(screen.queryByTestId("alaia-opening")).not.toBeInTheDocument();
-    expect(window.sessionStorage.getItem("aurora:intro-video-2-seen:ba-2026")).toBe("1");
+    expect(window.sessionStorage.getItem("alaia:intro-video-2-seen:ba-2026")).toBe("1");
     expect(document.querySelector("[data-aurora-intro-video]")).toBeNull();
   });
 

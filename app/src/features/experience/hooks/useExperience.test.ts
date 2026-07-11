@@ -75,7 +75,7 @@ describe("useExperience — scope de persistencia (Decisión D3)", () => {
   it("la clave de 'intro vista' se scopea por scopeId (no queda pegada al storyId fijo)", () => {
     renderHook(() => useExperience(auroraStoryPackage, "trip-intro"));
     // En pre-viaje + reduced-motion, el montaje marca la intro vista bajo el scope.
-    expect(window.sessionStorage.getItem("aurora:intro-video-2-seen:trip-intro")).toBe("1");
-    expect(window.sessionStorage.getItem(`aurora:intro-video-2-seen:${PACKAGE_STORY_ID}`)).toBeNull();
+    expect(window.sessionStorage.getItem("alaia:intro-video-2-seen:trip-intro")).toBe("1");
+    expect(window.sessionStorage.getItem(`alaia:intro-video-2-seen:${PACKAGE_STORY_ID}`)).toBeNull();
   });
 });

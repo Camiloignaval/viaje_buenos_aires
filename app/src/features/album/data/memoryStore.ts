@@ -6,7 +6,7 @@
 import type { KeyValueStorage, Memory } from "./types";
 
 export function memoriesKey(storyId: string): string {
-  return `aurora:memories:${storyId}`;
+  return `alaia:memories:${storyId}`;
 }
 
 function getDefaultStorage(): KeyValueStorage {

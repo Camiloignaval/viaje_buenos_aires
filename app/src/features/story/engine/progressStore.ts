@@ -12,7 +12,7 @@ export interface KeyValueStorage {
 }
 
 export function progressKey(storyId: string): string {
-  return `aurora:progress:${storyId}`;
+  return `alaia:progress:${storyId}`;
 }
 
 function getDefaultStorage(): KeyValueStorage {

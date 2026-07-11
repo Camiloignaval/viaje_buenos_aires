@@ -51,7 +51,7 @@ describe("openingRules", () => {
 
   it("usa una key global separada del intro de Experience", () => {
     expect(OPENING_STORAGE_KEY).toBe("alaia:opening:lastShown:v1");
-    expect(OPENING_STORAGE_KEY).not.toContain("aurora:intro-video-2-seen");
+    expect(OPENING_STORAGE_KEY).not.toContain("alaia:intro-video-2-seen");
   });
 
   it("calcula la clave de día local estable", () => {

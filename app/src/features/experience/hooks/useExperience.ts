@@ -44,8 +44,8 @@ export function useExperience(
   // propio package. El contenido narrativo lo resuelve getStoryView desde el
   // package — no depende de este scope.
   const scope = scopeId;
-  const themeStorageKey = `aurora:${scope}:theme`;
-  const introSeenKey = `aurora:intro-video-2-seen:${scope}`;
+  const themeStorageKey = `alaia:${scope}:theme`;
+  const introSeenKey = `alaia:intro-video-2-seen:${scope}`;
 
   const [now] = useState(() => new Date());
   const [themePref, setThemePref] = useState<Theme>(() => {

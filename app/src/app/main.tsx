@@ -4,10 +4,15 @@ import { RouterProvider } from "react-router-dom";
 import { registerSW } from "virtual:pwa-register";
 import { AlaiaOpening } from "@/features/opening/components/AlaiaOpening";
 import { AppProviders } from "@/providers/AppProviders";
+import { runBrandMigration } from "@/lib/brandMigration";
 import { router } from "./router";
 import "@/styles/shell.css";
 
-// PWA de Aurora: registra el Service Worker (instalable + offline, autoUpdate).
+// Migración de marca Aurora → Alaia de las claves locales, ANTES del primer render
+// que las lee. Idempotente y sin pérdida (copy-if-absent, no borra las viejas).
+runBrandMigration();
+
+// PWA de Alaia: registra el Service Worker (instalable + offline, autoUpdate).
 registerSW({ immediate: true });
 
 const rootEl = document.getElementById("root");
