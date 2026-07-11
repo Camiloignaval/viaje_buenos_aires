@@ -25,12 +25,12 @@ function getClientPromise() {
     requireConfigValue('', 'MONGODB_URI');
   }
   if (!clientPromise) {
-    clientPromise = globalThis._auroraPlatformMongoClientPromise;
+    clientPromise = globalThis._alaiaPlatformMongoClientPromise;
   }
   if (!clientPromise) {
     const client = new MongoClient(requireConfigValue(getPlatformConfig().database.mongodbUri, 'MONGODB_URI'));
     clientPromise = client.connect();
-    globalThis._auroraPlatformMongoClientPromise = clientPromise;
+    globalThis._alaiaPlatformMongoClientPromise = clientPromise;
   }
   return clientPromise;
 }

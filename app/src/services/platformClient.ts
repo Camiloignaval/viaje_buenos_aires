@@ -1,7 +1,7 @@
 // Cliente HTTP delgado hacia Aurora Platform (api/auth/*, api/trips/*,
 // api/stories/*). No mantiene estado — eso es de los hooks de cada feature.
 // `credentials: "include"` es obligatorio: la sesión vive en una cookie
-// HttpOnly (aurora_session, lib/platformAuth.js) que el JS no puede leer.
+// HttpOnly (alaia_session, lib/platformAuth.js) que el JS no puede leer.
 //
 // Port TS del núcleo del viejo platformApi.js. El contrato de red no cambia.
 

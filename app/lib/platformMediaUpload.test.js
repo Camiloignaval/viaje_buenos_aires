@@ -27,7 +27,7 @@ test('normalizeMediaUploadInput rechaza type o dataUrl inconsistentes', () => {
   assert.throws(() => normalizeMediaUploadInput({ type: 'image', dataUrl: 'data:video/mp4;base64,abc' }), /Imagen inv.lida/);
 });
 
-test('cloudinaryUploadOptions usa carpeta aurora/trips/{tripId}', () => {
+test('cloudinaryUploadOptions usa carpeta alaia/trips/{tripId}', () => {
   assert.deepEqual(cloudinaryUploadOptions({ tripId: 'trip-1', type: 'video' }), {
     folder: userMediaFolder('trip-1'),
     resource_type: 'video',
@@ -41,7 +41,7 @@ test('createMediaAssetDocument crea contrato MediaAsset persistible', () => {
     tripId,
     userId,
     input: { type: 'image', memoryLegacyId: 'm1' },
-    uploadResult: { secure_url: 'https://cdn/img.jpg', public_id: 'aurora/trips/x/img', resource_type: 'image', format: 'jpg', bytes: 123, width: 10, height: 20 },
+    uploadResult: { secure_url: 'https://cdn/img.jpg', public_id: 'alaia/trips/x/img', resource_type: 'image', format: 'jpg', bytes: 123, width: 10, height: 20 },
     now: '2026-01-01T00:00:00.000Z',
   });
 

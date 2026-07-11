@@ -3,8 +3,8 @@ import test from 'node:test';
 import { isPlatformConfigurationError, platformErrorStatus } from './platformErrors.js';
 
 test('platformErrorStatus clasifica errores de configuración como 503', () => {
-  assert.equal(platformErrorStatus(new Error('Aurora Platform necesita MONGODB_URI configurado.')), 503);
-  assert.equal(platformErrorStatus(new Error('Aurora no tiene Cloudinary configurado.')), 503);
+  assert.equal(platformErrorStatus(new Error('Alaia Platform necesita MONGODB_URI configurado.')), 503);
+  assert.equal(platformErrorStatus(new Error('Alaia no tiene Cloudinary configurado.')), 503);
   assert.equal(platformErrorStatus(new Error('Falta configurar proveedor de email para enviar códigos de acceso.')), 503);
 });
 

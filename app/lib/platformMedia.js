@@ -1,5 +1,5 @@
-export const USER_MEDIA_FOLDER_PREFIX = 'aurora/trips';
-export const STORY_MEDIA_FOLDER_PREFIX = 'aurora/stories';
+export const USER_MEDIA_FOLDER_PREFIX = 'alaia/trips';
+export const STORY_MEDIA_FOLDER_PREFIX = 'alaia/stories';
 
 export const STORY_MEDIA_SOURCES = Object.freeze({
   adminUpload: 'admin_upload',

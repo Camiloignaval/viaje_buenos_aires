@@ -1,4 +1,4 @@
-// POST /api/aurora/sync
+// POST /api/alaia/sync
 // Recibe el estado local de un dispositivo ({ storyId, accessToken,
 // chapterStatuses, memories }), lo fusiona con lo que ya hay guardado (si hay
 // otro dispositivo que sincronizó antes) y devuelve el resultado fusionado —
@@ -7,14 +7,14 @@
 // La fusión es la MISMA función pura que se prueba en `syncMerge.test.js` —
 // nada de lógica de conflictos vive solo acá, sin test.
 
-import { isAuroraBackendConfigured, getStoryPackagesCollection, getStoryStateCollection } from '../../lib/auroraMongo.js';
+import { isAlaiaBackendConfigured, getStoryPackagesCollection, getStoryStateCollection } from '../../lib/alaiaMongo.js';
 import { applyCors } from '../../lib/cors.js';
 import { mergeChapterStatuses, mergeMemories } from '../../src/sync/syncMerge.js';
 
 export default async function handler(req, res) {
   if (applyCors(req, res)) return;
-  if (!isAuroraBackendConfigured()) {
-    return res.status(503).json({ error: 'Aurora no tiene backend configurado (falta MONGODB_URI).' });
+  if (!isAlaiaBackendConfigured()) {
+    return res.status(503).json({ error: 'Alaia no tiene backend configurado (falta MONGODB_URI).' });
   }
   if (req.method !== 'POST') {
     res.setHeader('Allow', ['POST']);
@@ -47,7 +47,7 @@ export default async function handler(req, res) {
 
     return res.status(200).json({ chapterStatuses: mergedChapterStatuses, memories: mergedMemories });
   } catch (err) {
-    console.error('api/aurora/sync error:', err);
+    console.error('api/alaia/sync error:', err);
     return res.status(500).json({ error: 'Error de servidor', detail: err.message });
   }
 }

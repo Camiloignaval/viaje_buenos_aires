@@ -1,11 +1,11 @@
-// Cloudinary para las fotos de Aurora (Épica 5). Reutiliza la MISMA cuenta que
+// Cloudinary para las fotos de Alaia (Épica 5). Reutiliza la MISMA cuenta que
 // el prototipo viejo (`CLOUDINARY_CLOUD_NAME/API_KEY/API_SECRET` — ya existen
 // si el prototipo viejo está desplegado) — no hace falta una cuenta nueva,
-// las fotos de Aurora simplemente van a su propia carpeta (`aurora/<storyId>`),
+// las fotos de Alaia simplemente van a su propia carpeta (`alaia/<storyId>`),
 // sin mezclarse con las del prototipo viejo (`ba-trip-2026`).
 //
 // A diferencia de `lib/cloudinary.js`, acá NUNCA se lanza un error al importar
-// el módulo — Aurora tiene que poder arrancar sin backend configurado.
+// el módulo — Alaia tiene que poder arrancar sin backend configurado.
 
 import { v2 as cloudinary } from 'cloudinary';
 

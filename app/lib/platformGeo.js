@@ -5,11 +5,11 @@ import { normalizeSearchText, resolveCityQuery, scoreCityMatch } from './searchN
 // llamando a un tercero, respetamos su política de uso (User-Agent propio,
 // resultados cacheados un rato para no repetir la misma búsqueda).
 const NOMINATIM_BASE_URL = 'https://nominatim.openstreetmap.org';
-const USER_AGENT = 'AuroraTravelPlanner/1.0 (app privada de viajes, 2 usuarios)';
+const USER_AGENT = 'AlaiaTravelPlanner/1.0 (app privada de viajes, 2 usuarios)';
 const CACHE_TTL_MS = 5 * 60 * 1000;
 
 function getCache() {
-  return (globalThis._auroraGeoCache ??= new Map());
+  return (globalThis._alaiaGeoCache ??= new Map());
 }
 
 function cacheKey(prefix, params) {

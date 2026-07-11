@@ -1,5 +1,5 @@
 // Único archivo de sync/ que toca red, `fetch` y `localStorage` — orquesta subir
-// fotos pendientes y sincronizar progreso/Memorias contra /api/aurora/*. Nunca
+// fotos pendientes y sincronizar progreso/Memorias contra /api/alaia/*. Nunca
 // rompe la experiencia local: cualquier falla se traga en silencio y la app sigue
 // 100% local. La fusión de verdad vive en syncMerge.ts (servidor). Port TS 1:1 de
 // sync/syncClient.js.
@@ -64,7 +64,7 @@ async function uploadPendingPhotos(
       if (!blob) {
         continue;
       }
-      const response = await fetch("/api/aurora/photo-upload", {
+      const response = await fetch("/api/alaia/photo-upload", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ storyId, accessToken, image: await blobToDataUrl(blob) }),
@@ -98,7 +98,7 @@ export async function syncNow(storyId: string): Promise<SyncResult | null> {
     const chapterStatuses = loadProgress(storyId);
     const memories = loadMemories(storyId, undefined, { includeArchived: true });
 
-    const response = await fetch("/api/aurora/sync", {
+    const response = await fetch("/api/alaia/sync", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ storyId, accessToken, chapterStatuses, memories }),

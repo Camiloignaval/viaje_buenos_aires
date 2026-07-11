@@ -44,7 +44,7 @@ export function authCodeExpiresAt({ now = Date.now(), ttlSeconds = AUTH_CODE_TTL
 
 export async function deliverAuthCode(email, code) {
   // MVP: si hay RESEND_API_KEY configurada, el código sale por mail real con
-  // el template VerifyEmail de Aurora (free tier de Resend: 3000/mes). Sin
+  // el template VerifyEmail de Alaia (free tier de Resend: 3000/mes). Sin
   // esa key, en desarrollo queda visible en logs; en producción se exige
   // configurar un proveedor antes de usar auth real con usuarios.
   if (getPlatformConfig().email.resendApiKey) {
@@ -55,7 +55,7 @@ export async function deliverAuthCode(email, code) {
     return { delivery: 'resend' };
   }
   if (process.env.AURORA_AUTH_CODE_DELIVERY === 'console' || process.env.NODE_ENV !== 'production') {
-    console.info(`[aurora-auth] Código de acceso para ${email}: ${code}`);
+    console.info(`[alaia-auth] Código de acceso para ${email}: ${code}`);
     return { delivery: 'console' };
   }
   throw new Error('Falta configurar proveedor de email para enviar códigos de acceso.');

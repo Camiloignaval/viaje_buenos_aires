@@ -2,7 +2,7 @@
 import { requireTripRole } from '../../../lib/platformAuth.js';
 import { getMediaAssetsCollection, toObjectId } from '../../../lib/platformMongo.js';
 import { sendPlatformError } from '../../../lib/platformErrors.js';
-import { getCloudinary, isCloudinaryConfigured } from '../../../lib/auroraCloudinary.js';
+import { getCloudinary, isCloudinaryConfigured } from '../../../lib/alaiaCloudinary.js';
 import {
   cloudinaryUploadOptions,
   createMediaAssetDocument,
@@ -37,7 +37,7 @@ export default async function handler(req, res) {
     if (!context) return;
 
     if (!isCloudinaryConfigured()) {
-      return res.status(503).json({ error: 'Aurora no tiene Cloudinary configurado.' });
+      return res.status(503).json({ error: 'Alaia no tiene Cloudinary configurado.' });
     }
 
     const input = normalizeMediaUploadInput(readBody(req));

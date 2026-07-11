@@ -1,17 +1,17 @@
-// POST /api/aurora/photo-upload
+// POST /api/alaia/photo-upload
 // Recibe { storyId, accessToken, image: "data:image/jpeg;base64,..." } y la
 // sube a Cloudinary, en la carpeta propia de esa historia. Devuelve { url }.
 // El mismo accessToken que habilita sincronizar habilita subir fotos — no hay
 // un segundo secreto separado (ver README.md de `sync/`).
 
-import { isAuroraBackendConfigured, getStoryPackagesCollection } from '../../lib/auroraMongo.js';
-import { getCloudinary, isCloudinaryConfigured } from '../../lib/auroraCloudinary.js';
+import { isAlaiaBackendConfigured, getStoryPackagesCollection } from '../../lib/alaiaMongo.js';
+import { getCloudinary, isCloudinaryConfigured } from '../../lib/alaiaCloudinary.js';
 import { applyCors } from '../../lib/cors.js';
 
 export default async function handler(req, res) {
   if (applyCors(req, res)) return;
-  if (!isAuroraBackendConfigured() || !isCloudinaryConfigured()) {
-    return res.status(503).json({ error: 'Aurora no tiene backend de fotos configurado.' });
+  if (!isAlaiaBackendConfigured() || !isCloudinaryConfigured()) {
+    return res.status(503).json({ error: 'Alaia no tiene backend de fotos configurado.' });
   }
   if (req.method !== 'POST') {
     res.setHeader('Allow', ['POST']);
@@ -35,13 +35,13 @@ export default async function handler(req, res) {
 
     const cloudinary = getCloudinary();
     const result = await cloudinary.uploader.upload(image, {
-      folder: `aurora/${storyId}`,
+      folder: `alaia/${storyId}`,
       resource_type: 'image',
     });
 
     return res.status(200).json({ url: result.secure_url });
   } catch (err) {
-    console.error('api/aurora/photo-upload error:', err);
+    console.error('api/alaia/photo-upload error:', err);
     return res.status(500).json({ error: 'No se pudo subir la imagen', detail: err.message });
   }
 }

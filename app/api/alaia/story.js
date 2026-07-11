@@ -1,5 +1,5 @@
-// GET  /api/aurora/story?storyId=X&token=Y  → devuelve el Story Package publicado
-// POST /api/aurora/story                    → Aurora Studio: publica/actualiza un Story
+// GET  /api/alaia/story?storyId=X&token=Y  → devuelve el Story Package publicado
+// POST /api/alaia/story                    → Alaia Studio: publica/actualiza un Story
 //                                              Package (protegido por AURORA_ADMIN_PASSWORD)
 //
 // Republicar un `storyId` que ya existe actualiza su contenido pero CONSERVA el
@@ -7,14 +7,14 @@
 // corregir el contenido de la historia.
 
 import crypto from 'node:crypto';
-import { isAuroraBackendConfigured, getStoryPackagesCollection } from '../../lib/auroraMongo.js';
+import { isAlaiaBackendConfigured, getStoryPackagesCollection } from '../../lib/alaiaMongo.js';
 import { applyCors } from '../../lib/cors.js';
 import { loadStoryPackage, StoryPackageValidationError } from '../../src/story/storyPackage/storyPackage.js';
 
 export default async function handler(req, res) {
   if (applyCors(req, res)) return;
-  if (!isAuroraBackendConfigured()) {
-    return res.status(503).json({ error: 'Aurora no tiene backend configurado (falta MONGODB_URI).' });
+  if (!isAlaiaBackendConfigured()) {
+    return res.status(503).json({ error: 'Alaia no tiene backend configurado (falta MONGODB_URI).' });
   }
 
   try {
@@ -64,7 +64,7 @@ export default async function handler(req, res) {
     res.setHeader('Allow', ['GET', 'POST']);
     return res.status(405).json({ error: 'Método no permitido' });
   } catch (err) {
-    console.error('api/aurora/story error:', err);
+    console.error('api/alaia/story error:', err);
     return res.status(500).json({ error: 'Error de servidor', detail: err.message });
   }
 }

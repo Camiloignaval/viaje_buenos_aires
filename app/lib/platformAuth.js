@@ -2,7 +2,7 @@ import crypto from 'node:crypto';
 import { getTripsCollection, toObjectId } from './platformMongo.js';
 import { getPlatformConfig, requireConfigValue } from './platformConfig.js';
 
-export const SESSION_COOKIE_NAME = 'aurora_session';
+export const SESSION_COOKIE_NAME = 'alaia_session';
 export const SESSION_TTL_SECONDS = 60 * 60 * 24 * 30;
 
 export class AuthError extends Error {

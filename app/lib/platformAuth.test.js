@@ -49,5 +49,5 @@ test('parseCookies lee cookies codificadas', () => {
 test('serializeCookie crea cookie httpOnly segura para sesión', () => {
   const cookie = serializeCookie(SESSION_COOKIE_NAME, 'token', { maxAge: 60, secure: true });
 
-  assert.equal(cookie, 'aurora_session=token; Path=/; SameSite=Lax; HttpOnly; Secure; Max-Age=60');
+  assert.equal(cookie, 'alaia_session=token; Path=/; SameSite=Lax; HttpOnly; Secure; Max-Age=60');
 });

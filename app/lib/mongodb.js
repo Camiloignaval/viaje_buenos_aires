@@ -6,7 +6,7 @@
 // El chequeo de la variable de entorno es DELIBERADAMENTE lazy (dentro de la
 // función, no al importar el módulo): un throw a nivel de módulo puede tirar
 // abajo todo el proceso de `vercel dev` si algo bundlea/evalúa este archivo
-// antes de que el entorno esté cargado — mismo patrón que auroraMongo.js y
+// antes de que el entorno esté cargado — mismo patrón que alaiaMongo.js y
 // platformMongo.js.
 
 import { MongoClient } from "mongodb";

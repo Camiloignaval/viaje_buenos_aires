@@ -11,8 +11,8 @@ import {
 } from './platformMedia.js';
 
 test('media folders separan User Media y Story Media', () => {
-  assert.equal(userMediaFolder('trip-1'), 'aurora/trips/trip-1');
-  assert.equal(storyMediaFolder('ba-2026'), 'aurora/stories/ba-2026');
+  assert.equal(userMediaFolder('trip-1'), 'alaia/trips/trip-1');
+  assert.equal(storyMediaFolder('ba-2026'), 'alaia/stories/ba-2026');
 });
 
 test('normalizeStoryMedia valida el contrato mínimo editorial', () => {
