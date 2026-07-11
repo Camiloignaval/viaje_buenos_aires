@@ -1,0 +1,13 @@
+change: story-catalog-resolution
+artifact_store: openspec
+execution_mode: automatic
+delivery_strategy: ask-on-risk
+phases:
+  explore: skipped   # investigación equivalente ya hecha inline por el orquestador (ver proposal.md > "Investigación previa")
+  proposal: done
+  specs: done
+  design: done
+  tasks: done   # chain_strategy=stacked-to-main confirmado, sin decisiones pendientes
+  apply: done   # 6 fases implementadas en una sola sesión (sin PRs intermedios, por pedido del usuario)
+  verify: done   # typecheck + npm test (131) + test:react (270) + build + e2e desktop (17) en verde
+  archive: done   # specs delta promovidas a openspec/specs/; cambio movido a changes/archive/2026-07-11-story-catalog-resolution

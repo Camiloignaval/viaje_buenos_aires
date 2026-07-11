@@ -1,0 +1,50 @@
+schema: spec-driven
+
+context: |
+  Tech stack: React 19 + TypeScript + Vite 8 (frontend en app/src, feature-based:
+  app/src/features/{trips,experience,connected,onboarding,auth,story}).
+  Backend serverless en app/api + app/lib (Node, MongoDB vía app/lib/platformMongo.js).
+  Data fetching: TanStack React Query (QueryClientProvider único en AppProviders.tsx).
+  Routing: react-router-dom v7 (app/src/app/router.tsx), rutas lazy por feature.
+  Validación: zod.
+  Motion: framer-motion (un solo uso hoy, LoginForm.tsx) + CSS puro (@keyframes/transition)
+  en shell.css, experience.css, alaiaOpening.css, LoadingScreen.module.css.
+  Story Package: contenido narrativo curado a mano (no generado), schema validado en
+  app/src/story/storyPackage/, único ejemplar hoy: app/src/story/data/story-ba2026.json
+  (storyId "story-ba-2026"). No existe motor de generación de historias (Story Profiling
+  Engine es solo visión documental, sin implementación).
+
+testing: |
+  npm run typecheck   -> tsc -p tsconfig.json --noEmit
+  npm run test:react  -> vitest run (componentes/hooks React+TS)
+  npm run test        -> node --test (libs legacy JS en src/**/*.test.js, lib/**/*.test.js)
+  npm run build       -> vite build
+
+style: |
+  Comentarios solo cuando explican el "por qué" (constraint no obvio), nunca el "qué".
+  Sin abstracciones anticipadas; no tocar código no relacionado al cambio.
+
+rules:
+  proposal:
+    - Include rollback plan for risky changes
+    - Distinguish "hoy" (estado actual verificado) de "propuesto" explícitamente
+  specs:
+    - Use Given/When/Then for scenarios
+    - Use RFC 2119 keywords (MUST, SHALL, SHOULD, MAY)
+  design:
+    - Include sequence diagrams / data-flow diagrams for complex flows
+    - Document architecture decisions with rationale (por qué esta opción y no otra)
+  tasks:
+    - Group by phase, use hierarchical numbering
+    - Keep tasks completable in one session
+    - Forecast review workload (400-line PR budget) explícitamente
+  apply:
+    - Follow existing code patterns
+    tdd: false
+    test_command: "npm run test:react"
+  verify:
+    test_command: "npm run test:react"
+    build_command: "npm run build"
+    coverage_threshold: 0
+  archive:
+    - Warn before merging destructive deltas
