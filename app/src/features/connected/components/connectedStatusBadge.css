@@ -1,6 +1,6 @@
 /* Insignia mínima y discreta de estado conectado (Etapa 4, Bloque 4). Copiada
    VERBATIM de src/connected/connectedStatusBadge.css durante la migración
-   strangler-fig: no toca experience.css ni la dirección visual de Aurora.
+   strangler-fig: no toca experience.css ni la dirección visual de Alaia.
    Abajo-derecha (no arriba-derecha): ese rincón ya lo ocupan .theme-switch y
    .intro-replay-button de experience.css, además del .chapter-topbar que
    cubre todo el ancho superior. env(safe-area-inset-*) para no quedar bajo el

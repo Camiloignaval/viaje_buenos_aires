@@ -1,6 +1,6 @@
 import type { CSSProperties } from "react";
 
-// Partículas doradas del umbral de Aurora — receta portada literal desde
+// Partículas doradas del umbral de Alaia — receta portada literal desde
 // connectedShell.js (profundidad far/mid/near → tamaño/velocidad/opacidad/
 // nitidez). Es atmósfera pura: aria-hidden, sin interacción.
 
@@ -52,10 +52,10 @@ const GLINTS: Glint[] = [
 // CSSProperties + las custom props --p-* que consume shell.css.
 type ParticleStyle = CSSProperties & Record<`--p-${string}`, string | number>;
 
-export function AuroraParticles({ subtle = false }: { subtle?: boolean }) {
+export function AlaiaParticles({ subtle = false }: { subtle?: boolean }) {
   return (
     <div
-      className={`aurora-particles${subtle ? " aurora-particles-subtle" : ""}`}
+      className={`alaia-particles${subtle ? " alaia-particles-subtle" : ""}`}
       aria-hidden="true"
     >
       {RISING.map((p, i) => {
@@ -72,7 +72,7 @@ export function AuroraParticles({ subtle = false }: { subtle?: boolean }) {
         return (
           <span
             key={`rise-${i}`}
-            className="aurora-particle aurora-particle-rise"
+            className="alaia-particle alaia-particle-rise"
             style={style}
           />
         );
@@ -91,7 +91,7 @@ export function AuroraParticles({ subtle = false }: { subtle?: boolean }) {
         return (
           <span
             key={`glint-${i}`}
-            className="aurora-particle aurora-particle-glint"
+            className="alaia-particle alaia-particle-glint"
             style={style}
           />
         );

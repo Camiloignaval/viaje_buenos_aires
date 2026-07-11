@@ -92,7 +92,7 @@ export function ReplayIntroButton() {
 function IntroVideo() {
   const { actions } = useExperienceCtx();
   return (
-    <div className="intro-video-shell" aria-label="Introducción de Aurora">
+    <div className="intro-video-shell" aria-label="Introducción de Alaia">
       <video
         className="intro-video"
         src="/video_intro_2.mp4"
@@ -100,7 +100,7 @@ function IntroVideo() {
         autoPlay
         playsInline
         preload="auto"
-        data-aurora-intro-video=""
+        data-alaia-intro-video=""
         ref={actions.registerIntroVideo}
       />
       <div className="cover-tint" aria-hidden="true" />

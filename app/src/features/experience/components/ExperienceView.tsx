@@ -9,7 +9,7 @@ import { StoryMode } from "@/features/story/engine/types";
 
 // Espejo de renderExperience: decide la vista raíz, calcula rootClasses y el tema,
 // y elige entre índice de lectura / álbum del viaje / modo actual. El <div> raíz
-// es `.aurora-experience` (dentro de #app, igual que en experience.html).
+// es `.alaia-experience` (dentro de #app, igual que en experience.html).
 export function ExperienceView() {
   const { view, theme, interactive, showingTripAlbum, showingPreparations, indexNavigationOpen } =
     useExperienceCtx();
@@ -22,8 +22,8 @@ export function ExperienceView() {
   const themeablePage =
     showingTripAlbum || showingPreparations || view.currentMode !== StoryMode.PRE_TRIP;
   const rootClasses = [
-    "aurora-experience",
-    `aurora-theme-${theme}`,
+    "alaia-experience",
+    `alaia-theme-${theme}`,
     indexNavigationOpen ? "is-reading-index" : "",
   ]
     .filter(Boolean)

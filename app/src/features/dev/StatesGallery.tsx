@@ -1,6 +1,6 @@
 import { Link, useSearchParams } from "react-router-dom";
 import type { ReactNode } from "react";
-import { AuroraParticles } from "@/components/animations/AuroraParticles";
+import { AlaiaParticles } from "@/components/animations/AlaiaParticles";
 import { WizardShell } from "@/components/wizard/WizardShell";
 import { CheckingSession } from "@/features/auth/components/CheckingSession";
 import { EmailStep } from "@/features/auth/components/EmailStep";
@@ -86,9 +86,9 @@ const SAMPLE_TRIPS: Trip[] = [
 function TripsFrame({ title, account, children }: { title: string; account?: string; children: ReactNode }) {
   return (
     <div className="trips-page">
-      <AuroraParticles subtle />
+      <AlaiaParticles subtle />
       <div className="trips-page-content">
-        <p className="aurora-eyebrow">Aurora</p>
+        <p className="alaia-eyebrow">Alaia</p>
         <h1 className="trips-title">{title}</h1>
         {account ? <p className="trips-account">{account}</p> : null}
         {children}
@@ -100,9 +100,9 @@ function TripsFrame({ title, account, children }: { title: string; account?: str
 // Marco del umbral idéntico al de LoginPage.
 function EntranceFrame({ children }: { children: ReactNode }) {
   return (
-    <div className="aurora-entrance">
-      <AuroraParticles />
-      <div className="aurora-entrance-content">{children}</div>
+    <div className="alaia-entrance">
+      <AlaiaParticles />
+      <div className="alaia-entrance-content">{children}</div>
     </div>
   );
 }
@@ -296,7 +296,7 @@ export const GALLERY_STATES: Record<string, GalleryState> = {
           travelReason: "honeymoon",
           travelStyle: ["romantic", "gastronomic"],
           travelBudgetStyle: "balanced",
-          accommodation: { type: "hotel", name: "Hotel Aurora, Palermo" },
+          accommodation: { type: "hotel", name: "Hotel Alaia, Palermo" },
         }}
         onEditStep={noop}
         onBack={noop}
@@ -322,7 +322,7 @@ export default function StatesGallery() {
   return (
     <div className="trips-page">
       <div className="trips-page-content">
-        <p className="aurora-eyebrow">Aurora · dev</p>
+        <p className="alaia-eyebrow">Alaia · dev</p>
         <h1 className="trips-title">Galería de estados</h1>
         <p className="trips-account">
           Cada pantalla de acceso en aislamiento, sin backend. Solo desarrollo.

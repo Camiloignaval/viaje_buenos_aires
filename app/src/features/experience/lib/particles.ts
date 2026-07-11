@@ -1,6 +1,6 @@
 // Profundidad simulada por capas (E-refino cinematográfico): cada capa correlaciona
 // tamaño, velocidad, opacidad y nitidez. Datos portados VERBATIM de render.js
-// (renderIntroParticles) — son parte de la atmósfera de Aurora.
+// (renderIntroParticles) — son parte de la atmósfera de Alaia.
 
 type Depth = "far" | "mid" | "near";
 

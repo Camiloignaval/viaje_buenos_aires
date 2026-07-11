@@ -1,5 +1,5 @@
 // Helpers de presentación portados VERBATIM de experience/render.js — la copia,
-// el tono y los marcadores del índice son parte de la identidad de Aurora.
+// el tono y los marcadores del índice son parte de la identidad de Alaia.
 
 import { ChapterStatus } from "@/features/story/engine/types";
 import type { ChapterStatusValue } from "@/features/story/engine/types";

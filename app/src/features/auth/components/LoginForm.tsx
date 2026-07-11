@@ -42,9 +42,9 @@ export function LoginForm() {
   }
 
   return (
-    <div className="aurora-entrance-content" data-step={step}>
+    <div className="alaia-entrance-content" data-step={step}>
       {/* El paso email→código es una página que se da vuelta: la vieja se
-          desvanece (Motion) y la nueva se escribe sola (aurora-reveal por
+          desvanece (Motion) y la nueva se escribe sola (alaia-reveal por
           elemento). El wrapper sólo maneja la salida para no duplicar el fade. */}
       <AnimatePresence mode="wait" initial={false}>
         <motion.div

@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { renderHook } from "@testing-library/react";
-import { auroraStoryPackage } from "../data/auroraStory";
+import { demoStoryPackage } from "../data/demoStory";
 
 // Aísla los stores/sync: solo queremos verificar CON QUÉ scope se los llama,
 // no su comportamiento real (IndexedDB/localStorage/red). vi.hoisted permite
@@ -35,7 +35,7 @@ vi.mock("@/lib/prefersReducedMotion", () => ({ prefersReducedMotion: () => true 
 
 import { useExperience } from "./useExperience";
 
-const PACKAGE_STORY_ID = auroraStoryPackage.storyId; // "story-ba-2026"
+const PACKAGE_STORY_ID = demoStoryPackage.storyId; // "story-ba-2026"
 
 afterEach(() => {
   vi.clearAllMocks();
@@ -44,13 +44,13 @@ afterEach(() => {
 
 describe("useExperience — scope de persistencia (Decisión D3)", () => {
   it("por defecto (sin scopeId) keyea por el storyId del package — retrocompatible", () => {
-    renderHook(() => useExperience(auroraStoryPackage));
+    renderHook(() => useExperience(demoStoryPackage));
     expect(loadProgress).toHaveBeenCalledWith(PACKAGE_STORY_ID);
     expect(saveSyncToken).toHaveBeenCalledWith(PACKAGE_STORY_ID, "token-abc");
   });
 
   it("con scopeId (tripId) keyea progreso, recuerdos y sync por el tripId, NO por el storyId fijo", () => {
-    renderHook(() => useExperience(auroraStoryPackage, "trip-abc-123"));
+    renderHook(() => useExperience(demoStoryPackage, "trip-abc-123"));
 
     expect(loadProgress).toHaveBeenCalledWith("trip-abc-123");
     expect(syncNow).toHaveBeenCalledWith("trip-abc-123");
@@ -62,9 +62,9 @@ describe("useExperience — scope de persistencia (Decisión D3)", () => {
   });
 
   it("dos trips distintos producen scopes independientes (progreso por-trip)", () => {
-    const { unmount } = renderHook(() => useExperience(auroraStoryPackage, "trip-uno"));
+    const { unmount } = renderHook(() => useExperience(demoStoryPackage, "trip-uno"));
     unmount();
-    renderHook(() => useExperience(auroraStoryPackage, "trip-dos"));
+    renderHook(() => useExperience(demoStoryPackage, "trip-dos"));
 
     expect(loadProgress).toHaveBeenCalledWith("trip-uno");
     expect(loadProgress).toHaveBeenCalledWith("trip-dos");
@@ -73,7 +73,7 @@ describe("useExperience — scope de persistencia (Decisión D3)", () => {
   // Punto 8.6: la intro cinematográfica se keyea por scopeId, no por el storyId
   // fijo. Un trip nuevo NO hereda el "ya vista" de otro scope (ni del demo local).
   it("la clave de 'intro vista' se scopea por scopeId (no queda pegada al storyId fijo)", () => {
-    renderHook(() => useExperience(auroraStoryPackage, "trip-intro"));
+    renderHook(() => useExperience(demoStoryPackage, "trip-intro"));
     // En pre-viaje + reduced-motion, el montaje marca la intro vista bajo el scope.
     expect(window.sessionStorage.getItem("alaia:intro-video-2-seen:trip-intro")).toBe("1");
     expect(window.sessionStorage.getItem(`alaia:intro-video-2-seen:${PACKAGE_STORY_ID}`)).toBeNull();

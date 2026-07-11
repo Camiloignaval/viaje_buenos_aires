@@ -24,19 +24,19 @@ export function EmailStep({ defaultEmail, submitting, submitError, onSubmit }: P
 
   return (
     <>
-      <p className="aurora-eyebrow aurora-reveal aurora-reveal-1">Alaia</p>
-      <h1 className="aurora-entrance-title aurora-reveal aurora-reveal-2">
+      <p className="alaia-eyebrow alaia-reveal alaia-reveal-1">Alaia</p>
+      <h1 className="alaia-entrance-title alaia-reveal alaia-reveal-2">
         Tus viajes empiezan acá.
       </h1>
-      <p className="aurora-entrance-text aurora-reveal aurora-reveal-3">
+      <p className="alaia-entrance-text alaia-reveal alaia-reveal-3">
         Escribí tu correo y te enviamos un código para entrar.
       </p>
       <form
-        className="aurora-entrance-form aurora-reveal aurora-reveal-4"
+        className="alaia-entrance-form alaia-reveal alaia-reveal-4"
         noValidate
         onSubmit={handleSubmit((values) => onSubmit(values.email))}
       >
-        <label htmlFor="login-email-input" className="aurora-sr-only">
+        <label htmlFor="login-email-input" className="alaia-sr-only">
           Tu correo
         </label>
         <input
@@ -50,11 +50,11 @@ export function EmailStep({ defaultEmail, submitting, submitError, onSubmit }: P
         <button type="submit" disabled={submitting}>
           {submitting ? "Enviando código…" : "Continuar →"}
         </button>
-        <p className="aurora-entrance-error" role="alert" aria-live="polite">
+        <p className="alaia-entrance-error" role="alert" aria-live="polite">
           {error ?? ""}
         </p>
       </form>
-      <p className="aurora-entrance-footer aurora-reveal aurora-reveal-5">
+      <p className="alaia-entrance-footer alaia-reveal alaia-reveal-5">
         Ya empezaste este viaje.
       </p>
     </>

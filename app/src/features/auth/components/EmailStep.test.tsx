@@ -6,7 +6,7 @@ import { EmailStep } from "./EmailStep";
 // Ejercita la integración real RHF + zodResolver + Zod 4 en runtime (no solo
 // el schema): que valide, muestre el mensaje original y normalice al enviar.
 describe("EmailStep", () => {
-  it("muestra la copy editorial de Aurora", () => {
+  it("muestra la copy editorial de Alaia", () => {
     render(
       <EmailStep defaultEmail="" submitting={false} submitError={null} onSubmit={() => {}} />,
     );

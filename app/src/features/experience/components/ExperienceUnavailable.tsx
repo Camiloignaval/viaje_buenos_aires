@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 //   - empty     → el viaje existe pero su historia no está lista (estado de producto)
 //   - not-found → el viaje no existe o no es accesible (estado de producto)
 //   - error     → fallo técnico real, reintentable (no es "sin historia")
-// Misma paleta que el umbral (aurora-entrance), igual que RouteError.
+// Misma paleta que el umbral (alaia-entrance), igual que RouteError.
 export type ExperienceUnavailableVariant = "empty" | "not-found" | "error";
 
 interface Copy {
@@ -40,14 +40,14 @@ export function ExperienceUnavailable({
   const backTo = variant === "empty" && tripId ? `/trips/${tripId}` : "/trips";
 
   return (
-    <div className="aurora-entrance">
-      <div className="aurora-entrance-content">
-        <p className="aurora-eyebrow">Alaia</p>
-        <h1 className="aurora-entrance-title">{copy.title}</h1>
-        <p className="aurora-entrance-text">{copy.text}</p>
+    <div className="alaia-entrance">
+      <div className="alaia-entrance-content">
+        <p className="alaia-eyebrow">Alaia</p>
+        <h1 className="alaia-entrance-title">{copy.title}</h1>
+        <p className="alaia-entrance-text">{copy.text}</p>
         {variant === "error" ? (
           <form
-            className="aurora-entrance-form"
+            className="alaia-entrance-form"
             onSubmit={(event) => {
               event.preventDefault();
               window.location.reload();
@@ -56,7 +56,7 @@ export function ExperienceUnavailable({
             <button type="submit">Reintentar →</button>
           </form>
         ) : (
-          <div className="aurora-entrance-form">
+          <div className="alaia-entrance-form">
             <Link to={backTo}>Volver a mis viajes →</Link>
           </div>
         )}

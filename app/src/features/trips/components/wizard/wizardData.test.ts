@@ -121,7 +121,7 @@ describe("buildCreateTripInput", () => {
     city: BA_CITY,
     startDateTime: "2026-07-18T09:30",
     endDateTime: "2026-07-21T22:00",
-    accommodation: { type: "hotel", name: "Hotel Aurora" },
+    accommodation: { type: "hotel", name: "Hotel Alaia" },
     travelContext: "  Nos gusta caminar.  ",
     budgetAmount: null,
     budgetCurrency: "",
@@ -148,7 +148,7 @@ describe("buildCreateTripInput", () => {
       travelReason: "honeymoon",
       travelStyle: ["romantic"],
       travelBudgetStyle: "balanced",
-      accommodation: { type: "hotel", name: "Hotel Aurora" },
+      accommodation: { type: "hotel", name: "Hotel Alaia" },
       travelContext: "Nos gusta caminar.",
     });
   });

@@ -1,4 +1,4 @@
-// El Story Package real de Aurora (Buenos Aires 2026), validado. Se importa el
+// El Story Package real de Alaia (Buenos Aires 2026), validado. Se importa el
 // mismo JSON que usa la experience vanilla (read-only) — no se duplica la data.
 //
 // USO ACOTADO: es el demo LOCAL de desarrollo/QA — el único caso donde Experience
@@ -12,4 +12,4 @@ import { loadStoryPackage } from "@/features/story/engine/storyPackage";
 // `/*#__PURE__*/` le dice a Rollup que esta llamada no tiene efectos observables:
 // así, cuando el gate `import.meta.env.DEV` elimina el único uso en producción,
 // también se eliminan este const y el JSON de BA del bundle de producción (DCE).
-export const auroraStoryPackage = /*#__PURE__*/ loadStoryPackage(raw);
+export const demoStoryPackage = /*#__PURE__*/ loadStoryPackage(raw);

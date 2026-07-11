@@ -189,7 +189,7 @@ export function PreparationsPage() {
         </div>
         <section className="preparation-afterword">
           <p>Algunas páginas todavía esperan su momento.</p>
-          <p>Aurora las abrirá cuando empiece el viaje.</p>
+          <p>Alaia las abrirá cuando empiece el viaje.</p>
         </section>
       </section>
     </div>

@@ -1,8 +1,8 @@
-/* Estilos mínimos y aislados para la primera pantalla real de Aurora.
+/* Estilos mínimos y aislados para la primera pantalla real de Alaia.
    Deliberadamente no son el sistema de diseño final — ver README.md. */
 
 :root {
-  /* Aurora no tiene "dark mode" y "light mode": tiene dos atmósferas del
+  /* Alaia no tiene "dark mode" y "light mode": tiene dos atmósferas del
      mismo libro. Estos tokens son la fuente de verdad para toda la UI. */
   --bg: #0f0e0d;
   --bg-rgb: 15, 14, 13;
@@ -103,7 +103,7 @@
   --radius-pill: 999px;
 }
 
-.aurora-theme-light {
+.alaia-theme-light {
   --bg: #f7f3ec;
   --bg-rgb: 247, 243, 236;
   --bg-secondary: #f2ece3;
@@ -243,7 +243,7 @@ body {
 }
 
 /*
- * Aurora es un libro por páginas, no una página larga (E-6, corrección):
+ * Alaia es un libro por páginas, no una página larga (E-6, corrección):
  * cada "página" (portada, índice, preparación, capítulo, epílogo, memoria,
  * álbum) ocupa 100dvh y se recorre con scroll-snap vertical — nunca queda
  * contenido a mitad de camino entre dos páginas cortas.
@@ -253,11 +253,11 @@ body:has(.book) {
   overflow: hidden;
 }
 
-body:has(.aurora-theme-dark) {
+body:has(.alaia-theme-dark) {
   background: #0f0e0d;
 }
 
-body:has(.aurora-theme-light) {
+body:has(.alaia-theme-light) {
   background: #f7f3ec;
 }
 
@@ -276,11 +276,11 @@ body:has(.aurora-theme-light) {
   background: var(--bg);
 }
 
-#app:has(.aurora-theme-light) {
+#app:has(.alaia-theme-light) {
   background: #f7f3ec;
 }
 
-#app:has(.aurora-theme-dark) {
+#app:has(.alaia-theme-dark) {
   background: #0f0e0d;
 }
 
@@ -307,7 +307,7 @@ body:has(.aurora-theme-light) {
     transform 0.24s ease;
 }
 
-.aurora-experience > .theme-switch {
+.alaia-experience > .theme-switch {
   position: fixed;
   top: calc(env(safe-area-inset-top, 0px) + 0.88rem);
   right: calc(env(safe-area-inset-right, 0px) + 0.9rem);
@@ -327,8 +327,8 @@ body:has(.aurora-theme-light) {
   transform: translateY(-1px);
 }
 
-.aurora-experience > .theme-switch:hover,
-.aurora-experience > .theme-switch:focus-visible {
+.alaia-experience > .theme-switch:hover,
+.alaia-experience > .theme-switch:focus-visible {
   background: rgba(var(--surface-secondary-rgb), 0.3);
 }
 
@@ -363,12 +363,12 @@ body:has(.aurora-theme-light) {
   flex: 0 0 auto;
 }
 
-.aurora-theme-light .theme-switch {
+.alaia-theme-light .theme-switch {
   color: rgba(var(--gold-rgb), 0.68);
 }
 
-.aurora-theme-light .theme-switch:hover,
-.aurora-theme-light .theme-switch:focus-visible {
+.alaia-theme-light .theme-switch:hover,
+.alaia-theme-light .theme-switch:focus-visible {
   color: var(--gold);
 }
 
@@ -377,12 +377,12 @@ body:has(.aurora-theme-light) {
   pointer-events: none;
 }
 
-body:has(.aurora-experience.is-reading-index),
-#app:has(.aurora-experience.is-reading-index) {
+body:has(.alaia-experience.is-reading-index),
+#app:has(.alaia-experience.is-reading-index) {
   background: #0f0e0d;
 }
 
-.aurora-experience.is-reading-index .theme-switch {
+.alaia-experience.is-reading-index .theme-switch {
   opacity: 0;
   pointer-events: none;
 }
@@ -2329,7 +2329,7 @@ body:has(.cover-index-stage.is-index-writing) {
  * Después del video de intro, el índice real (nunca una copia) se escribe de
  * a poco. `experienceView.js` agrega `.is-revealing` cuando el video terminó
  * o cuando entró el fallback; estas demoras son relativas a ese momento, no
- * a cuando se abrió Aurora.
+ * a cuando se abrió Alaia.
  */
 .page-index-pending .eyebrow,
 .page-index-pending .preparation-index-entry,
@@ -2863,7 +2863,7 @@ body:has(.cover-index-stage.is-index-writing) {
 }
 
 /*
- * Aurora vive (Épica 4): invitaciones quietas, nunca modales, nunca bloquean
+ * Alaia vive (Épica 4): invitaciones quietas, nunca modales, nunca bloquean
  * nada. Flotan fijas sobre el libro (E-6, corrección) para no convertirse en
  * una página propia ni desalinear el scroll-snap del resto del contenido.
  */

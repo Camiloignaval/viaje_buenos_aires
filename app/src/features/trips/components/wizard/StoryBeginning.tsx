@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { AuroraParticles } from "@/components/animations/AuroraParticles";
+import { AlaiaParticles } from "@/components/animations/AlaiaParticles";
 import type { Trip } from "../../types";
 
 // Un poco más que el mínimo de 2s del spec: le da tiempo a la segunda línea
@@ -39,22 +39,22 @@ export function StoryBeginning({ run, onSuccess, onError }: Props) {
   }, [run, onSuccess, onError]);
 
   return (
-    <div className="aurora-entrance">
-      <AuroraParticles subtle />
-      <div className="aurora-loading aurora-loading-story" role="status" aria-live="polite">
-        <p className="aurora-eyebrow aurora-reveal aurora-reveal-1">Alaia</p>
-        <div className="aurora-halo aurora-reveal aurora-reveal-2" aria-hidden="true">
-          <span className="aurora-halo-ring" />
-          <span className="aurora-halo-orbit">
-            <span className="aurora-halo-light" />
+    <div className="alaia-entrance">
+      <AlaiaParticles subtle />
+      <div className="alaia-loading alaia-loading-story" role="status" aria-live="polite">
+        <p className="alaia-eyebrow alaia-reveal alaia-reveal-1">Alaia</p>
+        <div className="alaia-halo alaia-reveal alaia-reveal-2" aria-hidden="true">
+          <span className="alaia-halo-ring" />
+          <span className="alaia-halo-orbit">
+            <span className="alaia-halo-light" />
           </span>
         </div>
-        <p className="aurora-loading-text aurora-reveal aurora-reveal-3">
+        <p className="alaia-loading-text alaia-reveal alaia-reveal-3">
           Cada historia comienza de una forma distinta.
         </p>
         {/* Pausa deliberada antes de la segunda línea (reveal-5, no reveal-4):
             más silencio entre ambas, más cinematográfico. */}
-        <p className="aurora-loading-hint aurora-reveal aurora-reveal-5">
+        <p className="alaia-loading-hint alaia-reveal alaia-reveal-5">
           Creo que ya estoy lista para acompañarlos.
         </p>
       </div>

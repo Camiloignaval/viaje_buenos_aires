@@ -4,7 +4,7 @@ import type { ConnectedTripState } from "@/features/connected/hooks/useConnected
 import type { StoryContentState } from "@/features/connected/hooks/useConnectedContent";
 import { ContentStatus, TripContextStatus } from "@/features/connected/lib/status";
 import type { StoryPackage } from "@/features/story/engine/types";
-import { auroraStoryPackage } from "../data/auroraStory";
+import { demoStoryPackage } from "../data/demoStory";
 
 function trip(overrides: Partial<ConnectedTripState>): ConnectedTripState {
   return { status: TripContextStatus.SUCCESS, tripId: "trip-1", trip: null, error: null, ...overrides };
@@ -35,7 +35,7 @@ describe("resolveStory — derivación de los 6 estados", () => {
   it("viaje resuelto con historia válida → ready (con storyPackage y scopeId = tripId)", () => {
     const r = resolveStory(
       trip({ tripId: "trip-ba" }),
-      content({ status: ContentStatus.SUCCESS, story: { storyPackage: auroraStoryPackage } }),
+      content({ status: ContentStatus.SUCCESS, story: { storyPackage: demoStoryPackage } }),
     );
     expect(r.kind).toBe("ready");
     if (r.kind === "ready") {

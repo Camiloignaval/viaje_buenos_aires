@@ -8,7 +8,7 @@ import { runBrandMigration } from "@/lib/brandMigration";
 import { router } from "./router";
 import "@/styles/shell.css";
 
-// Migración de marca Aurora → Alaia de las claves locales, ANTES del primer render
+// Migración de marca Alaia → Alaia de las claves locales, ANTES del primer render
 // que las lee. Idempotente y sin pérdida (copy-if-absent, no borra las viejas).
 runBrandMigration();
 

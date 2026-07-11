@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { AuroraParticles } from "@/components/animations/AuroraParticles";
+import { AlaiaParticles } from "@/components/animations/AlaiaParticles";
 
 interface Props {
   question: string;
@@ -14,7 +14,7 @@ interface Props {
 }
 
 // Marco editorial de "una conversación por pantalla" — misma receta visual
-// que Experience (fondo, halo, partículas, aurora-reveal escalonado, sin
+// que Experience (fondo, halo, partículas, alaia-reveal escalonado, sin
 // cards). Lo comparten el onboarding y el wizard de creación de viaje: es el
 // primer encuentro con Alaia, nunca un formulario administrativo.
 export function WizardShell({
@@ -30,11 +30,11 @@ export function WizardShell({
 }: Props) {
   return (
     <div className="trips-page">
-      <AuroraParticles subtle />
+      <AlaiaParticles subtle />
       <div className="trips-page-content">
-        <p className="aurora-eyebrow aurora-reveal aurora-reveal-1">{eyebrow}</p>
-        <h1 className="trips-title aurora-reveal aurora-reveal-2">{question}</h1>
-        <div className="trip-form aurora-reveal aurora-reveal-3">{children}</div>
+        <p className="alaia-eyebrow alaia-reveal alaia-reveal-1">{eyebrow}</p>
+        <h1 className="trips-title alaia-reveal alaia-reveal-2">{question}</h1>
+        <div className="trip-form alaia-reveal alaia-reveal-3">{children}</div>
         {extraAction}
         <div className="trip-form-actions">
           {onBack && (

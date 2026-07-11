@@ -42,7 +42,7 @@ export function ActiveTripHome({
   const countdown = temporalLabel(temporalState);
 
   return (
-    <section className="active-trip-home aurora-reveal aurora-reveal-3" aria-label="Portada del viaje activo">
+    <section className="active-trip-home alaia-reveal alaia-reveal-3" aria-label="Portada del viaje activo">
       <p className="active-trip-home-kicker">Tu historia activa</p>
       <h2 className="active-trip-home-title">{trip.title}</h2>
       <p className="active-trip-home-destination">{formatDestination(trip.destination)}</p>

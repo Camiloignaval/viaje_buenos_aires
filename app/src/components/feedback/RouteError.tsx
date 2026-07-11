@@ -11,15 +11,15 @@ export function RouteError() {
   }
 
   return (
-    <div className="aurora-entrance">
-      <div className="aurora-entrance-content">
-        <p className="aurora-eyebrow">Alaia</p>
-        <h1 className="aurora-entrance-title">Algo se interrumpió.</h1>
-        <p className="aurora-entrance-text">
+    <div className="alaia-entrance">
+      <div className="alaia-entrance-content">
+        <p className="alaia-eyebrow">Alaia</p>
+        <h1 className="alaia-entrance-title">Algo se interrumpió.</h1>
+        <p className="alaia-entrance-text">
           Volvé a intentar en un momento — tus recuerdos siguen guardados.
         </p>
         <form
-          className="aurora-entrance-form"
+          className="alaia-entrance-form"
           onSubmit={(event) => {
             event.preventDefault();
             window.location.reload();

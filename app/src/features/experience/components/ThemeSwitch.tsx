@@ -10,7 +10,7 @@ export function ThemeSwitch({ extraClass = "" }: { extraClass?: string }) {
   }
   const nextTheme: Theme = theme === "light" ? "dark" : "light";
   const icon = nextTheme === "light" ? "☀" : "☾";
-  const label = nextTheme === "light" ? "Aurora Día" : "Aurora Noche";
+  const label = nextTheme === "light" ? "Alaia Día" : "Alaia Noche";
   const classes = ["theme-switch", extraClass].filter(Boolean).join(" ");
   return (
     <button

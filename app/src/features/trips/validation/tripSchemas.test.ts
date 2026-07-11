@@ -64,7 +64,7 @@ describe("tripWizardSchema", () => {
   it("acepta un payload completo con alojamiento y contexto opcionales", () => {
     const result = tripWizardSchema.safeParse(
       validPayload({
-        accommodation: { type: "hotel", name: "Hotel Aurora" },
+        accommodation: { type: "hotel", name: "Hotel Alaia" },
         travelContext: "Nos gusta caminar.",
       }),
     );

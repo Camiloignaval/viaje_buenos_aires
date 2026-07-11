@@ -20,7 +20,7 @@ export function LockedChapterModal() {
         aria-labelledby="locked-chapter-title"
         aria-describedby="locked-chapter-copy"
       >
-        <p className="locked-chapter-eyebrow">Aurora</p>
+        <p className="locked-chapter-eyebrow">Alaia</p>
         <h2 id="locked-chapter-title">{lockedChapterNotice.line}</h2>
         <p id="locked-chapter-copy">{detail}</p>
         <button

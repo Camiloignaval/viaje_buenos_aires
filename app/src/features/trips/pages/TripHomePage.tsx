@@ -4,7 +4,7 @@ import { useStoryContent } from "@/features/connected/hooks/useConnectedContent"
 import { resolveStory } from "@/features/experience/hooks/useResolvedStory";
 import { ExperienceUnavailable } from "@/features/experience/components/ExperienceUnavailable";
 import { LoadingScreen } from "@/components/feedback/LoadingScreen";
-import { AuroraParticles } from "@/components/animations/AuroraParticles";
+import { AlaiaParticles } from "@/components/animations/AlaiaParticles";
 import { ActiveTripHome } from "../components/ActiveTripHome";
 import { resolveTripLifecycle } from "../lib/initialDestination";
 import { tripUrl } from "../lib/tripUrl";
@@ -33,9 +33,9 @@ export default function TripHomePage() {
 
   return (
     <div className="trips-page">
-      <AuroraParticles subtle />
+      <AlaiaParticles subtle />
       <div className="trips-page-content">
-        <p className="aurora-eyebrow aurora-reveal aurora-reveal-1">Aurora</p>
+        <p className="alaia-eyebrow alaia-reveal alaia-reveal-1">Alaia</p>
         <ActiveTripHome
           trip={trip}
           lifecycle={lifecycle}
@@ -44,7 +44,7 @@ export default function TripHomePage() {
           showAction={storyReady}
         />
         {!storyReady && (
-          <p className="active-trip-home-preparations aurora-reveal aurora-reveal-4">
+          <p className="active-trip-home-preparations alaia-reveal alaia-reveal-4">
             Tu historia todavía no está lista. Cuando esté disponible, vas a poder entrar desde acá.
           </p>
         )}

@@ -1,4 +1,4 @@
-// Tipos del dominio narrativo de Aurora (Story Package + Story Engine). Port
+// Tipos del dominio narrativo de Alaia (Story Package + Story Engine). Port
 // TS de la forma que ya validan storyPackage.js/storyProgress.js/storyEngine.js.
 // Los muchos campos opcionales reflejan STORY_PACKAGE_SCHEMA_v1.4: casi todo el
 // contenido de un capítulo es opcional y el render decide si pintarlo o no.

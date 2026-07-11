@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 // Regex y mensajes portados TAL CUAL del viejo loginForm.js — la validación es
-// parte de la identidad de Aurora y no debe cambiar. Nunca revela si el correo
+// parte de la identidad de Alaia y no debe cambiar. Nunca revela si el correo
 // tiene cuenta o no.
 export const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 export const AUTH_CODE_LENGTH = 6;

@@ -61,9 +61,9 @@ function renderPortada() {
 
 describe("TripHomePage (Portada del viaje)", () => {
   it("READY: muestra el viaje y el CTA voluntario 'Entrar al viaje' → Experience", async () => {
-    const { auroraStoryPackage } = await import("@/features/experience/data/auroraStory");
+    const { demoStoryPackage } = await import("@/features/experience/data/demoStory");
     getTrip.mockResolvedValue({ trip: trip() });
-    getStory.mockResolvedValue({ story: { storyId: "ba-2026", storyPackage: auroraStoryPackage } });
+    getStory.mockResolvedValue({ story: { storyId: "ba-2026", storyPackage: demoStoryPackage } });
 
     renderPortada();
 

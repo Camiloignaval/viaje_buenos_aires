@@ -1,5 +1,5 @@
 // Mensajes cálidos del modal de capítulo bloqueado. Copy portado VERBATIM de
-// experienceView.js — parte de la identidad editorial de Aurora.
+// experienceView.js — parte de la identidad editorial de Alaia.
 
 export interface LockedChapterNotice {
   line: string;
@@ -10,7 +10,7 @@ export interface LockedChapterNotice {
 
 const LOCKED_CHAPTER_MESSAGES = [
   { line: "Algunas historias no se apuran.", detail: "Este capítulo estará disponible el {fecha}." },
-  { line: "Aurora todavía guarda algunas sorpresas.", detail: "Este capítulo se abrirá el {fecha}." },
+  { line: "Alaia todavía guarda algunas sorpresas.", detail: "Este capítulo se abrirá el {fecha}." },
   { line: "Todavía no es tiempo de pasar esta página.", detail: "Vuelve el {fecha}." },
   { line: "La espera también forma parte del viaje.", detail: "Este capítulo estará disponible el {fecha}." },
   { line: "Cada día merece vivirse en su momento.", detail: "Este capítulo se abrirá el {fecha}." },

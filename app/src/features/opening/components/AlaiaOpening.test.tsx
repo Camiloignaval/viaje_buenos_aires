@@ -110,7 +110,7 @@ describe("AlaiaOpening", () => {
 
     expect(screen.queryByTestId("alaia-opening")).not.toBeInTheDocument();
     expect(window.sessionStorage.getItem("alaia:intro-video-2-seen:ba-2026")).toBe("1");
-    expect(document.querySelector("[data-aurora-intro-video]")).toBeNull();
+    expect(document.querySelector("[data-alaia-intro-video]")).toBeNull();
   });
 
   it("sale cuando termina el video", () => {

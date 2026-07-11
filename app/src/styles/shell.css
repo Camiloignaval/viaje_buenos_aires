@@ -1,5 +1,5 @@
 /* ─────────────────────────────────────────────────────────────────────────
-   El UMBRAL de Aurora — login + "Mis viajes".
+   El UMBRAL de Alaia — login + "Mis viajes".
 
    Dirección de arte: el acceso no es una UI, es la PORTADA del mismo libro que
    continúa en Experience. Hablan el mismo idioma:
@@ -62,7 +62,7 @@ body {
 
 /* Sólo para lectores de pantalla — etiquetas de campo que la portada no muestra
    pero que la accesibilidad necesita. */
-.aurora-sr-only {
+.alaia-sr-only {
   position: absolute;
   width: 1px;
   height: 1px;
@@ -78,7 +78,7 @@ body {
    Clon de fadeInSoft de experience.css (misma curva expo), un punto más ágil:
    el umbral es funcional (no hay video de intro que acompañar), pero todo entra
    flotando, nada brusco. */
-@keyframes aurora-reveal-in {
+@keyframes alaia-reveal-in {
   from {
     opacity: 0;
     transform: translateY(14px);
@@ -89,33 +89,33 @@ body {
   }
 }
 
-.aurora-reveal {
-  animation: aurora-reveal-in 1.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+.alaia-reveal {
+  animation: alaia-reveal-in 1.2s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
-.aurora-reveal-1 {
+.alaia-reveal-1 {
   animation-delay: 0.1s;
 }
-.aurora-reveal-2 {
+.alaia-reveal-2 {
   animation-delay: 0.3s;
 }
-.aurora-reveal-3 {
+.alaia-reveal-3 {
   animation-delay: 0.52s;
 }
-.aurora-reveal-4 {
+.alaia-reveal-4 {
   animation-delay: 0.76s;
 }
-.aurora-reveal-5 {
+.alaia-reveal-5 {
   animation-delay: 1s;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .aurora-reveal {
+  .alaia-reveal {
     animation: none;
   }
 }
 
 /* ── Atmósfera compartida: umbral + "Mis viajes" ─────────────────────────── */
-.aurora-entrance,
+.alaia-entrance,
 .trips-page {
   position: relative;
   width: 100%;
@@ -140,8 +140,8 @@ body {
 
 /* Composición CENTRADA — portada, no formulario. margin:auto centra en ambos
    ejes y deja scrollear si desborda. */
-.aurora-entrance-content,
-.aurora-loading,
+.alaia-entrance-content,
+.alaia-loading,
 .trips-page-content {
   position: relative;
   z-index: 2;
@@ -149,10 +149,10 @@ body {
   width: 100%;
   text-align: center;
 }
-.aurora-entrance-content {
+.alaia-entrance-content {
   max-width: 30rem;
 }
-.aurora-loading {
+.alaia-loading {
   max-width: 26rem;
 }
 .trips-page-content {
@@ -161,7 +161,7 @@ body {
 
 /* ── Partículas doradas (atmósfera pura, aria-hidden) ───────────────────────
    Receta idéntica a .index-particles de experience.css. */
-.aurora-particles {
+.alaia-particles {
   position: absolute;
   inset: 0;
   z-index: 1;
@@ -170,11 +170,11 @@ body {
   mix-blend-mode: screen;
 }
 
-.aurora-particles-subtle {
+.alaia-particles-subtle {
   opacity: 0.4;
 }
 
-.aurora-particle {
+.alaia-particle {
   position: absolute;
   left: var(--p-left);
   width: calc(var(--p-size) * 1.28);
@@ -185,18 +185,18 @@ body {
   filter: blur(var(--p-blur, 0.15px));
 }
 
-.aurora-particle-rise {
+.alaia-particle-rise {
   bottom: -8%;
-  animation: aurora-particle-rise var(--p-duration) var(--p-delay) linear infinite;
+  animation: alaia-particle-rise var(--p-duration) var(--p-delay) linear infinite;
 }
 
-.aurora-particle-glint {
+.alaia-particle-glint {
   top: var(--p-top);
   transform: translate3d(-50%, 0, 0) scale(0.7);
-  animation: aurora-particle-glint var(--p-duration) var(--p-delay) ease-in-out infinite;
+  animation: alaia-particle-glint var(--p-duration) var(--p-delay) ease-in-out infinite;
 }
 
-@keyframes aurora-particle-rise {
+@keyframes alaia-particle-rise {
   0% {
     opacity: 0;
     transform: translate3d(0, 0, 0) scale(0.7);
@@ -213,7 +213,7 @@ body {
   }
 }
 
-@keyframes aurora-particle-glint {
+@keyframes alaia-particle-glint {
   0%,
   100% {
     opacity: calc(0.04 * var(--p-opacity, 1));
@@ -230,13 +230,13 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .aurora-particle {
+  .alaia-particle {
     animation: none;
   }
 }
 
 /* ── Tipografía del umbral ──────────────────────────────────────────────── */
-.aurora-eyebrow {
+.alaia-eyebrow {
   margin: 0 0 clamp(1rem, 3svh, 1.6rem);
   font-size: 0.72rem;
   font-weight: 400;
@@ -245,7 +245,7 @@ body {
   color: var(--gold-soft);
 }
 
-.aurora-entrance-title {
+.alaia-entrance-title {
   margin: 0 0 clamp(1.35rem, 3.5svh, 1.9rem);
   font-family: var(--font-display);
   font-weight: 500;
@@ -257,7 +257,7 @@ body {
 
 /* La promesa como cita, no como subtítulo: columna angosta en ch, serif italic,
    interlineado generoso — exactamente el registro de .cover-promise. */
-.aurora-entrance-text {
+.alaia-entrance-text {
   max-width: 30ch;
   margin: 0 auto clamp(2.75rem, 7svh, 4.25rem);
   font-family: var(--font-display);
@@ -267,7 +267,7 @@ body {
   color: rgba(var(--secondary-rgb), 0.82);
 }
 
-.aurora-entrance-email {
+.alaia-entrance-email {
   margin: 0 0 clamp(2.5rem, 6.5svh, 3.75rem);
   font-family: var(--font-display);
   font-style: italic;
@@ -275,13 +275,13 @@ body {
   color: var(--gold-soft);
 }
 
-.aurora-entrance-form {
+.alaia-entrance-form {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-.aurora-entrance-form input {
+.alaia-entrance-form input {
   display: block;
   width: 100%;
   max-width: 22rem;
@@ -298,23 +298,23 @@ body {
   transition: border-color 0.35s ease;
 }
 
-.aurora-entrance-form input::placeholder {
+.alaia-entrance-form input::placeholder {
   font-family: var(--font-body);
   font-size: 0.95rem;
   letter-spacing: normal;
   color: rgba(var(--taupe-rgb), 0.5);
 }
 
-.aurora-entrance-form input:focus-visible {
+.alaia-entrance-form input:focus-visible {
   outline: none;
   border-bottom-color: var(--gold);
 }
 
 /* Autofill de WebKit: box-shadow inset del color de la página + text-fill forzado. */
-.aurora-entrance-form input:-webkit-autofill,
-.aurora-entrance-form input:-webkit-autofill:hover,
-.aurora-entrance-form input:-webkit-autofill:focus,
-.aurora-entrance-form input:-webkit-autofill:active {
+.alaia-entrance-form input:-webkit-autofill,
+.alaia-entrance-form input:-webkit-autofill:hover,
+.alaia-entrance-form input:-webkit-autofill:focus,
+.alaia-entrance-form input:-webkit-autofill:active {
   -webkit-text-fill-color: var(--ivory);
   caret-color: var(--ivory);
   -webkit-box-shadow: 0 0 0 1000px var(--bg) inset;
@@ -323,11 +323,11 @@ body {
   transition: background-color 600000s 0s, color 600000s 0s;
 }
 
-.aurora-entrance-form input:-webkit-autofill:focus {
+.alaia-entrance-form input:-webkit-autofill:focus {
   border-bottom-color: var(--gold);
 }
 
-.aurora-code-input {
+.alaia-code-input {
   font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
   font-size: 1.65rem;
   letter-spacing: 0.7em;
@@ -336,7 +336,7 @@ body {
 
 /* Los botones del umbral no son botones: son un renglón dorado con una flecha,
    con un halo de luz al pasar por encima. */
-.aurora-entrance-form button {
+.alaia-entrance-form button {
   margin: 0;
   padding: 0.4rem 0.7rem;
   font-family: var(--font-display);
@@ -349,17 +349,17 @@ body {
   transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease, text-shadow 0.45s ease;
 }
 
-.aurora-entrance-form button:hover:not(:disabled) {
+.alaia-entrance-form button:hover:not(:disabled) {
   transform: translateY(-2px);
   text-shadow: 0 0 26px rgba(var(--gold-rgb), 0.42);
 }
 
-.aurora-entrance-form button:focus-visible {
+.alaia-entrance-form button:focus-visible {
   outline: 1px solid var(--focus-ring);
   outline-offset: 6px;
 }
 
-.aurora-entrance-form button:disabled {
+.alaia-entrance-form button:disabled {
   opacity: 0.45;
   cursor: default;
   transform: none;
@@ -367,12 +367,12 @@ body {
 
 /* "Enviando código…"/"Abriendo…" respiran, no se congelan. */
 @media (prefers-reduced-motion: no-preference) {
-  .aurora-entrance-form button:disabled {
-    animation: aurora-button-breathe 2s ease-in-out infinite;
+  .alaia-entrance-form button:disabled {
+    animation: alaia-button-breathe 2s ease-in-out infinite;
   }
 }
 
-@keyframes aurora-button-breathe {
+@keyframes alaia-button-breathe {
   0%,
   100% {
     opacity: 0.35;
@@ -382,7 +382,7 @@ body {
   }
 }
 
-.aurora-entrance-error {
+.alaia-entrance-error {
   min-height: 1.5em; /* reserva el espacio: el error no empuja el contenido */
   max-width: 30ch;
   margin: clamp(1rem, 2.5svh, 1.5rem) auto 0;
@@ -393,7 +393,7 @@ body {
   color: var(--error);
 }
 
-.aurora-entrance-secondary {
+.alaia-entrance-secondary {
   display: inline-block;
   margin: clamp(2.5rem, 6svh, 3.5rem) auto 0;
   padding: 0.3rem 0.6rem;
@@ -407,16 +407,16 @@ body {
   transition: color 0.3s ease;
 }
 
-.aurora-entrance-secondary:hover {
+.alaia-entrance-secondary:hover {
   color: rgba(var(--secondary-rgb), 1);
 }
 
-.aurora-entrance-secondary:focus-visible {
+.alaia-entrance-secondary:focus-visible {
   outline: 1px solid var(--focus-ring);
   outline-offset: 5px;
 }
 
-.aurora-entrance-footer {
+.alaia-entrance-footer {
   margin: clamp(3rem, 8svh, 4.5rem) 0 0;
   font-size: 0.75rem;
   font-style: italic;
@@ -424,17 +424,17 @@ body {
 }
 
 /* ── Loading contemplativo — el halo es el protagonista, el texto acompaña ──
-   Nada de spinner ni "cargando": Aurora está preparando algo. El halo respira
+   Nada de spinner ni "cargando": Alaia está preparando algo. El halo respira
    despacio, con un resplandor dorado, y una luz recorre el borde muy lento. */
-.aurora-halo {
+.alaia-halo {
   position: relative;
   width: clamp(76px, 26svh, 112px);
   height: clamp(76px, 26svh, 112px);
   margin: 0 auto clamp(1.75rem, 5svh, 2.75rem);
 }
 
-/* Resplandor detrás del aro — la respiración de Aurora. */
-.aurora-halo::before {
+/* Resplandor detrás del aro — la respiración de Alaia. */
+.alaia-halo::before {
   content: "";
   position: absolute;
   inset: -45%;
@@ -443,12 +443,12 @@ body {
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .aurora-halo::before {
-    animation: aurora-halo-glow 7s ease-in-out infinite;
+  .alaia-halo::before {
+    animation: alaia-halo-glow 7s ease-in-out infinite;
   }
 }
 
-@keyframes aurora-halo-glow {
+@keyframes alaia-halo-glow {
   0%,
   100% {
     opacity: 0.45;
@@ -460,7 +460,7 @@ body {
   }
 }
 
-.aurora-halo-ring {
+.alaia-halo-ring {
   position: absolute;
   inset: 0;
   border-radius: 50%;
@@ -468,12 +468,12 @@ body {
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .aurora-halo-ring {
-    animation: aurora-halo-breathe 7s ease-in-out infinite;
+  .alaia-halo-ring {
+    animation: alaia-halo-breathe 7s ease-in-out infinite;
   }
 }
 
-@keyframes aurora-halo-breathe {
+@keyframes alaia-halo-breathe {
   0%,
   100% {
     opacity: 0.5;
@@ -485,18 +485,18 @@ body {
   }
 }
 
-.aurora-halo-orbit {
+.alaia-halo-orbit {
   position: absolute;
   inset: 0;
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .aurora-halo-orbit {
-    animation: aurora-halo-orbit 13s linear infinite;
+  .alaia-halo-orbit {
+    animation: alaia-halo-orbit 13s linear infinite;
   }
 }
 
-@keyframes aurora-halo-orbit {
+@keyframes alaia-halo-orbit {
   from {
     transform: rotate(0deg);
   }
@@ -505,7 +505,7 @@ body {
   }
 }
 
-.aurora-halo-light {
+.alaia-halo-light {
   position: absolute;
   top: -3px;
   left: 50%;
@@ -517,7 +517,7 @@ body {
   box-shadow: 0 0 9px rgba(var(--gold-rgb), 0.5);
 }
 
-.aurora-loading-text {
+.alaia-loading-text {
   margin: 0 0 0.55rem;
   font-family: var(--font-display);
   font-weight: 500;
@@ -526,7 +526,7 @@ body {
   color: rgba(var(--ivory-rgb), 0.94);
 }
 
-.aurora-loading-hint {
+.alaia-loading-hint {
   margin: 0;
   font-family: var(--font-display);
   font-size: 0.82rem;
@@ -537,11 +537,11 @@ body {
 /* La transición de Alaia (StoryBeginning): más aire entre las dos líneas que
    el loading genérico (CheckingSession) — es el comienzo de un capítulo, no
    una espera funcional. Misma receta visual, solo más silenciosa. */
-.aurora-loading-story .aurora-halo {
+.alaia-loading-story .alaia-halo {
   margin-bottom: clamp(2.25rem, 6svh, 3.25rem);
 }
 
-.aurora-loading-story .aurora-loading-text {
+.alaia-loading-story .alaia-loading-text {
   margin-bottom: clamp(1rem, 3.2svh, 1.5rem);
 }
 
@@ -594,7 +594,7 @@ body {
 }
 
 .trip-index-item {
-  animation: aurora-reveal-in 1.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: alaia-reveal-in 1.2s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 .trip-index-item:nth-child(1) {
   animation-delay: 0.28s;
@@ -1371,7 +1371,7 @@ body {
    recorta el AIRE VERTICAL entre bloques, nunca la tipografía ni el registro
    editorial. */
 @media (max-width: 640px) {
-  .aurora-entrance,
+  .alaia-entrance,
   .trips-page {
     padding-top: max(1.75rem, env(safe-area-inset-top));
     padding-bottom: max(1.75rem, env(safe-area-inset-bottom));
@@ -1403,11 +1403,11 @@ body {
     gap: 0.5rem;
   }
 
-  .aurora-loading-story .aurora-halo {
+  .alaia-loading-story .alaia-halo {
     margin-bottom: 1.75rem;
   }
 
-  .aurora-loading-story .aurora-loading-text {
+  .alaia-loading-story .alaia-loading-text {
     margin-bottom: 0.85rem;
   }
 }

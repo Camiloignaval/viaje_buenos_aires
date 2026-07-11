@@ -1,4 +1,4 @@
-// Cliente HTTP delgado hacia Aurora Platform (api/auth/*, api/trips/*,
+// Cliente HTTP delgado hacia Alaia Platform (api/auth/*, api/trips/*,
 // api/stories/*). No mantiene estado — eso es de los hooks de cada feature.
 // `credentials: "include"` es obligatorio: la sesión vive en una cookie
 // HttpOnly (alaia_session, lib/platformAuth.js) que el JS no puede leer.

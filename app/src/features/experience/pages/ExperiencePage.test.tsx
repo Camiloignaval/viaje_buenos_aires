@@ -90,9 +90,9 @@ describe("ExperiencePage (resolución por viaje real vía connected)", () => {
   it("trip con baseStoryId ba-2026 → renderiza la historia resuelta, no un import estático (punto 8.1)", async () => {
     // El contenido real lo trae getStory (no un import estático); usamos el
     // package real de BA como respuesta de red simulada.
-    const { auroraStoryPackage } = await import("../data/auroraStory");
+    const { demoStoryPackage } = await import("../data/demoStory");
     getTrip.mockResolvedValue({ trip: baTrip("trip-ba") });
-    getStory.mockResolvedValue({ story: { storyId: "ba-2026", storyPackage: auroraStoryPackage } });
+    getStory.mockResolvedValue({ story: { storyId: "ba-2026", storyPackage: demoStoryPackage } });
 
     renderAt("/experience?tripId=trip-ba");
 
@@ -135,18 +135,18 @@ describe("ExperiencePage (resolución por viaje real vía connected)", () => {
 // Punto 8.7 — blindaje explícito: el import estático de BA solo puede usarse en el
 // branch local, y ningún trip conectado renderiza BA por defecto.
 describe("ExperiencePage — blindaje anti-fallback a Buenos Aires (punto 8.7)", () => {
-  it("el código fuente solo referencia auroraStoryPackage en el branch kind:local", () => {
+  it("el código fuente solo referencia demoStoryPackage en el branch kind:local", () => {
     const source = readFileSync("src/features/experience/pages/ExperiencePage.tsx", "utf8");
     // Descarta el preámbulo (imports + ExperienceRuntime) y deja los cuerpos de
-    // cada `case`. El import de auroraStoryPackage vive en el preámbulo; acá solo
+    // cada `case`. El import de demoStoryPackage vive en el preámbulo; acá solo
     // interesa QUÉ branch lo USA.
     const caseBodies = source.split(/case "/).slice(1);
     const localBody = caseBodies.find((chunk) => chunk.startsWith("local"));
     const otherBodies = caseBodies.filter((chunk) => !chunk.startsWith("local"));
 
-    expect(localBody).toContain("auroraStoryPackage");
+    expect(localBody).toContain("demoStoryPackage");
     for (const body of otherBodies) {
-      expect(body).not.toContain("auroraStoryPackage");
+      expect(body).not.toContain("demoStoryPackage");
     }
   });
 

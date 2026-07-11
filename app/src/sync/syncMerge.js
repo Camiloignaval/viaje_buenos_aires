@@ -1,7 +1,7 @@
 // Fusiona el estado local con el estado remoto de una historia (Épica 5 —
 // Persistencia Real). Funciones puras: mismo input, mismo output siempre. No
 // tocan red ni storage — las usan tanto `syncClient.js` (cliente) como
-// `api/aurora/sync.js` (servidor, único punto de verdad de la fusión).
+// `api/alaia/sync.js` (servidor, único punto de verdad de la fusión).
 //
 // No es un CRDT ni resuelve conflictos campo por campo: es la estrategia más
 // simple que sigue siendo correcta para una app personal de pocas personas,

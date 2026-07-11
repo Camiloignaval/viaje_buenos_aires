@@ -8,7 +8,7 @@ import { useTripId } from "@/features/connected/hooks/useTripId";
 import { useExperience } from "../hooks/useExperience";
 import { useResolvedStory } from "../hooks/useResolvedStory";
 import { useRevealOnScroll } from "../hooks/useRevealOnScroll";
-import { auroraStoryPackage } from "../data/auroraStory";
+import { demoStoryPackage } from "../data/demoStory";
 import type { StoryPackage } from "@/features/story/engine/types";
 import "../experience.css";
 
@@ -57,7 +57,7 @@ export default function ExperiencePage() {
       // historia: redirige de forma controlada a la lista de viajes. Sin fallback
       // implícito a Buenos Aires. Es el ÚNICO uso del package estático.
       return import.meta.env.DEV ? (
-        <ExperienceRuntime storyPackage={auroraStoryPackage} />
+        <ExperienceRuntime storyPackage={demoStoryPackage} />
       ) : (
         <Navigate to="/trips" replace />
       );

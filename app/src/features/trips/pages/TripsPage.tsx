@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { AuroraParticles } from "@/components/animations/AuroraParticles";
+import { AlaiaParticles } from "@/components/animations/AlaiaParticles";
 import { useSession } from "@/features/auth/hooks/useSession";
 import { useLogout } from "@/features/auth/hooks/useLogout";
 import { useTrips } from "../hooks/useTrips";
@@ -36,18 +36,18 @@ export default function TripsPage() {
 
   return (
     <div className="trips-page">
-      <AuroraParticles subtle />
+      <AlaiaParticles subtle />
       <div className="trips-page-content">
-        <p className="aurora-eyebrow aurora-reveal aurora-reveal-1">Alaia</p>
-        <h1 className="trips-title aurora-reveal aurora-reveal-2">Mis viajes</h1>
+        <p className="alaia-eyebrow alaia-reveal alaia-reveal-1">Alaia</p>
+        <h1 className="trips-title alaia-reveal alaia-reveal-2">Mis viajes</h1>
         {!isEmpty && (
-          <p className="trips-account aurora-reveal aurora-reveal-3">
+          <p className="trips-account alaia-reveal alaia-reveal-3">
             {user?.email ?? ""}
           </p>
         )}
 
         {trips.isPending && (
-          <p className="trips-loading aurora-reveal aurora-reveal-3">
+          <p className="trips-loading alaia-reveal alaia-reveal-3">
             Buscando tus viajes…
           </p>
         )}
@@ -82,7 +82,7 @@ export default function TripsPage() {
         {hasTrips && (
           <button
             type="button"
-            className="trips-create-link aurora-reveal aurora-reveal-4"
+            className="trips-create-link alaia-reveal alaia-reveal-4"
             onClick={() => setCreating(true)}
           >
             + Un nuevo viaje
@@ -93,7 +93,7 @@ export default function TripsPage() {
 
         <button
           type="button"
-          className="trips-logout aurora-reveal aurora-reveal-5"
+          className="trips-logout alaia-reveal alaia-reveal-5"
           onClick={() => logout.mutate()}
         >
           Cerrar sesión

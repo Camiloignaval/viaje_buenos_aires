@@ -51,7 +51,7 @@ export function FeedbackSection() {
   }
 
   return (
-    <section className="feedback-section aurora-reveal aurora-reveal-5" aria-labelledby="feedback-title">
+    <section className="feedback-section alaia-reveal alaia-reveal-5" aria-labelledby="feedback-title">
       <div>
         <p className="feedback-kicker">Alaia mejora con vos</p>
         <h2 id="feedback-title" className="feedback-title">

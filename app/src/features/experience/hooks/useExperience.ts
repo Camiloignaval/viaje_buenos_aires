@@ -396,7 +396,7 @@ export function useExperience(
         try {
           localStorage.setItem(themeStorageKey, nextTheme);
         } catch {
-          /* la preferencia visual no debe romper Aurora si el storage falla */
+          /* la preferencia visual no debe romper Alaia si el storage falla */
         }
       },
       openPreparations() {
