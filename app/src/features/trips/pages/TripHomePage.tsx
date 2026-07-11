@@ -5,6 +5,7 @@ import { resolveStory } from "@/features/experience/hooks/useResolvedStory";
 import { ExperienceUnavailable } from "@/features/experience/components/ExperienceUnavailable";
 import { LoadingScreen } from "@/components/feedback/LoadingScreen";
 import { AlaiaParticles } from "@/components/animations/AlaiaParticles";
+import { TripInvitePanel } from "@/features/sharing/components/TripInvitePanel";
 import { ActiveTripHome } from "../components/ActiveTripHome";
 import { resolveTripLifecycle } from "../lib/initialDestination";
 import { tripUrl } from "../lib/tripUrl";
@@ -48,6 +49,7 @@ export default function TripHomePage() {
             Tu historia todavía no está lista. Cuando esté disponible, vas a poder entrar desde acá.
           </p>
         )}
+        <TripInvitePanel trip={trip} />
       </div>
     </div>
   );

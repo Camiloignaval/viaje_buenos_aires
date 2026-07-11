@@ -1,0 +1,148 @@
+/* Panel de compartir en la Portada. Sobrio y editorial, sobre el fondo oscuro de
+   Alaia. Discreto: no compite con la Portada ni parece un panel administrativo. */
+
+.invite-panel {
+  margin-top: 2.5rem;
+  padding-top: 1.75rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: flex-start;
+  text-align: left;
+}
+
+.invite-panel-summary {
+  font-size: 0.85rem;
+  letter-spacing: 0.02em;
+  color: rgba(255, 255, 255, 0.62);
+  margin: 0;
+}
+
+.invite-panel-editor {
+  margin-top: 2rem;
+  font-size: 0.85rem;
+  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.invite-panel-cta {
+  background: none;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: inherit;
+  border-radius: 999px;
+  padding: 0.6rem 1.25rem;
+  font: inherit;
+  cursor: pointer;
+  transition: border-color 160ms ease, opacity 160ms ease;
+}
+.invite-panel-cta:hover:not(:disabled) {
+  border-color: rgba(255, 255, 255, 0.75);
+}
+.invite-panel-cta:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.invite-panel-pending {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.invite-panel-pending li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+.invite-panel-pending button {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.55);
+  text-decoration: underline;
+  cursor: pointer;
+  font: inherit;
+}
+
+/* Diálogo de creación de invitación (inline en la Portada). */
+.invite-dialog {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.invite-dialog-title {
+  font-size: 1.05rem;
+  font-weight: 500;
+  margin: 0;
+}
+.invite-dialog-text {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.72);
+  margin: 0;
+}
+.invite-dialog-label {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+.invite-dialog input {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  padding: 0.6rem 0.8rem;
+  color: inherit;
+  font: inherit;
+}
+.invite-dialog-error {
+  color: #e6a5a5;
+  font-size: 0.85rem;
+  margin: 0;
+}
+.invite-dialog-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+.invite-dialog-actions button,
+.invite-dialog-back {
+  background: none;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: inherit;
+  border-radius: 999px;
+  padding: 0.5rem 1.1rem;
+  font: inherit;
+  cursor: pointer;
+}
+.invite-dialog-actions button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.invite-share {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+.invite-share-primary {
+  background: rgba(255, 255, 255, 0.9);
+  color: #0f0e0d;
+  border-radius: 999px;
+  padding: 0.55rem 1.2rem;
+  text-decoration: none;
+  font-weight: 500;
+}
+.invite-share button {
+  background: none;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: inherit;
+  border-radius: 999px;
+  padding: 0.55rem 1.2rem;
+  font: inherit;
+  cursor: pointer;
+}

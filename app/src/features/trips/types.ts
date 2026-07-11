@@ -53,6 +53,12 @@ export interface TravelBudget {
   style: string;
 }
 
+export interface TripMember {
+  userId: string;
+  role: string;
+  joinedAt: string;
+}
+
 export interface Trip {
   id: string;
   title: string;
@@ -62,6 +68,8 @@ export interface Trip {
   status: TripStatus;
   role: string | null;
   updatedAt: string;
+  // Presente en el detalle (publicTripDetail). Ausente en el summary del listado.
+  members?: TripMember[];
   // Ausentes en viajes legacy (sin fechas/alojamiento/contexto guardados).
   startDateTime?: string;
   endDateTime?: string;
