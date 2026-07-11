@@ -6,6 +6,9 @@ export const ERROR_CODES = Object.freeze({
   VALIDATION_ERROR: 'VALIDATION_ERROR',
   RATE_LIMITED: 'RATE_LIMITED',
   FORBIDDEN: 'FORBIDDEN',
+  NOT_FOUND: 'NOT_FOUND',
+  CONFLICT: 'CONFLICT',
+  GONE: 'GONE',
   EMAIL_DELIVERY_ERROR: 'EMAIL_DELIVERY_ERROR',
   UNEXPECTED_ERROR: 'UNEXPECTED_ERROR',
 });
@@ -103,6 +106,58 @@ export class RateLimitError extends PlatformError {
       statusCode: 429,
       retryable: true,
       severity: 'warning',
+    });
+  }
+}
+
+export class ForbiddenError extends PlatformError {
+  constructor(message = 'No tenés permisos para esta acción.', details) {
+    super({
+      code: ERROR_CODES.FORBIDDEN,
+      safeMessage: message,
+      statusCode: 403,
+      retryable: false,
+      severity: 'warning',
+      details,
+    });
+  }
+}
+
+export class NotFoundError extends PlatformError {
+  constructor(message = 'No encontramos lo que buscás.', details) {
+    super({
+      code: ERROR_CODES.NOT_FOUND,
+      safeMessage: message,
+      statusCode: 404,
+      retryable: false,
+      severity: 'warning',
+      details,
+    });
+  }
+}
+
+export class ConflictError extends PlatformError {
+  constructor(message = 'Esta acción entra en conflicto con el estado actual.', details) {
+    super({
+      code: ERROR_CODES.CONFLICT,
+      safeMessage: message,
+      statusCode: 409,
+      retryable: false,
+      severity: 'warning',
+      details,
+    });
+  }
+}
+
+export class GoneError extends PlatformError {
+  constructor(message = 'Esto ya no está disponible.', details) {
+    super({
+      code: ERROR_CODES.GONE,
+      safeMessage: message,
+      statusCode: 410,
+      retryable: false,
+      severity: 'warning',
+      details,
     });
   }
 }
