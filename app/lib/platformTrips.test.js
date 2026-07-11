@@ -3,7 +3,10 @@ import assert from 'node:assert/strict';
 import { ObjectId } from 'mongodb';
 import {
   MVP_BASE_STORY_ID,
+  TRIP_ROLES,
+  addMemberIfCapacity,
   createTripDocument,
+  hasInviteCapacity,
   normalizeTripInput,
   normalizeTripPatch,
   publicTripDetail,
@@ -342,4 +345,65 @@ test('publicTripSummary conserva viajes de la etapa anterior (sin perfil narrati
   assert.equal(summary.startDateTime, '2026-07-18T09:30');
   assert.equal('travelCompanions' in summary, false);
   assert.equal('travelBudgetStyle' in summary, false);
+});
+
+// --- Etapa 6: cupo y alta atómica de miembros ---
+
+test('TRIP_ROLES define owner y editor (sin roles extra en este MVP)', () => {
+  assert.deepEqual(Object.values(TRIP_ROLES).sort(), ['editor', 'owner']);
+});
+
+test('hasInviteCapacity cuenta members + pendientes no vencidas contra expectedTravelers', () => {
+  // Viaje para 2 (owner + 1). Con 1 miembro y 0 pendientes hay lugar.
+  assert.equal(hasInviteCapacity({ membersCount: 1, pendingCount: 0, expectedTravelers: 2 }), true);
+  // Con 1 miembro y 1 pendiente ya se llenó el cupo esperado → no invitar más.
+  assert.equal(hasInviteCapacity({ membersCount: 1, pendingCount: 1, expectedTravelers: 2 }), false);
+  // Con el cupo ya completo por miembros tampoco.
+  assert.equal(hasInviteCapacity({ membersCount: 2, pendingCount: 0, expectedTravelers: 2 }), false);
+});
+
+function fakeTripsCollection({ matchedCount, trip }) {
+  return {
+    async updateOne() {
+      return { matchedCount, modifiedCount: matchedCount };
+    },
+    async findOne() {
+      return trip;
+    },
+  };
+}
+
+test('addMemberIfCapacity: alta exitosa cuando el update condicional matchea', async () => {
+  const trips = fakeTripsCollection({ matchedCount: 1 });
+  const result = await addMemberIfCapacity(trips, {
+    tripId: new ObjectId(),
+    userId: new ObjectId(),
+    now: '2026-07-10T12:00:00.000Z',
+  });
+  assert.deepEqual(result, { outcome: 'added' });
+});
+
+test('addMemberIfCapacity: idempotente si el usuario ya es miembro (matchedCount 0 + ya presente)', async () => {
+  const userId = new ObjectId();
+  const trips = fakeTripsCollection({
+    matchedCount: 0,
+    trip: { _id: new ObjectId(), members: [{ userId, role: 'owner' }], expectedTravelers: 2 },
+  });
+  const result = await addMemberIfCapacity(trips, { tripId: new ObjectId(), userId });
+  assert.deepEqual(result, { outcome: 'already-member' });
+});
+
+test('addMemberIfCapacity: cupo lleno si no matchea y el usuario no está en members', async () => {
+  const trips = fakeTripsCollection({
+    matchedCount: 0,
+    trip: { _id: new ObjectId(), members: [{ userId: new ObjectId(), role: 'owner' }, { userId: new ObjectId(), role: 'editor' }], expectedTravelers: 2 },
+  });
+  const result = await addMemberIfCapacity(trips, { tripId: new ObjectId(), userId: new ObjectId() });
+  assert.deepEqual(result, { outcome: 'capacity-full' });
+});
+
+test('addMemberIfCapacity: trip inexistente cuando no matchea y findOne no encuentra el viaje', async () => {
+  const trips = fakeTripsCollection({ matchedCount: 0, trip: null });
+  const result = await addMemberIfCapacity(trips, { tripId: new ObjectId(), userId: new ObjectId() });
+  assert.deepEqual(result, { outcome: 'trip-not-found' });
 });

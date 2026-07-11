@@ -12,6 +12,7 @@ export const PLATFORM_COLLECTIONS = Object.freeze({
   authCodes: 'authCodes',
   feedback: 'feedback',
   notificationDeliveries: 'notificationDeliveries',
+  tripInvitations: 'tripInvitations',
 });
 
 export function isPlatformMongoConfigured() {
@@ -65,3 +66,4 @@ export const getStoryMediaCollection = () => getPlatformCollection(PLATFORM_COLL
 export const getAuthCodesCollection = () => getPlatformCollection(PLATFORM_COLLECTIONS.authCodes);
 export const getFeedbackCollection = () => getPlatformCollection(PLATFORM_COLLECTIONS.feedback);
 export const getNotificationDeliveriesCollection = () => getPlatformCollection(PLATFORM_COLLECTIONS.notificationDeliveries);
+export const getTripInvitationsCollection = () => getPlatformCollection(PLATFORM_COLLECTIONS.tripInvitations);

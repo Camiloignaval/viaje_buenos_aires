@@ -10,6 +10,14 @@ export const TRIP_STATUSES = Object.freeze({
   archived: 'archived',
 });
 
+// Roles de miembro. `owner` administra (invitar/revocar/editar); `editor` es un
+// miembro colaborador de solo lectura en este MVP (lista el viaje, abre Portada y
+// Experience, lee contenido conectado). No hay más roles todavía.
+export const TRIP_ROLES = Object.freeze({
+  owner: 'owner',
+  editor: 'editor',
+});
+
 const COUNTRY_CODE_PATTERN = /^[A-Z]{2}$/;
 const CURRENCY_CODE_PATTERN = /^[A-Z]{3}$/;
 const DATETIME_LOCAL_PATTERN = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/;
@@ -316,6 +324,49 @@ export function normalizeTripPatch(input = {}) {
 export function roleForUser(trip, userId) {
   const member = trip.members?.find((item) => String(item.userId) === String(userId));
   return member?.role ?? null;
+}
+
+// Cupo del viaje = `expectedTravelers` (total esperado, incluye al owner). Chequeo
+// puro para el momento de CREAR una invitación: no sobre-invitar contando miembros
+// actuales + invitaciones pendientes no vencidas. Las vencidas/revocadas/rechazadas
+// no reservan cupo (no se cuentan). El chequeo de ACEPTAR es atómico y vive abajo.
+export function hasInviteCapacity({ membersCount, pendingCount, expectedTravelers }) {
+  return membersCount + pendingCount < expectedTravelers;
+}
+
+// Alta atómica de miembro: UNA sola operación que respeta el cupo y no duplica.
+// La BD es la única autoridad del cupo (evita carreras entre dos aceptaciones por
+// el último lugar). El `$expr` compara el tamaño real de `members` contra
+// `expectedTravelers`; `$ne` impide duplicar. Devuelve el desenlace para que el
+// llamador distinga alta / ya-miembro (idempotente) / cupo lleno sin condiciones
+// de carrera. No confía en ningún cálculo previo del frontend.
+export async function addMemberIfCapacity(trips, { tripId, userId, role = TRIP_ROLES.editor, now = new Date().toISOString() }) {
+  const tripObjectId = toObjectId(tripId, 'tripId');
+  const userObjectId = toObjectId(userId, 'userId');
+
+  const result = await trips.updateOne(
+    {
+      _id: tripObjectId,
+      'members.userId': { $ne: userObjectId },
+      $expr: { $lt: [{ $size: '$members' }, '$expectedTravelers'] },
+    },
+    {
+      $push: { members: { userId: userObjectId, role, joinedAt: now } },
+      $set: { updatedAt: now },
+    }
+  );
+
+  if (result.matchedCount === 1) {
+    return { outcome: 'added' };
+  }
+
+  // matchedCount 0 → o ya es miembro (idempotente) o no hay cupo. Un findOne
+  // desambigua sin reservar cupo ni arriesgar una doble alta.
+  const trip = await trips.findOne({ _id: tripObjectId });
+  if (!trip) return { outcome: 'trip-not-found' };
+  const alreadyMember = (trip.members ?? []).some((m) => String(m.userId) === String(userObjectId));
+  if (alreadyMember) return { outcome: 'already-member' };
+  return { outcome: 'capacity-full' };
 }
 
 // Los viajes legacy tienen `destination` como string y no tienen fechas,
