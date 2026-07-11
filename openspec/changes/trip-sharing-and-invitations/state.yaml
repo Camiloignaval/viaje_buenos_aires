@@ -1,0 +1,27 @@
+change: trip-sharing-and-invitations
+artifact_store: openspec
+execution_mode: interactive
+delivery_strategy: ask-on-risk
+phases:
+  explore: done      # diagnóstico real del repo inline por el orquestador (ver design.md §1)
+  proposal: done
+  specs: done        # trip-bootstrap, trip-invitations, invitation-auth-return, trip-membership, invitation-sharing-ui
+  design: done
+  tasks: done
+  apply: in-progress # plan aprobado + D1–D3 cerradas; ejecución autónoma de la Etapa 6
+  verify: pending
+  archive: pending   # NO archivar todavía (instrucción explícita del usuario)
+resolved_decisions:
+  D1-onboarding-invitado: defer       # aceptar NO exige onboarding; el guard lo fuerza al entrar a /trips/:tripId; no se pierde la invitación
+  D2-cupo-vs-pendientes: create-counts-pending  # crear cuenta members+pendientes-no-vencidas; aceptar valida atómico solo members; vencidas/revocadas/rechazadas no reservan
+  D3-e2e-backend-real: no-fullstack-harness      # unit backend + integración lib/endpoints + vitest FE + Playwright UI sin Mongo; e2e real manual con 2 usuarios
+  canal-whatsapp: wa.me               # sin API oficial ni contactos
+  rol-editor: read-only-collaborator  # sin pantallas de edición nuevas en el MVP
+  email-invitacion: deferred          # NotificationService listo; sin envío automático ahora
+  token-hash: hmac-existing-secret    # ALAIA_AUTH_CODE_SECRET || ALAIA_JWT_SECRET (sin nueva env var)
+  expiracion: lazy-7-days             # INVITATION_TTL_DAYS=7; sin cron/Redis
+constraints:
+  - no implementar código hasta aprobación
+  - no commits en la fase de plan
+  - reusar infraestructura existente (no arquitectura paralela)
+  - no reabrir ni alterar la Etapa 5
