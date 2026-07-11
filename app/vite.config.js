@@ -7,10 +7,10 @@ import react from "@vitejs/plugin-react";
 // de imports de Vite espera separadores POSIX.
 const srcDir = resolve(__dirname, "src").replace(/\\/g, "/");
 
-// Aurora es una SPA React única (index.html). `admin.html` es Aurora Studio, una
+// Alaia es una SPA React única (index.html). `admin.html` es Alaia Studio, una
 // herramienta aparte que NO es la app instalable: este plugin le quita el
 // <link rel="manifest"> que vite-plugin-pwa inyecta en cada HTML del build, para
-// que solo index.html se anuncie/instale como Aurora.
+// que solo index.html se anuncie/instale como Alaia.
 function stripManifestFromStudio() {
   return {
     name: "strip-manifest-from-studio",
@@ -49,9 +49,9 @@ export default defineConfig({
   build: {
     rollupOptions: {
       input: {
-        // Aurora: la SPA React única.
+        // Alaia: la SPA React única.
         main: resolve(__dirname, "index.html"),
-        // Aurora Studio (herramienta de publicación, entrada aparte).
+        // Alaia Studio (herramienta de publicación, entrada aparte).
         admin: resolve(__dirname, "admin.html"),
       },
     },
@@ -67,7 +67,7 @@ export default defineConfig({
         server.middlewares.use(blockApiRoutes);
       },
     },
-    // PWA de Aurora. El Service Worker se registra desde la SPA React
+    // PWA de Alaia. El Service Worker se registra desde la SPA React
     // (src/app/main.tsx, virtual:pwa-register) — nunca desde Studio.
     VitePWA({
       registerType: "autoUpdate",
