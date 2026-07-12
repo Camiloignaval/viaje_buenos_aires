@@ -54,7 +54,7 @@ export async function bootstrapBuenosAiresTrip({ email, collections = {}, now = 
 
   const user = await users.findOne({ email: normalizedEmail });
   if (!user) {
-    throw new Error('No existe un usuario con ese correo. Iniciá sesión con esa cuenta antes de asociar el viaje.');
+    throw new Error('No existe un usuario con ese correo. Inicia sesión con esa cuenta antes de asociar el viaje.');
   }
 
   if (typeof trips.createIndex === 'function') {
@@ -66,13 +66,18 @@ export async function bootstrapBuenosAiresTrip({ email, collections = {}, now = 
 
   const result = await trips.updateOne(
     { bootstrapKey: BUENOS_AIRES_BOOTSTRAP_KEY },
-    {
-      $setOnInsert: fresh,
-      $set: { ownerId, baseStoryId: MVP_BASE_STORY_ID, updatedAt: now },
-    },
+    { $setOnInsert: fresh },
     { upsert: true },
   );
   const created = Boolean(result.upsertedCount || result.upsertedId);
+
+  // Mongo no permite escribir el mismo path en $setOnInsert y $set dentro de
+  // una misma operación (por ejemplo ownerId/baseStoryId/updatedAt). Por eso el
+  // upsert crea el documento y este update separado asegura los campos móviles.
+  await trips.updateOne(
+    { bootstrapKey: BUENOS_AIRES_BOOTSTRAP_KEY },
+    { $set: { ownerId, baseStoryId: MVP_BASE_STORY_ID, updatedAt: now } },
+  );
 
   // Asegura al owner en members SIN pisar a otros miembros (solo pushea si falta).
   await trips.updateOne(
