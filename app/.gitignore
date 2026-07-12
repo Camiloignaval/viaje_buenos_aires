@@ -38,3 +38,6 @@ playwright-report
 
 # Salida de vite-plugin-pwa en dev
 dev-dist
+
+.vercel
+.env*
