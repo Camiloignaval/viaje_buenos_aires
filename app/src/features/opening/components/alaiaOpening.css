@@ -1,0 +1,55 @@
+.alaia-opening-app {
+  min-height: 100%;
+}
+
+.alaia-opening {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483647;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: #000;
+  opacity: 1;
+  transition: opacity 800ms ease;
+}
+
+.alaia-opening.is-fading {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.alaia-opening__video {
+  width: 100vw;
+  height: 100vh;
+  background: #000;
+  object-fit: contain;
+}
+
+.alaia-opening__skip {
+  position: absolute;
+  right: max(1rem, env(safe-area-inset-right));
+  bottom: max(1rem, env(safe-area-inset-bottom));
+  border: 1px solid rgb(255 255 255 / 28%);
+  border-radius: 999px;
+  padding: 0.45rem 0.8rem;
+  color: rgb(255 255 255 / 78%);
+  background: rgb(0 0 0 / 38%);
+  font: inherit;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+}
+
+.alaia-opening__skip:hover,
+.alaia-opening__skip:focus-visible {
+  color: #fff;
+  border-color: rgb(255 255 255 / 70%);
+  outline: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .alaia-opening {
+    transition-duration: 200ms;
+  }
+}

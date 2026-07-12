@@ -1,0 +1,21 @@
+change: rename-aurora-to-alaia
+artifact_store: openspec
+execution_mode: automatic
+delivery_strategy: ask-on-risk
+phases:
+  explore: skipped   # inventario equivalente hecho inline por el orquestador (ver proposal > "Inventario")
+  proposal: done
+  specs: done
+  design: done
+  tasks: done
+  apply: done    # 6 fases + corte limpio de env vars, en 8 commits temáticos
+  verify: done   # typecheck + npm test (131) + test:react (274) + build + e2e desktop (17) en verde
+  archive: done  # specs promovidas a openspec/specs/; cambio movido a changes/archive/2026-07-11-rename-aurora-to-alaia
+resolved_decisions:
+  css-classes-aurora: rename            # aurora-* → alaia-*/brand-*
+  api-aurora-routes: rename-clean       # /api/alaia/* ÚNICO; SIN aliases (dir api/aurora eliminado)
+  cookie-session: rename                # aurora_session → alaia_session (no se conservan sesiones)
+  cloudinary-folders: rename            # aurora/* → alaia/* (no hay contenido persistido)
+  indexeddb-aurora-photos: keep         # conservar aurora-photos (migrar no aporta valor, agrega riesgo)
+  env-vars-aurora: rename-clean         # AURORA_* → ALAIA_* SIN fallback; Vercel actualizado por el usuario en simultáneo
+  production-domain: alaia.cl           # EMAIL_FROM/appUrl/CORS/fixtures → alaia.cl

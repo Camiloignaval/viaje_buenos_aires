@@ -4,50 +4,110 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="robots" content="noindex, nofollow" />
-    <title>Aurora Studio — Publicar una historia</title>
+    <title>Alaia Studio — Publicar una historia</title>
     <style>
-      body { font-family: system-ui, sans-serif; max-width: 720px; margin: 2rem auto; padding: 0 1rem; color: #222; }
-      h1 { font-size: 1.25rem; }
-      .note { background: #fff3cd; border: 1px solid #f0c36d; padding: 0.75rem 1rem; border-radius: 6px; font-size: 0.9rem; margin-bottom: 1.5rem; }
-      fieldset { margin-bottom: 1.5rem; border: 1px solid #ddd; border-radius: 6px; }
-      label { display: block; margin: 0.5rem 0; }
-      input[type="password"], input[type="file"], textarea, button { font: inherit; padding: 0.4rem; }
-      textarea { width: 100%; box-sizing: border-box; font-family: monospace; font-size: 0.8rem; }
-      button { cursor: pointer; }
-      .error { color: #b5473f; font-size: 0.9rem; }
-      .result { display: none; }
-      .result.visible { display: block; }
-      .result input[type="text"] { width: 100%; box-sizing: border-box; padding: 0.5rem; font-family: monospace; }
-      #qr { margin-top: 1rem; }
+      body {
+        font-family: system-ui, sans-serif;
+        max-width: 720px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+        color: #222;
+      }
+      h1 {
+        font-size: 1.25rem;
+      }
+      .note {
+        background: #fff3cd;
+        border: 1px solid #f0c36d;
+        padding: 0.75rem 1rem;
+        border-radius: 6px;
+        font-size: 0.9rem;
+        margin-bottom: 1.5rem;
+      }
+      fieldset {
+        margin-bottom: 1.5rem;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+      }
+      label {
+        display: block;
+        margin: 0.5rem 0;
+      }
+      input[type="password"],
+      input[type="file"],
+      textarea,
+      button {
+        font: inherit;
+        padding: 0.4rem;
+      }
+      textarea {
+        width: 100%;
+        box-sizing: border-box;
+        font-family: monospace;
+        font-size: 0.8rem;
+      }
+      button {
+        cursor: pointer;
+      }
+      .error {
+        color: #b5473f;
+        font-size: 0.9rem;
+      }
+      .result {
+        display: none;
+      }
+      .result.visible {
+        display: block;
+      }
+      .result input[type="text"] {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 0.5rem;
+        font-family: monospace;
+      }
+      #qr {
+        margin-top: 1rem;
+      }
     </style>
   </head>
   <body>
-    <h1>Aurora Studio — Publicar una historia</h1>
+    <h1>Alaia Studio — Publicar una historia</h1>
     <p class="note">
-      Esto no es la aplicación de Aurora. Es la herramienta para publicar un Story
-      Package en el backend y generar el link/QR de acceso para sincronizar entre
-      dispositivos. Requiere que el backend esté configurado (<code>AURORA_MONGODB_URI</code>,
-      <code>AURORA_ADMIN_PASSWORD</code>).
+      Esto no es la aplicación de Alaia. Es la herramienta para publicar un
+      Story Package en el backend y generar el link/QR de acceso para
+      sincronizar entre dispositivos. Requiere que el backend esté configurado
+      (<code>MONGODB_URI</code>,
+      <code>ALAIA_ADMIN_PASSWORD</code>).
     </p>
 
     <fieldset>
       <legend>Publicar</legend>
       <label>
         Contraseña de administración:
-        <input type="password" id="password-input" autocomplete="current-password" />
+        <input
+          type="password"
+          id="password-input"
+          autocomplete="current-password"
+        />
       </label>
       <label>
         Story Package (JSON):
         <input type="file" id="file-input" accept="application/json" />
       </label>
-      <textarea id="json-input" rows="12" placeholder="Pegá acá el JSON del Story Package, o subí un archivo arriba."></textarea>
+      <textarea
+        id="json-input"
+        rows="12"
+        placeholder="Pega aquí el JSON del Story Package, o sube un archivo arriba."
+      ></textarea>
       <p><button type="button" id="publish-button">Publicar</button></p>
       <p class="error" id="error-message"></p>
     </fieldset>
 
     <fieldset class="result" id="result">
       <legend>Listo</legend>
-      <p>Link de acceso (sincroniza progreso, Memorias y fotos de esta historia):</p>
+      <p>
+        Link de acceso (sincroniza progreso, Memorias y fotos de esta historia):
+      </p>
       <input type="text" id="link-output" readonly />
       <p><button type="button" id="copy-button">Copiar link</button></p>
       <div id="qr"></div>

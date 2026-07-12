@@ -18,7 +18,7 @@ Las fotos van en la carpeta `images/`, con estos nombres exactos (si falta algun
 - `dia4-hero.jpg`, `dia4-ateneo.jpg`, `dia4-almuerzo.jpg`, `dia4-cafe.jpg`
 - `medialunas-hero.jpg`, `prep-avion-vertical.jpg` (versión vertical de `prep-avion.jpg`, se usa en mobile)
 
-Para reemplazar una foto: sobrescribí el archivo con el mismo nombre en `images/`.
+Para reemplazar una foto: sobrescribe el archivo con el mismo nombre en `images/`.
 
 > `dia2-desayuno.jpg` quedó sin usar — el hotel incluye desayuno, así que esa ficha de cafetería se sacó de la guía.
 
@@ -39,9 +39,9 @@ Cambiando esas dos líneas, se actualiza toda la guía (botones, iconos, barras 
 
 ## Modificar el itinerario
 
-- **Texto y horarios**: cada día vive en su propio bloque `<div id="chapter-dia-N">` dentro del `<body>` — buscá el número de día y editá directamente el HTML (horarios de timeline, direcciones, qué pedir, precios).
+- **Texto y horarios**: cada día vive en su propio bloque `<div id="chapter-dia-N">` dentro del `<body>` — busca el número de día y edita directamente el HTML (horarios de timeline, direcciones, qué pedir, precios).
 - **Checklist, apps recomendadas y presupuesto total del viaje**: no están en el HTML, sino como datos en el `<script>` final (`CHECKLIST`, `APPS`, `TRIP_BUDGET`, `CHAPTERS`). Editar esos arrays actualiza automáticamente esas secciones.
-- **Presupuestos diarios**: son tarjetas manuales (`.dashboard`) dentro de cada día — si cambiás un precio, actualizá también el "Total del día" y el "Acumulado del viaje" de los días siguientes a mano.
+- **Presupuestos diarios**: son tarjetas manuales (`.dashboard`) dentro de cada día — si cambias un precio, actualiza también el "Total del día" y el "Acumulado del viaje" de los días siguientes a mano.
 
 ## Estructura
 

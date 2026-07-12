@@ -4,8 +4,8 @@
 //
 // Como es una app privada de dos personas (no hay datos sensibles de terceros
 // en juego, y las escrituras ya están protegidas por UPLOAD_PASSWORD), se
-// permite cualquier origen. Si en algún momento querés restringirlo a un
-// dominio puntual, cambiá el '*' de acá abajo.
+// permite cualquier origen. Si en algún momento quieres restringirlo a un
+// dominio puntual, cambia el '*' de aquí abajo.
 
 export function applyCors(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");

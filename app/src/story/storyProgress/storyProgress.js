@@ -8,31 +8,88 @@ export const ChapterStatus = Object.freeze({
   COMPLETED: 'completed',
 });
 
+const DAY_IN_MS = 24 * 60 * 60 * 1000;
+const CALENDAR_DATE_PATTERN = /^(\d{4})-(\d{2})-(\d{2})/;
+
 function toDate(value) {
   return value instanceof Date ? value : new Date(value);
 }
 
-function addDays(date, days) {
-  const result = new Date(toDate(date).getTime());
-  result.setUTCDate(result.getUTCDate() + days);
-  return result;
+function pad2(value) {
+  return String(value).padStart(2, '0');
 }
 
-function isOnOrAfter(now, referenceDate) {
-  return toDate(now).getTime() >= toDate(referenceDate).getTime();
+function calendarDateParts(calendarDate) {
+  const match = CALENDAR_DATE_PATTERN.exec(calendarDate);
+  if (!match) throw new Error(`Fecha calendario inválida: ${calendarDate}`);
+  return [Number(match[1]), Number(match[2]), Number(match[3])];
+}
+
+/** Fecha calendario percibida: YYYY-MM-DD, sin horas ni conversión UTC. */
+export function calendarDateFrom(value) {
+  if (typeof value === 'string') {
+    const match = CALENDAR_DATE_PATTERN.exec(value);
+    if (!match) throw new Error(`Fecha calendario inválida: ${value}`);
+    return `${match[1]}-${match[2]}-${match[3]}`;
+  }
+  return `${value.getFullYear()}-${pad2(value.getMonth() + 1)}-${pad2(value.getDate())}`;
+}
+
+export function calendarOrdinal(calendarDate) {
+  const [year, month, day] = calendarDateParts(calendarDate);
+  return Math.floor(Date.UTC(year, month - 1, day) / DAY_IN_MS);
+}
+
+export function calendarDateFromOrdinal(ordinal) {
+  const date = new Date(ordinal * DAY_IN_MS);
+  return `${date.getUTCFullYear()}-${pad2(date.getUTCMonth() + 1)}-${pad2(date.getUTCDate())}`;
+}
+
+export function addCalendarDays(date, days) {
+  return calendarDateFromOrdinal(calendarOrdinal(calendarDateFrom(date)) + days);
+}
+
+export function calendarDaysBetween(start, end) {
+  return calendarOrdinal(calendarDateFrom(end)) - calendarOrdinal(calendarDateFrom(start));
+}
+
+function isCalendarOnOrAfter(now, referenceDate) {
+  return calendarDaysBetween(referenceDate, now) >= 0;
 }
 
 /**
- * Fecha de referencia de un capítulo para efectos de desbloqueo.
+ * Date estable para presentación: mediodía UTC del día calendario.
+ * No representa una hora real del viaje; evita que el formato cambie de día
+ * por el timezone local del navegador o del servidor.
+ */
+function calendarDateToDisplayDate(calendarDate) {
+  const [year, month, day] = calendarDateParts(calendarDate);
+  return new Date(Date.UTC(year, month - 1, day, 12));
+}
+
+/**
+ * Anchor sintético para el countdown actual, que ya divide milisegundos.
+ * La fecha se calcula desde `now + díasCalendario * 24h` para que el resultado sea
+ * exactamente días de calendario, sin depender de la hora ni de cambios DST.
+ */
+export function countdownAnchorForCalendarDate(targetDate, now) {
+  const days = Math.max(0, calendarDaysBetween(now, targetDate));
+  return new Date(toDate(now).getTime() + days * DAY_IN_MS);
+}
+
+export function getChapterReferenceCalendarDate(chapter, storyPackage) {
+  if (chapter.date) return calendarDateFrom(chapter.date);
+  return addCalendarDays(storyPackage.metadata.travelDates.start, chapter.order - 1);
+}
+
+/**
+ * Fecha de referencia de un capítulo para presentación.
  * Si el capítulo trae su propia `date` (caso del capítulo especial), se usa tal cual —
  * nunca se deriva de `travelDates.end` (ver SPECIAL_CHAPTER_DESIGN.md §4).
- * Si no, se calcula como travelDates.start + (order - 1) días.
+ * Si no, se calcula como travelDates.start + (order - 1) días de calendario.
  */
 export function getChapterReferenceDate(chapter, storyPackage) {
-  if (chapter.date) {
-    return toDate(chapter.date);
-  }
-  return addDays(storyPackage.metadata.travelDates.start, chapter.order - 1);
+  return calendarDateToDisplayDate(getChapterReferenceCalendarDate(chapter, storyPackage));
 }
 
 function resolveUnlockRule(chapter, storyPackage) {
@@ -50,9 +107,9 @@ export function getChapterStatus({ chapter, storyPackage, now, previousChapterCo
   }
 
   const unlockRule = resolveUnlockRule(chapter, storyPackage);
-  const referenceDate = getChapterReferenceDate(chapter, storyPackage);
+  const referenceDate = getChapterReferenceCalendarDate(chapter, storyPackage);
 
-  const dateSatisfied = !unlockRule.requiresDateReached || isOnOrAfter(now, referenceDate);
+  const dateSatisfied = !unlockRule.requiresDateReached || isCalendarOnOrAfter(now, referenceDate);
   const previousSatisfied = !unlockRule.requiresPreviousChapterCompleted || previousChapterCompleted === true;
 
   return dateSatisfied && previousSatisfied ? ChapterStatus.AVAILABLE : ChapterStatus.LOCKED;

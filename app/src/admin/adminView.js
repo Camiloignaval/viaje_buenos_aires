@@ -1,4 +1,4 @@
-// Conecta los controles de admin.html con /api/aurora/story (Épica 5). Como
+// Conecta los controles de admin.html con /api/alaia/story (Épica 5). Como
 // debugView.js/memoriesView.js: herramienta interna, no UI de producto.
 // Valida el Story Package con la MISMA función que usa el motor real —
 // no duplica reglas de validación acá.
@@ -54,7 +54,7 @@ publishButton.addEventListener('click', async () => {
   publishButton.disabled = true;
   publishButton.textContent = 'Publicando...';
   try {
-    const response = await fetch('/api/aurora/story', {
+    const response = await fetch('/api/alaia/story', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ password: passwordInput.value, storyPackage: rawStoryPackage }),
@@ -65,7 +65,7 @@ publishButton.addEventListener('click', async () => {
       return;
     }
 
-    const link = `${window.location.origin}/experience.html?token=${body.accessToken}`;
+    const link = `${window.location.origin}/experience?token=${body.accessToken}`;
     linkOutput.value = link;
     resultEl.classList.add('visible');
     qrEl.innerHTML = '';

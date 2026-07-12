@@ -29,3 +29,15 @@ dist-ssr
 *.sw?
 
 .vercel
+.env*
+
+# Playwright (el spec y la config se versionan; los artefactos no)
+test-results
+playwright-report
+/e2e/__shots__
+
+# Salida de vite-plugin-pwa en dev
+dev-dist
+
+.vercel
+.env*

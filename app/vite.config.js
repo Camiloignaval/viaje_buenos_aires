@@ -1,20 +1,24 @@
 import { resolve } from "node:path";
 import { defineConfig } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
+import react from "@vitejs/plugin-react";
 
-// vite-plugin-pwa inyecta el <link rel="manifest"> en TODOS los HTML que Vite
-// build-ee, sin distinguir cuál es la app instalable — con build multi-página
-// eso incluiría a `index.html` (el prototipo viejo) y a `admin.html` (Aurora
-// Studio, Épica 5 — una herramienta, no la app). Este plugin corre después y
-// lo saca de esos dos: solo `experience.html` anuncia el manifest de Aurora.
-function stripManifestFromLegacyHtml() {
+// Normalizado a "/" — en Windows resolve() devuelve backslashes y la resolución
+// de imports de Vite espera separadores POSIX.
+const srcDir = resolve(__dirname, "src").replace(/\\/g, "/");
+
+// Alaia es una SPA React única (index.html). `admin.html` es Alaia Studio, una
+// herramienta aparte que NO es la app instalable: este plugin le quita el
+// <link rel="manifest"> que vite-plugin-pwa inyecta en cada HTML del build, para
+// que solo index.html se anuncie/instale como Alaia.
+function stripManifestFromStudio() {
   return {
-    name: "strip-manifest-from-legacy-html",
+    name: "strip-manifest-from-studio",
     enforce: "post",
     transformIndexHtml: {
       order: "post",
       handler(html, ctx) {
-        if (ctx.filename?.endsWith("index.html") || ctx.filename?.endsWith("admin.html")) {
+        if (ctx.filename?.endsWith("admin.html")) {
           return html.replace(/<link rel="manifest"[^>]*>\n?/, "");
         }
         return html;
@@ -23,15 +27,10 @@ function stripManifestFromLegacyHtml() {
   };
 }
 
-// En dev, `npm run dev` solo sirve el frontend (ver README). Las funciones
-// serverless en `api/` necesitan `vercel dev` para ejecutarse de verdad.
-// Sin esto, Vite devuelve el código fuente de esos archivos como texto plano
-// para peticiones a /api/*, y storage.js lo interpreta como backend
-// disponible, rompiendo el fallback a localStorage. `vite preview` (necesario
-// para probar la PWA con un build real, Épica 4) tenía el mismo problema por
-// una razón distinta: sin esto, cualquier ruta sin archivo estático — incluida
-// `/api/memories` — cae al fallback de `index.html`, devolviendo HTML donde
-// `storage.js` espera JSON. Se descubrió validando la Épica 4, no la causó.
+// En dev, `npm run dev` solo sirve el frontend. Las funciones serverless en
+// `api/` necesitan `vercel dev`. Sin esto, Vite devolvería el código fuente de
+// esos archivos como texto para /api/*, y con el fallback SPA cualquier /api/*
+// sin match caería en index.html (HTML donde el cliente espera JSON).
 function blockApiRoutes(req, res, next) {
   if (req.url?.startsWith("/api/")) {
     res.statusCode = 404;
@@ -42,21 +41,23 @@ function blockApiRoutes(req, res, next) {
 }
 
 export default defineConfig({
+  // Alias @/* → src/*, espejo de tsconfig paths. Forma regex con $1: la forma
+  // string bare "@" no matchea de forma fiable en Vite 8/Rolldown.
+  resolve: {
+    alias: [{ find: /^@\/(.*)$/, replacement: `${srcDir}/$1` }],
+  },
   build: {
-    // Por defecto Vite solo build-ea index.html (el prototipo viejo). Aurora
-    // (experience.html) necesita estar en el build real para poder instalarse
-    // como PWA — Épica 4. `admin.html` (Aurora Studio, Épica 5) también, porque
-    // es una herramienta real que se usa en producción (publicar historias),
-    // a diferencia de `debug.html`/`memories.html` que quedan afuera a propósito.
     rollupOptions: {
       input: {
+        // Alaia: la SPA React única.
         main: resolve(__dirname, "index.html"),
-        experience: resolve(__dirname, "experience.html"),
+        // Alaia Studio (herramienta de publicación, entrada aparte).
         admin: resolve(__dirname, "admin.html"),
       },
     },
   },
   plugins: [
+    react({ include: /\.(jsx|tsx)$/ }),
     {
       name: "block-api-in-dev",
       configureServer(server) {
@@ -66,23 +67,45 @@ export default defineConfig({
         server.middlewares.use(blockApiRoutes);
       },
     },
-    // Épica 4 — PWA solo para Aurora (experience.html). El Service Worker se
-    // registra ÚNICAMENTE desde experienceView.js (nunca desde main.js, debug.html
-    // ni memories.html) — así el prototipo viejo con backend (`../lib`, `../api`,
-    // detección de backend por fetch) nunca queda bajo su control. `globIgnores`
-    // excluye además los 3 HTML que no son Aurora, por si algún chunk suelto
-    // quedara precacheado (inofensivo, pero así ninguno de esos 3 se sirve
-    // jamás desde cache ni se "instala" como si fuera la app real).
+    // PWA de Alaia. El Service Worker se registra desde la SPA React
+    // (src/app/main.tsx, virtual:pwa-register) — nunca desde Studio.
     VitePWA({
       registerType: "autoUpdate",
-      injectRegister: null, // registro manual, solo desde experienceView.js
+      injectRegister: null, // registro manual desde React (main.tsx)
       workbox: {
         globPatterns: ["**/*.{js,css,html,svg,png,jpg,mp4,webmanifest,ico}"],
-        globIgnores: ["index.html", "debug.html", "memories.html", "admin.html"],
-        navigateFallback: null,
-        // Los assets emocionales de Aurora (cover-hero.jpg y video_intro_2.mp4)
-        // pesan más que el límite por defecto de Workbox (2 MiB). Sin esto,
-        // "offline completo" dejaría afuera justo la primera impresión.
+        globIgnores: [
+          // Studio no es la app instalable.
+          "admin.html",
+          // Export bruto de íconos: duplica assets ya curados bajo /icons.
+          "AppAssets_2026-07-09/**/*",
+          // Copias legacy en la raíz: la historia carga estas fotos desde
+          // /images/*. Fuera del precache para no inflar la primera instalación.
+          "dia1-cena.jpg",
+          "dia1-corrientes.jpg",
+          "dia1-cuartito.jpg",
+          "dia1-rapanui.jpg",
+          "dia2-almuerzo.jpg",
+          "dia2-cafepalermo.jpg",
+          "dia2-cementerio.jpg",
+          "dia2-cena.jpg",
+          "dia2-floralis.jpg",
+          "dia2-puertomadero.jpg",
+          "dia2-rosedal.jpg",
+          "dia3-almuerzo.jpg",
+          "dia3-caminito.jpg",
+          "dia3-dorrego.jpg",
+          "dia3-floreria.jpg",
+          "dia3-mafalda.jpg",
+          "dia3-mercado.jpg",
+          "dia4-almuerzo.jpg",
+          "dia4-ateneo.jpg",
+          "hotel.jpg",
+        ],
+        navigateFallback: "/index.html",
+        // Assets emocionales (cover-hero.jpg, video_intro_2.mp4) superan el
+        // límite por defecto de Workbox (2 MiB); sin esto el offline completo
+        // dejaría afuera la primera impresión.
         maximumFileSizeToCacheInBytes: 50 * 1024 * 1024,
       },
       includeAssets: [
@@ -97,11 +120,11 @@ export default defineConfig({
         "icons/Web/og.png",
       ],
       manifest: {
-        id: "/experience.html",
-        name: "Aurora — Buenos Aires 2026",
-        short_name: "Aurora",
+        id: "/",
+        name: "Alaia — Buenos Aires 2026",
+        short_name: "Alaia",
         description: "Un compañero de viaje para vivir y recordar Buenos Aires 2026.",
-        start_url: "/experience.html",
+        start_url: "/",
         scope: "/",
         display: "standalone",
         background_color: "#0f0e0d",
@@ -115,6 +138,6 @@ export default defineConfig({
         ],
       },
     }),
-    stripManifestFromLegacyHtml(),
+    stripManifestFromStudio(),
   ],
 });
