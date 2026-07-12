@@ -46,8 +46,13 @@ export function FeedbackSection() {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    await mutation.mutateAsync({ category, message, ...feedbackContext() });
-    setMessage("");
+    try {
+      await mutation.mutateAsync({ category, message, ...feedbackContext() });
+      setMessage("");
+    } catch {
+      // El estado de error lo expone React Query; no relanzamos para evitar
+      // rechazos no manejados desde el submit del formulario.
+    }
   }
 
   return (
@@ -58,7 +63,9 @@ export function FeedbackSection() {
           Queremos seguir mejorando contigo
         </h2>
         <p className="feedback-description">
-          ¿Hay algo que podríamos hacer mejor? Tu mirada también forma parte de esta historia.
+          ¿Hay algo que podríamos hacer mejor?
+          <br />
+          Tu mirada también forma parte de esta historia.
         </p>
       </div>
 
@@ -88,7 +95,7 @@ export function FeedbackSection() {
           value={message}
           maxLength={3000}
           onChange={(event) => setMessage(event.target.value)}
-          placeholder="Contanos qué viste, qué sentiste o qué podríamos cuidar mejor."
+          placeholder="Cuéntanos qué viste, qué sentiste o qué podríamos cuidar mejor."
           required
         />
 
@@ -99,12 +106,14 @@ export function FeedbackSection() {
         )}
         {mutation.isSuccess && (
           <p className="feedback-success">
-            Gracias por ayudarnos a mejorar Alaia. Leeremos tu mensaje con atención.
+            Gracias por ayudarnos a mejorar Alaia.
+            <br />
+            Leeremos tu mensaje con atención.
           </p>
         )}
 
         <button type="submit" className="trips-create-link" disabled={mutation.isPending || message.trim().length < 10}>
-          {mutation.isPending ? "Enviando..." : "Enviar sugerencia"}
+          {mutation.isPending ? "Enviando..." : "Enviar sugerencia →"}
         </button>
       </form>
     </section>

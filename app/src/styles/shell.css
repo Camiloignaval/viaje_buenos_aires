@@ -437,9 +437,9 @@ body {
 .alaia-halo::before {
   content: "";
   position: absolute;
-  inset: -45%;
+  inset: -25%;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(var(--gold-rgb), 0.18) 0%, rgba(var(--gold-rgb), 0) 70%);
+  background: radial-gradient(circle, rgba(var(--gold-rgb), 0.14) 0%, rgba(var(--gold-rgb), 0) 65%);
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -451,12 +451,12 @@ body {
 @keyframes alaia-halo-glow {
   0%,
   100% {
-    opacity: 0.45;
+    opacity: 0.4;
     transform: scale(0.9);
   }
   50% {
-    opacity: 1;
-    transform: scale(1.08);
+    opacity: 0.75;
+    transform: scale(1.04);
   }
 }
 
@@ -579,6 +579,42 @@ body {
   font-size: 0.92rem;
   font-style: italic;
   color: var(--error);
+}
+
+.trips-secondary-nav {
+  display: inline-block;
+  margin: 0 auto clamp(1.4rem, 4svh, 2.2rem);
+  font-family: var(--font-display);
+  font-size: 0.96rem;
+  font-style: italic;
+  color: rgba(var(--gold-rgb), 0.82);
+  text-decoration: none;
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), color 0.45s ease;
+}
+
+.trips-secondary-nav:hover,
+.trips-secondary-nav:focus-visible {
+  transform: translateY(-2px);
+  color: var(--gold);
+  outline: none;
+}
+
+.trips-secondary-nav:focus-visible {
+  outline: 1px solid var(--focus-ring);
+  outline-offset: 5px;
+}
+
+.trips-index-section {
+  margin: 0 auto;
+}
+
+.trips-section-title {
+  margin: 0 0 clamp(1.3rem, 3.2svh, 1.9rem);
+  font-family: var(--font-display);
+  font-size: clamp(1.05rem, 2.4svh, 1.25rem);
+  font-weight: 400;
+  font-style: italic;
+  color: rgba(var(--secondary-rgb), 0.82);
 }
 
 /* El índice de viajes ES el índice de capítulos: pilas centradas (numeral
@@ -793,6 +829,53 @@ body {
 .trips-create-link-primary {
   font-family: var(--font-display);
   font-size: clamp(1.15rem, 3svh, 1.35rem);
+}
+
+.feedback-teaser {
+  width: min(100%, 27rem);
+  margin: clamp(1.9rem, 5svh, 3rem) auto 1rem;
+  padding-top: clamp(1.15rem, 3svh, 1.65rem);
+  border-top: 1px solid rgba(var(--gold-rgb), 0.16);
+  color: rgba(var(--secondary-rgb), 0.78);
+}
+
+.feedback-teaser-title {
+  margin: 0 0 0.45rem;
+  font-family: var(--font-display);
+  font-size: clamp(1.08rem, 2.4svh, 1.28rem);
+  font-weight: 400;
+  font-style: italic;
+  color: rgba(var(--ivory-rgb), 0.9);
+}
+
+.feedback-teaser p {
+  max-width: 30ch;
+  margin: 0 auto 0.75rem;
+  line-height: 1.6;
+}
+
+.feedback-teaser-link {
+  display: inline-block;
+  font-family: var(--font-display);
+  color: var(--gold);
+  text-decoration: none;
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), text-shadow 0.45s ease;
+}
+
+.feedback-teaser-link:hover,
+.feedback-teaser-link:focus-visible {
+  transform: translateY(-2px);
+  text-shadow: 0 0 24px rgba(var(--gold-rgb), 0.34);
+  outline: none;
+}
+
+.feedback-teaser-link:focus-visible {
+  outline: 1px solid var(--focus-ring);
+  outline-offset: 5px;
+}
+
+.feedback-page-content {
+  max-width: 36rem;
 }
 
 .feedback-section {

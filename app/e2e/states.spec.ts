@@ -13,6 +13,8 @@ const STATES = [
   "invalid-code",
   "trips-empty",
   "trips-list",
+  "trip-home",
+  "feedback",
   "create-trip",
   "onboarding-name",
   "onboarding-country",

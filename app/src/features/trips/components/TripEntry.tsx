@@ -1,6 +1,7 @@
+import { Link } from "react-router-dom";
 import type { Trip } from "../types";
 import { toRoman } from "../lib/toRoman";
-import { tripUrl } from "../lib/tripUrl";
+import { tripHomeUrl } from "../lib/tripUrl";
 import { formatDestination } from "../lib/formatDestination";
 import { safeTripTemporalState, describeTripTemporalState } from "../lib/countdown";
 
@@ -24,13 +25,7 @@ export function TripEntry({ trip, index, now }: { trip: Trip; index: number; now
 
   return (
     <li className="trip-index-item">
-      <button
-        type="button"
-        className="trip-entry"
-        onClick={() => {
-          window.location.href = tripUrl(trip.id);
-        }}
-      >
+      <Link className="trip-entry" to={tripHomeUrl(trip.id)}>
         <span className="trip-entry-number" aria-hidden="true">
           {toRoman(index + 1)}
         </span>
@@ -39,7 +34,7 @@ export function TripEntry({ trip, index, now }: { trip: Trip; index: number; now
           <span className="trip-entry-status">{formatDestination(trip.destination)}</span>
           {status && <span className="trip-entry-countdown">{status}</span>}
         </span>
-      </button>
+      </Link>
     </li>
   );
 }

@@ -11,6 +11,7 @@ const LoginPage = lazy(() => import("@/features/auth/pages/LoginPage"));
 const OnboardingPage = lazy(() => import("@/features/onboarding/pages/OnboardingPage"));
 const TripsPage = lazy(() => import("@/features/trips/pages/TripsPage"));
 const TripHomePage = lazy(() => import("@/features/trips/pages/TripHomePage"));
+const FeedbackPage = lazy(() => import("@/features/feedback/pages/FeedbackPage"));
 const ExperiencePage = lazy(() => import("@/features/experience/pages/ExperiencePage"));
 const InvitePage = lazy(() => import("@/features/sharing/pages/InvitePage"));
 
@@ -43,6 +44,16 @@ const children: RouteObject[] = [
       <RequireAuth>
         <RequireOnboarding>
           <TripHomePage />
+        </RequireOnboarding>
+      </RequireAuth>
+    ),
+  },
+  {
+    path: "feedback",
+    element: (
+      <RequireAuth>
+        <RequireOnboarding>
+          <FeedbackPage />
         </RequireOnboarding>
       </RequireAuth>
     ),

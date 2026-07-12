@@ -1,5 +1,6 @@
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { PlatformApiError } from "@/services/platformClient";
@@ -53,6 +54,7 @@ function renderPortada() {
       <MemoryRouter initialEntries={["/trips/trip-1"]}>
         <Routes>
           <Route path="trips/:tripId" element={<TripHomePage />} />
+          <Route path="trips" element={<div>Mis viajes destino</div>} />
         </Routes>
       </MemoryRouter>
     </QueryClientProvider>,
@@ -70,6 +72,33 @@ describe("TripHomePage (Portada del viaje)", () => {
     expect(await screen.findByRole("heading", { name: "Buenos Aires en familia" })).toBeInTheDocument();
     const cta = await screen.findByRole("link", { name: "Entrar al viaje" });
     expect(cta).toHaveAttribute("href", "/experience?tripId=trip-1");
+  });
+
+  it("muestra navegación editorial para volver a Mis viajes", async () => {
+    const { demoStoryPackage } = await import("@/features/experience/data/demoStory");
+    getTrip.mockResolvedValue({ trip: trip() });
+    getStory.mockResolvedValue({ story: { storyId: "ba-2026", storyPackage: demoStoryPackage } });
+
+    renderPortada();
+
+    const back = await screen.findByRole("link", { name: "← Volver a Mis viajes" });
+    expect(back).toHaveAttribute("href", "/trips");
+  });
+
+  it("vuelve a /trips manteniendo SPA y accesibilidad de teclado", async () => {
+    const user = userEvent.setup();
+    const { demoStoryPackage } = await import("@/features/experience/data/demoStory");
+    getTrip.mockResolvedValue({ trip: trip() });
+    getStory.mockResolvedValue({ story: { storyId: "ba-2026", storyPackage: demoStoryPackage } });
+
+    renderPortada();
+
+    const back = await screen.findByRole("link", { name: "← Volver a Mis viajes" });
+    back.focus();
+    expect(back).toHaveFocus();
+    await user.keyboard("{Enter}");
+
+    expect(await screen.findByText("Mis viajes destino")).toBeInTheDocument();
   });
 
   it("EMPTY: viaje sin historia → estado honesto, sin CTA de entrada, nunca redirige", async () => {

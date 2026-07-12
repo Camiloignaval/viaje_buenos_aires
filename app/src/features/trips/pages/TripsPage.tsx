@@ -1,7 +1,9 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { AlaiaParticles } from "@/components/animations/AlaiaParticles";
 import { useSession } from "@/features/auth/hooks/useSession";
 import { useLogout } from "@/features/auth/hooks/useLogout";
+import { isFeedbackUiEnabled } from "@/features/feedback/lib/feedbackFlag";
 import { useTrips } from "../hooks/useTrips";
 import { TripsIndex } from "../components/TripsIndex";
 import { TripsEmpty } from "../components/TripsEmpty";
@@ -9,7 +11,6 @@ import { CreateTripWizard } from "../components/CreateTripWizard";
 import { ActiveTripHome } from "../components/ActiveTripHome";
 import { tripHomeUrl } from "../lib/tripUrl";
 import { resolveInitialAlaiaDestination } from "../lib/initialDestination";
-import { FeedbackSection } from "@/features/feedback/components/FeedbackSection";
 
 // "Mis viajes" — la página siguiente del mismo libro. Reúne índice, escena
 // vacía y creación en una sola pantalla editorial, igual que el viejo
@@ -19,6 +20,7 @@ export default function TripsPage() {
   const { user } = useSession();
   const trips = useTrips();
   const logout = useLogout();
+  const feedbackEnabled = isFeedbackUiEnabled();
 
   if (creating) {
     // El wizard es su propia secuencia de pantallas completas (cada paso trae
@@ -33,6 +35,9 @@ export default function TripsPage() {
   const initialDestination = trips.isSuccess
     ? resolveInitialAlaiaDestination(list)
     : null;
+  const activeTrip = initialDestination?.kind === "active-trip-home" ? initialDestination.trip : null;
+  const indexTrips = activeTrip ? list.filter((trip) => trip.id !== activeTrip.id) : list;
+  const shouldRenderIndex = trips.isSuccess && indexTrips.length > 0;
 
   return (
     <div className="trips-page">
@@ -78,7 +83,16 @@ export default function TripsPage() {
             to={tripHomeUrl(initialDestination.trip.id)}
           />
         )}
-        {hasTrips && <TripsIndex trips={list} />}
+        {shouldRenderIndex && (
+          <section className="trips-index-section alaia-reveal alaia-reveal-4" aria-labelledby={activeTrip ? "other-trips-title" : undefined}>
+            {activeTrip && (
+              <h2 id="other-trips-title" className="trips-section-title">
+                Otras historias
+              </h2>
+            )}
+            <TripsIndex trips={indexTrips} />
+          </section>
+        )}
         {hasTrips && (
           <button
             type="button"
@@ -89,7 +103,17 @@ export default function TripsPage() {
           </button>
         )}
 
-        {!trips.isPending && !trips.isError && <FeedbackSection />}
+        {feedbackEnabled && !trips.isPending && !trips.isError && (
+          <section className="feedback-teaser alaia-reveal alaia-reveal-5" aria-labelledby="feedback-teaser-title">
+            <h2 id="feedback-teaser-title" className="feedback-teaser-title">
+              Ayúdanos a mejorar Alaia
+            </h2>
+            <p>Tu mirada también forma parte de esta historia.</p>
+            <Link className="feedback-teaser-link" to="/feedback">
+              Enviar sugerencia →
+            </Link>
+          </section>
+        )}
 
         <button
           type="button"

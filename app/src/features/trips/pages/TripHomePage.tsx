@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useConnectedTrip } from "@/features/connected/hooks/useConnectedTrip";
 import { useStoryContent } from "@/features/connected/hooks/useConnectedContent";
 import { resolveStory } from "@/features/experience/hooks/useResolvedStory";
@@ -36,6 +36,9 @@ export default function TripHomePage() {
     <div className="trips-page">
       <AlaiaParticles subtle />
       <div className="trips-page-content">
+        <Link className="trips-secondary-nav alaia-reveal alaia-reveal-1" to="/trips">
+          ← Volver a Mis viajes
+        </Link>
         <p className="alaia-eyebrow alaia-reveal alaia-reveal-1">Alaia</p>
         <ActiveTripHome
           trip={trip}
@@ -46,7 +49,7 @@ export default function TripHomePage() {
         />
         {!storyReady && (
           <p className="active-trip-home-preparations alaia-reveal alaia-reveal-4">
-            Tu historia todavía no está lista. Cuando esté disponible, vas a poder entrar desde acá.
+            Tu historia todavía no está lista. Cuando esté disponible, vas a poder entrar desde aquí.
           </p>
         )}
         <TripInvitePanel trip={trip} />

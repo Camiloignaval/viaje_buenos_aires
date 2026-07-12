@@ -7,6 +7,7 @@ import { EmailStep } from "@/features/auth/components/EmailStep";
 import { CodeStep } from "@/features/auth/components/CodeStep";
 import { TripsEmpty } from "@/features/trips/components/TripsEmpty";
 import { TripsIndex } from "@/features/trips/components/TripsIndex";
+import { ActiveTripHome } from "@/features/trips/components/ActiveTripHome";
 import { CreateTripWizard } from "@/features/trips/components/CreateTripWizard";
 import { ArrivalStep } from "@/features/trips/components/wizard/ArrivalStep";
 import { DepartureStep } from "@/features/trips/components/wizard/DepartureStep";
@@ -15,6 +16,9 @@ import { SummaryStep } from "@/features/trips/components/wizard/SummaryStep";
 import { StoryBeginning } from "@/features/trips/components/wizard/StoryBeginning";
 import { INITIAL_WIZARD_DATA } from "@/features/trips/components/wizard/wizardData";
 import type { Trip } from "@/features/trips/types";
+import { tripHomeUrl, tripUrl } from "@/features/trips/lib/tripUrl";
+import { tripTemporalState } from "@/features/trips/lib/countdown";
+import { FeedbackSection } from "@/features/feedback/components/FeedbackSection";
 import { InviteUnauthenticated } from "@/features/sharing/components/InviteUnauthenticated";
 import { InviteDecision } from "@/features/sharing/components/InviteDecision";
 import { InviteWrongEmail } from "@/features/sharing/components/InviteWrongEmail";
@@ -87,6 +91,8 @@ const SAMPLE_TRIPS: Trip[] = [
   },
 ];
 
+const SAMPLE_ACTIVE_TRIP = SAMPLE_TRIPS[3];
+
 // Invitación de muestra para la galería (sin backend): mismos campos que devuelve
 // el preview público sanitizado.
 const SAMPLE_INVITATION: InvitationPreview = {
@@ -98,13 +104,13 @@ const SAMPLE_INVITATION: InvitationPreview = {
 };
 
 // Marco de "Mis viajes" idéntico al de TripsPage, para que el estado se vea igual.
-function TripsFrame({ title, account, children }: { title: string; account?: string; children: ReactNode }) {
+function TripsFrame({ title, account, children }: { title?: string; account?: string; children: ReactNode }) {
   return (
     <div className="trips-page">
       <AlaiaParticles subtle />
       <div className="trips-page-content">
         <p className="alaia-eyebrow">Alaia</p>
-        <h1 className="trips-title">{title}</h1>
+        {title ? <h1 className="trips-title">{title}</h1> : null}
         {account ? <p className="trips-account">{account}</p> : null}
         {children}
       </div>
@@ -205,13 +211,66 @@ export const GALLERY_STATES: Record<string, GalleryState> = {
     label: "Mis viajes · lista",
     render: () => (
       <TripsFrame title="Mis viajes" account="agus@ejemplo.com">
-        <TripsIndex trips={SAMPLE_TRIPS} />
+        <ActiveTripHome
+          trip={SAMPLE_ACTIVE_TRIP}
+          lifecycle="upcoming"
+          temporalState={tripTemporalState(
+            new Date(),
+            SAMPLE_ACTIVE_TRIP.startDateTime ?? "",
+            SAMPLE_ACTIVE_TRIP.endDateTime ?? "",
+            "America/Argentina/Buenos_Aires",
+          )}
+          to={tripHomeUrl(SAMPLE_ACTIVE_TRIP.id)}
+        />
+        <h2 className="trips-section-title">Otras historias</h2>
+        <TripsIndex trips={SAMPLE_TRIPS.filter((trip) => trip.id !== SAMPLE_ACTIVE_TRIP.id)} />
         <button type="button" className="trips-create-link">
           + Un nuevo viaje
         </button>
+        <section className="feedback-teaser" aria-labelledby="dev-feedback-teaser-title">
+          <h2 id="dev-feedback-teaser-title" className="feedback-teaser-title">
+            Ayúdanos a mejorar Alaia
+          </h2>
+          <p>Tu mirada también forma parte de esta historia.</p>
+          <Link className="feedback-teaser-link" to="/feedback">
+            Enviar sugerencia →
+          </Link>
+        </section>
         <button type="button" className="trips-logout">
           Cerrar sesión
         </button>
+      </TripsFrame>
+    ),
+  },
+  "trip-home": {
+    label: "Portada del viaje",
+    render: () => (
+      <TripsFrame title="">
+        <Link className="trips-secondary-nav" to="/trips">
+          ← Volver a Mis viajes
+        </Link>
+        <ActiveTripHome
+          trip={SAMPLE_ACTIVE_TRIP}
+          lifecycle="upcoming"
+          temporalState={tripTemporalState(
+            new Date(),
+            SAMPLE_ACTIVE_TRIP.startDateTime ?? "",
+            SAMPLE_ACTIVE_TRIP.endDateTime ?? "",
+            "America/Argentina/Buenos_Aires",
+          )}
+          to={tripUrl(SAMPLE_ACTIVE_TRIP.id)}
+        />
+      </TripsFrame>
+    ),
+  },
+  feedback: {
+    label: "Feedback",
+    render: () => (
+      <TripsFrame title="">
+        <Link className="trips-secondary-nav" to="/trips">
+          ← Volver a Mis viajes
+        </Link>
+        <FeedbackSection />
       </TripsFrame>
     ),
   },
@@ -224,7 +283,7 @@ export const GALLERY_STATES: Record<string, GalleryState> = {
   "onboarding-name": {
     label: "Alaia · onboarding (nombre)",
     render: () => (
-      <WizardShell question="¿Cómo querés que te llamemos?" onNext={noop} nextDisabled={false}>
+      <WizardShell question="¿Cómo quieres que te llamemos?" onNext={noop} nextDisabled={false}>
         <label htmlFor="dev-onboarding-name">Nombre</label>
         <input id="dev-onboarding-name" type="text" defaultValue="Kari" />
       </WizardShell>
