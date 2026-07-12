@@ -45,7 +45,7 @@ describe("TripInvitePanel", () => {
     const cta = await screen.findByRole("button", { name: /Invitar a esta historia/ });
     expect(cta).toBeEnabled();
     fireEvent.click(cta);
-    expect(screen.getByText("¿Con quién querés compartir esta historia?")).toBeInTheDocument();
+    expect(screen.getByText("¿Con quién quieres compartir esta historia?")).toBeInTheDocument();
     expect(screen.getByLabelText("Correo de la persona")).toBeInTheDocument();
   });
 

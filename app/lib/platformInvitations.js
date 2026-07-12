@@ -191,7 +191,7 @@ export async function createInvitation({
 
   // No invitarse a sí mismo.
   if (invitedEmailNormalized === String(owner.email ?? '').trim().toLowerCase()) {
-    throw new ConflictError('Ese es tu correo: ya sos parte de esta historia.');
+    throw new ConflictError('Ese es tu correo: ya eres parte de esta historia.');
   }
 
   const invitations = collections.invitations ?? (await getTripInvitationsCollection());

@@ -11,7 +11,7 @@ describe("EmailStep", () => {
       <EmailStep defaultEmail="" submitting={false} submitError={null} onSubmit={() => {}} />,
     );
     expect(
-      screen.getByRole("heading", { name: "Tus viajes empiezan acá." }),
+      screen.getByRole("heading", { name: "Tus viajes empiezan aquí." }),
     ).toBeInTheDocument();
   });
 

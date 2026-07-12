@@ -273,7 +273,7 @@ test('createInvitation crea pending como editor, devuelve inviteUrl y NO persist
 test('createInvitation rechaza invitarse a sí mismo (409)', async () => {
   await assert.rejects(
     createInvitation({ trip: tripDoc(), owner: validOwner(), email: 'owner@alaia.test', collections: collections() }),
-    /ya sos parte/,
+    /ya eres parte/,
   );
 });
 

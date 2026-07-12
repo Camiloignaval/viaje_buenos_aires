@@ -25,7 +25,7 @@ const COMPANION_PHRASES: Record<string, string> = {
   family: "toda la familia, sumando un capítulo más",
   friends: "un grupo de amigos que decidió vivirlo junto",
   coworkers: "un equipo que también sabe parar y disfrutar",
-  solo: "vos, con todo el tiempo del mundo para descubrir",
+  solo: "tú, con todo el tiempo del mundo para descubrir",
   other: "un grupo que decidió emprender esto juntos",
 };
 

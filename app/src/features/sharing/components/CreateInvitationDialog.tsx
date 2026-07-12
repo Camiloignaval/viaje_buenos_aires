@@ -32,7 +32,7 @@ export function CreateInvitationDialog({ tripId, onClose }: { tripId: string; on
         create.mutate(email.trim());
       }}
     >
-      <h2 className="invite-dialog-title">¿Con quién querés compartir esta historia?</h2>
+      <h2 className="invite-dialog-title">¿Con quién quieres compartir esta historia?</h2>
       <label className="invite-dialog-label" htmlFor="invite-email">
         Correo de la persona
       </label>

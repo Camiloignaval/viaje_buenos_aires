@@ -152,7 +152,7 @@ function normalizeTravelContext(value) {
 function normalizeTravelCompanions(value) {
   const key = String(value ?? '');
   if (!TRAVEL_COMPANIONS[key]) {
-    throw new Error('Contanos quiénes viven esta historia con vos.');
+    throw new Error('Cuéntanos quiénes viven esta historia contigo.');
   }
   return key;
 }
@@ -168,17 +168,17 @@ function normalizeExpectedTravelers(value) {
 function normalizeTravelReason(value) {
   const key = String(value ?? '');
   if (!TRAVEL_REASONS[key]) {
-    throw new Error('Contanos qué los trae hasta acá.');
+    throw new Error('Cuéntanos qué los trae hasta aquí.');
   }
   return key;
 }
 
 function normalizeTravelStyle(value) {
   if (!Array.isArray(value) || value.length === 0) {
-    throw new Error('Elegí al menos un estilo de viaje.');
+    throw new Error('Elige al menos un estilo de viaje.');
   }
   if (value.length > MAX_TRAVEL_STYLES) {
-    throw new Error(`Elegí como máximo ${MAX_TRAVEL_STYLES} estilos de viaje.`);
+    throw new Error(`Elige como máximo ${MAX_TRAVEL_STYLES} estilos de viaje.`);
   }
   const styles = [...new Set(value.map((item) => String(item)))];
   if (styles.some((style) => !TRAVEL_STYLES[style])) {
@@ -190,7 +190,7 @@ function normalizeTravelStyle(value) {
 function normalizeTravelBudgetStyle(value) {
   const key = String(value ?? '');
   if (!TRAVEL_BUDGET_STYLES[key]) {
-    throw new Error('Contanos cómo les gustaría vivir este viaje.');
+    throw new Error('Cuéntanos cómo les gustaría vivir este viaje.');
   }
   return key;
 }

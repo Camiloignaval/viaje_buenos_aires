@@ -26,10 +26,10 @@ export function EmailStep({ defaultEmail, submitting, submitError, onSubmit }: P
     <>
       <p className="alaia-eyebrow alaia-reveal alaia-reveal-1">Alaia</p>
       <h1 className="alaia-entrance-title alaia-reveal alaia-reveal-2">
-        Tus viajes empiezan acá.
+        Tus viajes empiezan aquí.
       </h1>
       <p className="alaia-entrance-text alaia-reveal alaia-reveal-3">
-        Escribí tu correo y te enviamos un código para entrar.
+        Escribe tu correo y te enviaremos un código para entrar.
       </p>
       <form
         className="alaia-entrance-form alaia-reveal alaia-reveal-4"

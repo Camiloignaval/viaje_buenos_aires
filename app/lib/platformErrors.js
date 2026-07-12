@@ -111,7 +111,7 @@ export class RateLimitError extends PlatformError {
 }
 
 export class ForbiddenError extends PlatformError {
-  constructor(message = 'No tenés permisos para esta acción.', details) {
+  constructor(message = 'No tienes permisos para esta acción.', details) {
     super({
       code: ERROR_CODES.FORBIDDEN,
       safeMessage: message,

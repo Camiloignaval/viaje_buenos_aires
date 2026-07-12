@@ -148,7 +148,7 @@ export function MemoryInvitation({
       {engaged ? (
         <textarea
           className="memory-note-input"
-          placeholder="Escribí algo que quieras recordar..."
+          placeholder="Escribe algo que quieras recordar..."
           value={note}
           onChange={(event) => setNote(event.target.value)}
         />

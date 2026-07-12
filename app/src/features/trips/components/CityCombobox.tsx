@@ -34,14 +34,14 @@ export function CityCombobox({ label, countryCode, value, onChange, autoFocus }:
   return (
     <ComboboxField<CityOption>
       label={label}
-      placeholder={countryCode ? "Buscá tu ciudad…" : "Elegí primero un país"}
+      placeholder={countryCode ? "Busca tu ciudad…" : "Elige primero un país"}
       inputValue={query}
       onInputValueChange={setQuery}
       options={options}
       isLoading={isSettling || search.isFetching}
-      errorMessage={search.isError ? "No pudimos buscar ciudades. Probá de nuevo." : undefined}
+      errorMessage={search.isError ? "No pudimos buscar ciudades. Prueba de nuevo." : undefined}
       emptyMessage={
-        query.trim().length < 2 ? "Escribí al menos 2 letras." : "No encontramos una ciudad con ese nombre."
+        query.trim().length < 2 ? "Escribe al menos 2 letras." : "No encontramos una ciudad con ese nombre."
       }
       disabled={!countryCode}
       autoFocus={autoFocus}

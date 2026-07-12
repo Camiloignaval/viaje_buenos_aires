@@ -354,7 +354,7 @@ export function ActionButton({
   const { interactive, confirmingClose, actions } = useExperienceCtx();
   const {
     useConfirmation = true,
-    confirmQuestion = "¿Querés cerrar el día así como fue?",
+    confirmQuestion = "¿Quieres cerrar el día así como fue?",
     confirmLabel = "Sí, cerrar por hoy",
     cancelLabel = "Seguir un rato más",
     startLabel = "Abrir este día",

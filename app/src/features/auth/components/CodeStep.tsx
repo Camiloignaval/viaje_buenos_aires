@@ -41,7 +41,7 @@ export function CodeStep({
         Te enviamos seis números.
       </h1>
       <p className="alaia-entrance-text alaia-reveal alaia-reveal-3">
-        Escríbelos acá para abrir Alaia.
+        Escríbelos aquí para abrir Alaia.
       </p>
       <p className="alaia-entrance-email alaia-reveal alaia-reveal-4">{email}</p>
       <form

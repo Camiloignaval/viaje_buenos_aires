@@ -31,13 +31,13 @@ export function AccommodationCombobox({
   return (
     <ComboboxField<PlaceOption>
       label={label}
-      placeholder="Buscá tu hotel, alojamiento o barrio…"
+      placeholder="Busca tu hotel, alojamiento o barrio…"
       inputValue={query}
       onInputValueChange={setQuery}
       options={options}
       isLoading={search.isFetching}
-      errorMessage={search.isError ? "No pudimos buscar. Probá de nuevo." : undefined}
-      emptyMessage={query.trim().length < 2 ? "Escribí al menos 2 letras." : "Sin resultados."}
+      errorMessage={search.isError ? "No pudimos buscar. Prueba de nuevo." : undefined}
+      emptyMessage={query.trim().length < 2 ? "Escribe al menos 2 letras." : "Sin resultados."}
       autoFocus={autoFocus}
       getOptionKey={(place) => place.id}
       getOptionLabel={(place) => place.name}

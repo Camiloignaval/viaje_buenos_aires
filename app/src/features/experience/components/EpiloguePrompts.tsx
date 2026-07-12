@@ -22,7 +22,7 @@ function TextPrompt({ prompt, chapterId }: { prompt: EpiloguePrompt; chapterId: 
       ) : null}
       <textarea
         className="memory-note-input"
-        placeholder="Escribí algo que quieras recordar..."
+        placeholder="Escribe algo que quieras recordar..."
         value={note}
         onChange={(event) => setNote(event.target.value)}
       />

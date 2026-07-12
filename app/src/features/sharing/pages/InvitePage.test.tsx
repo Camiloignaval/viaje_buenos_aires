@@ -91,7 +91,7 @@ describe("InvitePage", () => {
     acceptInvitation.mockResolvedValue({ tripId: "trip-9" });
 
     renderPage();
-    expect(screen.getByText("¿Querés formar parte de esta historia?")).toBeInTheDocument();
+    expect(screen.getByText("¿Quieres formar parte de esta historia?")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: /Aceptar invitación/ }));
 
     expect(await screen.findByText("portada-del-viaje")).toBeInTheDocument();

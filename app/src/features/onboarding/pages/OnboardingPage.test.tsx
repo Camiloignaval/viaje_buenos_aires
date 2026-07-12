@@ -43,7 +43,7 @@ describe("OnboardingPage", () => {
   it("pide el nombre primero, en su propia pantalla (una conversación por vez)", async () => {
     renderPage();
     expect(
-      await screen.findByRole("heading", { name: "¿Cómo querés que te llamemos?" }),
+      await screen.findByRole("heading", { name: "¿Cómo quieres que te llamemos?" }),
     ).toBeInTheDocument();
     expect(screen.queryByText("¿Desde dónde viajás?")).not.toBeInTheDocument();
   });

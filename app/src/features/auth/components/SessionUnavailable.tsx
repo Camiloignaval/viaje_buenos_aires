@@ -14,7 +14,7 @@ export function SessionUnavailable({ onRetry }: { onRetry: () => void }) {
           No pudimos verificar tu sesión.
         </h1>
         <p className="alaia-entrance-text alaia-reveal alaia-reveal-3">
-          Puede ser la conexión. Tus recuerdos siguen guardados — probá de nuevo
+          Puede ser la conexión. Tus recuerdos siguen guardados — prueba de nuevo
           en un momento.
         </p>
         <form

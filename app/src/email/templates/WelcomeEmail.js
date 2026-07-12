@@ -19,12 +19,12 @@ export function WelcomeEmail({ name = '', appUrl = DEFAULT_APP_URL } = {}) {
       h(
         'p',
         { style: styles.text },
-        `Hola${name ? ` ${name}` : ''}, tu viaje estÃ¡ a punto de convertirse en algo que vas a recordar mucho despuÃ©s de volver.`,
+        `Hola${name ? ` ${name}` : ''}, tu viaje está a punto de convertirse en algo que vas a recordar mucho después de volver.`,
       ),
       h(
         'p',
         { style: styles.text },
-        'Alaia te acompaÃ±a en cada paso: guarda tus recuerdos, organiza tu itinerario y te muestra la ciudad de una forma distinta.',
+        'Alaia te acompaña en cada paso: guarda tus recuerdos, organiza tu itinerario y te muestra la ciudad de una forma distinta.',
       ),
       h(Spacer, { height: '8px' }),
       h(EmailButton, { href: appUrl }, 'Abrir Alaia'),

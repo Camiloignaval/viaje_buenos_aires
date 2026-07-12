@@ -8,20 +8,20 @@ import { theme, styles } from '../theme.js';
 
 const DEFAULT_APP_URL = 'https://Alaia.cl';
 
-// Soporta cÃ³digo, botÃ³n, o ambos â€” quien llama a sendVerifyEmail decide
-// quÃ© mecanismo de verificaciÃ³n usar sin tocar este template.
+// Soporta código, botón, o ambos — quien llama a sendVerifyEmail decide
+// qué mecanismo de verificación usar sin tocar este template.
 export function VerifyEmail({ name = '', code, verifyUrl, appUrl = DEFAULT_APP_URL } = {}) {
   return h(
     AlaiaLayout,
-    { previewText: 'ConfirmÃ¡ tu correo para seguir con Alaia', appUrl },
+    { previewText: 'Confirma tu correo para seguir con Alaia', appUrl },
     h(
       EmailCard,
       null,
-      h(SectionTitle, null, 'ConfirmÃ¡ tu correo'),
+      h(SectionTitle, null, 'Confirma tu correo'),
       h(
         'p',
         { style: styles.text },
-        `Hola${name ? ` ${name}` : ''}, usÃ¡ este cÃ³digo para verificar tu correo. Vence en 10 minutos.`,
+        `Hola${name ? ` ${name}` : ''}, usa este código para verificar tu correo. Vence en 10 minutos.`,
       ),
       code
         ? h(

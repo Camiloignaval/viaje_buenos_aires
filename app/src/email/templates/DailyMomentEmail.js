@@ -16,7 +16,7 @@ export function DailyMomentEmail({ name = '', memoryTitle, memoryText, imageUrl,
       EmailCard,
       null,
       h(SectionTitle, null, memoryTitle ?? 'Un recuerdo de tu viaje'),
-      h('p', { style: styles.text }, `Hola${name ? ` ${name}` : ''}, Alaia guardó este momento para vos.`),
+      h('p', { style: styles.text }, `Hola${name ? ` ${name}` : ''}, Alaia guardó este momento para ti.`),
       imageUrl
         ? h(
             'div',

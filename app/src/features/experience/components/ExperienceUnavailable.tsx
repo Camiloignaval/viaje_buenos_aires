@@ -16,15 +16,15 @@ interface Copy {
 const COPY: Record<ExperienceUnavailableVariant, Copy> = {
   empty: {
     title: "Tu historia todavía no está lista.",
-    text: "Este viaje todavía no tiene una historia para vivir. Cuando esté disponible, la vas a encontrar acá.",
+    text: "Este viaje todavía no tiene una historia para vivir. Cuando esté disponible, la vas a encontrar aquí.",
   },
   "not-found": {
     title: "No encontramos este viaje.",
-    text: "El viaje que buscás no existe o no tenés acceso. Volvé a tus viajes para seguir.",
+    text: "El viaje que buscas no existe o no tienes acceso. Vuelve a tus viajes para seguir.",
   },
   error: {
     title: "Algo se interrumpió.",
-    text: "No pudimos cargar la historia en este momento — tus recuerdos siguen guardados. Probá de nuevo.",
+    text: "No pudimos cargar la historia en este momento — tus recuerdos siguen guardados. Prueba de nuevo.",
   },
 };
 

@@ -46,12 +46,12 @@ function cleanUrl(value) {
 export function normalizeFeedbackInput(input = {}) {
   const category = FEEDBACK_CATEGORIES[String(input.category ?? '').trim()];
   if (!category) {
-    throw new ValidationError('Elegí una categoría válida.');
+    throw new ValidationError('Elige una categoría válida.');
   }
 
   const message = cleanText(input.message, MESSAGE_MAX_LENGTH);
   if (!message || message.length < MESSAGE_MIN_LENGTH) {
-    throw new ValidationError('Contanos un poco más para poder entender tu sugerencia.');
+    throw new ValidationError('Cuéntanos un poco más para poder entender tu sugerencia.');
   }
 
   return {
@@ -101,7 +101,7 @@ export async function enforceFeedbackRateLimit({ feedback, userId, now = new Dat
   const since = new Date(now.getTime() - RATE_LIMIT_WINDOW_MS).toISOString();
   const count = await feedback.countDocuments({ userId: toObjectId(userId, 'userId'), createdAt: { $gte: since } });
   if (count >= RATE_LIMIT_MAX) {
-    throw new RateLimitError('Gracias por escribirnos. Esperá un poco antes de enviar otra sugerencia.');
+    throw new RateLimitError('Gracias por escribirnos. Espera un poco antes de enviar otra sugerencia.');
   }
 }
 

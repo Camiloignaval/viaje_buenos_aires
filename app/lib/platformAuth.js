@@ -158,7 +158,7 @@ export async function requireTripMember(req, res, tripId, options = {}) {
   });
 
   if (!trip) {
-    const error = new AuthError('No tenés acceso a este viaje.', 403);
+    const error = new AuthError('No tienes acceso a este viaje.', 403);
     if (res) {
       sendAuthError(res, error);
       return null;
@@ -177,7 +177,7 @@ export async function requireTripRole(req, res, tripId, allowedRoles, options = 
   }
 
   if (!allowedRoles.includes(context.role)) {
-    const error = new AuthError('No tenés permisos para esta acción.', 403);
+    const error = new AuthError('No tienes permisos para esta acción.', 403);
     if (res) {
       sendAuthError(res, error);
       return null;

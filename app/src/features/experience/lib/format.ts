@@ -25,7 +25,7 @@ export const CHAPTER_INDEX_MARKER: Record<ChapterStatusValue, string> = {
 
 // Una frase breve y distinta por capítulo futuro — nunca la misma promesa repetida.
 export const CHAPTER_TEASERS = [
-  "Todo empieza acá.",
+  "Todo empieza aquí.",
   "La ciudad se empieza a abrir.",
   "Buenos Aires ya se siente distinta.",
   "Un último regalo antes de volver.",

@@ -11,7 +11,7 @@ export const onboardingSchema = z.object({
   residenceCountryCode: z
     .string()
     .trim()
-    .regex(/^[A-Za-z]{2}$/, "Elegí un país de residencia.")
+    .regex(/^[A-Za-z]{2}$/, "Elige un país de residencia.")
     .transform((value) => value.toUpperCase()),
 });
 

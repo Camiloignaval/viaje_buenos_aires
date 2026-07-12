@@ -62,7 +62,7 @@ estático aparte — no pasa por Vite. Tiene su propia copia mínima de esta
 misma lógica (checklist, álbum, video) y llama a esta API por su cuenta.
 
 Para que funcione, dentro de `index.html` hay que pegar la URL de esta app
-una vez desplegada en Vercel. Buscá esta línea (cerca del inicio del
+una vez desplegada en Vercel. Busca esta línea (cerca del inicio del
 `<script>`, sección "BACKEND") y completala:
 
 ```js
@@ -112,7 +112,7 @@ npm run preview   # para revisar el build localmente antes de desplegar
   foto, y la recuerda en `sessionStorage` para no repetirla toda la sesión.
   La validación real ocurre en el servidor (`api/upload.js`, contra la
   variable `UPLOAD_PASSWORD`) — si no configurás esa variable, no se pide
-  contraseña (útil mientras solo probás vos).
+  contraseña (útil mientras solo pruebas tú).
 - **`lib/mongodb.js`** cachea la conexión a Mongo entre invocaciones de la
   función serverless (evita abrir una conexión nueva en cada request).
 - **`api/memories.js`**, **`api/memories/[id].js`** y **`api/upload.js`**
@@ -143,20 +143,20 @@ npm run preview   # para revisar el build localmente antes de desplegar
 **El código ya está.** Ya creaste la cuenta de Mongo, el cluster, el usuario y
 la cuenta de Cloudinary — lo que falta es cargar esas credenciales en
 **Vercel** (no solo en tu `.env.local`, que es solo para tu compu) y
-desplegar. Los pasos 1-8 quedan acá documentados por si algún día hay que
+desplegar. Los pasos 1-8 quedan aquí documentados por si algún día hay que
 recrear algo desde cero.
 
 ### Paso 1 — Crear cuenta en MongoDB Atlas
 
 1. Entrá a **https://www.mongodb.com/cloud/atlas/register**
 2. Registrate con tu email o con tu cuenta de Google.
-3. Cuando te pregunte "What is your goal today?" o similar, elegí cualquier
+3. Cuando te pregunte "What is your goal today?" o similar, elige cualquier
    opción — no importa, se puede saltar.
 
 ### Paso 2 — Crear un cluster gratis
 
-1. Te va a ofrecir crear un cluster. Elegí el plan **M0 (Free)**.
-2. Como proveedor da igual (AWS/Google/Azure); elegí la región más cercana a
+1. Te va a ofrecir crear un cluster. Elige el plan **M0 (Free)**.
+2. Como proveedor da igual (AWS/Google/Azure); elige la región más cercana a
    Chile (por ejemplo `São Paulo` o `us-east-1`).
 3. Ponele un nombre simple, por ejemplo `ba-trip-cluster`.
 4. Click en **Create** y esperá 2-3 minutos a que se aprovisione.
@@ -175,7 +175,7 @@ recrear algo desde cero.
 ### Paso 4 — Obtener el connection string
 
 1. Cuando el cluster esté listo, click en **Connect**.
-2. Elegí **Drivers** (a veces dice "Connect your application").
+2. Elige **Drivers** (a veces dice "Connect your application").
 3. Copiá el string que empieza con `mongodb+srv://...` — se ve así:
    ```
    mongodb+srv://ba-trip-user:<password>@ba-trip-cluster.xxxxx.mongodb.net/?retryWrites=true&w=majority
@@ -207,7 +207,7 @@ Collections → Add My Own Data** → Database name `ba_trip`, Collection name
 
 ### Paso 8 — Obtener las credenciales de Cloudinary
 
-1. Una vez adentro, andá al **Dashboard** (es la primera pantalla que ves al
+1. Una vez adentro, anda al **Dashboard** (es la primera pantalla que ves al
    loguearte).
 2. Ahí vas a ver, arriba, un cuadro **"Product Environment Credentials"** con
    tres datos:
@@ -220,16 +220,16 @@ Collections → Add My Own Data** → Database name `ba_trip`, Collection name
 
 1. Entrá a **https://vercel.com/signup** y registrate (lo más simple: con tu
    cuenta de GitHub).
-2. Si el código va a vivir en GitHub: subí la carpeta `app/` a un repositorio
-   nuevo, y en Vercel elegí **Add New → Project → Import** ese repositorio.
-3. Si todavía no querés usar GitHub, avisame y lo desplegamos directo desde
+2. Si el código va a vivir en GitHub: sube la carpeta `app/` a un repositorio
+   nuevo, y en Vercel elige **Add New → Project → Import** ese repositorio.
+3. Si todavía no quieres usar GitHub, avísame y lo desplegamos directo desde
    la terminal con `vercel deploy` (te voy guiando en ese momento).
 
 ### Paso 10 — Configurar las variables de entorno en Vercel
 
 1. Dentro del proyecto en Vercel: **Settings → Environment Variables**.
 2. Agregá estas 5, una por una (nombre exacto a la izquierda, valor a la
-   derecha) — son las mismas 4 que ya tenés en tu `.env.local`, más una nueva
+   derecha) — son las mismas 4 que ya tienes en tu `.env.local`, más una nueva
    opcional:
 
    | Nombre | Valor | ¿Obligatoria? |
@@ -238,14 +238,14 @@ Collections → Add My Own Data** → Database name `ba_trip`, Collection name
    | `CLOUDINARY_CLOUD_NAME` | del Paso 8 | Sí |
    | `CLOUDINARY_API_KEY` | del Paso 8 | Sí |
    | `CLOUDINARY_API_SECRET` | del Paso 8 | Sí |
-   | `UPLOAD_PASSWORD` | una contraseña que inventes vos (para que no cualquiera con el link pueda subir fotos) | No — si la dejás vacía, no se pide contraseña |
+   | `UPLOAD_PASSWORD` | una contraseña que inventes tú (para que no cualquiera con el link pueda subir fotos) | No — si la dejas vacía, no se pide contraseña |
 
 3. Marcá los 3 entornos (Production, Preview, Development) para cada una.
-4. Guardá y hacé un **Redeploy** del proyecto para que tomen efecto.
+4. Guarda y haz un **Redeploy** del proyecto para que tomen efecto.
 
 ### Probar el backend en tu compu antes de desplegar (opcional)
 
-Si tenés la CLI de Vercel instalada (`npm i -g vercel`), podés probar la API
+Si tienes la CLI de Vercel instalada (`npm i -g vercel`), puedes probar la API
 localmente sin desplegar nada, usando las variables de tu `.env.local`:
 
 ```bash

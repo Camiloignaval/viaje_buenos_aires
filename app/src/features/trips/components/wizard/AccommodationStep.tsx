@@ -25,7 +25,7 @@ export function AccommodationStep({ countryCode, cityName, value, onChange, onBa
         </button>
       }
     >
-      <p className="combobox-helper">Buscá tu hotel, alojamiento o barrio.</p>
+      <p className="combobox-helper">Busca tu hotel, alojamiento o barrio.</p>
       <AccommodationCombobox
         label="Alojamiento"
         countryCode={countryCode}

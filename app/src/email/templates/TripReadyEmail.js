@@ -18,7 +18,7 @@ function formatDateRange(startDate, endDate) {
     return date.toLocaleDateString('es-CL', { day: 'numeric', month: 'long', timeZone: 'UTC' });
   };
   if (!endDate || endDate === startDate) return format(startDate);
-  return `${format(startDate)} â€“ ${format(endDate)}`;
+  return `${format(startDate)} – ${format(endDate)}`;
 }
 
 export function TripReadyEmail({ name = '', destination, startDate, endDate, tripUrl, appUrl = DEFAULT_APP_URL } = {}) {
@@ -26,11 +26,11 @@ export function TripReadyEmail({ name = '', destination, startDate, endDate, tri
 
   return h(
     AlaiaLayout,
-    { previewText: `Tu viaje a ${destination} ya estÃ¡ listo`, appUrl },
+    { previewText: `Tu viaje a ${destination} ya está listo`, appUrl },
     h(
       EmailCard,
       null,
-      h(SectionTitle, null, 'Tu viaje ya estÃ¡ listo'),
+      h(SectionTitle, null, 'Tu viaje ya está listo'),
       h('p', { style: styles.text }, `Hola${name ? ` ${name}` : ''}, terminamos de armar tu experiencia en Alaia.`),
       h(Divider),
       h('p', { style: { margin: 0, fontSize: '20px', fontWeight: 600, color: theme.colors.textPrimary } }, destination),

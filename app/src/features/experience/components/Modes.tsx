@@ -156,7 +156,7 @@ export function Epilogue() {
           chapterId={specialChapter.id}
           status={view.specialChapterStatus ?? ChapterStatus.AVAILABLE}
           options={{
-            confirmQuestion: "Esto va a cerrar el viaje. ¿Querés guardarlo así, tal como fue?",
+            confirmQuestion: "Esto va a cerrar el viaje. ¿Quieres guardarlo así, tal como fue?",
             confirmLabel: "Sí, guardar así",
             cancelLabel: "Seguir un poco más",
             startLabel: "Abrir el cierre",

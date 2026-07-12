@@ -17,7 +17,7 @@ interface Props {
 }
 
 // Catálogo JSON local (sin red): filtra en el cliente por nombre o código ISO.
-export function CountryCombobox({ label, placeholder = "Buscá un país…", value, onChange, autoFocus }: Props) {
+export function CountryCombobox({ label, placeholder = "Busca un país…", value, onChange, autoFocus }: Props) {
   const [query, setQuery] = useState(value?.name ?? "");
 
   useEffect(() => {

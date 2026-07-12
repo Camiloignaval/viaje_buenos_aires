@@ -51,9 +51,9 @@ export function NotificationPrompt() {
   }
   return (
     <div className="notification-prompt">
-      <p>{pendingNotification.body} ¿Querés que Alaia te avise en momentos así?</p>
+      <p>{pendingNotification.body} ¿Quieres que Alaia te avise en momentos así?</p>
       <button type="button" onClick={() => actions.allowNotifications()}>
-        Avisame
+        Avísame
       </button>
       <button type="button" onClick={() => actions.dismissNotificationPrompt()}>
         Ahora no

@@ -42,7 +42,7 @@ export default function OnboardingPage() {
   if (step === "name") {
     return (
       <WizardShell
-        question="¿Cómo querés que te llamemos?"
+        question="¿Cómo quieres que te llamemos?"
         onNext={() => setStep("country")}
         nextDisabled={!canAdvanceName}
       >

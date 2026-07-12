@@ -42,19 +42,19 @@ export const tripWizardSchema = z
     startDateTime: z.string().regex(DATETIME_LOCAL_PATTERN, "La fecha y hora de llegada es inválida."),
     endDateTime: z.string().regex(DATETIME_LOCAL_PATTERN, "La fecha y hora de regreso es inválida."),
     travelCompanions: z.enum(["partner", "family", "friends", "coworkers", "solo", "other"], {
-      error: "Contanos quiénes viven esta historia con vos.",
+      error: "Cuéntanos quiénes viven esta historia contigo.",
     }),
     expectedTravelers: z.number().int().min(1).max(50, "La cantidad de personas es inválida."),
     travelReason: z.enum(
       ["honeymoon", "birthday", "vacation", "celebration", "family_reunion", "work", "studies", "first_time"],
-      { error: "Contanos qué los trae hasta acá." },
+      { error: "Cuéntanos qué los trae hasta aquí." },
     ),
     travelStyle: z
       .array(z.enum(["romantic", "relaxed", "adventurous", "cultural", "gastronomic", "photographic", "nightlife", "nature", "shopping"]))
-      .min(1, "Elegí al menos un estilo de viaje.")
-      .max(MAX_TRAVEL_STYLES, `Elegí como máximo ${MAX_TRAVEL_STYLES} estilos de viaje.`),
+      .min(1, "Elige al menos un estilo de viaje.")
+      .max(MAX_TRAVEL_STYLES, `Elige como máximo ${MAX_TRAVEL_STYLES} estilos de viaje.`),
     travelBudgetStyle: z.enum(["carefree", "balanced", "simple", "defined"], {
-      error: "Contanos cómo les gustaría vivir este viaje.",
+      error: "Cuéntanos cómo les gustaría vivir este viaje.",
     }),
     accommodation: tripAccommodationSchema.optional(),
     travelContext: z

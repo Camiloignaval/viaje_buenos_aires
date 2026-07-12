@@ -13,7 +13,7 @@ interface Props {
 export function StyleStep({ value, onChange, onBack, onNext, canAdvance }: Props) {
   return (
     <WizardShell question="¿Cómo imaginan este viaje?" onBack={onBack} onNext={onNext} nextDisabled={!canAdvance}>
-      <p className="combobox-helper">Podés elegir hasta dos.</p>
+      <p className="combobox-helper">Puedes elegir hasta dos.</p>
       <OptionGrid
         legend="Estilo del viaje"
         options={TRAVEL_STYLE_OPTIONS}

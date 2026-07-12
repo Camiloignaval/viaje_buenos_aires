@@ -11,18 +11,18 @@ const DEFAULT_APP_URL = 'https://Alaia.cl';
 export function ResetPasswordEmail({ name = '', resetUrl, appUrl = DEFAULT_APP_URL } = {}) {
   return h(
     AlaiaLayout,
-    { previewText: 'ElegÃ­ una nueva contraseÃ±a para Alaia', appUrl },
+    { previewText: 'Elige una nueva contraseña para Alaia', appUrl },
     h(
       EmailCard,
       null,
-      h(SectionTitle, null, 'CambiÃ¡ tu contraseÃ±a'),
-      h('p', { style: styles.text }, `Hola${name ? ` ${name}` : ''}, recibimos una solicitud para cambiar tu contraseÃ±a.`),
+      h(SectionTitle, null, 'Cambia tu contraseña'),
+      h('p', { style: styles.text }, `Hola${name ? ` ${name}` : ''}, recibimos una solicitud para cambiar tu contraseña.`),
       h(Spacer, { height: '8px' }),
-      h(EmailButton, { href: resetUrl }, 'Elegir nueva contraseÃ±a'),
+      h(EmailButton, { href: resetUrl }, 'Elegir nueva contraseña'),
       h(
         'p',
         { style: { ...styles.textMuted, marginTop: '24px' } },
-        'Si no fuiste vos, ignorÃ¡ este correo â€” tu contraseÃ±a actual sigue funcionando.',
+        'Si no fuiste tú, ignora este correo — tu contraseña actual sigue funcionando.',
       ),
     ),
   );

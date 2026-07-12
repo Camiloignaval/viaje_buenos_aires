@@ -4,7 +4,7 @@ export function TripsEmpty({ onCreate }: { onCreate: () => void }) {
   return (
     <div className="trips-empty">
       <p className="trips-empty-text alaia-reveal alaia-reveal-3">
-        Todavía no empezaste ningún viaje. Cuando lo hagas, va a abrirse acá como
+        Todavía no comienzas ningún viaje. Cuando lo hagas, se abrirá aquí como
         el primer capítulo.
       </p>
       <button

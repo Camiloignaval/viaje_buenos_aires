@@ -38,7 +38,7 @@ export function BudgetAmountStep({
         onChange={(event) => onChangeCurrency(event.target.value)}
       >
         <option value="" disabled>
-          Elegí una moneda
+          Elige una moneda
         </option>
         {CURRENCY_OPTIONS.map((option) => (
           <option key={option.value} value={option.value}>

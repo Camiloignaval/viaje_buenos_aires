@@ -14,14 +14,14 @@ export function EmailFooter({ appUrl = DEFAULT_APP_URL } = {}) {
     h(
       'p',
       { style: { margin: 0, fontFamily: theme.font.sans, fontSize: '12px', lineHeight: '20px', color: theme.colors.textSecondary } },
-      `Â© ${year} Alaia. Todos los derechos reservados.`,
+      `© ${year} Alaia. Todos los derechos reservados.`,
     ),
     h(
       'p',
       { style: { margin: '4px 0 0', fontFamily: theme.font.sans, fontSize: '12px', lineHeight: '20px' } },
       h('a', { href: `${appUrl}/privacidad`, style: linkStyle }, 'Privacidad'),
-      '  Â·  ',
-      h('a', { href: `${appUrl}/terminos`, style: linkStyle }, 'TÃ©rminos'),
+      '  ·  ',
+      h('a', { href: `${appUrl}/terminos`, style: linkStyle }, 'Términos'),
     ),
   );
 }

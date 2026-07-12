@@ -52,7 +52,7 @@ describe("CityCombobox", () => {
 
     await user.type(screen.getByLabelText("Ciudad"), "r");
 
-    expect(await screen.findByText("Escribí al menos 2 letras.", undefined, { timeout: 3000 })).toBeInTheDocument();
+    expect(await screen.findByText("Escribe al menos 2 letras.", undefined, { timeout: 3000 })).toBeInTheDocument();
     expect(searchCities).not.toHaveBeenCalled();
   });
 });

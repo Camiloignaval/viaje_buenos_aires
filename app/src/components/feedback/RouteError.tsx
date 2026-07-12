@@ -16,7 +16,7 @@ export function RouteError() {
         <p className="alaia-eyebrow">Alaia</p>
         <h1 className="alaia-entrance-title">Algo se interrumpió.</h1>
         <p className="alaia-entrance-text">
-          Volvé a intentar en un momento — tus recuerdos siguen guardados.
+          Vuelve a intentar en un momento — tus recuerdos siguen guardados.
         </p>
         <form
           className="alaia-entrance-form"
