@@ -17,7 +17,7 @@ export function CreateInvitationDialog({ tripId, onClose }: { tripId: string; on
         <p className="invite-dialog-text">Listo. Comparte este enlace con la persona que invitaste.</p>
         <ShareInvitation inviteUrl={result.inviteUrl} />
         <button type="button" className="invite-dialog-back" onClick={onClose}>
-          Volver
+          ← Volver a la portada
         </button>
       </div>
     );
@@ -54,7 +54,7 @@ export function CreateInvitationDialog({ tripId, onClose }: { tripId: string; on
           Crear invitación
         </button>
         <button type="button" className="invite-dialog-back" onClick={onClose}>
-          Volver
+          ← Volver a la portada
         </button>
       </div>
     </form>

@@ -77,7 +77,7 @@ describe("OnboardingPage", () => {
     await user.click(screen.getByRole("button", { name: "Continuar →" }));
     await screen.findByRole("heading", { name: "¿Desde dónde viajás?" });
 
-    await user.click(screen.getByRole("button", { name: "Volver" }));
+    await user.click(screen.getByRole("button", { name: "← Volver" }));
     expect(await screen.findByLabelText("Nombre")).toHaveValue("Kari");
   });
 

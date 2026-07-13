@@ -43,8 +43,12 @@ export function IndexPage({
       <ChapterList />
       {returnMode && interactive ? (
         <p className="index-current-return">
-          <button type="button" onClick={() => actions.resumeReading()}>
-            Volver a la lectura →
+          <button
+            type="button"
+            className="book-back-link"
+            onClick={() => actions.resumeReading()}
+          >
+            ← Volver al capítulo
           </button>
         </p>
       ) : null}

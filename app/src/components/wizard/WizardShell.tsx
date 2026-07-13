@@ -39,7 +39,7 @@ export function WizardShell({
         <div className="trip-form-actions">
           {onBack && (
             <button type="button" className="trip-form-cancel" onClick={onBack}>
-              Volver
+              ← Volver
             </button>
           )}
           {onNext && (

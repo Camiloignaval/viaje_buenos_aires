@@ -35,7 +35,7 @@ function ExperienceRuntime({
       <div id="app" ref={appRef}>
         {scopeId ? (
           <Link className="experience-trips-nav" to="/trips">
-            ← Mis viajes
+            ← Volver a Mis viajes
           </Link>
         ) : null}
         <ExperienceContext.Provider value={value}>

@@ -28,7 +28,7 @@ export function RouteError() {
           <button type="submit">Reintentar →</button>
         </form>
         <Link className="alaia-entrance-secondary" to="/trips">
-          ← Mis viajes
+          ← Volver a Mis viajes
         </Link>
       </div>
     </div>

@@ -147,10 +147,10 @@
 .invite-dialog-actions {
   display: flex;
   gap: 0.75rem;
-  flex-wrap: wrap;
+  flex-direction: column;
+  align-items: center;
 }
-.invite-dialog-actions button,
-.invite-dialog-back {
+.invite-dialog-actions button:not(.invite-dialog-back) {
   background: none;
   border: 1px solid rgba(255, 255, 255, 0.3);
   color: inherit;
@@ -158,6 +158,31 @@
   padding: 0.5rem 1.1rem;
   font: inherit;
   cursor: pointer;
+}
+.invite-dialog-back {
+  display: block;
+  margin: 0.85rem auto 0;
+  padding: 0.25rem 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.62);
+  font-family: var(--font-display);
+  font-size: 0.88rem;
+  font-style: italic;
+  cursor: pointer;
+  transition: color 0.25s ease;
+}
+.invite-dialog-actions .invite-dialog-back {
+  margin-top: 0;
+}
+.invite-dialog-back:hover,
+.invite-dialog-back:focus-visible {
+  color: rgba(255, 255, 255, 0.92);
+}
+.invite-dialog-back:focus-visible {
+  outline: 1px solid var(--focus-ring);
+  outline-offset: 5px;
 }
 .invite-dialog-actions button:disabled {
   opacity: 0.4;

@@ -14,7 +14,7 @@ export const inviteCopy = {
   wrongEmailTitle: "Esta invitación fue enviada a otro correo.",
   wrongEmailText: "Cierra sesión e inicia con el correo al que llegó la invitación para poder aceptarla.",
   logout: "Cerrar sesión",
-  backToTrips: "Volver a Mis viajes →",
+  backToTrips: "← Volver a Mis viajes",
 };
 
 type TerminalVariant = Exclude<InvitationStatus, "pending"> | "not-found" | "error";

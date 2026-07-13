@@ -33,7 +33,7 @@ describe("RouteError", () => {
     render(<RouterProvider router={router} />);
 
     expect(await screen.findByRole("button", { name: "Reintentar →" })).toBeInTheDocument();
-    await user.click(screen.getByRole("link", { name: "← Mis viajes" }));
+    await user.click(screen.getByRole("link", { name: "← Volver a Mis viajes" }));
 
     expect(await screen.findByText("Mis viajes destino")).toBeInTheDocument();
   });

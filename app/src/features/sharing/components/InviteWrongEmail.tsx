@@ -15,7 +15,9 @@ export function InviteWrongEmail() {
         <button type="button" onClick={() => logout.mutate()} disabled={logout.isPending}>
           {inviteCopy.logout}
         </button>
-        <Link to="/trips">{inviteCopy.backToTrips}</Link>
+        <Link className="alaia-entrance-secondary" to="/trips">
+          {inviteCopy.backToTrips}
+        </Link>
       </div>
     </InviteFrame>
   );

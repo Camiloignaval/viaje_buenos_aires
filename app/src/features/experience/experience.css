@@ -345,9 +345,9 @@ body:has(.alaia-theme-light) {
   white-space: nowrap;
 }
 
-/* Salida editorial de la Experience conectada. Flota en el centro del margen
+/* Salida editorial de la Experience conectada. Ocupa el centro del margen
    superior para convivir con la navegación de capítulos y el selector de tema
-   tanto en desktop como en mobile, sin ocupar espacio dentro de la historia. */
+   tanto en desktop como en mobile, sin competir con la historia. */
 .experience-trips-nav {
   position: fixed;
   top: max(0.65rem, env(safe-area-inset-top));
@@ -355,10 +355,9 @@ body:has(.alaia-theme-light) {
   z-index: 40;
   display: inline-flex;
   align-items: center;
-  padding: 0.28rem 0.68rem;
-  border: 1px solid rgba(221, 210, 196, 0.2);
-  border-radius: 999px;
-  background: rgba(15, 14, 13, 0.38);
+  padding: 0.28rem 0;
+  border: 0;
+  background: transparent;
   color: rgba(246, 242, 235, 0.72);
   font-family: var(--font-display);
   font-size: 0.76rem;
@@ -367,18 +366,11 @@ body:has(.alaia-theme-light) {
   text-decoration: none;
   white-space: nowrap;
   transform: translateX(-50%);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  transition:
-    color 0.25s ease,
-    border-color 0.25s ease,
-    background 0.25s ease;
+  transition: color 0.25s ease;
 }
 
 .experience-trips-nav:hover,
 .experience-trips-nav:focus-visible {
-  border-color: rgba(221, 210, 196, 0.46);
-  background: rgba(15, 14, 13, 0.56);
   color: #f6f2eb;
 }
 
@@ -1095,7 +1087,6 @@ body:has(.cover-index-stage.is-index-writing) {
 .chapter-topbar .book-back-link {
   margin: 0;
   color: rgba(246, 242, 235, 0.88);
-  border-color: rgba(221, 210, 196, 0.36);
   text-shadow: 0 8px 24px rgba(0, 0, 0, 0.72);
 }
 
@@ -1107,11 +1098,14 @@ body:has(.cover-index-stage.is-index-writing) {
 }
 
 .chapter-topbar .theme-switch:hover,
-.chapter-topbar .theme-switch:focus-visible,
+.chapter-topbar .theme-switch:focus-visible {
+  color: #f6f2eb;
+  border-color: rgba(221, 210, 196, 0.62);
+}
+
 .chapter-topbar .book-back-link:hover,
 .chapter-topbar .book-back-link:focus-visible {
   color: #f6f2eb;
-  border-color: rgba(221, 210, 196, 0.62);
 }
 
 .chapter-hero-frame {
@@ -2635,7 +2629,6 @@ body:has(.cover-index-stage.is-index-writing) {
   margin: 0 0 1rem;
   padding: 0.2rem 0;
   border: 0;
-  border-bottom: 1px solid rgba(var(--text-secondary-rgb), 0.22);
   background: transparent;
   color: rgba(var(--text-secondary-rgb), 0.68);
   font-family: var(--font-display);
@@ -2647,7 +2640,15 @@ body:has(.cover-index-stage.is-index-writing) {
 .book-back-link:hover,
 .book-back-link:focus-visible {
   color: rgba(var(--text-primary-rgb), 0.9);
-  border-color: rgba(var(--text-secondary-rgb), 0.48);
+}
+
+.index-current-return {
+  margin: var(--space-4) 0 0;
+  text-align: center;
+}
+
+.index-current-return .book-back-link {
+  margin: 0;
 }
 
 /* En Preparativos la interacción principal es la lista: los banners flotantes

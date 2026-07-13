@@ -38,6 +38,9 @@ export function ExperienceUnavailable({
   const copy = COPY[variant];
   // En `empty` el viaje existe → se vuelve a SU portada; en el resto, a la lista.
   const backTo = variant === "empty" && tripId ? `/trips/${tripId}` : "/trips";
+  const backLabel = variant === "empty" && tripId
+    ? "← Volver a la portada"
+    : "← Volver a Mis viajes";
 
   return (
     <div className="alaia-entrance">
@@ -57,7 +60,9 @@ export function ExperienceUnavailable({
           </form>
         ) : (
           <div className="alaia-entrance-form">
-            <Link to={backTo}>Volver a mis viajes →</Link>
+            <Link className="alaia-entrance-secondary" to={backTo}>
+              {backLabel}
+            </Link>
           </div>
         )}
       </div>

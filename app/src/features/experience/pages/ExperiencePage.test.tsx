@@ -123,7 +123,7 @@ describe("ExperiencePage (demo local sin tripId)", () => {
     renderAt("/experience");
 
     expect(await screen.findByText("Buenos Aires, 2026")).toBeInTheDocument();
-    expect(screen.queryByRole("link", { name: "← Mis viajes" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "← Volver a Mis viajes" })).not.toBeInTheDocument();
     expect(getTrip).not.toHaveBeenCalled();
   });
 
@@ -170,7 +170,7 @@ describe("ExperiencePage (gates de la rama conectada)", () => {
     renderAt("/experience?tripId=trip-ba");
 
     expect(await screen.findByText("Buenos Aires, 2026")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "← Mis viajes" })).toHaveAttribute("href", "/trips");
+    expect(screen.getByRole("link", { name: "← Volver a Mis viajes" })).toHaveAttribute("href", "/trips");
     expect(getTrip).toHaveBeenCalledWith("trip-ba");
     expect(getStory).toHaveBeenCalledWith("ba-2026");
   });

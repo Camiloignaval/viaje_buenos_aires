@@ -8,11 +8,11 @@ vi.mock("../api/invitationsApi", () => ({ createInvitation, revokeInvitation: vi
 
 afterEach(() => vi.clearAllMocks());
 
-function renderDialog() {
+function renderDialog(onClose = vi.fn()) {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(
     <QueryClientProvider client={queryClient}>
-      <CreateInvitationDialog tripId="trip-1" onClose={() => {}} />
+      <CreateInvitationDialog tripId="trip-1" onClose={onClose} />
     </QueryClientProvider>,
   );
 }
@@ -31,5 +31,15 @@ describe("CreateInvitationDialog", () => {
 
     expect(await screen.findByRole("link", { name: "Compartir por WhatsApp" })).toBeInTheDocument();
     expect(createInvitation).toHaveBeenCalledWith("trip-1", "pareja@mail.com");
+  });
+
+  it("presenta el regreso como acción editorial secundaria", () => {
+    const onClose = vi.fn();
+    renderDialog(onClose);
+
+    const back = screen.getByRole("button", { name: "← Volver a la portada" });
+    expect(back).toHaveClass("invite-dialog-back");
+    fireEvent.click(back);
+    expect(onClose).toHaveBeenCalledOnce();
   });
 });

@@ -11,7 +11,7 @@ interface ReadingTopbarProps {
 
 // Espejo de renderReadingTopbar(interactive, theme, {label, action, extraClass}).
 export function ReadingTopbar({
-  label = "← Capítulos",
+  label = "← Volver al índice",
   action = "open-index",
   extraClass = "",
 }: ReadingTopbarProps) {
