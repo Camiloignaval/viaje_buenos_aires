@@ -48,11 +48,13 @@
 .invite-panel-cta {
   margin-top: 0.25rem;
   background: none;
-  border: 1px solid rgba(var(--gold-rgb), 0.38);
+  border: 0;
+  border-bottom: 1px solid rgba(var(--gold-rgb), 0.38);
   color: var(--gold);
-  border-radius: 999px;
-  padding: 0.6rem 1.3rem;
-  font: inherit;
+  border-radius: 0;
+  padding: 0.3rem 0.1rem 0.4rem;
+  font-family: var(--font-display);
+  font-size: 0.98rem;
   cursor: pointer;
   transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.45s ease;
 }

@@ -136,6 +136,7 @@ export function CreateTripWizard({ onCancel }: Props) {
         <ArrivalStep
           value={data.startDateTime}
           cityName={data.city?.name ?? null}
+          timeZone={data.city?.timezone}
           onChange={(startDateTime) => update({ startDateTime })}
           onBack={goBack}
           onNext={goNext}
@@ -148,6 +149,7 @@ export function CreateTripWizard({ onCancel }: Props) {
           value={data.endDateTime}
           minDateTime={data.startDateTime}
           cityName={data.city?.name ?? null}
+          timeZone={data.city?.timezone}
           onChange={(endDateTime) => update({ endDateTime })}
           onBack={goBack}
           onNext={goNext}

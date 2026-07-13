@@ -22,6 +22,7 @@ export default defineConfig({
   projects: [
     { name: "mobile-small", use: { viewport: { width: 360, height: 740 }, deviceScaleFactor: 2 } },
     { name: "mobile-medium", use: { viewport: { width: 390, height: 844 }, deviceScaleFactor: 2 } },
+    { name: "mobile-414", use: { viewport: { width: 414, height: 896 }, deviceScaleFactor: 2 } },
     { name: "mobile-large", use: { viewport: { width: 430, height: 932 }, deviceScaleFactor: 2 } },
     { name: "tablet", use: { viewport: { width: 820, height: 1180 } } },
     { name: "desktop", use: { viewport: { width: 1440, height: 900 } } },

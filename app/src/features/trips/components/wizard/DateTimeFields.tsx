@@ -1,34 +1,49 @@
 import { useEffect, useState } from "react";
+import { AlaiaDatePicker } from "./AlaiaDatePicker";
+import { AlaiaTimePicker } from "./AlaiaTimePicker";
+import { parseCalendarDate } from "./datePickerUtils";
 
 interface Props {
   idPrefix: string;
   dateLabel: string;
   timeLabel: string;
-  value: string; // "YYYY-MM-DDTHH:mm" completo, o "" si falta alguna de las dos partes
+  value: string;
   onChange: (value: string) => void;
-  min?: string; // fecha mínima "YYYY-MM-DD" para el input nativo de fecha
+  min?: string;
+  cityName?: string | null;
+  timeZone?: string;
   autoFocus?: boolean;
+  initialOpen?: "date" | "time";
 }
 
-function splitValue(value: string): { date: string; time: string } {
-  if (!value) return { date: "", time: "" };
-  return { date: value.slice(0, 10), time: value.slice(11, 16) };
+export function splitDateTimeValue(value: string): { date: string; time: string } {
+  if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(value)) return { date: "", time: "" };
+  const date = value.slice(0, 10);
+  const time = value.slice(11, 16);
+  if (!parseCalendarDate(date) || !/^(?:[01]\d|2[0-3]):[0-5]\d$/.test(time)) return { date: "", time: "" };
+  return { date, time };
 }
 
-// Fecha y hora como dos controles nativos separados (no un único
-// datetime-local): se lee mucho más claro, el teclado mobile no mezcla dos
-// tipos de picker, y cada navegador dibuja su propio widget de calendario/reloj
-// de forma consistente para SU tipo, sin la variación extra de datetime-local.
-// El valor combinado sigue siendo el mismo string "YYYY-MM-DDTHH:mm" de
-// siempre — nada cambia río abajo (duration.ts, validación, persistencia).
-export function DateTimeFields({ idPrefix, dateLabel, timeLabel, value, onChange, min, autoFocus }: Props) {
-  const [date, setDate] = useState(() => splitValue(value).date);
-  const [time, setTime] = useState(() => splitValue(value).time);
+// Dos selectores propios comparten un único estado combinado. El contrato sigue
+// siendo exactamente "YYYY-MM-DDTHH:mm": no se crea Date, no se convierte a UTC
+// y la hora elegida siempre representa el reloj local del destino.
+export function DateTimeFields({
+  idPrefix,
+  dateLabel,
+  timeLabel,
+  value,
+  onChange,
+  min,
+  cityName,
+  timeZone,
+  autoFocus,
+  initialOpen,
+}: Props) {
+  const [date, setDate] = useState(() => splitDateTimeValue(value).date);
+  const [time, setTime] = useState(() => splitDateTimeValue(value).time);
 
-  // Si el valor combinado cambia desde afuera (ej. al volver a este paso desde
-  // otro), resincroniza los dos campos — solo en ese sentido, nunca al revés.
   useEffect(() => {
-    const parts = splitValue(value);
+    const parts = splitDateTimeValue(value);
     setDate(parts.date);
     setTime(parts.time);
   }, [value]);
@@ -39,34 +54,30 @@ export function DateTimeFields({ idPrefix, dateLabel, timeLabel, value, onChange
 
   return (
     <div className="datetime-fields">
-      <div className="datetime-field">
-        <label htmlFor={`${idPrefix}-date`}>{dateLabel}</label>
-        <input
-          id={`${idPrefix}-date`}
-          type="date"
-          autoFocus={autoFocus}
-          min={min || undefined}
-          value={date}
-          onChange={(event) => {
-            const nextDate = event.target.value;
-            setDate(nextDate);
-            emit(nextDate, time);
-          }}
-        />
-      </div>
-      <div className="datetime-field">
-        <label htmlFor={`${idPrefix}-time`}>{timeLabel}</label>
-        <input
-          id={`${idPrefix}-time`}
-          type="time"
-          value={time}
-          onChange={(event) => {
-            const nextTime = event.target.value;
-            setTime(nextTime);
-            emit(date, nextTime);
-          }}
-        />
-      </div>
+      <AlaiaDatePicker
+        id={`${idPrefix}-date`}
+        label={dateLabel}
+        value={date}
+        min={min}
+        timeZone={timeZone}
+        autoFocus={autoFocus}
+        initialOpen={initialOpen === "date"}
+        onConfirm={(nextDate) => {
+          setDate(nextDate);
+          emit(nextDate, time);
+        }}
+      />
+      <AlaiaTimePicker
+        id={`${idPrefix}-time`}
+        label={timeLabel}
+        value={time}
+        cityName={cityName}
+        initialOpen={initialOpen === "time"}
+        onConfirm={(nextTime) => {
+          setTime(nextTime);
+          emit(date, nextTime);
+        }}
+      />
     </div>
   );
 }

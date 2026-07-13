@@ -1,6 +1,6 @@
 import { Link, Navigate } from "react-router-dom";
-import { ExperienceContext } from "../components/experienceContext";
-import { ExperienceView } from "../components/ExperienceView";
+import { ExperienceContext, useExperienceCtx } from "../components/experienceContext";
+import { ExperienceView, experienceUsesReadingTopbar } from "../components/ExperienceView";
 import { ExperienceUnavailable } from "../components/ExperienceUnavailable";
 import { ConnectedStatusBadge } from "@/features/connected/components/ConnectedStatusBadge";
 import { LoadingScreen } from "@/components/feedback/LoadingScreen";
@@ -13,6 +13,20 @@ import { useRevealOnScroll } from "../hooks/useRevealOnScroll";
 import { demoStoryPackage } from "../data/demoStory";
 import type { StoryPackage } from "@/features/story/engine/types";
 import "../experience.css";
+
+function ExperienceTripsNavigation() {
+  const experience = useExperienceCtx();
+
+  if (experienceUsesReadingTopbar(experience)) {
+    return null;
+  }
+
+  return (
+    <Link className="experience-trips-nav" to="/trips">
+      ← Volver a Mis viajes
+    </Link>
+  );
+}
 
 // Runtime real de la experiencia cinematográfica. Recibe un Story Package ya
 // resuelto y validado + el scope de persistencia (tripId del viaje, o el id del
@@ -33,12 +47,8 @@ function ExperienceRuntime({
   return (
     <>
       <div id="app" ref={appRef}>
-        {scopeId ? (
-          <Link className="experience-trips-nav" to="/trips">
-            ← Volver a Mis viajes
-          </Link>
-        ) : null}
         <ExperienceContext.Provider value={value}>
+          {scopeId ? <ExperienceTripsNavigation /> : null}
           <ExperienceView />
         </ExperienceContext.Provider>
       </div>

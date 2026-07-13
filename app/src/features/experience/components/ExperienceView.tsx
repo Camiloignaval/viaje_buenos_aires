@@ -6,6 +6,21 @@ import { LockedChapterModal } from "./LockedChapterModal";
 import { JourneyIndex } from "./IndexPage";
 import { PreTrip, InProgress, Epilogue, MemoryMode, TripAlbum } from "./Modes";
 import { StoryMode } from "@/features/story/engine/types";
+import type { ExperienceContextValue } from "../experienceTypes";
+
+export function experienceUsesReadingTopbar({
+  view,
+  showingTripAlbum,
+  showingPreparations,
+}: Pick<ExperienceContextValue, "view" | "showingTripAlbum" | "showingPreparations">) {
+  return (
+    showingTripAlbum ||
+    showingPreparations ||
+    (view.currentMode === StoryMode.IN_PROGRESS && Boolean(view.visibleChapter)) ||
+    view.currentMode === StoryMode.EPILOGUE ||
+    view.currentMode === StoryMode.MEMORY_MODE
+  );
+}
 
 // Espejo de renderExperience: decide la vista raíz, calcula rootClasses y el tema,
 // y elige entre índice de lectura / álbum del viaje / modo actual. El <div> raíz
@@ -28,12 +43,11 @@ export function ExperienceView() {
   ]
     .filter(Boolean)
     .join(" ");
-  const usesReadingTopbar =
-    showingTripAlbum ||
-    showingPreparations ||
-    (view.currentMode === StoryMode.IN_PROGRESS && Boolean(view.visibleChapter)) ||
-    view.currentMode === StoryMode.EPILOGUE ||
-    view.currentMode === StoryMode.MEMORY_MODE;
+  const usesReadingTopbar = experienceUsesReadingTopbar({
+    view,
+    showingTripAlbum,
+    showingPreparations,
+  });
   const showThemeSwitch = interactive && themeablePage && !usesReadingTopbar;
 
   if (readingIndexOpen) {

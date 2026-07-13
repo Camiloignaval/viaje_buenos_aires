@@ -336,10 +336,41 @@ export const GALLERY_STATES: Record<string, GalleryState> = {
       <ArrivalStep
         value="2026-07-18T09:30"
         cityName="Buenos Aires"
+        timeZone="America/Argentina/Buenos_Aires"
         onChange={noop}
         onBack={noop}
         onNext={noop}
         canAdvance
+      />
+    ),
+  },
+  "trip-arrival-date-open": {
+    label: "Alaia · llegada (calendario abierto)",
+    render: () => (
+      <ArrivalStep
+        value="2026-07-18T09:30"
+        cityName="Valdivia"
+        timeZone="America/Santiago"
+        onChange={noop}
+        onBack={noop}
+        onNext={noop}
+        canAdvance
+        initialOpen="date"
+      />
+    ),
+  },
+  "trip-arrival-time-open": {
+    label: "Alaia · llegada (hora abierta)",
+    render: () => (
+      <ArrivalStep
+        value="2026-07-18T09:30"
+        cityName="Valdivia"
+        timeZone="America/Santiago"
+        onChange={noop}
+        onBack={noop}
+        onNext={noop}
+        canAdvance
+        initialOpen="time"
       />
     ),
   },
@@ -350,6 +381,7 @@ export const GALLERY_STATES: Record<string, GalleryState> = {
         value=""
         minDateTime="2026-07-18T09:30"
         cityName="Buenos Aires"
+        timeZone="America/Argentina/Buenos_Aires"
         onChange={noop}
         onBack={noop}
         onNext={noop}
@@ -364,6 +396,7 @@ export const GALLERY_STATES: Record<string, GalleryState> = {
         value="2026-07-18T08:00"
         minDateTime="2026-07-18T09:30"
         cityName="Buenos Aires"
+        timeZone="America/Argentina/Buenos_Aires"
         onChange={noop}
         onBack={noop}
         onNext={noop}

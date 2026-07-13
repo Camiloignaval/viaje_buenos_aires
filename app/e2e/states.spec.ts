@@ -20,6 +20,8 @@ const STATES = [
   "onboarding-name",
   "onboarding-country",
   "trip-arrival-step",
+  "trip-arrival-date-open",
+  "trip-arrival-time-open",
   "trip-departure-step",
   "trip-departure-step-error",
   "trip-style-step",
@@ -77,6 +79,23 @@ for (const state of STATES) {
       expect(panel).not.toBeNull();
       expect(next).not.toBeNull();
       expect((panel?.y ?? 0) + (panel?.height ?? 0)).toBeLessThanOrEqual((next?.y ?? 0) + 1);
+    }
+    if (state.startsWith("trip-arrival") || state.startsWith("trip-departure")) {
+      await expect(page.locator('input[type="date"], input[type="time"], input[type="datetime-local"]')).toHaveCount(0);
+    }
+    if (state === "trip-arrival-date-open" || state === "trip-arrival-time-open") {
+      const dialog = page.getByRole("dialog");
+      await expect(dialog).toBeVisible();
+      await dialog.evaluate((element) => Promise.all(element.getAnimations().map((animation) => animation.finished)));
+      const box = await dialog.boundingBox();
+      const viewport = page.viewportSize();
+      expect(box).not.toBeNull();
+      expect(viewport).not.toBeNull();
+      expect(box?.x ?? -1).toBeGreaterThanOrEqual(0);
+      expect(box?.y ?? -1).toBeGreaterThanOrEqual(0);
+      expect((box?.x ?? 0) + (box?.width ?? 0)).toBeLessThanOrEqual(viewport?.width ?? 0);
+      expect((box?.y ?? 0) + (box?.height ?? 0)).toBeLessThanOrEqual(viewport?.height ?? 0);
+      await expect(page.getByRole("button", { name: state.endsWith("date-open") ? "Elegir esta fecha" : "Usar esta hora" })).toBeVisible();
     }
     // Dejar asentar la entrada de Framer Motion (opacity vía WAAPI) antes de
     // capturar. No usamos `animations:"disabled"`: esa opción pelea con Motion y

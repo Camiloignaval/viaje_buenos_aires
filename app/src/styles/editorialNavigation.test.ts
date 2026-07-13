@@ -40,3 +40,13 @@ describe("navegación editorial de regreso", () => {
     expectEditorialBack(css, ".trip-form-cancel");
   });
 });
+
+describe("aislamiento visual de Experience", () => {
+  it("no deja su padding de body activo al volver al shell", () => {
+    const css = readCss("src/features/experience/experience.css");
+    const declarations = rule(css, "body:has(.alaia-experience)");
+
+    expect(declarations).toMatch(/padding:\s*2rem 1\.25rem;/);
+    expect(css).not.toMatch(/(?:^|\n)body \{[^}]*padding:/);
+  });
+});

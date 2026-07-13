@@ -14,4 +14,12 @@ describe("banderas de país consistentes", () => {
     expect(css).toMatch(/font-family:\s*"Twemoji Country Flags"/);
     expect(statSync(font).size).toBeGreaterThan(70_000);
   });
+
+  it("muestra la bandera sin sello circular ni fondo decorativo", () => {
+    const css = readFileSync(resolve(process.cwd(), "src/styles/shell.css"), "utf8");
+    const declarations = css.match(/\.active-trip-home-country\s*\{([^}]*)\}/)?.[1] ?? "";
+
+    expect(declarations).not.toMatch(/(?:border|border-radius|background|box-shadow)\s*:/);
+    expect(declarations).not.toMatch(/(?:^|\n)\s*(?:width|height)\s*:/);
+  });
 });

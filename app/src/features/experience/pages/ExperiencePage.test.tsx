@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
 import { QueryCache, QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { sessionQueryKey } from "@/features/auth/hooks/useSession";
@@ -173,6 +173,21 @@ describe("ExperiencePage (gates de la rama conectada)", () => {
     expect(screen.getByRole("link", { name: "← Volver a Mis viajes" })).toHaveAttribute("href", "/trips");
     expect(getTrip).toHaveBeenCalledWith("trip-ba");
     expect(getStory).toHaveBeenCalledWith("ba-2026");
+  });
+
+  it("oculta la salida global cuando Preparativos ya ofrece su regreso contextual", async () => {
+    const { demoStoryPackage } = await import("../data/demoStory");
+    getTrip.mockResolvedValue({ trip: baTrip("trip-ba") });
+    getStory.mockResolvedValue({ story: { storyId: "ba-2026", storyPackage: demoStoryPackage } });
+
+    renderAt("/experience?tripId=trip-ba");
+
+    expect(await screen.findByRole("link", { name: "← Volver a Mis viajes" })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: /Preparativos/ }));
+
+    expect(screen.getByRole("heading", { name: "Preparativos" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "← Volver al índice" })).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "← Volver a Mis viajes" })).not.toBeInTheDocument();
   });
 
   it("un 401 posterior a una sesión cacheada vuelve al login, no al error de Experience", async () => {
