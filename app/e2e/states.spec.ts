@@ -1,4 +1,4 @@
-import { test } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 
 // Recorre cada estado de la galería dev-only en cada viewport y guarda un PNG en
 // e2e/__shots__/<viewport>-<estado>.png. Sin backend: la galería renderiza los
@@ -47,8 +47,22 @@ for (const state of STATES) {
         JSON.stringify({ shownAt: now.getTime(), dayKey, variant: "opening" }),
       );
     });
-    await page.goto(`/dev/states?state=${state}`);
-    await page.waitForLoadState("networkidle");
+    await page.goto(`/dev/states?state=${state}`, { waitUntil: "domcontentloaded" });
+    if (state === "feedback") {
+      await page.getByRole("combobox", { name: "Categoría" }).click();
+      const panel = await page.getByRole("listbox").boundingBox();
+      const message = await page.getByLabel("Mensaje").boundingBox();
+      expect(panel).not.toBeNull();
+      expect(message).not.toBeNull();
+      expect((panel?.y ?? 0) + (panel?.height ?? 0)).toBeLessThanOrEqual((message?.y ?? 0) + 1);
+    }
+    if (state === "onboarding-country") {
+      const panel = await page.getByRole("listbox").boundingBox();
+      const next = await page.getByRole("button", { name: "Continuar →" }).boundingBox();
+      expect(panel).not.toBeNull();
+      expect(next).not.toBeNull();
+      expect((panel?.y ?? 0) + (panel?.height ?? 0)).toBeLessThanOrEqual((next?.y ?? 0) + 1);
+    }
     // Dejar asentar la entrada de Framer Motion (opacity vía WAAPI) antes de
     // capturar. No usamos `animations:"disabled"`: esa opción pelea con Motion y
     // puede capturar el bloque en opacity:0. Los halos/partículas infinitos son

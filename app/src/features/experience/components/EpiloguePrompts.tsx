@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { SelectField } from "@/components/inputs/SelectField";
 import { useExperienceCtx } from "./experienceContext";
 import { SavedMemory } from "./Memories";
 import type { EpiloguePrompt, StoryPackage } from "@/features/story/engine/types";
@@ -59,17 +60,14 @@ function PlacePrompt({
     <div className="memory-slot memory-slot-invitation">
       <p className="section-title">{prompt.label}</p>
       <p className="memory-invitation-question">{prompt.selectionPrompt ?? ""}</p>
-      <select
+      <SelectField
         className="memory-place-select"
+        label={prompt.selectionPrompt ?? prompt.label}
+        labelClassName="alaia-sr-only"
         value={selected}
-        onChange={(event) => setSelected(event.target.value)}
-      >
-        {places.map((place) => (
-          <option key={place.id} value={place.name}>
-            {place.name}
-          </option>
-        ))}
-      </select>
+        options={places.map((place) => ({ value: place.name, label: place.name }))}
+        onChange={setSelected}
+      />
       <button
         type="button"
         data-chapter-id={chapterId}

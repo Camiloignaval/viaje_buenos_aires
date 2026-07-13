@@ -1,4 +1,5 @@
 import { WizardShell } from "@/components/wizard/WizardShell";
+import { SelectField } from "@/components/inputs/SelectField";
 import { CURRENCY_OPTIONS } from "../../data/travelOptions";
 
 interface Props {
@@ -31,21 +32,15 @@ export function BudgetAmountStep({
     >
       <p className="combobox-helper">Para todo el viaje, no por persona ni por día.</p>
 
-      <label htmlFor="wizard-budget-currency">Moneda</label>
-      <select
+      <SelectField
         id="wizard-budget-currency"
+        className="trip-select-field"
+        label="Moneda"
         value={currency}
-        onChange={(event) => onChangeCurrency(event.target.value)}
-      >
-        <option value="" disabled>
-          Elige una moneda
-        </option>
-        {CURRENCY_OPTIONS.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </select>
+        options={CURRENCY_OPTIONS}
+        placeholder="Elige una moneda"
+        onChange={onChangeCurrency}
+      />
 
       <label htmlFor="wizard-budget-amount">Monto aproximado</label>
       <input

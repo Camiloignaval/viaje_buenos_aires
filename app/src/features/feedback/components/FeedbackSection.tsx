@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
+import { SelectField } from "@/components/inputs/SelectField";
 import { useSubmitFeedback } from "../hooks/useSubmitFeedback";
 import type { FeedbackCategory } from "../api/feedbackApi";
 
@@ -70,21 +71,15 @@ export function FeedbackSection() {
       </div>
 
       <form className="feedback-form" onSubmit={handleSubmit}>
-        <label className="feedback-label" htmlFor="feedback-category">
-          Categoría
-        </label>
-        <select
+        <SelectField
           id="feedback-category"
-          className="feedback-select"
+          className="feedback-select-field"
+          label="Categoría"
+          labelClassName="feedback-label"
           value={category}
-          onChange={(event) => setCategory(event.target.value as FeedbackCategory)}
-        >
-          {CATEGORIES.map((item) => (
-            <option key={item.value} value={item.value}>
-              {item.label}
-            </option>
-          ))}
-        </select>
+          options={CATEGORIES}
+          onChange={setCategory}
+        />
 
         <label className="feedback-label" htmlFor="feedback-message">
           Mensaje

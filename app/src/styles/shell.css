@@ -977,17 +977,12 @@ body {
   color: var(--taupe);
 }
 
-.feedback-select,
 .feedback-textarea {
   width: 100%;
   color: var(--ivory);
   background: rgba(var(--bg-rgb), 0.32);
   border: 1px solid rgba(var(--gold-rgb), 0.22);
   border-radius: 18px;
-}
-
-.feedback-select {
-  padding: 0.75rem 0.9rem;
 }
 
 .feedback-textarea {
@@ -1070,24 +1065,6 @@ body {
   border-bottom-color: var(--gold);
 }
 
-.trip-form select {
-  display: block;
-  width: 100%;
-  max-width: 22rem;
-  margin: 0 auto clamp(1.75rem, 4.5svh, 2.5rem);
-  padding: 0.5rem 0;
-  font-family: var(--font-body);
-  font-size: 1.05rem;
-  text-align: center;
-  text-align-last: center;
-  color: var(--ivory);
-  background: transparent;
-  border: none;
-  border-bottom: 1px solid rgba(var(--gold-rgb), 0.26);
-  border-radius: 0;
-  transition: border-color 0.35s ease;
-}
-
 /* Llegada/regreso: fecha y hora como dos controles nativos separados, no un
    único datetime-local (spec "fechas") — mismo registro editorial que el
    resto de los inputs del wizard. `color-scheme: dark` es lo que evita que el
@@ -1157,15 +1134,6 @@ body {
   color: var(--taupe);
 }
 
-.trip-form select option {
-  color: var(--bg);
-}
-
-.trip-form select:focus-visible {
-  outline: none;
-  border-bottom-color: var(--gold);
-}
-
 .trip-form-actions {
   display: flex;
   align-items: center;
@@ -1225,9 +1193,187 @@ body {
   outline-offset: 5px;
 }
 
+/* Selectores y comboboxes comparten panel, radios, sombras y estados. Los
+   paneles crecen dentro del flujo: nunca dejan una CTA visible detrás. */
+.alaia-select {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.alaia-select > label {
+  margin: 0 0 0.45rem;
+}
+
+.alaia-select-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  width: 100%;
+  min-height: 2.85rem;
+  padding: 0.7rem 0.9rem;
+  border: 1px solid rgba(var(--gold-rgb), 0.28);
+  border-radius: 14px;
+  background:
+    linear-gradient(180deg, rgba(var(--surface-rgb), 0.94), rgba(var(--bg-rgb), 0.96)),
+    var(--bg);
+  box-shadow:
+    0 16px 36px -28px rgba(var(--bg-rgb), 0.95),
+    inset 0 1px 0 rgba(255, 255, 255, 0.025);
+  color: var(--text-primary, var(--ivory));
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
+}
+
+.alaia-select-trigger:hover:not(:disabled),
+.alaia-select[data-open="true"] .alaia-select-trigger {
+  border-color: rgba(var(--gold-rgb), 0.52);
+  background:
+    linear-gradient(180deg, rgba(var(--surface-rgb), 0.99), rgba(var(--bg-rgb), 0.98)),
+    var(--bg);
+}
+
+.alaia-select-trigger:focus-visible {
+  outline: 1px solid var(--focus-ring);
+  outline-offset: 3px;
+}
+
+.alaia-select-trigger:disabled {
+  opacity: 0.46;
+  cursor: default;
+}
+
+.alaia-select-placeholder {
+  color: var(--text-muted, var(--taupe));
+  font-style: italic;
+}
+
+.alaia-select-chevron {
+  flex: 0 0 auto;
+  width: 0.48rem;
+  height: 0.48rem;
+  margin: -0.2rem 0.15rem 0 0;
+  border-right: 1px solid rgba(var(--text-secondary-rgb, var(--secondary-rgb)), 0.84);
+  border-bottom: 1px solid rgba(var(--text-secondary-rgb, var(--secondary-rgb)), 0.84);
+  transform: rotate(45deg);
+  transition: transform 0.25s ease;
+}
+
+.alaia-select[data-open="true"] .alaia-select-chevron {
+  margin-top: 0.2rem;
+  transform: rotate(225deg);
+}
+
+.alaia-select-listbox,
+.combobox-listbox {
+  width: 100%;
+  margin: 0.35rem auto 0;
+  padding: 0.35rem;
+  list-style: none;
+  background:
+    linear-gradient(180deg, rgba(var(--surface-rgb), 0.99), rgba(var(--bg-rgb), 0.99)),
+    var(--bg);
+  border: 1px solid rgba(var(--gold-rgb), 0.3);
+  border-radius: 14px;
+  max-height: 15rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  box-shadow:
+    0 22px 48px -30px rgba(var(--bg-rgb), 0.98),
+    inset 0 1px 0 rgba(255, 255, 255, 0.025);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(var(--gold-rgb), 0.68) rgba(var(--bg-rgb), 0.88);
+}
+
+.alaia-select-listbox {
+  animation: alaia-select-open 0.22s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.alaia-select-option,
+.combobox-option button {
+  display: block;
+  width: 100%;
+  padding: 0.62rem 0.75rem;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--text-primary, var(--ivory));
+  font-family: var(--font-body);
+  font-size: 0.93rem;
+  line-height: 1.35;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.18s ease, color 0.18s ease;
+}
+
+.alaia-select-option.is-active,
+.alaia-select-option:hover,
+.combobox-option.is-active button,
+.combobox-option button:hover {
+  background: rgba(var(--gold-rgb), 0.12);
+  color: var(--gold);
+}
+
+.alaia-select-option[aria-selected="true"] {
+  color: var(--gold);
+}
+
+.alaia-select-listbox::-webkit-scrollbar,
+.combobox-listbox::-webkit-scrollbar {
+  width: 7px;
+}
+
+.alaia-select-listbox::-webkit-scrollbar-track,
+.combobox-listbox::-webkit-scrollbar-track {
+  background: rgba(var(--bg-rgb), 0.88);
+  border-radius: 999px;
+}
+
+.alaia-select-listbox::-webkit-scrollbar-thumb,
+.combobox-listbox::-webkit-scrollbar-thumb {
+  background: rgba(var(--gold-rgb), 0.66);
+  border: 2px solid rgba(var(--bg-rgb), 0.88);
+  border-radius: 999px;
+}
+
+.alaia-select-listbox::-webkit-scrollbar-thumb:hover,
+.combobox-listbox::-webkit-scrollbar-thumb:hover {
+  background: rgba(var(--gold-rgb), 0.86);
+}
+
+.feedback-select-field {
+  width: 100%;
+}
+
+.trip-select-field {
+  width: min(100%, 22rem);
+  margin: 0 auto clamp(1.75rem, 4.5svh, 2.5rem);
+}
+
+@keyframes alaia-select-open {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .alaia-select-listbox {
+    animation: none;
+  }
+}
+
 /* Combobox genérico (país, ciudad, alojamiento) — hereda el input editorial de
-   .trip-form (misma cascada: `.trip-form input`, `.trip-form label`) y agrega
-   un listbox flotante discreto debajo. */
+   .trip-form y agrega una lista con scroll interno dentro del flujo. */
 .combobox-field {
   position: relative;
   width: 100%;
@@ -1236,41 +1382,15 @@ body {
   align-items: center;
 }
 
+.combobox-field:has(.combobox-listbox) > input {
+  margin-bottom: 0.25rem;
+}
+
 .combobox-listbox {
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 20;
-  width: 100%;
+  position: relative;
   max-width: 22rem;
-  margin: 0.25rem 0 0;
-  padding: 0.35rem 0;
-  list-style: none;
-  background: rgba(var(--surface-rgb), 0.97);
-  border: 1px solid rgba(var(--gold-rgb), 0.26);
-  border-radius: 0.4rem;
-  max-height: 15rem;
-  overflow-y: auto;
-  box-shadow: 0 12px 32px rgba(var(--bg-rgb), 0.55);
-}
-
-.combobox-option button {
-  display: block;
-  width: 100%;
-  padding: 0.5rem 0.9rem;
-  font-family: var(--font-body);
-  font-size: 0.95rem;
-  text-align: left;
-  color: var(--ivory);
-  background: none;
-  border: none;
-  cursor: pointer;
-}
-
-.combobox-option.is-active button,
-.combobox-option button:hover {
-  background: rgba(var(--gold-rgb), 0.14);
+  max-height: min(13rem, 28svh);
+  margin-bottom: 0.5rem;
 }
 
 .combobox-status {

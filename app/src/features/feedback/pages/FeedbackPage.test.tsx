@@ -52,11 +52,13 @@ describe("FeedbackPage", () => {
     submitFeedback.mockResolvedValue({ feedback: { id: "f1", status: "received", createdAt: "2026-07-11" } });
     renderFeedbackPage();
 
+    await user.click(screen.getByRole("combobox", { name: "Categoría" }));
+    await user.click(screen.getByRole("option", { name: "Problema" }));
     await user.type(screen.getByLabelText("Mensaje"), "Me gustaría una portada aún más tranquila.");
     await user.click(screen.getByRole("button", { name: "Enviar sugerencia →" }));
 
     await waitFor(() => expect(submitFeedback).toHaveBeenCalledWith(expect.objectContaining({
-      category: "suggestion",
+      category: "problem",
       message: "Me gustaría una portada aún más tranquila.",
     })));
     expect(await screen.findByText((_, node) => node?.textContent === "Gracias por ayudarnos a mejorar Alaia.Leeremos tu mensaje con atención.")).toBeInTheDocument();

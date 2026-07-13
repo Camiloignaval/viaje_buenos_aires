@@ -1,6 +1,7 @@
 import { Link, useSearchParams } from "react-router-dom";
 import type { ReactNode } from "react";
 import { AlaiaParticles } from "@/components/animations/AlaiaParticles";
+import { CountryCombobox } from "@/components/inputs/CountryCombobox";
 import { WizardShell } from "@/components/wizard/WizardShell";
 import { CheckingSession } from "@/features/auth/components/CheckingSession";
 import { EmailStep } from "@/features/auth/components/EmailStep";
@@ -297,8 +298,7 @@ export const GALLERY_STATES: Record<string, GalleryState> = {
     label: "Alaia · onboarding (país)",
     render: () => (
       <WizardShell question="¿Desde dónde viajás?" onBack={noop} onNext={noop} nextDisabled={false}>
-        <label htmlFor="dev-onboarding-country">País de residencia</label>
-        <input id="dev-onboarding-country" type="text" defaultValue="Chile" />
+        <CountryCombobox label="País de residencia" value={null} onChange={noop} autoFocus />
       </WizardShell>
     ),
   },

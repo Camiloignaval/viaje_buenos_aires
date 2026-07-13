@@ -1414,8 +1414,7 @@ body:has(.cover-index-stage.is-index-writing) {
   box-shadow: none;
 }
 
-.page-chapter .memory-slot textarea,
-.page-chapter .memory-slot select {
+.page-chapter .memory-slot textarea {
   border-color: rgba(var(--text-secondary-rgb), 0.18);
   background: rgba(var(--text-primary-rgb), 0.08);
   color: rgba(var(--text-primary-rgb), 0.9);
@@ -1652,8 +1651,7 @@ body:has(.cover-index-stage.is-index-writing) {
   font-style: italic;
 }
 
-.memory-slot textarea,
-.memory-slot select {
+.memory-slot textarea {
   font-family: inherit;
   font-size: 0.92rem;
   padding: 0.5rem;
@@ -1668,6 +1666,10 @@ body:has(.cover-index-stage.is-index-writing) {
 .memory-slot textarea {
   min-height: 3.5rem;
   resize: vertical;
+}
+
+.memory-place-select {
+  margin-bottom: 0.5rem;
 }
 
 .memory-slot-invitation button {
