@@ -63,12 +63,44 @@ describe("ActiveTripHome", () => {
     expect(screen.getByRole("region", { name: "Portada del viaje activo" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Buenos Aires en familia" })).toBeInTheDocument();
     expect(screen.getByText("Buenos Aires, CABA")).toBeInTheDocument();
+    expect(screen.getByRole("img", { name: "Argentina" })).toHaveTextContent("🇦🇷");
+    expect(screen.queryByText("AR")).not.toBeInTheDocument();
+    expect(screen.getByText("18–21 de julio de 2026 · 3 noches")).toBeInTheDocument();
     expect(screen.getByText("Faltan 8 días.")).toBeInTheDocument();
-    expect(screen.getByText("Te espera Hotel Madero.")).toBeInTheDocument();
+    expect(screen.getByText("Cada vez falta menos para empezar esta historia.")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Entrar al viaje" })).toHaveAttribute(
       "href",
       "/experience?tripId=trip-1",
     );
+  });
+
+  it("renderiza la bandera de Chile de forma genérica y accesible", () => {
+    const chileTrip: Trip = {
+      ...TRIP,
+      title: "Valdivia, 2026",
+      destination: {
+        countryCode: "CL",
+        countryName: "Chile",
+        cityId: "fallback:cl:valdivia",
+        cityName: "Valdivia",
+        adminName: "Región de Los Ríos",
+        latitude: -39.8141,
+        longitude: -73.246,
+        timezone: "America/Santiago",
+      },
+    };
+
+    renderInRouter(
+      <ActiveTripHome
+        trip={chileTrip}
+        lifecycle="upcoming"
+        temporalState={null}
+        to={tripUrl(chileTrip.id)}
+      />,
+    );
+
+    expect(screen.getByRole("img", { name: "Chile" })).toHaveTextContent("🇨🇱");
+    expect(screen.queryByText("CL")).not.toBeInTheDocument();
   });
 
   it("navega por SPA (React Router) al hacer click — sin recarga de página", async () => {
@@ -97,7 +129,7 @@ describe("ActiveTripHome", () => {
     expect(screen.queryByRole("link", { name: "Entrar al viaje" })).not.toBeInTheDocument();
   });
 
-  it("usa una acción de día cuando el viaje está en curso", () => {
+  it("mantiene el CTA 'Entrar al viaje' cuando el viaje está en curso", () => {
     renderInRouter(
       <ActiveTripHome
         trip={TRIP}
@@ -108,9 +140,24 @@ describe("ActiveTripHome", () => {
     );
 
     expect(screen.getByText("Día 2 de 4.")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Comenzar el día" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: "Entrar al viaje" })).toHaveAttribute(
       "href",
       "/experience?tripId=trip-1",
     );
+  });
+
+  it("degrada con elegancia para destinos y fechas legacy", () => {
+    renderInRouter(
+      <ActiveTripHome
+        trip={{ ...TRIP, destination: "Ruta del vino", startDateTime: undefined, endDateTime: undefined }}
+        lifecycle="upcoming"
+        temporalState={null}
+        to={tripUrl(TRIP.id)}
+      />,
+    );
+
+    expect(screen.getByText("Ruta del vino")).toBeInTheDocument();
+    expect(screen.queryByRole("img")).not.toBeInTheDocument();
+    expect(screen.queryByText(/noches/)).not.toBeInTheDocument();
   });
 });

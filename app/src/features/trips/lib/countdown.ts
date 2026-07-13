@@ -89,13 +89,25 @@ export function describeTripTemporalState(state: TripTemporalState): string {
       return "Mañana comienza esta historia.";
     case "in-progress":
       return `Día ${state.dayIndex} de ${state.totalDays}.`;
-    case "upcoming": {
-      const { days } = state;
-      if (days > 60) return "Todavía falta un poco.";
-      if (days >= 30) return "Cada vez falta menos.";
-      if (days >= 15) return "El viaje ya empieza a tomar forma.";
-      if (days >= 7) return `Faltan ${days} días.`;
-      return "Ya casi es hora.";
-    }
+    case "upcoming":
+      return `Faltan ${state.days} días.`;
+  }
+}
+
+/** Segunda línea emocional; el estado factual de arriba sigue siendo la fuente única. */
+export function describeTripTemporalCompanion(state: TripTemporalState): string {
+  switch (state.kind) {
+    case "past":
+      return "Ahora esta historia vive en sus recuerdos.";
+    case "today":
+      return "La historia empieza hoy.";
+    case "tomorrow":
+      return "Todo está listo para cuando quieras entrar.";
+    case "in-progress":
+      return "El viaje ya se está escribiendo.";
+    case "upcoming":
+      if (state.days > 30) return "La historia ya tiene un destino.";
+      if (state.days >= 8) return "Cada vez falta menos para empezar esta historia.";
+      return "Ya casi es hora de entrar.";
   }
 }

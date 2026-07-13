@@ -36,6 +36,12 @@ export function describeDuration(startDateTime: string, endDateTime: string): st
   return `${days} días · ${nights} noche${nights === 1 ? "" : "s"}`;
 }
 
+/** Solo la parte nocturna, para composiciones donde el rango ya comunica los días. */
+export function describeNights(startDateTime: string, endDateTime: string): string {
+  const nights = Math.max(0, daysBetweenCalendarDates(startDateTime, endDateTime));
+  return `${nights} noche${nights === 1 ? "" : "s"}`;
+}
+
 /** Ventana útil aproximada del primer día, según la hora de llegada. */
 export function firstDayHint(startDateTime: string): string | null {
   if (hourOf(startDateTime) >= LATE_ARRIVAL_HOUR) {

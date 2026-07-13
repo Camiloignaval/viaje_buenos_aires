@@ -1,5 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { tripTemporalState, safeTripTemporalState, describeTripTemporalState } from "./countdown";
+import {
+  tripTemporalState,
+  safeTripTemporalState,
+  describeTripTemporalState,
+  describeTripTemporalCompanion,
+} from "./countdown";
 
 const TZ = "America/Argentina/Buenos_Aires";
 
@@ -71,12 +76,31 @@ describe("tripTemporalState", () => {
     expect(state).toEqual({ kind: "upcoming", days: 9 });
   });
 
-  it("describeTripTemporalState cubre los baldes editoriales (>60, 30-60, 15-29, 7-14, 2-6)", () => {
-    expect(describeTripTemporalState({ kind: "upcoming", days: 90 })).toBe("Todavía falta un poco.");
-    expect(describeTripTemporalState({ kind: "upcoming", days: 45 })).toBe("Cada vez falta menos.");
-    expect(describeTripTemporalState({ kind: "upcoming", days: 20 })).toBe("El viaje ya empieza a tomar forma.");
+  it("describeTripTemporalState mantiene visible el estado factual en todos los baldes", () => {
+    expect(describeTripTemporalState({ kind: "upcoming", days: 90 })).toBe("Faltan 90 días.");
+    expect(describeTripTemporalState({ kind: "upcoming", days: 45 })).toBe("Faltan 45 días.");
+    expect(describeTripTemporalState({ kind: "upcoming", days: 20 })).toBe("Faltan 20 días.");
     expect(describeTripTemporalState({ kind: "upcoming", days: 10 })).toBe("Faltan 10 días.");
-    expect(describeTripTemporalState({ kind: "upcoming", days: 3 })).toBe("Ya casi es hora.");
+    expect(describeTripTemporalState({ kind: "upcoming", days: 3 })).toBe("Faltan 3 días.");
+  });
+
+  it("el copy complementario evoluciona sin duplicar el cálculo temporal", () => {
+    expect(describeTripTemporalCompanion({ kind: "upcoming", days: 31 })).toBe("La historia ya tiene un destino.");
+    expect(describeTripTemporalCompanion({ kind: "upcoming", days: 30 })).toBe(
+      "Cada vez falta menos para empezar esta historia.",
+    );
+    expect(describeTripTemporalCompanion({ kind: "upcoming", days: 8 })).toBe(
+      "Cada vez falta menos para empezar esta historia.",
+    );
+    expect(describeTripTemporalCompanion({ kind: "upcoming", days: 7 })).toBe("Ya casi es hora de entrar.");
+    expect(describeTripTemporalCompanion({ kind: "tomorrow" })).toBe("Todo está listo para cuando quieras entrar.");
+    expect(describeTripTemporalCompanion({ kind: "today" })).toBe("La historia empieza hoy.");
+    expect(describeTripTemporalCompanion({ kind: "in-progress", dayIndex: 2, totalDays: 4 })).toBe(
+      "El viaje ya se está escribiendo.",
+    );
+    expect(describeTripTemporalCompanion({ kind: "past" })).toBe(
+      "Ahora esta historia vive en sus recuerdos.",
+    );
   });
 
   it("dayIndex/totalDays son siempre números chicos y coherentes con el largo real del viaje, nunca escala de ordinal absoluto", () => {

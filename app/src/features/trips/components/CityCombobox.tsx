@@ -8,13 +8,13 @@ interface Props {
   label: string;
   countryCode: string | null;
   value: CityOption | null;
-  onChange: (city: CityOption) => void;
+  onChange: (city: CityOption | null) => void;
   autoFocus?: boolean;
 }
 
 // Búsqueda restringida al país elegido, debounced (300ms) y cacheada por
-// TanStack Query — cancela la búsqueda anterior al cambiar la query/país
-// porque cada combinación es una queryKey distinta.
+// TanStack Query — cancela por AbortSignal la búsqueda anterior al cambiar la
+// query/país y cachea cada combinación en una queryKey distinta.
 export function CityCombobox({ label, countryCode, value, onChange, autoFocus }: Props) {
   const [query, setQuery] = useState(value?.name ?? "");
   const debouncedQuery = useDebouncedValue(query, 300);
@@ -29,20 +29,29 @@ export function CityCombobox({ label, countryCode, value, onChange, autoFocus }:
   // reflejan la query anterior — sin este flag se llega a mostrar "Sin
   // resultados" de una búsqueda vieja mientras el usuario todavía está
   // tipeando la nueva.
-  const isSettling = query.trim() !== debouncedQuery.trim();
+  const trimmedQuery = query.trim();
+  const canSearch = trimmedQuery.length >= 2;
+  const isSettling = canSearch && trimmedQuery !== debouncedQuery.trim();
+  const emptyMessage =
+    trimmedQuery.length === 0
+      ? "Escribe una ciudad."
+      : trimmedQuery.length === 1
+        ? "Escribe al menos 2 letras."
+        : "No encontramos una ciudad con ese nombre.";
 
   return (
     <ComboboxField<CityOption>
       label={label}
       placeholder={countryCode ? "Busca tu ciudad…" : "Elige primero un país"}
       inputValue={query}
-      onInputValueChange={setQuery}
+      onInputValueChange={(nextQuery) => {
+        setQuery(nextQuery);
+        if (value && nextQuery.trim() !== value.name) onChange(null);
+      }}
       options={options}
-      isLoading={isSettling || search.isFetching}
-      errorMessage={search.isError ? "No pudimos buscar ciudades. Prueba de nuevo." : undefined}
-      emptyMessage={
-        query.trim().length < 2 ? "Escribe al menos 2 letras." : "No encontramos una ciudad con ese nombre."
-      }
+      isLoading={canSearch && (isSettling || search.isFetching)}
+      errorMessage={search.isError ? "No pudimos buscar ahora. Inténtalo nuevamente." : undefined}
+      emptyMessage={emptyMessage}
       disabled={!countryCode}
       autoFocus={autoFocus}
       getOptionKey={(city) => city.id}

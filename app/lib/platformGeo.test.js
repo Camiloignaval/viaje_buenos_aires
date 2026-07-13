@@ -1,4 +1,4 @@
-import { test } from 'node:test';
+import { beforeEach, test } from 'node:test';
 import assert from 'node:assert/strict';
 import { timezoneForCoordinates, searchCities, searchPlaces } from './platformGeo.js';
 
@@ -31,6 +31,10 @@ function stubFetchCapture(payload) {
     },
   };
 }
+
+beforeEach(() => {
+  globalThis._alaiaGeoCache?.clear();
+});
 
 test('timezoneForCoordinates resuelve Buenos Aires', () => {
   assert.equal(timezoneForCoordinates(-34.6037, -58.3816), 'America/Argentina/Buenos_Aires');
@@ -99,7 +103,7 @@ test('searchCities resuelve alias conocidos (NYC) antes de consultar Nominatim',
   try {
     await searchCities({ countryCode: 'US', query: 'NYC', limit: 8 });
     const url = new URL(stub.lastUrl());
-    assert.equal(url.searchParams.get('city'), 'new york');
+    assert.equal(url.searchParams.get('q'), 'new york');
   } finally {
     stub.restore();
   }
@@ -110,13 +114,13 @@ test('searchCities no altera búsquedas que no son un alias', async () => {
   try {
     await searchCities({ countryCode: 'BR', query: 'rio de janeiro', limit: 8 });
     const url = new URL(stub.lastUrl());
-    assert.equal(url.searchParams.get('city'), 'rio de janeiro');
+    assert.equal(url.searchParams.get('q'), 'rio de janeiro');
   } finally {
     stub.restore();
   }
 });
 
-test('searchCities prioriza la coincidencia más relevante por sobre el orden crudo de Nominatim', async () => {
+test('searchCities prioriza la coincidencia más relevante y descarta ruido sin relación', async () => {
   const stub = stubFetchCapture([
     {
       place_id: 1,
@@ -134,7 +138,115 @@ test('searchCities prioriza la coincidencia más relevante por sobre el orden cr
   try {
     const cities = await searchCities({ countryCode: 'BR', query: 'sao paulo', limit: 8 });
     assert.equal(cities[0].name, 'São Paulo');
-    assert.equal(cities[1].name, 'São Bernardo do Campo');
+    assert.equal(cities.length, 1);
+  } finally {
+    stub.restore();
+  }
+});
+
+test('searchCities recupera Valdivia desde resultados libres de un prefijo y deduplica la ciudad', async () => {
+  const stub = stubFetchCapture([
+    {
+      place_id: 915341,
+      lat: '-39.8141262',
+      lon: '-73.2459859',
+      importance: 0.54,
+      addresstype: 'city',
+      name: 'Valdivia',
+      address: { city: 'Valdivia', state: 'Región de Los Ríos', country: 'Chile', country_code: 'cl' },
+    },
+    {
+      place_id: 950152,
+      lat: '-39.82',
+      lon: '-73.24',
+      importance: 0.1,
+      name: 'Hostal Valdi',
+      address: { city: 'VALDIVIA', state: 'Región de Los Ríos', country: 'Chile', country_code: 'cl' },
+    },
+  ]);
+  try {
+    const cities = await searchCities({ countryCode: 'CL', query: 'valdi', limit: 8 });
+    const url = new URL(stub.lastUrl());
+    assert.equal(url.searchParams.get('q'), 'valdi');
+    assert.equal(url.searchParams.get('countrycodes'), 'cl');
+    assert.equal(cities.length, 1);
+    assert.equal(cities[0].name, 'Valdivia');
+    assert.equal(cities[0].countryCode, 'CL');
+    assert.equal(cities[0].timezone, 'America/Santiago');
+  } finally {
+    stub.restore();
+  }
+});
+
+test('searchCities combina fallback para va y prioriza prefijos sobre coincidencias parciales', async () => {
+  const stub = stubFetchOnce([
+    {
+      place_id: 400,
+      lat: '-33.04',
+      lon: '-71.63',
+      importance: 0.9,
+      address: { city: 'Naval', country: 'Chile', country_code: 'cl' },
+    },
+  ]);
+  try {
+    const cities = await searchCities({ countryCode: 'CL', query: 'va', limit: 8 });
+    const names = cities.map(({ name }) => name);
+    assert.deepEqual(new Set(names.slice(0, 3)), new Set(['Valdivia', 'Valparaíso', 'Vallenar']));
+    assert.ok(names.indexOf('Naval') > 2);
+  } finally {
+    stub.restore();
+  }
+});
+
+test('searchCities devuelve prefijos co aunque el proveedor responda vacío', async () => {
+  const stub = stubFetchOnce([]);
+  try {
+    const cities = await searchCities({ countryCode: 'CL', query: 'co', limit: 8 });
+    assert.deepEqual(cities.map(({ name }) => name), ['Concepción', 'Copiapó', 'Coquimbo']);
+  } finally {
+    stub.restore();
+  }
+});
+
+test('searchCities conserva el proveedor como fuente principal y deduplica el fallback', async () => {
+  const stub = stubFetchOnce([
+    {
+      place_id: 915341,
+      lat: '-39.8141262',
+      lon: '-73.2459859',
+      importance: 0.54,
+      address: { city: 'Valdivia', state: 'Región de Los Ríos', country: 'Chile', country_code: 'cl' },
+    },
+  ]);
+  try {
+    const cities = await searchCities({ countryCode: 'CL', query: 'va', limit: 8 });
+    const valdivias = cities.filter(({ name }) => name === 'Valdivia');
+    assert.equal(valdivias.length, 1);
+    assert.equal(valdivias[0].id, '915341');
+  } finally {
+    stub.restore();
+  }
+});
+
+test('searchCities aplica countryCode también al normalizar resultados del proveedor', async () => {
+  const stub = stubFetchOnce([
+    {
+      place_id: 1,
+      lat: '-39.82',
+      lon: '-73.24',
+      address: { city: 'Valdivia', country: 'Chile', country_code: 'cl' },
+    },
+    {
+      place_id: 2,
+      lat: '40.0',
+      lon: '-3.0',
+      address: { city: 'Valdivia', country: 'España', country_code: 'es' },
+    },
+  ]);
+  try {
+    const cities = await searchCities({ countryCode: 'CL', query: 'valdivia', limit: 8 });
+    assert.equal(cities.length, 1);
+    assert.equal(cities[0].countryCode, 'CL');
   } finally {
     stub.restore();
   }

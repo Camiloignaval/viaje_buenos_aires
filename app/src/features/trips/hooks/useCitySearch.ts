@@ -7,7 +7,7 @@ export function useCitySearch(countryCode: string | null, query: string) {
   const trimmed = query.trim();
   return useQuery({
     queryKey: ["locations", "cities", countryCode, trimmed],
-    queryFn: () => searchCities(countryCode as string, trimmed).then((data) => data.cities),
+    queryFn: ({ signal }) => searchCities(countryCode as string, trimmed, signal).then((data) => data.cities),
     enabled: Boolean(countryCode) && trimmed.length >= MIN_QUERY_LENGTH,
     staleTime: 60_000,
   });

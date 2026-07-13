@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   daysBetweenCalendarDates,
   describeDuration,
+  describeNights,
   firstDayHint,
   lastDayHint,
 } from "./duration";
@@ -17,6 +18,11 @@ describe("describeDuration", () => {
 
   it("1 noche usa singular: '2 días · 1 noche'", () => {
     expect(describeDuration("2026-07-18T09:30", "2026-07-19T10:00")).toBe("2 días · 1 noche");
+  });
+
+  it("expone las noches sin repetir el rango de días", () => {
+    expect(describeNights("2026-07-18T09:30", "2026-07-21T22:00")).toBe("3 noches");
+    expect(describeNights("2026-07-18T09:30", "2026-07-19T10:00")).toBe("1 noche");
   });
 
   it("no cambia de día por conversión UTC (horas cercanas a medianoche)", () => {

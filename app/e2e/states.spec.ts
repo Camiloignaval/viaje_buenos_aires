@@ -14,6 +14,7 @@ const STATES = [
   "trips-empty",
   "trips-list",
   "trip-home",
+  "trip-home-chile",
   "feedback",
   "create-trip",
   "onboarding-name",
@@ -48,6 +49,20 @@ for (const state of STATES) {
       );
     });
     await page.goto(`/dev/states?state=${state}`, { waitUntil: "domcontentloaded" });
+    // WebKit puede aislar localStorage del addInitScript en una navegación de
+    // contexto nuevo. Si la apertura aparece igual, la cerramos por su control
+    // público antes de validar la pantalla solicitada.
+    const skipOpening = page.getByRole("button", { name: "Saltar apertura" });
+    if (await skipOpening.isVisible()) {
+      await skipOpening.click();
+      await expect(page.getByRole("dialog", { name: "Apertura de marca Alaia" })).toBeHidden();
+    }
+    if (state === "trip-home" || state === "trip-home-chile") {
+      const country = state === "trip-home" ? "Argentina" : "Chile";
+      const flag = state === "trip-home" ? "🇦🇷" : "🇨🇱";
+      await expect(page.getByRole("img", { name: country })).toHaveText(flag);
+      await expect(page.getByText(state === "trip-home" ? "AR" : "CL", { exact: true })).toHaveCount(0);
+    }
     if (state === "feedback") {
       await page.getByRole("combobox", { name: "Categoría" }).click();
       const panel = await page.getByRole("listbox").boundingBox();

@@ -1,5 +1,6 @@
 import tzlookup from 'tz-lookup';
 import { normalizeSearchText, resolveCityQuery, scoreCityMatch } from './searchNormalize.js';
+import { searchCityPrefixFallback } from './cityPrefixFallback.js';
 
 // Proxy propio a OpenStreetMap Nominatim: gratis, sin API key. Como server
 // llamando a un tercero, respetamos su política de uso (User-Agent propio,
@@ -62,47 +63,85 @@ export async function searchCities({ countryCode, query, limit = 8 }) {
   const cached = getCached(key);
   if (cached) return cached;
 
-  // Alias conocidos (NYC, SF, Bs As...) se resuelven al término real antes de
-  // consultar Nominatim. Pedimos más resultados de los que vamos a devolver
-  // porque después reordenamos por relevancia propia — el orden de Nominatim
-  // no siempre prioriza lo que el usuario esperaría ver primero.
+  // Nominatim NO es un proveedor de autocomplete: su parámetro estructurado
+  // `city=` solo devuelve nombres completos ("valdivia" funciona, "valdi" no).
+  // La búsqueda libre, en cambio, también encuentra lugares cuya dirección
+  // pertenece a la ciudad buscada. Extraemos la ciudad de esas direcciones y
+  // filtramos/rankeamos el resultado; para prefijos demasiado cortos, el
+  // respaldo local secundario completa la respuesta sin excepciones por query.
   const resolvedQuery = resolveCityQuery(query);
   const results = await nominatimSearch({
     countrycodes: countryCode.toLowerCase(),
-    city: resolvedQuery,
-    limit: Math.min(limit * 3, 20),
+    q: resolvedQuery,
+    limit: 20,
   });
 
   const normalizedQuery = normalizeSearchText(resolvedQuery);
+  const normalizedCountryCode = String(countryCode).trim().toUpperCase();
   const seen = new Set();
-  const cities = [];
+  const candidates = [];
   for (const item of Array.isArray(results) ? results : []) {
     const latitude = Number(item.lat);
     const longitude = Number(item.lon);
-    const cityName = item.address?.city ?? item.address?.town ?? item.address?.village ?? item.name;
+    const cityName =
+      item.address?.city ??
+      item.address?.town ??
+      item.address?.village ??
+      item.address?.municipality ??
+      (item.addresstype === 'city' || item.addresstype === 'town' || item.addresstype === 'village'
+        ? item.name
+        : null);
     if (!cityName || !Number.isFinite(latitude) || !Number.isFinite(longitude)) continue;
+
+    const resultCountryCode = String(item.address?.country_code ?? '').trim().toUpperCase();
+    if (resultCountryCode && resultCountryCode !== normalizedCountryCode) continue;
+
+    const score = scoreCityMatch(cityName, normalizedQuery);
+    if (score === 0) continue;
 
     const timezone = timezoneForCoordinates(latitude, longitude);
     if (!timezone) continue;
 
-    const dedupeKey = `${cityName}|${item.address?.state ?? ''}`;
+    const adminName = item.address?.state ?? item.address?.county ?? '';
+    const dedupeKey = `${normalizeSearchText(cityName)}|${normalizeSearchText(adminName)}`;
     if (seen.has(dedupeKey)) continue;
     seen.add(dedupeKey);
 
-    cities.push({
-      id: String(item.place_id),
-      name: cityName,
-      ...(item.address?.state ? { adminName: item.address.state } : {}),
-      countryCode: String(item.address?.country_code ?? countryCode).toUpperCase(),
-      countryName: item.address?.country ?? '',
-      latitude,
-      longitude,
-      timezone,
+    candidates.push({
+      score,
+      importance: Number(item.importance) || 0,
+      sourcePriority: 1,
+      city: {
+        id: String(item.place_id),
+        name: cityName,
+        ...(adminName ? { adminName } : {}),
+        countryCode: resultCountryCode || normalizedCountryCode,
+        countryName: item.address?.country ?? '',
+        latitude,
+        longitude,
+        timezone,
+      },
     });
   }
 
-  cities.sort((a, b) => scoreCityMatch(b.name, normalizedQuery) - scoreCityMatch(a.name, normalizedQuery));
-  const limited = cities.slice(0, limit);
+  // Para prefijos de dos letras Nominatim suele devolver cero resultados. Se
+  // combina un respaldo local pequeño y genérico, sin desplazar al proveedor:
+  // si ambos conocen la misma ciudad gana el dato externo; para nombres
+  // distintos manda siempre la relevancia textual.
+  const providerCityNames = new Set(candidates.map(({ city }) => normalizeSearchText(city.name)));
+  for (const fallback of searchCityPrefixFallback(normalizedCountryCode, normalizedQuery)) {
+    if (providerCityNames.has(normalizeSearchText(fallback.city.name))) continue;
+    candidates.push(fallback);
+  }
+
+  candidates.sort(
+    (a, b) =>
+      b.score - a.score ||
+      b.sourcePriority - a.sourcePriority ||
+      b.importance - a.importance ||
+      a.city.name.localeCompare(b.city.name),
+  );
+  const limited = candidates.slice(0, limit).map(({ city }) => city);
 
   setCached(key, limited);
   return limited;

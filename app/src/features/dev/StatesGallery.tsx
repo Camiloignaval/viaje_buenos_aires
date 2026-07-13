@@ -95,6 +95,21 @@ const SAMPLE_TRIPS: Trip[] = [
 ];
 
 const SAMPLE_ACTIVE_TRIP = SAMPLE_TRIPS[3];
+const SAMPLE_CHILE_TRIP: Trip = {
+  ...SAMPLE_ACTIVE_TRIP,
+  id: "cl-1",
+  title: "Valdivia, 2026",
+  destination: {
+    countryCode: "CL",
+    countryName: "Chile",
+    cityId: "fallback:cl:valdivia",
+    cityName: "Valdivia",
+    adminName: "Región de Los Ríos",
+    latitude: -39.8141,
+    longitude: -73.246,
+    timezone: "America/Santiago",
+  },
+};
 
 // Invitación de muestra para la galería (sin backend): mismos campos que devuelve
 // el preview público sanitizado.
@@ -264,6 +279,19 @@ export const GALLERY_STATES: Record<string, GalleryState> = {
             members: [{ userId: "u1", role: "owner", joinedAt: "2026-01-05T18:00:00.000Z" }],
             expectedTravelers: 2,
           }}
+        />
+      </TripsFrame>
+    ),
+  },
+  "trip-home-chile": {
+    label: "Portada del viaje · Chile",
+    render: () => (
+      <TripsFrame title="">
+        <ActiveTripHome
+          trip={SAMPLE_CHILE_TRIP}
+          lifecycle="upcoming"
+          temporalState={null}
+          to={tripUrl(SAMPLE_CHILE_TRIP.id)}
         />
       </TripsFrame>
     ),

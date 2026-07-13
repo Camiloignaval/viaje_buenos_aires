@@ -5,7 +5,7 @@ import type { CityOption } from "../../types";
 interface Props {
   countryCode: string | null;
   value: CityOption | null;
-  onChange: (city: CityOption) => void;
+  onChange: (city: CityOption | null) => void;
   onBack: () => void;
   onNext: () => void;
   canAdvance: boolean;

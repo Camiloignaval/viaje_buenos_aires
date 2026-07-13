@@ -23,15 +23,17 @@ export class PlatformApiError extends Error {
 interface RequestOptions {
   method?: string;
   body?: unknown;
+  signal?: AbortSignal;
 }
 
 export async function platformRequest<T>(
   path: string,
-  { method = "GET", body }: RequestOptions = {},
+  { method = "GET", body, signal }: RequestOptions = {},
 ): Promise<T> {
   const response = await fetch(path, {
     method,
     credentials: "include",
+    signal,
     headers: body ? { "Content-Type": "application/json" } : undefined,
     body: body ? JSON.stringify(body) : undefined,
   });
