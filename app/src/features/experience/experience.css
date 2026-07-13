@@ -345,6 +345,48 @@ body:has(.alaia-theme-light) {
   white-space: nowrap;
 }
 
+/* Salida editorial de la Experience conectada. Flota en el centro del margen
+   superior para convivir con la navegación de capítulos y el selector de tema
+   tanto en desktop como en mobile, sin ocupar espacio dentro de la historia. */
+.experience-trips-nav {
+  position: fixed;
+  top: max(0.65rem, env(safe-area-inset-top));
+  left: 50%;
+  z-index: 40;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.28rem 0.68rem;
+  border: 1px solid rgba(221, 210, 196, 0.2);
+  border-radius: 999px;
+  background: rgba(15, 14, 13, 0.38);
+  color: rgba(246, 242, 235, 0.72);
+  font-family: var(--font-display);
+  font-size: 0.76rem;
+  font-style: italic;
+  line-height: 1.2;
+  text-decoration: none;
+  white-space: nowrap;
+  transform: translateX(-50%);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition:
+    color 0.25s ease,
+    border-color 0.25s ease,
+    background 0.25s ease;
+}
+
+.experience-trips-nav:hover,
+.experience-trips-nav:focus-visible {
+  border-color: rgba(221, 210, 196, 0.46);
+  background: rgba(15, 14, 13, 0.56);
+  color: #f6f2eb;
+}
+
+.experience-trips-nav:focus-visible {
+  outline: 1px solid rgba(221, 210, 196, 0.54);
+  outline-offset: 4px;
+}
+
 .reading-topbar {
   display: flex;
   align-items: center;

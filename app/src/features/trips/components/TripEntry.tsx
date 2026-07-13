@@ -20,20 +20,45 @@ function temporalStatus(trip: Trip, now: Date): string | null {
 // Cada viaje es un capítulo del índice: una pila centrada —numeral romano en
 // cursiva, título, destino como promesa breve—, sin caja ni separador ni
 // "Entrar →". Mismo registro que .chapter-index de Experience.
-export function TripEntry({ trip, index, now }: { trip: Trip; index: number; now: Date }) {
+//
+// `featured` distingue la historia activa cuando aparece en "Mis viajes": en vez
+// del numeral lleva un antetítulo ("Tu historia") y una discreta invitación a
+// abrir ("Abrir el viaje →"). Es el UMBRAL hacia la Portada (/trips/:id), no la
+// Portada en sí: mantenerlo en registro de capítulo —no una tarjeta— es lo que
+// evita la sensación de dos portadas casi iguales.
+export function TripEntry({
+  trip,
+  index,
+  now,
+  featured = false,
+}: {
+  trip: Trip;
+  index: number;
+  now: Date;
+  featured?: boolean;
+}) {
   const status = temporalStatus(trip, now);
 
   return (
-    <li className="trip-index-item">
-      <Link className="trip-entry" to={tripHomeUrl(trip.id)}>
-        <span className="trip-entry-number" aria-hidden="true">
-          {toRoman(index + 1)}
-        </span>
+    <li className={featured ? "trip-index-item trip-index-item--featured" : "trip-index-item"}>
+      <Link className={featured ? "trip-entry trip-entry--featured" : "trip-entry"} to={tripHomeUrl(trip.id)}>
+        {featured ? (
+          <span className="trip-entry-kicker">Tu historia</span>
+        ) : (
+          <span className="trip-entry-number" aria-hidden="true">
+            {toRoman(index + 1)}
+          </span>
+        )}
         <span className="trip-entry-text">
           <span className="trip-entry-title">{trip.title}</span>
           <span className="trip-entry-status">{formatDestination(trip.destination)}</span>
           {status && <span className="trip-entry-countdown">{status}</span>}
         </span>
+        {featured && (
+          <span className="trip-entry-open" aria-hidden="true">
+            Abrir el viaje →
+          </span>
+        )}
       </Link>
     </li>
   );

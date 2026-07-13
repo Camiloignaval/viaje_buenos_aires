@@ -64,7 +64,7 @@ describe("ActiveTripHome", () => {
     expect(screen.getByRole("heading", { name: "Buenos Aires en familia" })).toBeInTheDocument();
     expect(screen.getByText("Buenos Aires, CABA")).toBeInTheDocument();
     expect(screen.getByText("Faltan 8 días.")).toBeInTheDocument();
-    expect(screen.getByText("Preparativos: Hotel Madero")).toBeInTheDocument();
+    expect(screen.getByText("Te espera Hotel Madero.")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Entrar al viaje" })).toHaveAttribute(
       "href",
       "/experience?tripId=trip-1",

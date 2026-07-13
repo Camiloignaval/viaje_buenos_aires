@@ -1,9 +1,9 @@
 {
-  "id": "/experience.html",
-  "name": "Aurora — Buenos Aires 2026",
-  "short_name": "Aurora",
+  "id": "/",
+  "name": "Alaia — Buenos Aires 2026",
+  "short_name": "Alaia",
   "description": "Un compañero de viaje para vivir y recordar Buenos Aires 2026.",
-  "start_url": "/experience.html",
+  "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "background_color": "#0F0E0D",

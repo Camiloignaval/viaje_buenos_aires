@@ -6,10 +6,9 @@ import { useLogout } from "@/features/auth/hooks/useLogout";
 import { isFeedbackUiEnabled } from "@/features/feedback/lib/feedbackFlag";
 import { useTrips } from "../hooks/useTrips";
 import { TripsIndex } from "../components/TripsIndex";
+import { TripEntry } from "../components/TripEntry";
 import { TripsEmpty } from "../components/TripsEmpty";
 import { CreateTripWizard } from "../components/CreateTripWizard";
-import { ActiveTripHome } from "../components/ActiveTripHome";
-import { tripHomeUrl } from "../lib/tripUrl";
 import { resolveInitialAlaiaDestination } from "../lib/initialDestination";
 
 // "Mis viajes" — la página siguiente del mismo libro. Reúne índice, escena
@@ -38,6 +37,7 @@ export default function TripsPage() {
   const activeTrip = initialDestination?.kind === "active-trip-home" ? initialDestination.trip : null;
   const indexTrips = activeTrip ? list.filter((trip) => trip.id !== activeTrip.id) : list;
   const shouldRenderIndex = trips.isSuccess && indexTrips.length > 0;
+  const now = new Date();
 
   return (
     <div className="trips-page">
@@ -75,13 +75,12 @@ export default function TripsPage() {
         )}
 
         {isEmpty && <TripsEmpty onCreate={() => setCreating(true)} />}
-        {initialDestination?.kind === "active-trip-home" && (
-          <ActiveTripHome
-            trip={initialDestination.trip}
-            lifecycle={initialDestination.lifecycle}
-            temporalState={initialDestination.temporalState}
-            to={tripHomeUrl(initialDestination.trip.id)}
-          />
+        {activeTrip && (
+          <section className="trips-active alaia-reveal alaia-reveal-3" aria-label="Tu historia activa">
+            <ul className="trips-active-list">
+              <TripEntry trip={activeTrip} index={0} now={now} featured />
+            </ul>
+          </section>
         )}
         {shouldRenderIndex && (
           <section className="trips-index-section alaia-reveal alaia-reveal-4" aria-labelledby={activeTrip ? "other-trips-title" : undefined}>

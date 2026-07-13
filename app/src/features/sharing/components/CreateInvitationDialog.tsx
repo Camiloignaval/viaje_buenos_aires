@@ -14,7 +14,7 @@ export function CreateInvitationDialog({ tripId, onClose }: { tripId: string; on
   if (result) {
     return (
       <div className="invite-dialog" role="dialog" aria-label="Invitación creada">
-        <p className="invite-dialog-text">Listo. Compartí este enlace con la persona que invitaste.</p>
+        <p className="invite-dialog-text">Listo. Comparte este enlace con la persona que invitaste.</p>
         <ShareInvitation inviteUrl={result.inviteUrl} />
         <button type="button" className="invite-dialog-back" onClick={onClose}>
           Volver

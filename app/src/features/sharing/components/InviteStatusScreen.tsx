@@ -12,7 +12,9 @@ export function InviteStatusScreen({ variant }: { variant: Variant }) {
     <InviteFrame title={copy.title}>
       <p className="alaia-entrance-text">{copy.text}</p>
       <div className="alaia-entrance-form">
-        <Link to="/trips">{inviteCopy.backToTrips}</Link>
+        <Link className="alaia-entrance-secondary" to="/trips">
+          {inviteCopy.backToTrips}
+        </Link>
       </div>
     </InviteFrame>
   );

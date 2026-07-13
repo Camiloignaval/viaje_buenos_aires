@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
 import OnboardingPage from "./OnboardingPage";
 
 const { AUTHENTICATED_USER } = vi.hoisted(() => ({
@@ -24,12 +24,21 @@ vi.mock("../api/onboardingApi", () => ({
   completeOnboarding: (...args: unknown[]) => completeOnboarding(...args),
 }));
 
-function renderPage() {
+function LocationProbe() {
+  const location = useLocation();
+  return <output data-testid="location">{location.pathname + location.search}</output>;
+}
+
+function renderPage(initialEntry = "/onboarding") {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(
     <QueryClientProvider client={queryClient}>
-      <MemoryRouter initialEntries={["/onboarding"]}>
-        <OnboardingPage />
+      <MemoryRouter initialEntries={[initialEntry]}>
+        <Routes>
+          <Route path="/onboarding" element={<OnboardingPage />} />
+          <Route path="/experience" element={<LocationProbe />} />
+          <Route path="/trips" element={<LocationProbe />} />
+        </Routes>
       </MemoryRouter>
     </QueryClientProvider>,
   );
@@ -89,6 +98,24 @@ describe("OnboardingPage", () => {
 
     await waitFor(() =>
       expect(completeOnboarding).toHaveBeenCalledWith({ displayName: "Kari", residenceCountryCode: "CL" }),
+    );
+  });
+
+  it("retoma el deep link original después de completar onboarding", async () => {
+    completeOnboarding.mockResolvedValue({
+      user: { ...AUTHENTICATED_USER, displayName: "Kari", residenceCountryCode: "CL", onboardingCompleted: true },
+    });
+    const user = userEvent.setup();
+    renderPage("/onboarding?returnTo=%2Fexperience%3FtripId%3Dtrip-ba");
+
+    await user.type(await screen.findByLabelText("Nombre"), "Kari");
+    await user.click(screen.getByRole("button", { name: "Continuar →" }));
+    await user.type(await screen.findByLabelText("País de residencia"), "Chile");
+    await user.click(await screen.findByRole("button", { name: /Chile/ }));
+    await user.click(screen.getByRole("button", { name: "Continuar →" }));
+
+    expect(await screen.findByTestId("location")).toHaveTextContent(
+      "/experience?tripId=trip-ba",
     );
   });
 });

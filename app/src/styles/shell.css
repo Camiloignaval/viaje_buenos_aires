@@ -716,10 +716,56 @@ body {
   color: var(--taupe);
 }
 
-/* La escena vacía — el umbral de un libro sin escribir. */
+/* La historia activa en "Mis viajes": un capítulo destacado, no una portada.
+   Mantiene el registro del índice (pila centrada, sin caja) pero con un
+   antetítulo y una invitación a abrir. Es el umbral hacia la Portada real
+   (/trips/:id): al no ser una tarjeta, nunca se confunde con ella. */
+.trips-active {
+  margin: 0 auto clamp(2.2rem, 5.5svh, 3.25rem);
+}
+
+.trips-active-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.trip-entry--featured {
+  gap: 0.5rem;
+}
+
+.trip-entry-kicker {
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(var(--gold-rgb), 0.76);
+}
+
+.trip-entry--featured .trip-entry-title {
+  font-size: clamp(1.5rem, 4svh, 2.1rem);
+  line-height: 1.16;
+}
+
+.trip-entry-open {
+  margin-top: 0.55rem;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 0.95rem;
+  color: rgba(var(--gold-rgb), 0.82);
+  transition: color 0.45s ease;
+}
+
+.trip-entry--featured:hover .trip-entry-open,
+.trip-entry--featured:focus-visible .trip-entry-open {
+  color: var(--gold);
+}
+
+/* La portada del viaje — la tapa del libro. Una tarjeta que sostiene el título
+   como una cubierta: el destino y la cuenta regresiva debajo, y una sola puerta
+   de entrada a la historia. */
 .active-trip-home {
-  margin: 0 auto clamp(2rem, 5svh, 3rem);
-  padding: clamp(1.3rem, 4svh, 2rem) clamp(1rem, 4vw, 1.5rem);
+  margin: 0 auto;
+  padding: clamp(1.9rem, 5svh, 2.9rem) clamp(1.25rem, 4vw, 1.9rem);
   max-width: 32rem;
   border: 1px solid rgba(var(--gold-rgb), 0.18);
   border-radius: 1.6rem;
@@ -765,7 +811,7 @@ body {
 }
 
 .active-trip-home-preparations {
-  margin: 0.8rem auto 1.35rem;
+  margin: 0.85rem auto clamp(1.6rem, 4svh, 2.1rem);
   max-width: 30ch;
   font-size: 0.9rem;
   line-height: 1.55;
@@ -774,9 +820,11 @@ body {
 
 .active-trip-home-action {
   display: inline-block;
-  padding: 0.54rem 0.9rem;
-  border: 1px solid rgba(var(--gold-rgb), 0.35);
+  padding: 0.7rem 1.5rem;
+  border: 1px solid rgba(var(--gold-rgb), 0.4);
   border-radius: 999px;
+  font-family: var(--font-display);
+  font-size: 1.02rem;
   color: var(--gold);
   text-decoration: none;
   transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.45s ease;
@@ -1462,6 +1510,23 @@ body {
 
   .trips-index {
     gap: clamp(1.1rem, 3svh, 1.6rem);
+  }
+
+  .trips-active {
+    margin-bottom: clamp(1.6rem, 4svh, 2.2rem);
+  }
+
+  .active-trip-home {
+    padding: clamp(1.5rem, 4svh, 2rem) clamp(1.1rem, 4vw, 1.5rem);
+  }
+
+  .invite-invitation,
+  .invite-panel-editor {
+    margin-top: clamp(2rem, 5svh, 2.8rem);
+  }
+
+  .invite-invitation {
+    padding-top: clamp(1.5rem, 3.5svh, 2rem);
   }
 
   .trip-form {

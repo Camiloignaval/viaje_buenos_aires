@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { prefersReducedMotion } from "@/lib/prefersReducedMotion";
 import {
-  OPENING_CROSSFADE_START_MS,
-  OPENING_HOME_STABLE_MS,
-  OPENING_MAX_TIMEOUT_MS,
+  OPENING_FADE_MS,
+  OPENING_MOBILE_MEDIA_QUERY,
   OPENING_REDUCED_MOTION_MS,
+  OPENING_SAFETY_BUFFER_MS,
+  OPENING_SAFETY_FALLBACK_MS,
   OPENING_VIDEO_SRC,
+  OPENING_VIDEO_SRC_MOBILE,
   SUPPORTED_OPENING_VARIANT,
   type OpeningVariant,
 } from "../lib/openingConstants";
@@ -22,6 +24,15 @@ type OpeningStatus = "hidden" | "video" | "reduced";
 
 function canUseWindow(): boolean {
   return typeof window !== "undefined";
+}
+
+function resolveVideoSrc(): string {
+  if (!canUseWindow() || typeof window.matchMedia !== "function") {
+    return OPENING_VIDEO_SRC;
+  }
+  return window.matchMedia(OPENING_MOBILE_MEDIA_QUERY).matches
+    ? OPENING_VIDEO_SRC_MOBILE
+    : OPENING_VIDEO_SRC;
 }
 
 function resolveInitialStatus(variant: OpeningVariant): OpeningStatus {
@@ -48,7 +59,10 @@ export function AlaiaOpening({
 }: AlaiaOpeningProps) {
   const [status, setStatus] = useState<OpeningStatus>(() => resolveInitialStatus(variant));
   const [isFading, setIsFading] = useState(false);
+  const [videoSrc] = useState(() => resolveVideoSrc());
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const skipButtonRef = useRef<HTMLButtonElement | null>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
   const timersRef = useRef<number[]>([]);
   const hasClosedRef = useRef(false);
 
@@ -76,9 +90,10 @@ export function AlaiaOpening({
     clearTimers();
     rememberShown();
     setIsFading(true);
-    const timerId = window.setTimeout(() => setStatus("hidden"), OPENING_REDUCED_MOTION_MS);
+    const fadeDuration = status === "reduced" ? OPENING_REDUCED_MOTION_MS : OPENING_FADE_MS;
+    const timerId = window.setTimeout(() => setStatus("hidden"), fadeDuration);
     timersRef.current.push(timerId);
-  }, [clearTimers, rememberShown]);
+  }, [clearTimers, rememberShown, status]);
 
   useEffect(() => {
     if (status === "hidden") return;
@@ -94,17 +109,33 @@ export function AlaiaOpening({
     const video = videoRef.current;
     rememberShown();
 
-    const fadeTimer = window.setTimeout(() => setIsFading(true), OPENING_CROSSFADE_START_MS);
-    const doneTimer = window.setTimeout(closeImmediately, OPENING_HOME_STABLE_MS);
-    const maxTimer = window.setTimeout(closeImmediately, OPENING_MAX_TIMEOUT_MS);
-    timersRef.current.push(fadeTimer, doneTimer, maxTimer);
+    // El cierre real lo dispara onEnded cuando el video termina. Esto es solo
+    // una red de seguridad: si el video se cuelga o nunca emite "ended", la
+    // apertura igual se cierra. La ajustamos a la duración real al conocerla.
+    let safetyTimerId = window.setTimeout(closeImmediately, OPENING_SAFETY_FALLBACK_MS);
+
+    const onLoadedMetadata = () => {
+      if (!video || !Number.isFinite(video.duration) || video.duration <= 0) return;
+      window.clearTimeout(safetyTimerId);
+      const cap = video.duration * 1000 + OPENING_SAFETY_BUFFER_MS;
+      safetyTimerId = window.setTimeout(closeImmediately, cap);
+    };
+
+    video?.addEventListener("loadedmetadata", onLoadedMetadata);
+    if (video && Number.isFinite(video.duration) && video.duration > 0) {
+      onLoadedMetadata();
+    }
 
     const played = video?.play?.();
     if (played && typeof played.catch === "function") {
       played.catch(closeImmediately);
     }
 
-    return clearTimers;
+    return () => {
+      window.clearTimeout(safetyTimerId);
+      clearTimers();
+      video?.removeEventListener("loadedmetadata", onLoadedMetadata);
+    };
   }, [clearTimers, closeImmediately, rememberShown, status]);
 
   useEffect(() => {
@@ -118,12 +149,33 @@ export function AlaiaOpening({
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [closeWithFade, status]);
 
+  useEffect(() => {
+    if (status === "hidden") return;
+
+    const activeElement = document.activeElement;
+    previousFocusRef.current = activeElement instanceof HTMLElement ? activeElement : null;
+    skipButtonRef.current?.focus({ preventScroll: true });
+
+    return () => {
+      const previousFocus = previousFocusRef.current;
+      previousFocusRef.current = null;
+      if (previousFocus?.isConnected) {
+        previousFocus.focus({ preventScroll: true });
+      }
+    };
+  }, [status]);
+
   const isVisible = status !== "hidden";
   const overlayFading = isFading || status === "reduced";
 
   return (
     <>
-      <div className="alaia-opening-app" data-opening-active={isVisible ? "true" : undefined}>
+      <div
+        className="alaia-opening-app"
+        data-opening-active={isVisible ? "true" : undefined}
+        aria-hidden={isVisible ? true : undefined}
+        inert={isVisible ? true : undefined}
+      >
         {children}
       </div>
       {isVisible ? (
@@ -138,7 +190,7 @@ export function AlaiaOpening({
             <video
               ref={videoRef}
               className="alaia-opening__video"
-              src={OPENING_VIDEO_SRC}
+              src={videoSrc}
               muted
               autoPlay
               playsInline
@@ -147,7 +199,12 @@ export function AlaiaOpening({
               onError={closeImmediately}
             />
           ) : null}
-          <button className="alaia-opening__skip" type="button" onClick={closeWithFade}>
+          <button
+            ref={skipButtonRef}
+            className="alaia-opening__skip"
+            type="button"
+            onClick={closeWithFade}
+          >
             Saltar apertura
           </button>
         </div>

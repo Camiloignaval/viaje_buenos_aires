@@ -1,9 +1,11 @@
-import { Navigate } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { ExperienceContext } from "../components/experienceContext";
 import { ExperienceView } from "../components/ExperienceView";
 import { ExperienceUnavailable } from "../components/ExperienceUnavailable";
 import { ConnectedStatusBadge } from "@/features/connected/components/ConnectedStatusBadge";
 import { LoadingScreen } from "@/components/feedback/LoadingScreen";
+import { RequireAuth } from "@/features/auth/components/RequireAuth";
+import { RequireOnboarding } from "@/features/onboarding/components/RequireOnboarding";
 import { useTripId } from "@/features/connected/hooks/useTripId";
 import { useExperience } from "../hooks/useExperience";
 import { useResolvedStory } from "../hooks/useResolvedStory";
@@ -31,6 +33,11 @@ function ExperienceRuntime({
   return (
     <>
       <div id="app" ref={appRef}>
+        {scopeId ? (
+          <Link className="experience-trips-nav" to="/trips">
+            ← Mis viajes
+          </Link>
+        ) : null}
         <ExperienceContext.Provider value={value}>
           <ExperienceView />
         </ExperienceContext.Provider>
@@ -40,10 +47,10 @@ function ExperienceRuntime({
   );
 }
 
-// Ruta /experience. Ya NO importa una historia fija: resuelve la del viaje real a
-// través de la capa connected (useResolvedStory) y decide qué mostrar. Default
-// export para lazy().
-export default function ExperiencePage() {
+// La rama conectada se monta RECIÉN después de auth + onboarding. Mantener este
+// hook en un hijo de ambos guards evita que el deep link dispare getTrip/getStory
+// mientras todavía no se ha validado la sesión.
+function ConnectedExperience() {
   const resolved = useResolvedStory();
   const tripId = useTripId();
 
@@ -51,16 +58,7 @@ export default function ExperiencePage() {
     case "loading":
       return <LoadingScreen />;
     case "local":
-      // Sin tripId. La demo de Buenos Aires es SOLO desarrollo/QA (import.meta.env.DEV,
-      // que Vite reemplaza por `false` en producción → esta rama y su import se
-      // eliminan por DCE). En producción, /experience sin tripId NUNCA carga una
-      // historia: redirige de forma controlada a la lista de viajes. Sin fallback
-      // implícito a Buenos Aires. Es el ÚNICO uso del package estático.
-      return import.meta.env.DEV ? (
-        <ExperienceRuntime storyPackage={demoStoryPackage} />
-      ) : (
-        <Navigate to="/trips" replace />
-      );
+      return <Navigate to="/trips" replace />;
     case "ready":
       return <ExperienceRuntime storyPackage={resolved.storyPackage} scopeId={resolved.scopeId} />;
     case "empty":
@@ -70,4 +68,31 @@ export default function ExperiencePage() {
     case "error":
       return <ExperienceUnavailable variant="error" tripId={tripId} />;
   }
+}
+
+// Ruta /experience. Sin tripId conserva el comportamiento local/demo existente.
+// Con tripId, los guards envuelven la rama conectada y permanecen suscritos a la
+// sesión: un 401 posterior desmonta las queries y vuelve al login con el deep link
+// exacto en returnTo.
+export default function ExperiencePage() {
+  const tripId = useTripId();
+
+  if (!tripId) {
+    // La demo de Buenos Aires es SOLO desarrollo/QA (import.meta.env.DEV, que
+    // Vite reemplaza por `false` en producción). En producción, /experience sin
+    // tripId redirige a la lista de viajes, sin fallback implícito a Buenos Aires.
+    return import.meta.env.DEV ? (
+      <ExperienceRuntime storyPackage={demoStoryPackage} />
+    ) : (
+      <Navigate to="/trips" replace />
+    );
+  }
+
+  return (
+    <RequireAuth>
+      <RequireOnboarding>
+        <ConnectedExperience />
+      </RequireOnboarding>
+    </RequireAuth>
+  );
 }

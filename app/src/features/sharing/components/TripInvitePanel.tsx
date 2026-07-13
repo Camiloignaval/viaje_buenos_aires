@@ -5,9 +5,10 @@ import { useRevokeInvitation } from "../hooks/useInvitationMutations";
 import { CreateInvitationDialog } from "./CreateInvitationDialog";
 import "../sharing.css";
 
-// Panel de compartir en la Portada. Solo el owner ve invitar / pendientes / cupos;
-// el editor ve una nota discreta de que comparte la historia. No es un panel
-// administrativo: mantiene el lenguaje editorial de Alaia.
+// Cierre editorial de la Portada: invitar a alguien a VIVIR esta historia, no
+// "agregar un miembro". Solo el owner ve la invitación; el editor ve una nota
+// discreta de que ya comparte la historia. Nada de tono administrativo: es parte
+// del relato, con el mismo lenguaje visual de Alaia.
 export function TripInvitePanel({ trip }: { trip: Trip }) {
   const isOwner = trip.role === "owner";
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -15,7 +16,7 @@ export function TripInvitePanel({ trip }: { trip: Trip }) {
   const revoke = useRevokeInvitation(trip.id);
 
   if (!isOwner) {
-    return <p className="invite-panel-editor">Compartís esta historia.</p>;
+    return <p className="invite-panel-editor">Compartes esta historia.</p>;
   }
 
   const members = trip.members?.length ?? 1;
@@ -23,38 +24,80 @@ export function TripInvitePanel({ trip }: { trip: Trip }) {
   const capacity = trip.expectedTravelers ?? members;
   const available = Math.max(0, capacity - members - pending.length);
 
+  const seatsOpen = available > 0;
+  const awaitingReply = available === 0 && pending.length > 0;
+  const complete = available === 0 && pending.length === 0;
+
   return (
-    <section className="invite-panel" aria-label="Compartir esta historia">
-      <p className="invite-panel-summary">
-        <span>{members === 1 ? "1 persona" : `${members} personas`}</span>
-        {pending.length > 0 ? <span> · {pending.length === 1 ? "1 pendiente" : `${pending.length} pendientes`}</span> : null}
-        {available > 0 ? <span> · {available === 1 ? "1 lugar libre" : `${available} lugares libres`}</span> : null}
-      </p>
+    <section className="invite-invitation" aria-label="Compartir esta historia">
+      <p className="invite-invitation-kicker">Compartir este viaje</p>
 
       {dialogOpen ? (
         <CreateInvitationDialog tripId={trip.id} onClose={() => setDialogOpen(false)} />
       ) : (
-        <button
-          type="button"
-          className="invite-panel-cta"
-          onClick={() => setDialogOpen(true)}
-          disabled={available <= 0}
-        >
-          Invitar a esta historia →
-        </button>
+        <>
+          {invitations.isPending && (
+            <p className="invite-invitation-line">Estamos preparando este momento para compartir.</p>
+          )}
+
+          {invitations.isError && (
+            <>
+              <p className="invite-invitation-line" role="alert">
+                No pudimos revisar las invitaciones pendientes.
+              </p>
+              <button type="button" className="invite-panel-cta" onClick={() => void invitations.refetch()}>
+                Reintentar
+              </button>
+            </>
+          )}
+
+          {invitations.isSuccess && seatsOpen && (
+            <>
+              <p className="invite-invitation-line">
+                {available === 1
+                  ? "Todavía hay un lugar reservado para alguien con quien quieras vivir esta historia."
+                  : `Todavía quedan ${available} lugares para quienes quieras que la vivan contigo.`}
+              </p>
+              <button
+                type="button"
+                className="invite-panel-cta"
+                onClick={() => setDialogOpen(true)}
+              >
+                Invitar a esta historia →
+              </button>
+            </>
+          )}
+
+          {invitations.isSuccess && awaitingReply && (
+            <p className="invite-invitation-line">Tu invitación ya está en camino.</p>
+          )}
+
+          {invitations.isSuccess && complete && (
+            <p className="invite-invitation-line invite-invitation-line--complete">
+              Ya están todos los que tenían que estar en esta historia.
+            </p>
+          )}
+        </>
       )}
 
       {pending.length > 0 ? (
-        <ul className="invite-panel-pending">
-          {pending.map((invitation) => (
-            <li key={invitation.invitationId}>
-              <span>{invitation.invitedEmailMasked}</span>
-              <button type="button" onClick={() => revoke.mutate(invitation.invitationId)} disabled={revoke.isPending}>
-                Revocar
-              </button>
-            </li>
-          ))}
-        </ul>
+        <div className="invite-panel-pending-wrap">
+          <p className="invite-panel-pending-title">Invitaciones en camino</p>
+          <ul className="invite-panel-pending">
+            {pending.map((invitation) => (
+              <li key={invitation.invitationId}>
+                <span>{invitation.invitedEmailMasked}</span>
+                <button
+                  type="button"
+                  onClick={() => revoke.mutate(invitation.invitationId)}
+                  disabled={revoke.isPending}
+                >
+                  Revocar
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
       ) : null}
     </section>
   );

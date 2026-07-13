@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useSearchParams } from "react-router-dom";
 import { WizardShell } from "@/components/wizard/WizardShell";
 import { CountryCombobox, type CountryOption } from "@/components/inputs/CountryCombobox";
 import { useSession } from "@/features/auth/hooks/useSession";
 import { CheckingSession } from "@/features/auth/components/CheckingSession";
+import { safeReturnTo } from "@/features/auth/lib/safeReturnTo";
 import { useCompleteOnboarding } from "../hooks/useCompleteOnboarding";
 import { onboardingSchema } from "../validation/onboardingSchema";
 
@@ -14,13 +15,15 @@ type OnboardingStep = "name" | "country";
 // vuelve a pedir. Default export para lazy() en el router.
 export default function OnboardingPage() {
   const { status, user } = useSession();
+  const [params] = useSearchParams();
+  const returnTo = safeReturnTo(params.get("returnTo"));
   const complete = useCompleteOnboarding();
   const [step, setStep] = useState<OnboardingStep>("name");
   const [displayName, setDisplayName] = useState("");
   const [country, setCountry] = useState<CountryOption | null>(null);
 
   if (status === "checking") return <CheckingSession />;
-  if (user?.onboardingCompleted) return <Navigate to="/trips" replace />;
+  if (user?.onboardingCompleted) return <Navigate to={returnTo ?? "/trips"} replace />;
 
   const canAdvanceName = displayName.trim().length > 0;
   const canSubmit = country !== null;

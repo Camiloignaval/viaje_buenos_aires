@@ -1,6 +1,10 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { OPENING_STORAGE_KEY, OPENING_VIDEO_SRC } from "../lib/openingConstants";
+import {
+  OPENING_SAFETY_FALLBACK_MS,
+  OPENING_STORAGE_KEY,
+  OPENING_VIDEO_SRC,
+} from "../lib/openingConstants";
 import { createOpeningRecord } from "../lib/openingRules";
 import { AlaiaOpening } from "./AlaiaOpening";
 
@@ -47,6 +51,7 @@ describe("AlaiaOpening", () => {
     vi.restoreAllMocks();
     window.localStorage.clear();
     window.sessionStorage.clear();
+    document.querySelectorAll("[data-test-previous-focus]").forEach((element) => element.remove());
   });
 
   it("muestra la apertura global la primera vez y mantiene Home montado detrás", () => {
@@ -77,16 +82,19 @@ describe("AlaiaOpening", () => {
     expect(screen.getByText("Home Alaia")).toBeInTheDocument();
   });
 
-  it("cierra con la línea de tiempo 2.8s fade y 4s Home estable", () => {
+  it("no se cierra sola mientras el video sigue reproduciendo", () => {
     renderOpening();
 
-    act(() => vi.advanceTimersByTime(2_799));
-    expect(screen.getByTestId("alaia-opening")).not.toHaveClass("is-fading");
+    // Sin metadata de duración (jsdom), aplica el fallback de la red de
+    // seguridad: hasta ese momento la apertura sigue visible, esperando el video.
+    act(() => vi.advanceTimersByTime(OPENING_SAFETY_FALLBACK_MS - 1));
+    expect(screen.getByTestId("alaia-opening")).toBeInTheDocument();
+  });
 
-    act(() => vi.advanceTimersByTime(1));
-    expect(screen.getByTestId("alaia-opening")).toHaveClass("is-fading");
+  it("cierra por la red de seguridad si el video nunca termina", () => {
+    renderOpening();
 
-    act(() => vi.advanceTimersByTime(1_200));
+    act(() => vi.advanceTimersByTime(OPENING_SAFETY_FALLBACK_MS));
     expect(screen.queryByTestId("alaia-opening")).not.toBeInTheDocument();
     expect(window.localStorage.getItem(OPENING_STORAGE_KEY)).not.toBeNull();
   });
@@ -106,7 +114,10 @@ describe("AlaiaOpening", () => {
 
     renderOpening();
     fireEvent.keyDown(window, { key: "Escape" });
-    act(() => vi.advanceTimersByTime(200));
+    act(() => vi.advanceTimersByTime(799));
+    expect(screen.getByTestId("alaia-opening")).toBeInTheDocument();
+
+    act(() => vi.advanceTimersByTime(1));
 
     expect(screen.queryByTestId("alaia-opening")).not.toBeInTheDocument();
     expect(window.sessionStorage.getItem("alaia:intro-video-2-seen:ba-2026")).toBe("1");
@@ -118,7 +129,12 @@ describe("AlaiaOpening", () => {
     const video = container.querySelector("video");
 
     fireEvent.ended(video as HTMLVideoElement);
-    act(() => vi.advanceTimersByTime(200));
+    expect(screen.getByTestId("alaia-opening")).toHaveClass("is-fading");
+
+    act(() => vi.advanceTimersByTime(799));
+    expect(screen.getByTestId("alaia-opening")).toBeInTheDocument();
+
+    act(() => vi.advanceTimersByTime(1));
 
     expect(screen.queryByTestId("alaia-opening")).not.toBeInTheDocument();
   });
@@ -129,9 +145,51 @@ describe("AlaiaOpening", () => {
     const { container } = renderOpening();
     expect(container.querySelector("video")).toBeNull();
 
-    act(() => vi.advanceTimersByTime(200));
+    act(() => vi.advanceTimersByTime(199));
+    expect(screen.getByTestId("alaia-opening")).toBeInTheDocument();
+
+    act(() => vi.advanceTimersByTime(1));
 
     expect(screen.queryByTestId("alaia-opening")).not.toBeInTheDocument();
     expect(window.localStorage.getItem(OPENING_STORAGE_KEY)).not.toBeNull();
+  });
+
+  it("aísla la app, enfoca el salto y restaura estado y foco al cerrar", () => {
+    const previousFocus = document.createElement("button");
+    previousFocus.dataset.testPreviousFocus = "true";
+    document.body.append(previousFocus);
+    previousFocus.focus();
+
+    const { container } = renderOpening();
+    const app = container.querySelector(".alaia-opening-app");
+    const skip = screen.getByRole("button", { name: "Saltar apertura" });
+
+    expect(app).toHaveAttribute("aria-hidden", "true");
+    expect(app).toHaveAttribute("inert");
+    expect(skip).toHaveFocus();
+
+    fireEvent.keyDown(window, { key: "Escape" });
+    act(() => vi.advanceTimersByTime(800));
+
+    expect(app).not.toHaveAttribute("aria-hidden");
+    expect(app).not.toHaveAttribute("inert");
+    expect(previousFocus).toHaveFocus();
+  });
+
+  it("restaura el foco previo y limpia timers al desmontar durante la apertura", () => {
+    const clearTimeoutSpy = vi.spyOn(window, "clearTimeout");
+    const previousFocus = document.createElement("button");
+    previousFocus.dataset.testPreviousFocus = "true";
+    document.body.append(previousFocus);
+    previousFocus.focus();
+
+    const { unmount } = renderOpening();
+    expect(screen.getByRole("button", { name: "Saltar apertura" })).toHaveFocus();
+    fireEvent.keyDown(window, { key: "Escape" });
+
+    unmount();
+
+    expect(previousFocus).toHaveFocus();
+    expect(clearTimeoutSpy).toHaveBeenCalledTimes(2);
   });
 });

@@ -50,9 +50,11 @@ export default defineConfig({
     rollupOptions: {
       input: {
         // Alaia: la SPA React única.
-        main: resolve(__dirname, "index.html"),
+        // Vite 8/Rolldown rechaza nombres de assets absolutos en un build
+        // multi-entry. Estos paths son relativos al `root` de Vite (app/).
+        main: "index.html",
         // Alaia Studio (herramienta de publicación, entrada aparte).
-        admin: resolve(__dirname, "admin.html"),
+        admin: "admin.html",
       },
     },
   },

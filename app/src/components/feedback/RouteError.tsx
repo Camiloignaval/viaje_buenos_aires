@@ -1,4 +1,4 @@
-import { useRouteError } from "react-router-dom";
+import { Link, useRouteError } from "react-router-dom";
 
 // Frontera de error de las rutas (errorElement de la ruta raíz). Sin esto, un
 // throw en render —p. ej. un paquete de historia inválido o un modo desconocido—
@@ -27,6 +27,9 @@ export function RouteError() {
         >
           <button type="submit">Reintentar →</button>
         </form>
+        <Link className="alaia-entrance-secondary" to="/trips">
+          ← Mis viajes
+        </Link>
       </div>
     </div>
   );

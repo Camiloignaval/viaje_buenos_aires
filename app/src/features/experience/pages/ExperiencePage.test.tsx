@@ -1,8 +1,10 @@
 import { readFileSync } from "node:fs";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { MemoryRouter, Route, Routes } from "react-router-dom";
-import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
+import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
+import { QueryCache, QueryClientProvider, QueryClient } from "@tanstack/react-query";
+import { sessionQueryKey } from "@/features/auth/hooks/useSession";
+import { handleAuthError } from "@/providers/authErrorHandler";
 import { PlatformApiError } from "@/services/platformClient";
 import ExperiencePage from "./ExperiencePage";
 
@@ -36,12 +38,71 @@ afterEach(() => {
   vi.unstubAllEnvs();
 });
 
-function renderAt(path: string) {
-  const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+const authenticatedUser = {
+  id: "user-1",
+  email: "kari@example.com",
+  onboardingCompleted: true,
+};
+
+function LocationProbe() {
+  const location = useLocation();
+  return <output data-testid="location">{location.pathname + location.search}</output>;
+}
+
+function createTestQueryClient(
+  user: typeof authenticatedUser | null = authenticatedUser,
+  handleData401 = false,
+) {
+  let client: QueryClient;
+  const queryCache = new QueryCache({
+    onError: (error) => {
+      if (handleData401) handleAuthError(client, error);
+    },
+  });
+  client = new QueryClient({
+    queryCache,
+    defaultOptions: { queries: { retry: false } },
+  });
+  client.setQueryData(sessionQueryKey, { user });
+  return client;
+}
+
+function renderAt(
+  path: string,
+  {
+    user = authenticatedUser,
+    handleData401 = false,
+  }: {
+    user?: typeof authenticatedUser | null;
+    handleData401?: boolean;
+  } = {},
+) {
+  const queryClient = createTestQueryClient(user, handleData401);
   return render(
     <QueryClientProvider client={queryClient}>
       <MemoryRouter initialEntries={[path]}>
-        <ExperiencePage />
+        <Routes>
+          <Route path="/experience" element={<ExperiencePage />} />
+          <Route
+            path="/login"
+            element={
+              <>
+                <div>Inicio de sesión destino</div>
+                <LocationProbe />
+              </>
+            }
+          />
+          <Route
+            path="/onboarding"
+            element={
+              <>
+                <div>Onboarding destino</div>
+                <LocationProbe />
+              </>
+            }
+          />
+          <Route path="/trips" element={<div>Lista de viajes destino</div>} />
+        </Routes>
       </MemoryRouter>
     </QueryClientProvider>,
   );
@@ -58,38 +119,80 @@ const baTrip = (id: string) => ({
 });
 
 describe("ExperiencePage (demo local sin tripId)", () => {
-  it("DEV: monta la demo de BA cuando NO hay tripId (import.meta.env.DEV=true)", async () => {
-    // En el entorno de test import.meta.env.DEV es true (dev-like).
+  it("DEV: monta la demo de BA sin consultar auth ni mostrar una salida de viaje conectado", async () => {
     renderAt("/experience");
+
     expect(await screen.findByText("Buenos Aires, 2026")).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "← Mis viajes" })).not.toBeInTheDocument();
     expect(getTrip).not.toHaveBeenCalled();
   });
 
-  it("PRODUCCIÓN: /experience sin tripId NO carga Buenos Aires — redirige controladamente a /trips", () => {
+  it("PRODUCCIÓN: /experience sin tripId conserva la redirección controlada a /trips", () => {
     vi.stubEnv("DEV", false);
-    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
-    render(
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={["/experience"]}>
-          <Routes>
-            <Route path="/experience" element={<ExperiencePage />} />
-            <Route path="/trips" element={<div>lista de viajes</div>} />
-          </Routes>
-        </MemoryRouter>
-      </QueryClientProvider>,
-    );
+    renderAt("/experience");
 
-    // Redirección controlada, sin fallback implícito a Buenos Aires.
-    expect(screen.getByText("lista de viajes")).toBeInTheDocument();
+    expect(screen.getByText("Lista de viajes destino")).toBeInTheDocument();
     expect(screen.queryByText("Buenos Aires, 2026")).not.toBeInTheDocument();
     expect(getTrip).not.toHaveBeenCalled();
   });
 });
 
+describe("ExperiencePage (gates de la rama conectada)", () => {
+  it("una sesión ausente redirige el deep link exacto antes de consultar el viaje", async () => {
+    renderAt("/experience?tripId=trip-ba&preview=1", { user: null });
+
+    expect(await screen.findByText("Inicio de sesión destino")).toBeInTheDocument();
+    expect(screen.getByTestId("location")).toHaveTextContent(
+      "/login?returnTo=%2Fexperience%3FtripId%3Dtrip-ba%26preview%3D1",
+    );
+    expect(getTrip).not.toHaveBeenCalled();
+    expect(getStory).not.toHaveBeenCalled();
+  });
+
+  it("onboarding incompleto también corta antes de las queries conectadas", async () => {
+    renderAt("/experience?tripId=trip-ba", {
+      user: { ...authenticatedUser, onboardingCompleted: false },
+    });
+
+    expect(await screen.findByText("Onboarding destino")).toBeInTheDocument();
+    expect(screen.getByTestId("location")).toHaveTextContent(
+      "/onboarding?returnTo=%2Fexperience%3FtripId%3Dtrip-ba",
+    );
+    expect(getTrip).not.toHaveBeenCalled();
+    expect(getStory).not.toHaveBeenCalled();
+  });
+
+  it("una sesión válida renderiza la historia y mantiene la navegación a Mis viajes", async () => {
+    const { demoStoryPackage } = await import("../data/demoStory");
+    getTrip.mockResolvedValue({ trip: baTrip("trip-ba") });
+    getStory.mockResolvedValue({ story: { storyId: "ba-2026", storyPackage: demoStoryPackage } });
+
+    renderAt("/experience?tripId=trip-ba");
+
+    expect(await screen.findByText("Buenos Aires, 2026")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "← Mis viajes" })).toHaveAttribute("href", "/trips");
+    expect(getTrip).toHaveBeenCalledWith("trip-ba");
+    expect(getStory).toHaveBeenCalledWith("ba-2026");
+  });
+
+  it("un 401 posterior a una sesión cacheada vuelve al login, no al error de Experience", async () => {
+    getTrip.mockRejectedValue(
+      new PlatformApiError("Sesión vencida", 401, "/api/trips/trip-ba"),
+    );
+
+    renderAt("/experience?tripId=trip-ba", { handleData401: true });
+
+    expect(await screen.findByText("Inicio de sesión destino")).toBeInTheDocument();
+    expect(screen.getByTestId("location")).toHaveTextContent(
+      "/login?returnTo=%2Fexperience%3FtripId%3Dtrip-ba",
+    );
+    expect(screen.queryByText("Algo se interrumpió.")).not.toBeInTheDocument();
+    expect(getStory).not.toHaveBeenCalled();
+  });
+});
+
 describe("ExperiencePage (resolución por viaje real vía connected)", () => {
-  it("trip con baseStoryId ba-2026 → renderiza la historia resuelta, no un import estático (punto 8.1)", async () => {
-    // El contenido real lo trae getStory (no un import estático); usamos el
-    // package real de BA como respuesta de red simulada.
+  it("trip con baseStoryId ba-2026 renderiza la historia resuelta, no un import estático", async () => {
     const { demoStoryPackage } = await import("../data/demoStory");
     getTrip.mockResolvedValue({ trip: baTrip("trip-ba") });
     getStory.mockResolvedValue({ story: { storyId: "ba-2026", storyPackage: demoStoryPackage } });
@@ -101,7 +204,7 @@ describe("ExperiencePage (resolución por viaje real vía connected)", () => {
     expect(getStory).toHaveBeenCalledWith("ba-2026");
   });
 
-  it("trip con baseStoryId null → estado honesto EMPTY, nunca Buenos Aires (punto 8.3)", async () => {
+  it("trip con baseStoryId null muestra EMPTY, nunca Buenos Aires", async () => {
     getTrip.mockResolvedValue({ trip: { ...baTrip("trip-sin"), baseStoryId: null } });
 
     renderAt("/experience?tripId=trip-sin");
@@ -111,9 +214,11 @@ describe("ExperiencePage (resolución por viaje real vía connected)", () => {
     expect(getStory).not.toHaveBeenCalled();
   });
 
-  it("baseStoryId presente pero inexistente en el catálogo (getStory 404) → mismo EMPTY honesto, nunca BA (punto 8.4)", async () => {
+  it("baseStoryId inexistente en el catálogo muestra EMPTY, nunca BA", async () => {
     getTrip.mockResolvedValue({ trip: { ...baTrip("trip-x"), baseStoryId: "historia-fantasma" } });
-    getStory.mockRejectedValue(new PlatformApiError("no existe", 404, "/api/stories/historia-fantasma"));
+    getStory.mockRejectedValue(
+      new PlatformApiError("no existe", 404, "/api/stories/historia-fantasma"),
+    );
 
     renderAt("/experience?tripId=trip-x");
 
@@ -121,7 +226,7 @@ describe("ExperiencePage (resolución por viaje real vía connected)", () => {
     expect(screen.queryByText("Buenos Aires, 2026")).not.toBeInTheDocument();
   });
 
-  it("trip inexistente/no accesible (getTrip 404) → not-found honesto, distinto de un crash (punto 8.8)", async () => {
+  it("trip inexistente/no accesible muestra not-found honesto", async () => {
     getTrip.mockRejectedValue(new PlatformApiError("403", 403, "/api/trips/fantasma"));
 
     renderAt("/experience?tripId=fantasma");
@@ -132,27 +237,24 @@ describe("ExperiencePage (resolución por viaje real vía connected)", () => {
   });
 });
 
-// Punto 8.7 — blindaje explícito: el import estático de BA solo puede usarse en el
-// branch local, y ningún trip conectado renderiza BA por defecto.
-describe("ExperiencePage — blindaje anti-fallback a Buenos Aires (punto 8.7)", () => {
-  it("el código fuente solo referencia demoStoryPackage en el branch kind:local", () => {
+// Blindaje explícito: el package estático de BA solo puede usarse en la rama
+// local, y ningún trip conectado lo referencia como fallback.
+describe("ExperiencePage — blindaje anti-fallback a Buenos Aires", () => {
+  it("la rama ConnectedExperience no referencia demoStoryPackage", () => {
     const source = readFileSync("src/features/experience/pages/ExperiencePage.tsx", "utf8");
-    // Descarta el preámbulo (imports + ExperienceRuntime) y deja los cuerpos de
-    // cada `case`. El import de demoStoryPackage vive en el preámbulo; acá solo
-    // interesa QUÉ branch lo USA.
-    const caseBodies = source.split(/case "/).slice(1);
-    const localBody = caseBodies.find((chunk) => chunk.startsWith("local"));
-    const otherBodies = caseBodies.filter((chunk) => !chunk.startsWith("local"));
+    const connectedStart = source.indexOf("function ConnectedExperience()");
+    const connectedEnd = source.indexOf("// Ruta /experience", connectedStart);
+    const connectedSource = source.slice(connectedStart, connectedEnd);
 
-    expect(localBody).toContain("demoStoryPackage");
-    for (const body of otherBodies) {
-      expect(body).not.toContain("demoStoryPackage");
-    }
+    expect(connectedSource).not.toContain("demoStoryPackage");
+    expect(source.slice(connectedEnd)).toContain("demoStoryPackage");
   });
 
-  it("un trip sin historia NO renderiza Buenos Aires (comportamiento, no solo código)", async () => {
+  it("un trip sin historia NO renderiza Buenos Aires", async () => {
     getTrip.mockResolvedValue({ trip: { ...baTrip("trip-otro"), baseStoryId: null } });
+
     renderAt("/experience?tripId=trip-otro");
+
     expect(await screen.findByText("Tu historia todavía no está lista.")).toBeInTheDocument();
     expect(screen.queryByText("Buenos Aires, 2026")).not.toBeInTheDocument();
   });

@@ -14,10 +14,10 @@ function temporalLabel(temporalState: TripTemporalState | null): string | null {
 }
 
 function preparationsLabel(trip: Trip): string {
-  if (trip.accommodation?.name) return `Preparativos: ${trip.accommodation.name}`;
-  if (trip.accommodation?.neighborhood) return `Preparativos: ${trip.accommodation.neighborhood}`;
-  if (trip.travelContext) return `Contexto: ${trip.travelContext}`;
-  return "Preparativos listos para cuando quieras entrar.";
+  if (trip.accommodation?.name) return `Te espera ${trip.accommodation.name}.`;
+  if (trip.accommodation?.neighborhood) return `Te espera ${trip.accommodation.neighborhood}.`;
+  if (trip.travelContext) return trip.travelContext;
+  return "Todo listo para cuando quieras entrar.";
 }
 
 // Portada del viaje activo. Se reutiliza en dos contextos con destino distinto,
@@ -43,7 +43,7 @@ export function ActiveTripHome({
 
   return (
     <section className="active-trip-home alaia-reveal alaia-reveal-3" aria-label="Portada del viaje activo">
-      <p className="active-trip-home-kicker">Tu historia activa</p>
+      <p className="active-trip-home-kicker">Nuestra historia</p>
       <h2 className="active-trip-home-title">{trip.title}</h2>
       <p className="active-trip-home-destination">{formatDestination(trip.destination)}</p>
       {countdown && <p className="active-trip-home-countdown">{countdown}</p>}

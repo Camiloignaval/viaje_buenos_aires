@@ -7,6 +7,7 @@ import { EmailStep } from "@/features/auth/components/EmailStep";
 import { CodeStep } from "@/features/auth/components/CodeStep";
 import { TripsEmpty } from "@/features/trips/components/TripsEmpty";
 import { TripsIndex } from "@/features/trips/components/TripsIndex";
+import { TripEntry } from "@/features/trips/components/TripEntry";
 import { ActiveTripHome } from "@/features/trips/components/ActiveTripHome";
 import { CreateTripWizard } from "@/features/trips/components/CreateTripWizard";
 import { ArrivalStep } from "@/features/trips/components/wizard/ArrivalStep";
@@ -16,9 +17,10 @@ import { SummaryStep } from "@/features/trips/components/wizard/SummaryStep";
 import { StoryBeginning } from "@/features/trips/components/wizard/StoryBeginning";
 import { INITIAL_WIZARD_DATA } from "@/features/trips/components/wizard/wizardData";
 import type { Trip } from "@/features/trips/types";
-import { tripHomeUrl, tripUrl } from "@/features/trips/lib/tripUrl";
+import { tripUrl } from "@/features/trips/lib/tripUrl";
 import { tripTemporalState } from "@/features/trips/lib/countdown";
 import { FeedbackSection } from "@/features/feedback/components/FeedbackSection";
+import { TripInvitePanel } from "@/features/sharing/components/TripInvitePanel";
 import { InviteUnauthenticated } from "@/features/sharing/components/InviteUnauthenticated";
 import { InviteDecision } from "@/features/sharing/components/InviteDecision";
 import { InviteWrongEmail } from "@/features/sharing/components/InviteWrongEmail";
@@ -211,17 +213,11 @@ export const GALLERY_STATES: Record<string, GalleryState> = {
     label: "Mis viajes · lista",
     render: () => (
       <TripsFrame title="Mis viajes" account="agus@ejemplo.com">
-        <ActiveTripHome
-          trip={SAMPLE_ACTIVE_TRIP}
-          lifecycle="upcoming"
-          temporalState={tripTemporalState(
-            new Date(),
-            SAMPLE_ACTIVE_TRIP.startDateTime ?? "",
-            SAMPLE_ACTIVE_TRIP.endDateTime ?? "",
-            "America/Argentina/Buenos_Aires",
-          )}
-          to={tripHomeUrl(SAMPLE_ACTIVE_TRIP.id)}
-        />
+        <section className="trips-active" aria-label="Tu historia activa">
+          <ul className="trips-active-list">
+            <TripEntry trip={SAMPLE_ACTIVE_TRIP} index={0} now={new Date()} featured />
+          </ul>
+        </section>
         <h2 className="trips-section-title">Otras historias</h2>
         <TripsIndex trips={SAMPLE_TRIPS.filter((trip) => trip.id !== SAMPLE_ACTIVE_TRIP.id)} />
         <button type="button" className="trips-create-link">
@@ -259,6 +255,14 @@ export const GALLERY_STATES: Record<string, GalleryState> = {
             "America/Argentina/Buenos_Aires",
           )}
           to={tripUrl(SAMPLE_ACTIVE_TRIP.id)}
+        />
+        <TripInvitePanel
+          trip={{
+            ...SAMPLE_ACTIVE_TRIP,
+            role: "owner",
+            members: [{ userId: "u1", role: "owner", joinedAt: "2026-01-05T18:00:00.000Z" }],
+            expectedTravelers: 2,
+          }}
         />
       </TripsFrame>
     ),

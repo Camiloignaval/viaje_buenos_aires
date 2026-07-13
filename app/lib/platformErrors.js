@@ -99,7 +99,7 @@ export class ValidationError extends PlatformError {
 }
 
 export class RateLimitError extends PlatformError {
-  constructor(message = 'Esperá un momento antes de volver a intentarlo.') {
+  constructor(message = 'Espera un momento antes de volver a intentarlo.') {
     super({
       code: ERROR_CODES.RATE_LIMITED,
       safeMessage: message,

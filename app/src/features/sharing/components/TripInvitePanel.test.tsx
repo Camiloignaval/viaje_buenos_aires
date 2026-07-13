@@ -51,12 +51,12 @@ describe("TripInvitePanel", () => {
 
   it("editor NO ve acciones de administración", () => {
     renderPanel(trip({ role: "editor" }));
-    expect(screen.getByText("Compartís esta historia.")).toBeInTheDocument();
+    expect(screen.getByText("Compartes esta historia.")).toHaveClass("invite-panel-editor");
     expect(screen.queryByRole("button", { name: /Invitar a esta historia/ })).not.toBeInTheDocument();
     expect(listTripInvitations).not.toHaveBeenCalled();
   });
 
-  it("owner con cupo lleno ve el CTA deshabilitado", async () => {
+  it("owner con cupo completo ve un cierre editorial, sin CTA administrativo", async () => {
     listTripInvitations.mockResolvedValue({ invitations: [] });
     renderPanel(
       trip({
@@ -66,7 +66,28 @@ describe("TripInvitePanel", () => {
         ],
       }),
     );
-    const cta = await screen.findByRole("button", { name: /Invitar a esta historia/ });
-    expect(cta).toBeDisabled();
+    expect(
+      await screen.findByText("Ya están todos los que tenían que estar en esta historia."),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /Invitar a esta historia/ })).not.toBeInTheDocument();
+  });
+
+  it("no infiere cupos ni permite invitar mientras las pendientes no están disponibles", () => {
+    listTripInvitations.mockReturnValue(new Promise(() => undefined));
+    renderPanel(trip());
+
+    expect(screen.getByText("Estamos preparando este momento para compartir.")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /Invitar a esta historia/ })).not.toBeInTheDocument();
+  });
+
+  it("muestra un estado recuperable si no puede consultar las invitaciones", async () => {
+    listTripInvitations.mockRejectedValue(new Error("offline"));
+    renderPanel(trip());
+
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "No pudimos revisar las invitaciones pendientes.",
+    );
+    expect(screen.queryByRole("button", { name: /Invitar a esta historia/ })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Reintentar" })).toBeEnabled();
   });
 });

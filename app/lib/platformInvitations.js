@@ -1,5 +1,6 @@
 import crypto from 'node:crypto';
 import {
+  ConfigurationError,
   ConflictError,
   EmailNotVerifiedError,
   ForbiddenError,
@@ -42,7 +43,7 @@ const RATE_LIMIT_MAX = 20; // invitaciones por owner por hora
 export function normalizeInvitedEmail(email) {
   const normalized = String(email ?? '').trim().toLowerCase();
   if (!EMAIL_PATTERN.test(normalized)) {
-    throw new ValidationError('Ingresá un correo válido para invitar.');
+    throw new ValidationError('Ingresa un correo válido para invitar.');
   }
   return normalized;
 }
@@ -65,6 +66,30 @@ export function hashInvitationToken(token, { secret = getInvitationSecret() } = 
 
 export function invitationExpiresAt({ now = Date.now(), ttlDays = INVITATION_TTL_DAYS } = {}) {
   return new Date(now + ttlDays * 24 * 60 * 60 * 1000).toISOString();
+}
+
+function requireInvitationBaseUrl(baseUrl) {
+  const configuredBaseUrl = requireConfigValue(String(baseUrl ?? '').trim(), 'APP_BASE_URL');
+  let parsedBaseUrl;
+
+  try {
+    parsedBaseUrl = new URL(configuredBaseUrl);
+  } catch {
+    throw new ConfigurationError('APP_BASE_URL debe ser una URL HTTP(S) absoluta.', {
+      variable: 'APP_BASE_URL',
+    });
+  }
+
+  if (!['http:', 'https:'].includes(parsedBaseUrl.protocol)) {
+    throw new ConfigurationError('APP_BASE_URL debe ser una URL HTTP(S) absoluta.', {
+      variable: 'APP_BASE_URL',
+    });
+  }
+
+  parsedBaseUrl.pathname = `${parsedBaseUrl.pathname.replace(/\/+$/, '')}/`;
+  parsedBaseUrl.search = '';
+  parsedBaseUrl.hash = '';
+  return parsedBaseUrl;
 }
 
 // Expiración perezosa: una invitación `pending` cuyo `expiresAt` ya pasó se
@@ -131,7 +156,7 @@ export function publicPendingInvitation(invitation) {
 
 export function assertCanManageInvitations(owner) {
   if (!owner?.emailVerifiedAt) {
-    throw new EmailNotVerifiedError('Verificá tu correo antes de invitar.');
+    throw new EmailNotVerifiedError('Verifica tu correo antes de invitar.');
   }
   if (!isOnboardingComplete(owner)) {
     throw new IncompleteProfileError();
@@ -163,7 +188,7 @@ export async function enforceInvitationRateLimit({ invitations, createdBy, now =
     createdAt: { $gte: since },
   });
   if (count >= RATE_LIMIT_MAX) {
-    throw new RateLimitError('Creaste muchas invitaciones en poco tiempo. Esperá un momento.');
+    throw new RateLimitError('Creaste muchas invitaciones en poco tiempo. Espera un momento.');
   }
 }
 
@@ -193,6 +218,10 @@ export async function createInvitation({
   if (invitedEmailNormalized === String(owner.email ?? '').trim().toLowerCase()) {
     throw new ConflictError('Ese es tu correo: ya eres parte de esta historia.');
   }
+
+  // La configuración se valida antes de abrir colecciones o ejecutar cualquier
+  // escritura. Así una invitación nunca queda persistida sin un enlace usable.
+  const invitationBaseUrl = requireInvitationBaseUrl(baseUrl);
 
   const invitations = collections.invitations ?? (await getTripInvitationsCollection());
   const users = collections.users ?? (await getUsersCollection());
@@ -228,6 +257,7 @@ export async function createInvitation({
   }
 
   const token = generateInvitationToken();
+  const inviteUrl = new URL(`invite/${encodeURIComponent(token)}`, invitationBaseUrl).toString();
   const doc = {
     tripId: tripObjectId,
     invitedEmail,
@@ -250,7 +280,6 @@ export async function createInvitation({
     throw error;
   }
 
-  const inviteUrl = `${baseUrl}/invite/${token}`;
   return { invitation: { ...doc, _id: insertedId }, inviteUrl, expiresAt: doc.expiresAt };
 }
 
@@ -281,7 +310,7 @@ function assertSessionEmailMatches(user, invitation) {
 
 export async function acceptInvitation({ token, user, collections = {}, now = new Date().toISOString() }) {
   if (!user?.emailVerifiedAt) {
-    throw new EmailNotVerifiedError('Verificá tu correo para aceptar la invitación.');
+    throw new EmailNotVerifiedError('Verifica tu correo para aceptar la invitación.');
   }
   const invitations = collections.invitations ?? (await getTripInvitationsCollection());
   const trips = collections.trips ?? (await getTripsCollection());

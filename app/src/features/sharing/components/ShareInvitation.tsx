@@ -1,22 +1,34 @@
 import { useState } from "react";
 import { whatsappShareUrl } from "../lib/whatsappUrl";
 
+type CopyStatus = "idle" | "success" | "error";
+
 // Compartir el enlace de una invitación ya creada: WhatsApp (wa.me, sin API
 // oficial) y copiar al portapapeles.
 export function ShareInvitation({ inviteUrl }: { inviteUrl: string }) {
-  const [copied, setCopied] = useState(false);
+  const [copyStatus, setCopyStatus] = useState<CopyStatus>("idle");
 
   const onCopy = async () => {
     try {
       await navigator.clipboard.writeText(inviteUrl);
-      setCopied(true);
+      setCopyStatus("success");
     } catch {
-      // Si el portapapeles no está disponible, el enlace igual se ve en pantalla.
+      setCopyStatus("error");
     }
   };
 
   return (
     <div className="invite-share">
+      <label>
+        <span>Enlace de invitación</span>
+        <input
+          type="url"
+          readOnly
+          value={inviteUrl}
+          onFocus={(event) => event.currentTarget.select()}
+        />
+      </label>
+
       <a
         className="invite-share-primary"
         href={whatsappShareUrl(inviteUrl)}
@@ -26,8 +38,14 @@ export function ShareInvitation({ inviteUrl }: { inviteUrl: string }) {
         Compartir por WhatsApp
       </a>
       <button type="button" onClick={onCopy}>
-        {copied ? "Enlace copiado ✓" : "Copiar enlace"}
+        {copyStatus === "success" ? "Enlace copiado ✓" : "Copiar enlace"}
       </button>
+
+      <p role="status" aria-live="polite">
+        {copyStatus === "success" && "Enlace copiado al portapapeles."}
+        {copyStatus === "error" &&
+          "No pudimos copiar el enlace. Selecciónalo y cópialo manualmente."}
+      </p>
     </div>
   );
 }

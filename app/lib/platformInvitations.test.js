@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { ObjectId } from 'mongodb';
+import { ConfigurationError } from './platformErrors.js';
 
 // Secreto/baseUrl para que hashInvitationToken y las inviteUrl funcionen sin Vercel.
 process.env.ALAIA_JWT_SECRET = process.env.ALAIA_JWT_SECRET || 'test-secret-invitations';
@@ -241,7 +242,7 @@ test('publicInvitationPreview sanitiza: nunca expone tokenHash, ids ni members',
 });
 
 test('assertCanManageInvitations exige email verificado y perfil completo', () => {
-  assert.throws(() => assertCanManageInvitations(validOwner({ emailVerifiedAt: null })), /Verificá tu correo/);
+  assert.throws(() => assertCanManageInvitations(validOwner({ emailVerifiedAt: null })), /Verifica tu correo/);
   assert.throws(() => assertCanManageInvitations(validOwner({ displayName: null })), /nombre y país/);
   assert.doesNotThrow(() => assertCanManageInvitations(validOwner()));
 });
@@ -268,6 +269,55 @@ test('createInvitation crea pending como editor, devuelve inviteUrl y NO persist
   const token = inviteUrl.split('/invite/')[1];
   assert.equal(cols.invitations.docs[0].tokenHash, hashInvitationToken(token));
   assert.equal('token' in cols.invitations.docs[0], false);
+});
+
+test('createInvitation exige APP_BASE_URL HTTP(S) absoluta antes de cualquier escritura', async () => {
+  for (const baseUrl of ['', 'alaia.test', 'ftp://alaia.test']) {
+    const cols = collections();
+    const writes = [];
+
+    for (const method of ['createIndex', 'insertOne', 'updateOne', 'updateMany']) {
+      const original = cols.invitations[method].bind(cols.invitations);
+      cols.invitations[method] = async (...args) => {
+        writes.push(method);
+        return original(...args);
+      };
+    }
+
+    await assert.rejects(
+      createInvitation({
+        trip: tripDoc(),
+        owner: validOwner(),
+        email: 'pareja@mail.com',
+        collections: cols,
+        baseUrl,
+      }),
+      (error) => {
+        assert.ok(error instanceof ConfigurationError);
+        assert.equal(error.details?.variable, 'APP_BASE_URL');
+        return true;
+      },
+    );
+    assert.deepEqual(writes, [], `no debe escribir con APP_BASE_URL=${JSON.stringify(baseUrl)}`);
+    assert.equal(cols.invitations.docs.length, 0);
+  }
+});
+
+test('createInvitation normaliza el slash final de APP_BASE_URL sin duplicarlo', async () => {
+  for (const baseUrl of ['https://alaia.test', 'https://alaia.test/', 'https://alaia.test////']) {
+    const { inviteUrl } = await createInvitation({
+      trip: tripDoc(),
+      owner: validOwner(),
+      email: 'pareja@mail.com',
+      collections: collections(),
+      baseUrl,
+    });
+
+    const parsed = new URL(inviteUrl);
+    assert.equal(parsed.origin, 'https://alaia.test');
+    assert.match(parsed.pathname, /^\/invite\/[A-Za-z0-9_-]+$/);
+    assert.equal(inviteUrl.includes('alaia.test//invite'), false);
+  }
 });
 
 test('createInvitation rechaza invitarse a sí mismo (409)', async () => {
@@ -370,7 +420,7 @@ test('createInvitation aplica rate limit por owner (429)', async () => {
 test('createInvitation exige owner verificado, perfil completo y email válido', async () => {
   await assert.rejects(
     createInvitation({ trip: tripDoc(), owner: validOwner({ emailVerifiedAt: null }), email: 'pareja@mail.com', collections: collections() }),
-    /Verificá tu correo/,
+    /Verifica tu correo/,
   );
   await assert.rejects(
     createInvitation({ trip: tripDoc(), owner: validOwner({ displayName: null }), email: 'pareja@mail.com', collections: collections() }),
@@ -463,7 +513,7 @@ test('acceptInvitation exige email verificado (403)', async () => {
   const { token, invitation } = seedInvitation();
   await assert.rejects(
     acceptInvitation({ token, user: invitee({ emailVerifiedAt: null }), collections: collections({ invitations: [invitation] }) }),
-    /Verificá tu correo/,
+    /Verifica tu correo/,
   );
 });
 

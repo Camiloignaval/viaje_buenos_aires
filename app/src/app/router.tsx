@@ -58,8 +58,8 @@ const children: RouteObject[] = [
       </RequireAuth>
     ),
   },
-  // La experiencia funciona 100% local (sin auth); con ?tripId= se enriquece
-  // contra la plataforma. Es la única experience (ya no hay HTML legacy).
+  // Sin tripId conserva la experiencia local. Con ?tripId=, ExperiencePage
+  // monta auth + onboarding antes de iniciar cualquier query conectada.
   { path: "experience", element: <ExperiencePage /> },
   // Invitación a compartir un viaje. Ruta PÚBLICA: el preview se ve sin sesión;
   // la aceptación exige iniciar sesión con el correo invitado (returnTo).
@@ -74,6 +74,10 @@ if (import.meta.env.DEV) {
   const StatesGallery = lazy(() => import("@/features/dev/StatesGallery"));
   children.push({ path: "dev/states", element: <StatesGallery /> });
 }
+
+// Cualquier ruta desconocida vuelve a una pantalla segura y navegable. `/trips`
+// aplica sus propios guards, así que este fallback no salta auth ni onboarding.
+children.push({ path: "*", element: <Navigate to="/trips" replace /> });
 
 export const router = createBrowserRouter([
   {

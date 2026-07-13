@@ -70,7 +70,7 @@ describe("TripsPage", () => {
 
     renderTripsPage();
 
-    expect(await screen.findByRole("heading", { name: "Viaje activo" })).toBeInTheDocument();
+    expect(await screen.findByRole("link", { name: /viaje activo/i })).toBeInTheDocument();
     expect(screen.queryByLabelText("Categoría")).not.toBeInTheDocument();
     expect(screen.queryByLabelText("Mensaje")).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /enviar sugerencia/i })).not.toBeInTheDocument();
@@ -92,7 +92,7 @@ describe("TripsPage", () => {
 
     renderTripsPage();
 
-    expect(await screen.findByRole("heading", { name: "Viaje activo" })).toBeInTheDocument();
+    expect(await screen.findByRole("link", { name: /viaje activo/i })).toBeInTheDocument();
     expect(screen.queryByRole("heading", { name: "Ayúdanos a mejorar Alaia" })).not.toBeInTheDocument();
   });
 
@@ -101,7 +101,7 @@ describe("TripsPage", () => {
 
     const { container } = renderTripsPage();
 
-    expect(await screen.findByRole("heading", { name: "Viaje activo" })).toBeInTheDocument();
+    expect(await screen.findByRole("link", { name: /viaje activo/i })).toBeInTheDocument();
     expect(container.querySelector(".trips-index")).toBeNull();
     expect(screen.getByRole("button", { name: "+ Un nuevo viaje" })).toBeInTheDocument();
   });
@@ -123,7 +123,7 @@ describe("TripsPage", () => {
 
     renderTripsPage();
 
-    expect(await screen.findByRole("heading", { name: "Viaje activo" })).toBeInTheDocument();
+    expect(await screen.findByRole("link", { name: /viaje activo/i })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Otras historias" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /escapada a mendoza/i })).toHaveAttribute("href", "/trips/other");
   });

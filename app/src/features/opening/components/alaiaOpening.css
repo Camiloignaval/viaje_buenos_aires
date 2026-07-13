@@ -2,6 +2,14 @@
   min-height: 100%;
 }
 
+/* Mientras la apertura está en pantalla, el loader "Revisando tu sesión"
+   (CheckingSession) no debe asomar por detrás —ni siquiera durante el fundido
+   de salida del overlay—. Solo se ve cuando ya no hay apertura. No afecta a
+   StoryBeginning (.alaia-loading-story), que es un paso del wizard de viajes. */
+.alaia-opening-app[data-opening-active] .alaia-loading:not(.alaia-loading-story) {
+  visibility: hidden;
+}
+
 .alaia-opening {
   position: fixed;
   inset: 0;
