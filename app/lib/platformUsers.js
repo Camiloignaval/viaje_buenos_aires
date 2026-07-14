@@ -31,6 +31,10 @@ export function publicUser(user) {
     email: user.email,
     displayName: user.displayName ?? null,
     residenceCountryCode: user.residenceCountryCode ?? null,
+    // Preferencia explícita de moneda (Context Engine, Etapa 6.5). Todavía no
+    // hay pantalla para editarla; el campo solo se expone en lectura para
+    // cuando exista. Ausente en documentos existentes → null, sin romper nada.
+    preferredCurrency: user.preferredCurrency ?? null,
     emailVerifiedAt: user.emailVerifiedAt ?? null,
     onboardingCompleted: isOnboardingComplete(user),
   };

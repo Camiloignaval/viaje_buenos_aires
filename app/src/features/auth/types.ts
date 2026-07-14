@@ -6,6 +6,11 @@ export interface User {
   email: string;
   displayName: string | null;
   residenceCountryCode: string | null;
+  // Preferencia explícita de moneda (Context Engine). Opcional: ausente en
+  // fixtures/sesiones previas a este campo y en usuarios que nunca la
+  // definieron. Se deriva de residenceCountryCode mientras tanto (ver
+  // features/context-engine/preferredCurrencyResolver.ts).
+  preferredCurrency?: string | null;
   emailVerifiedAt: string | null;
   onboardingCompleted: boolean;
 }

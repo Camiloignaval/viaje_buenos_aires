@@ -9,6 +9,10 @@ import { byCreatedAt, groupMemoriesByActivity, mostRecent } from "../lib/memoryG
 import { photoSlotKey } from "../lib/photoSlot";
 import { getChapterReferenceDate } from "@/features/story/engine/storyProgress";
 import { ChapterStatus } from "@/features/story/engine/types";
+import { useSession } from "@/features/auth/hooks/useSession";
+import { normalizeLegacyMoney } from "@/features/context-engine/money";
+import { resolvePreferredCurrency } from "@/features/context-engine/preferredCurrencyResolver";
+import { MoneyLine } from "@/features/context-engine/MoneyLine";
 import type {
   Activity,
   Chapter,
@@ -70,18 +74,37 @@ export function PhotoSpots({ spots, chapterId }: { spots: PhotoSpot[]; chapterId
 
 // Espejo de renderCollectionItems ("Para llevar del día").
 export function CollectionItems({ items, chapterId }: { items: CollectionItem[]; chapterId: string }) {
+  const { user } = useSession();
+  const preferredCurrency = resolvePreferredCurrency({
+    explicitPreference: user?.preferredCurrency,
+    residenceCountryCode: user?.residenceCountryCode,
+  });
+
   if (items.length === 0) return null;
   return (
     <section className="collection-items" data-reveal-on-scroll="" data-reveal-key={`chapter-${chapterId}-collection-items`}>
       <p className="section-title">Para llevar del día</p>
       <ul>
         {items.map((item) => {
-          const priceLine = [item.suggestedWhereToBuy, item.estimatedPrice].filter(Boolean).join(" — ");
+          // Solo se reconoce un monto único y limpio (sin rangos ni
+          // "Variable"); si no puede normalizarse con seguridad, se conserva
+          // el texto original tal cual — nunca se asume una moneda.
+          const localMoney = normalizeLegacyMoney(item.estimatedPrice, item.currency);
+          const priceLine = localMoney
+            ? null
+            : [item.suggestedWhereToBuy, item.estimatedPrice].filter(Boolean).join(" — ");
           return (
             <li key={item.id}>
               <p className="item-name">{item.name}</p>
               {item.description ? <p className="item-description">{item.description}</p> : null}
-              {priceLine ? <p className="item-description">{priceLine}</p> : null}
+              {localMoney ? (
+                <p className="item-description">
+                  {item.suggestedWhereToBuy ? `${item.suggestedWhereToBuy} — ` : ""}
+                  <MoneyLine localMoney={localMoney} preferredCurrency={preferredCurrency} />
+                </p>
+              ) : priceLine ? (
+                <p className="item-description">{priceLine}</p>
+              ) : null}
             </li>
           );
         })}

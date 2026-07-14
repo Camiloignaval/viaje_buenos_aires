@@ -10,6 +10,7 @@ export const ERROR_CODES = Object.freeze({
   CONFLICT: 'CONFLICT',
   GONE: 'GONE',
   EMAIL_DELIVERY_ERROR: 'EMAIL_DELIVERY_ERROR',
+  EXTERNAL_SERVICE_UNAVAILABLE: 'EXTERNAL_SERVICE_UNAVAILABLE',
   UNEXPECTED_ERROR: 'UNEXPECTED_ERROR',
 });
 
@@ -171,6 +172,21 @@ export class EmailDeliveryError extends PlatformError {
       statusCode: 502,
       retryable: true,
       severity: 'error',
+      details,
+    });
+  }
+}
+
+// Genérico para cualquier proveedor externo (tasas de cambio, clima, etc. a
+// futuro): nunca debe filtrar detalles del proveedor al cliente.
+export class ExternalServiceUnavailableError extends PlatformError {
+  constructor(message = 'Un servicio externo no está disponible en este momento.', details) {
+    super({
+      code: ERROR_CODES.EXTERNAL_SERVICE_UNAVAILABLE,
+      safeMessage: message,
+      statusCode: 502,
+      retryable: true,
+      severity: 'warning',
       details,
     });
   }

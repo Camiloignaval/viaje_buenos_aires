@@ -1228,6 +1228,27 @@ body:has(.cover-index-stage.is-index-writing) {
   margin: 0 0 0.3rem;
 }
 
+/* Money/Context Engine: la moneda local hereda el texto normal del item; la
+   conversión y la referencia temporal van discretas, en su propia línea. */
+.money-line {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  vertical-align: top;
+}
+
+.money-line-context {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.money-line-converted,
+.money-line-freshness {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
 .links {
   margin: 0.3rem 0 0;
   font-size: 0.85rem;

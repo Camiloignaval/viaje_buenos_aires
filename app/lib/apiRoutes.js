@@ -24,6 +24,10 @@ export const apiRoutes = Object.freeze([
     path: '/api/auth/verify-code',
     handler: lazyHandler(() => import('../routes/auth/verify-code.js')),
   },
+  {
+    path: '/api/context/exchange-rates',
+    handler: lazyHandler(() => import('../routes/context/exchange-rates.js')),
+  },
   { path: '/api/diagnose-env', handler: lazyHandler(() => import('../routes/diagnose-env.js')) },
   { path: '/api/feedback', handler: lazyHandler(() => import('../routes/feedback.js')) },
   { path: '/api/health', handler: lazyHandler(() => import('../routes/health.js')) },

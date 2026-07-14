@@ -37,9 +37,22 @@ test('publicUser expone el shape público con onboarding derivado', () => {
     email: 'kari@ejemplo.com',
     displayName: 'Kari',
     residenceCountryCode: 'CL',
+    preferredCurrency: null,
     emailVerifiedAt: null,
     onboardingCompleted: true,
   });
+});
+
+test('publicUser expone preferredCurrency cuando el documento ya lo tiene', () => {
+  const user = {
+    _id: 'abc123',
+    email: 'kari@ejemplo.com',
+    displayName: 'Kari',
+    residenceCountryCode: 'CL',
+    preferredCurrency: 'CLP',
+    onboardingCompleted: true,
+  };
+  assert.equal(publicUser(user).preferredCurrency, 'CLP');
 });
 
 test('publicUser devuelve onboarding pendiente y nulls para usuario legacy sin esos campos', () => {
@@ -49,6 +62,7 @@ test('publicUser devuelve onboarding pendiente y nulls para usuario legacy sin e
     email: 'viejo@ejemplo.com',
     displayName: null,
     residenceCountryCode: null,
+    preferredCurrency: null,
     emailVerifiedAt: null,
     onboardingCompleted: false,
   });

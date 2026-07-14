@@ -131,7 +131,12 @@ export interface CollectionItem {
   description?: string;
   relatedChapterId?: string;
   suggestedWhereToBuy?: string;
+  // estimatedPrice es texto libre legacy (monto único, rango o "Variable").
+  // currency acompaña al monto en el contenido curado pero no siempre permite
+  // normalizar a Money con seguridad (ver context-engine/money.ts): rangos y
+  // texto libre se muestran tal cual, sin conversión.
   estimatedPrice?: string;
+  currency?: string;
 }
 
 export interface Collection {
