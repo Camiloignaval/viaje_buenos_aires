@@ -777,7 +777,7 @@
           "description": "El clásico que nunca falla.",
           "suggestedWhereToBuy": "Cualquier local de la cadena o el shopping",
           "estimatedPrice": "$8.000",
-          "currency": "CLP"
+          "currency": "ARS"
         },
         {
           "id": "sh-2",
@@ -786,7 +786,7 @@
           "description": "Una parada dulce que ya es parte del Día 1.",
           "suggestedWhereToBuy": "Rapanui, Av. Corrientes",
           "estimatedPrice": "$10.000",
-          "currency": "CLP",
+          "currency": "ARS",
           "relatedChapterId": "chapter-1"
         },
         {
@@ -796,7 +796,7 @@
           "description": "El infaltable para llevar.",
           "suggestedWhereToBuy": "Cualquier supermercado",
           "estimatedPrice": "$5.000",
-          "currency": "CLP"
+          "currency": "ARS"
         },
         {
           "id": "sh-4",
@@ -805,7 +805,7 @@
           "description": "El set completo para llevarse un ritual, no solo un objeto.",
           "suggestedWhereToBuy": "Casas de artículos regionales, San Telmo o Florida",
           "estimatedPrice": "$15.000–$25.000",
-          "currency": "CLP"
+          "currency": "ARS"
         },
         {
           "id": "sh-5",
@@ -814,7 +814,7 @@
           "description": "Para brindar de nuevo ya en casa.",
           "suggestedWhereToBuy": "Vinotecas del centro o supermercado",
           "estimatedPrice": "$8.000–$15.000",
-          "currency": "CLP"
+          "currency": "ARS"
         },
         {
           "id": "sh-6",
@@ -823,7 +823,7 @@
           "description": "Variedad de marcas y precios.",
           "suggestedWhereToBuy": "Galerías Pacífico o Florida",
           "estimatedPrice": "Variable",
-          "currency": "CLP"
+          "currency": "ARS"
         },
         {
           "id": "sh-7",
@@ -832,7 +832,7 @@
           "description": "Algo con el sello de una librería única en el mundo.",
           "suggestedWhereToBuy": "El Ateneo Grand Splendid",
           "estimatedPrice": "$10.000–$18.000",
-          "currency": "CLP",
+          "currency": "ARS",
           "relatedChapterId": "chapter-4"
         },
         {
@@ -842,7 +842,7 @@
           "description": "Según la pieza elegida.",
           "suggestedWhereToBuy": "Talabarterías del Microcentro o San Telmo",
           "estimatedPrice": "Variable",
-          "currency": "CLP"
+          "currency": "ARS"
         },
         {
           "id": "sh-9",
@@ -851,7 +851,7 @@
           "description": "Un clásico cómodo y económico.",
           "suggestedWhereToBuy": "Locales de calzado del Microcentro",
           "estimatedPrice": "$12.000",
-          "currency": "CLP"
+          "currency": "ARS"
         },
         {
           "id": "sh-10",
@@ -860,7 +860,7 @@
           "description": "El favorito local.",
           "suggestedWhereToBuy": "Cualquier supermercado",
           "estimatedPrice": "$9.000",
-          "currency": "CLP"
+          "currency": "ARS"
         },
         {
           "id": "sh-11",
@@ -869,7 +869,7 @@
           "description": "Para preparar el mate en casa.",
           "suggestedWhereToBuy": "Cualquier supermercado",
           "estimatedPrice": "$6.000",
-          "currency": "CLP"
+          "currency": "ARS"
         },
         {
           "id": "sh-12",
@@ -878,7 +878,7 @@
           "description": "El complemento del mate.",
           "suggestedWhereToBuy": "Casas de artículos regionales",
           "estimatedPrice": "$18.000–$30.000",
-          "currency": "CLP"
+          "currency": "ARS"
         },
         {
           "id": "sh-13",
@@ -887,7 +887,7 @@
           "description": "Un clásico para acompañar quesos.",
           "suggestedWhereToBuy": "Cualquier supermercado o feria",
           "estimatedPrice": "$6.000",
-          "currency": "CLP"
+          "currency": "ARS"
         },
         {
           "id": "sh-14",
@@ -896,7 +896,7 @@
           "description": "Otra opción dulce para llevar.",
           "suggestedWhereToBuy": "Locales propios o shopping",
           "estimatedPrice": "$9.000",
-          "currency": "CLP"
+          "currency": "ARS"
         },
         {
           "id": "sh-15",
@@ -905,7 +905,7 @@
           "description": "Para quienes coleccionan música.",
           "suggestedWhereToBuy": "Mercado de San Telmo",
           "estimatedPrice": "Variable",
-          "currency": "CLP",
+          "currency": "ARS",
           "relatedChapterId": "chapter-3"
         },
         {
@@ -915,7 +915,7 @@
           "description": "Piezas únicas del mercado.",
           "suggestedWhereToBuy": "Mercado de San Telmo",
           "estimatedPrice": "Variable",
-          "currency": "CLP",
+          "currency": "ARS",
           "relatedChapterId": "chapter-3"
         },
         {
@@ -925,7 +925,7 @@
           "description": "Diseño local, fuera de lo genérico.",
           "suggestedWhereToBuy": "Palermo Soho o Galerías Pacífico",
           "estimatedPrice": "Variable",
-          "currency": "CLP"
+          "currency": "ARS"
         },
         {
           "id": "sh-18",
@@ -934,7 +934,7 @@
           "description": "Un recuerdo deportivo clásico.",
           "suggestedWhereToBuy": "Tiendas oficiales del Microcentro",
           "estimatedPrice": "$25.000–$40.000",
-          "currency": "CLP"
+          "currency": "ARS"
         },
         {
           "id": "sh-19",
@@ -943,7 +943,7 @@
           "description": "El souvenir más simple y efectivo.",
           "suggestedWhereToBuy": "Cualquier feria o kiosco turístico",
           "estimatedPrice": "$2.000–$4.000",
-          "currency": "CLP"
+          "currency": "ARS"
         },
         {
           "id": "sh-20",
@@ -952,7 +952,7 @@
           "description": "El leitmotiv del viaje, en versión para el avión de vuelta.",
           "suggestedWhereToBuy": "Las Violetas, Almagro",
           "estimatedPrice": "$8.000 la docena",
-          "currency": "CLP",
+          "currency": "ARS",
           "relatedChapterId": "chapter-4"
         }
       ]
@@ -1116,7 +1116,7 @@
     }
   ],
   "budget": {
-    "currency": "CLP",
+    "currency": "ARS",
     "categories": [
       { "name": "Comidas y salidas", "estimatedAmount": 400000 },
       { "name": "Cafés, medialunas y helados", "estimatedAmount": 96000 },
