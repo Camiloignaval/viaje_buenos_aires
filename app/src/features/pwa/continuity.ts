@@ -14,10 +14,11 @@ export interface LaunchInput {
   continuity: ContinuityState | null;
   /** Solo se restaura la continuidad con la app instalada (standalone). */
   standalone: boolean;
+  userId?: string | null;
 }
 
-export function resolveLaunchTarget({ continuity, standalone }: LaunchInput): LaunchTarget {
-  if (standalone && continuity && continuity.tripId) {
+export function resolveLaunchTarget({ continuity, standalone, userId }: LaunchInput): LaunchTarget {
+  if (standalone && continuity && continuity.tripId && continuity.userId === userId) {
     return { kind: "restore", tripId: continuity.tripId };
   }
   return { kind: "default" };

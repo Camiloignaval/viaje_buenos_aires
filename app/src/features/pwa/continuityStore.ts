@@ -10,6 +10,7 @@ export interface KeyValueStorage {
 }
 
 export interface ContinuityState {
+  userId: string;
   tripId: string;
   /** Último capítulo abierto (posición de lectura), si se conoce. */
   chapterId?: string | null;
@@ -27,7 +28,7 @@ export function getContinuity(storage: KeyValueStorage = getDefaultStorage()): C
   if (!raw) return null;
   try {
     const parsed: unknown = JSON.parse(raw);
-    if (parsed && typeof parsed === "object" && typeof (parsed as ContinuityState).tripId === "string") {
+    if (parsed && typeof parsed === "object" && typeof (parsed as ContinuityState).tripId === "string" && typeof (parsed as ContinuityState).userId === "string") {
       return parsed as ContinuityState;
     }
     return null;
@@ -45,13 +46,14 @@ function write(state: ContinuityState, storage: KeyValueStorage): void {
 }
 
 /** Recuerda el viaje abierto. Preserva el chapterId previo si es el mismo viaje. */
-export function rememberTrip(tripId: string, storage: KeyValueStorage = getDefaultStorage()): void {
-  if (!tripId) return;
+export function rememberTrip(userId: string, tripId: string, storage: KeyValueStorage = getDefaultStorage()): void {
+  if (!userId || !tripId) return;
   const previous = getContinuity(storage);
   write(
     {
+      userId,
       tripId,
-      chapterId: previous?.tripId === tripId ? previous.chapterId ?? null : null,
+      chapterId: previous?.userId === userId && previous?.tripId === tripId ? previous.chapterId ?? null : null,
       updatedAt: new Date().toISOString(),
     },
     storage,
@@ -60,14 +62,15 @@ export function rememberTrip(tripId: string, storage: KeyValueStorage = getDefau
 
 /** Recuerda la posición de lectura (capítulo) dentro del último viaje. */
 export function rememberReadingPosition(
+  userId: string,
   tripId: string,
   chapterId: string | null,
   storage: KeyValueStorage = getDefaultStorage(),
 ): void {
-  if (!tripId) return;
-  write({ tripId, chapterId, updatedAt: new Date().toISOString() }, storage);
+  if (!userId || !tripId) return;
+  write({ userId, tripId, chapterId, updatedAt: new Date().toISOString() }, storage);
 }
 
 export function clearContinuity(storage: KeyValueStorage = getDefaultStorage()): void {
-  write({ tripId: "", chapterId: null, updatedAt: new Date().toISOString() }, storage);
+  write({ userId: "", tripId: "", chapterId: null, updatedAt: new Date().toISOString() }, storage);
 }

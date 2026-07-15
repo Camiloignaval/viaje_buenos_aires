@@ -52,14 +52,17 @@ export function PwaInstallPrompt({ store = installPromptStore }: { store?: Insta
         ×
       </button>
       {platform === "ios" ? (
-        <p>
-          Para guardar Alaia en tu inicio, toca <strong>Compartir</strong> y luego <strong>Agregar a inicio</strong>.
-        </p>
+        <>
+          <p><strong>Lleva Alaia contigo</strong></p>
+          <p>1. Toca <strong>Compartir</strong>. 2. Elige <strong>“Añadir a pantalla de inicio”</strong>. 3. Abre Alaia desde su nuevo ícono.</p>
+          <p>Si te solicita iniciar sesión nuevamente, usa el mismo correo. Tu viaje ya estará esperándote.</p>
+        </>
       ) : (
         <>
-          <p>Alaia puede quedarse contigo, en tu pantalla de inicio.</p>
+          <p><strong>Lleva Alaia contigo</strong></p>
+          <p>Instálala para volver a esta historia desde tu pantalla de inicio y permitir que te acompañe durante el viaje.</p>
           <button type="button" className="pwa-install-action" onClick={() => void install()}>
-            Dejarla en inicio
+            Instalar Alaia
           </button>
         </>
       )}
