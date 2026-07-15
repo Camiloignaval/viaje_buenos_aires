@@ -26,10 +26,10 @@ Chain strategy: feature-branch-chain
 
 ## Unit 1: Pure semantic core
 
-- [ ] 1.1 **RED:** Add `memory/{contracts,validation,policy}.test.ts` for **Correlated pair, Invalid shape, Trip started, Last day, Favorite, First chapter, Deferred or transient, Untrusted owner, Prohibited datum**. Verify: `npm run test:react -- src/features/context-engine/memory`.
-- [ ] 1.2 **GREEN:** Add `memory/{contracts,validation,policy}.ts`; make every 1.1 scenario pass with exact immutable inputs/results and closed privacy/lineage rules. Verify: `npm run test:react -- src/features/context-engine/memory`.
-- [ ] 1.3 **TRIANGULATE:** Add `memory/{dedupe,lifecycle}.test.ts` for **Accepted lifecycle, No automatic archive, Explanation, Repeated chapter**, SHA-256 fixtures and illegal transitions. Verify: `npm run test:react -- src/features/context-engine/memory`.
-- [ ] 1.4 **REFACTOR:** Add `memory/{dedupe,lifecycle,index}.ts`; centralize schemas, clone/freeze and versioned identity for all Unit 1 scenarios without upstream imports. Verify: `npm run test:react -- src/features/context-engine/memory`; `npm run typecheck`.
+- [x] 1.1 **RED:** Add `memory/{contracts,validation,policy}.test.ts` for **Correlated pair, Invalid shape, Trip started, Last day, Favorite, First chapter, Deferred or transient, Untrusted owner, Prohibited datum**. Verify: `npm run test:react -- src/features/context-engine/memory`.
+- [x] 1.2 **GREEN:** Add `memory/{contracts,validation,policy}.ts`; make every 1.1 scenario pass with exact immutable inputs/results and closed privacy/lineage rules. Verify: `npm run test:react -- src/features/context-engine/memory`.
+- [x] 1.3 **TRIANGULATE:** Add `memory/{dedupe,lifecycle}.test.ts` for **Accepted lifecycle, No automatic archive, Explanation, Repeated chapter**, SHA-256 fixtures and illegal transitions. Verify: `npm run test:react -- src/features/context-engine/memory`.
+- [x] 1.4 **REFACTOR:** Add `memory/{dedupe,lifecycle,index}.ts`; centralize schemas, clone/freeze and versioned identity for all Unit 1 scenarios without upstream imports. Verify: `npm run test:react -- src/features/context-engine/memory`; `npm run typecheck`.
 
 ## Unit 2: Shared authenticated persistence
 
