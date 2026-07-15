@@ -27,7 +27,7 @@
         "open": "No importa cuántas veces viajemos. Siempre voy a recordar este como el viaje en que celebramos tu cumpleaños. Hoy no hay nada planeado todavía — solo la ciudad, esperándonos, y las maletas recién dejadas en el hotel.",
         "close": "Hoy probablemente estaremos cansados. Pero también felices. Hoy comenzó una aventura que llevábamos mucho tiempo esperando. Quizás no recordemos exactamente todo lo que hicimos — pero sí cómo nos sentimos. Y eso siempre será lo más importante."
       },
-      "assets": { "heroImage": "images/dia1-hero.jpg" },
+      "assets": { "heroImage": "dia1-hero.jpg" },
       "activities": [
         {
           "id": "act-1-1",
@@ -126,7 +126,7 @@
       "id": "chapter-2",
       "order": 2,
       "title": "Buenos Aires se disfruta caminando",
-      "assets": { "heroImage": "images/dia2-hero.jpg" },
+      "assets": { "heroImage": "dia2-hero.jpg" },
       "copy": {
         "open": "Los mejores recuerdos rara vez aparecen cuando uno anda apurado. Hoy no hay una sola parada que valga más que otra — solo un recorrido largo, pensado para caminarlo despacio.",
         "close": "Quizás hoy caminamos más despacio. Quizás nos detuvimos más veces. Pero probablemente también sonreímos mucho más. Y eso hace que este día haya valido completamente la pena."
@@ -278,7 +278,7 @@
       "id": "chapter-3",
       "order": 3,
       "title": "El alma de Buenos Aires",
-      "assets": { "heroImage": "images/dia3-hero.jpg" },
+      "assets": { "heroImage": "dia3-hero.jpg" },
       "copy": {
         "open": "No todas las ciudades se conocen mirando edificios. Algunas se conocen caminando sin rumbo. Hoy toca la Buenos Aires que no está en ningún itinerario oficial — la de las ferias, el tango de casualidad y los bares escondidos.",
         "close": "Hoy probablemente conocimos la Buenos Aires más auténtica. La que tiene historia. La que tiene música. La que tiene olor a café. Y quizás también la que más recordaremos."
@@ -415,7 +415,7 @@
       "id": "chapter-4",
       "order": 4,
       "title": "El último día siempre llega demasiado rápido",
-      "assets": { "heroImage": "images/dia4-hero.jpg" },
+      "assets": { "heroImage": "dia4-hero.jpg" },
       "copy": {
         "open": "Los mejores viajes no terminan. Simplemente empiezan a convertirse en recuerdos. Todavía queda un día entero por delante — no hace falta que se sienta como una despedida todavía.",
         "close": "Gracias Buenos Aires. Quizás este viaje terminó. Pero ahora comienza otra etapa. Porque desde hoy Buenos Aires ya no será solamente una ciudad — será el lugar donde celebramos un cumpleaños, donde caminamos durante horas, donde nos reímos, donde comimos increíble, y donde escribimos un recuerdo que nos acompañará siempre."
@@ -598,7 +598,7 @@
           "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=El+Cuartito,+Talcahuano+937,+CABA,+Buenos+Aires",
           "uberDeepLink": "https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[formatted_address]=Talcahuano+937,+CABA,+Buenos+Aires"
         },
-        "recommendation": "Elegimos El Cuartito a propósito para la primera comida del viaje: pizzería porteña desde 1934, de esas que no cambiaron el mostrador ni el mármol en décadas — mozos de toda la vida, mesas altas, cero pretensión. Pide fugazzeta y una de jamón; entre las dos, con algo para tomar, calcula unos $40.000 CLP. Aquí la pizza se come parada, apoyada en el mostrador — nadie se sienta a esperar."
+        "recommendation": "Elegimos El Cuartito a propósito para la primera comida del viaje: pizzería porteña desde 1934, de esas que no cambiaron el mostrador ni el mármol en décadas — mozos de toda la vida, mesas altas, cero pretensión. Pide fugazzeta y una de jamón; entre las dos, con algo para tomar, unos $40.000 CLP para hacerse una idea al cambio de estos días. Aquí la pizza se come parada, apoyada en el mostrador — nadie se sienta a esperar."
       },
       {
         "id": "la-estancia-asador-criollo",
@@ -608,7 +608,7 @@
           "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=La+Estancia+Asador+Criollo,+Lavalle+941,+CABA,+Buenos+Aires",
           "uberDeepLink": "https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[formatted_address]=Lavalle+941,+CABA,+Buenos+Aires"
         },
-        "recommendation": "Para la primera noche buscamos algo que se sintiera genuinamente porteño sin depender de una reserva. Este asador tiene el fogón a la vista desde 1962 — se nota que el fuego manda, no el menú. Pide empanadas criollas para empezar y el asado de fogón; entre los dos, unos $55.000–$70.000 CLP. Llegando temprano casi no hay espera."
+        "recommendation": "Para la primera noche buscamos algo que se sintiera genuinamente porteño sin depender de una reserva. Este asador tiene el fogón a la vista desde 1962 — se nota que el fuego manda, no el menú. Pide empanadas criollas para empezar y el asado de fogón; entre los dos, calcula unos $55.000–$70.000 CLP según cómo esté el cambio. Llegando temprano casi no hay espera."
       },
       {
         "id": "la-cabrera",
@@ -618,7 +618,7 @@
           "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=La+Cabrera,+José+A.+Cabrera+5099,+Palermo,+Buenos+Aires",
           "uberDeepLink": "https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[formatted_address]=José+A.+Cabrera+5099,+Palermo,+Buenos+Aires"
         },
-        "recommendation": "Si hay una comida que no se puede saltar en este viaje, es esta. La Cabrera tiene todo lo que se espera de una parrilla porteña — mesas llenas, guarniciones que no paran de llegar — pero sin la fila interminable de otras parrillas famosas. Pide provoleta para empezar y bife de chorizo para compartir; calcula unos $95.000 CLP. Reserva con unos días de anticipación, y guarda espacio: las guarniciones solas ya llenan."
+        "recommendation": "Si hay una comida que no se puede saltar en este viaje, es esta. La Cabrera tiene todo lo que se espera de una parrilla porteña — mesas llenas, guarniciones que no paran de llegar — pero sin la fila interminable de otras parrillas famosas. Pide provoleta para empezar y bife de chorizo para compartir; como referencia, alrededor de $95.000 CLP al cambio del momento. Reserva con unos días de anticipación, y guarda espacio: las guarniciones solas ya llenan."
       },
       {
         "id": "cabana-las-lilas",
@@ -628,7 +628,7 @@
           "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Cabaña+Las+Lilas,+Av.+Alicia+M.+de+Justo+516,+Puerto+Madero,+Buenos+Aires",
           "uberDeepLink": "https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[formatted_address]=Av.+Alicia+M.+de+Justo+516,+Puerto+Madero,+Buenos+Aires"
         },
-        "recommendation": "La reservamos para la noche que cierra el día más lindo del viaje: mesa con vista directa al dique de Puerto Madero, carne de cabañas propias. Probablemente la cena más especial de los cuatro días — aprox. $80.000 CLP para dos. Reserva con tiempo y pide mesa junto a la ventana; las luces del dique de noche valen tanto como el asado."
+        "recommendation": "La reservamos para la noche que cierra el día más lindo del viaje: mesa con vista directa al dique de Puerto Madero, carne de cabañas propias. Probablemente la cena más especial de los cuatro días — para dos, unos $80.000 CLP aproximados según el cambio. Reserva con tiempo y pide mesa junto a la ventana; las luces del dique de noche valen tanto como el asado."
       },
       {
         "id": "desnivel",
@@ -638,7 +638,7 @@
           "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Desnivel+Parrilla,+Defensa+855,+San+Telmo,+Buenos+Aires",
           "uberDeepLink": "https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[formatted_address]=Defensa+855,+San+Telmo,+Buenos+Aires"
         },
-        "recommendation": "Después de una mañana caminando San Telmo, esto es lo opuesto a un restaurante de guía turística: parrilla ruidosa, mesas pegadas, mozos que gritan los pedidos desde 1993. Pide milanesa napolitana o vacío; unos $55.000 CLP para dos. Si el lugar está lleno y hay que esperar afuera un rato, es buena señal — significa que vale la pena."
+        "recommendation": "Después de una mañana caminando San Telmo, esto es lo opuesto a un restaurante de guía turística: parrilla ruidosa, mesas pegadas, mozos que gritan los pedidos desde 1993. Pide milanesa napolitana o vacío; para dos, cerca de $55.000 CLP para tener una referencia en pesos chilenos. Si el lugar está lleno y hay que esperar afuera un rato, es buena señal — significa que vale la pena."
       },
       {
         "id": "el-correo",
@@ -648,7 +648,7 @@
           "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=El+Correo,+Recoleta,+Buenos+Aires",
           "uberDeepLink": "https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[formatted_address]=El+Correo,+Recoleta,+Buenos+Aires"
         },
-        "recommendation": "Para el último almuerzo elegimos algo tranquilo, lejos de cualquier circuito turístico — un rincón rústico, casi escondido, cerca de Recoleta. Pide un sándwich de milanesa o una tarta salada; unos $45.000 CLP para dos. Es el tipo de lugar donde da gusto quedarse un rato de más, sin nada más planeado después."
+        "recommendation": "Para el último almuerzo elegimos algo tranquilo, lejos de cualquier circuito turístico — un rincón rústico, casi escondido, cerca de Recoleta. Pide un sándwich de milanesa o una tarta salada; para dos, unos $45.000 CLP a modo de referencia. Es el tipo de lugar donde da gusto quedarse un rato de más, sin nada más planeado después."
       },
       {
         "id": "floreria-atlantico",
@@ -658,7 +658,7 @@
           "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Florería+Atlántico,+Arroyo+872,+Buenos+Aires",
           "uberDeepLink": "https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[formatted_address]=Arroyo+872,+Buenos+Aires"
         },
-        "recommendation": "Se entra literalmente por una florería — nadie que pase por la vereda sabe que abajo hay uno de los bares más premiados del mundo. Pide el cóctel de autor de temporada; unos $25.000 CLP para dos. No hace falta quedarse hasta tarde, pero sí hace falta quedarse un rato — es de esos lugares que se disfrutan más despacio."
+        "recommendation": "Se entra literalmente por una florería — nadie que pase por la vereda sabe que abajo hay uno de los bares más premiados del mundo. Pide el cóctel de autor de temporada; para dos, alrededor de $25.000 CLP según el cambio de esos días. No hace falta quedarse hasta tarde, pero sí hace falta quedarse un rato — es de esos lugares que se disfrutan más despacio."
       }
     ],
     "cafes": [
@@ -670,7 +670,7 @@
           "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Rapanui,+Av.+Corrientes,+CABA,+Buenos+Aires",
           "uberDeepLink": "https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[formatted_address]=Rapanui,+Av.+Corrientes,+CABA,+Buenos+Aires"
         },
-        "recommendation": "Nada elegante, nada de fotos perfectas — solo una heladería de barrio en plena Corrientes, ideal para cerrar la primera caminata. Pide chocolate, dulce de leche y frambuesa; con dos gustos cada uno, unos $10.000 CLP. Cómanselo caminando, no hace falta sentarse."
+        "recommendation": "Nada elegante, nada de fotos perfectas — solo una heladería de barrio en plena Corrientes, ideal para cerrar la primera caminata. Pide chocolate, dulce de leche y frambuesa; con dos gustos cada uno, unos $10.000 CLP para hacerse una idea al cambio. Cómanselo caminando, no hace falta sentarse."
       },
       {
         "id": "la-biela",
@@ -679,7 +679,7 @@
           "name": "Av. Quintana 596, Recoleta",
           "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=La+Biela,+Av.+Quintana+596,+Recoleta,+Buenos+Aires"
         },
-        "recommendation": "La favorita de Kari, y no por casualidad: mesas bajo un gomero centenario, justo frente a Plaza Francia, en uno de los cafés notables más icónicos de la ciudad. Pide café con leche y medialunas de manteca; unos $12.000 CLP para dos. Este es el lugar para no mirar el reloj — quedarse una hora de más es, literalmente, el plan."
+        "recommendation": "La favorita de Kari, y no por casualidad: mesas bajo un gomero centenario, justo frente a Plaza Francia, en uno de los cafés notables más icónicos de la ciudad. Pide café con leche y medialunas de manteca; para dos, cerca de $12.000 CLP como referencia en pesos chilenos. Este es el lugar para no mirar el reloj — quedarse una hora de más es, literalmente, el plan."
       },
       {
         "id": "lattente",
@@ -689,7 +689,7 @@
           "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Lattente,+Palermo+Soho,+Buenos+Aires",
           "uberDeepLink": "https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[formatted_address]=Lattente,+Palermo+Soho,+Buenos+Aires"
         },
-        "recommendation": "La otra favorita de Kari, esta vez en Palermo Soho: moderna, con buena pastelería y varios métodos de extracción para elegir. Pide un flat white; unos $18.000 CLP para dos. Ideal para una pausa corta antes de seguir caminando hacia Puerto Madero."
+        "recommendation": "La otra favorita de Kari, esta vez en Palermo Soho: moderna, con buena pastelería y varios métodos de extracción para elegir. Pide un flat white; para dos, unos $18.000 CLP aproximados al cambio del momento. Ideal para una pausa corta antes de seguir caminando hacia Puerto Madero."
       },
       {
         "id": "confiteria-ideal",
@@ -709,7 +709,7 @@
           "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Las+Violetas,+Av.+Rivadavia+3899,+Almagro,+Buenos+Aires",
           "uberDeepLink": "https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[formatted_address]=Av.+Rivadavia+3899,+Almagro,+Buenos+Aires"
         },
-        "recommendation": "Los otros días desayunamos en el hotel — el último, vale la pena romper la rutina en esta confitería emblemática desde 1884, con vitrales y mármoles italianos que no cambiaron en más de un siglo. Pide café con leche y medialunas de manteca — están entre las mejores de la ciudad; unos $20.000 CLP para dos. Es el desayuno con el que conviene despedirse de Buenos Aires."
+        "recommendation": "Los otros días desayunamos en el hotel — el último, vale la pena romper la rutina en esta confitería emblemática desde 1884, con vitrales y mármoles italianos que no cambiaron en más de un siglo. Pide café con leche y medialunas de manteca — están entre las mejores de la ciudad; para dos, unos $20.000 CLP a modo de referencia según el cambio. Es el desayuno con el que conviene despedirse de Buenos Aires."
       }
     ]
   },
@@ -1131,7 +1131,7 @@
     "anniversaryMessage": "Hace exactamente un año caminábamos por Buenos Aires. Hoy, volvemos a abrir esta historia para recordarlo."
   },
   "assets": {
-    "heroImage": "images/cover-hero.jpg"
+    "heroImage": "cover-hero.jpg"
   },
   "invitationContent": {
     "invitationTitle": "Una historia te está esperando",
