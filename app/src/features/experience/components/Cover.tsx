@@ -62,9 +62,14 @@ function CoverContent() {
 
 // Espejo de renderStaticCover.
 export function StaticCover() {
+  const { storyPackage } = useExperienceCtx();
+  // Fuente de verdad: el hero declarado por el paquete; fallback al asset raíz.
+  const coverImage = storyPackage.assets?.heroImage
+    ? `/${storyPackage.assets.heroImage.replace(/^\//, "")}`
+    : "/cover-hero.jpg";
   return (
     <section className="book-page cover">
-      <img className="cover-photo" src="/cover-hero.jpg" alt="" />
+      <img className="cover-photo" src={coverImage} alt="" />
       <div className="cover-tint" aria-hidden="true" />
       <div className="cover-scrim" aria-hidden="true" />
       <CoverContent />

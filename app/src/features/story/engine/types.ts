@@ -3,6 +3,10 @@
 // Los muchos campos opcionales reflejan STORY_PACKAGE_SCHEMA_v1.4: casi todo el
 // contenido de un capítulo es opcional y el render decide si pintarlo o no.
 
+import type { StoryIntelligence } from "./intelligence";
+
+export type { StoryIntelligence } from "./intelligence";
+
 export const ChapterStatus = {
   LOCKED: "locked",
   AVAILABLE: "available",
@@ -41,6 +45,8 @@ export interface Place {
   websiteUrl?: string;
   recommendation?: string;
   relatedChapterId?: string;
+  /** Metadata de significado (opcional): reserva, tipo de comida, etc. */
+  intelligence?: StoryIntelligence;
 }
 
 export interface SuggestedMemory {
@@ -62,11 +68,19 @@ export interface Activity {
   websiteUrl?: string;
   relatedPlaceId?: string;
   image?: string;
+  /** Metadata de significado (opcional): energía, clima, foto, etc. */
+  intelligence?: StoryIntelligence;
 }
 
 export interface ChapterCopy {
   open?: string;
   close?: string;
+}
+
+/** Assets asociados a un capítulo o al paquete (imagen hero, etc.). */
+export interface StoryAssets {
+  heroImage?: string;
+  [key: string]: unknown;
 }
 
 export interface Tradition {
@@ -87,6 +101,7 @@ export interface Chapter {
   nightNote?: string;
   ourMoment?: string;
   suggestedMemories?: SuggestedMemory[];
+  assets?: StoryAssets;
   [key: string]: unknown;
 }
 
@@ -162,7 +177,18 @@ export interface StoryMetadata {
   title: string;
   travelDates: TravelDates;
   travelerNames?: string[];
+  /** Idioma en que está escrito el contenido de la historia. */
   language: string;
+  /** País del destino (ISO 3166-1 alpha-2), para resolver el Travel Context. */
+  destinationCountryCode?: string;
+  /** Idioma predominante del destino (ISO 639-1), si difiere del contenido. */
+  destinationLanguage?: string;
+}
+
+/** Presupuesto editorial de la historia; su moneda es la moneda local del destino. */
+export interface StoryBudget {
+  currency?: string;
+  [key: string]: unknown;
 }
 
 export interface StoryMood {
@@ -190,7 +216,9 @@ export interface StoryPackage {
   photoSpots?: PhotoSpot[];
   collections?: Collection[];
   checklist?: ChecklistItem[];
+  budget?: StoryBudget;
   baseCopy: BaseCopy;
+  assets?: StoryAssets;
   [key: string]: unknown;
 }
 

@@ -36,6 +36,12 @@ export function buildChapterSummary(
 }
 
 export function heroImageForChapter(chapter: Chapter): string {
+  // Fuente de verdad: el asset declarado por el capítulo (Story Package).
+  const declared = chapter.assets?.heroImage;
+  if (typeof declared === "string" && declared.trim().length > 0) {
+    return declared.startsWith("/") ? declared : `/${declared}`;
+  }
+  // Fallback por día para capítulos que no declaran hero.
   const day = Math.min(Math.max(Number(chapter.order ?? 1), 1), 4);
   return `/dia${day}-hero.jpg`;
 }

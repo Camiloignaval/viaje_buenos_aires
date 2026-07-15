@@ -47,22 +47,23 @@ export function PwaInstallPrompt({ store = installPromptStore }: { store?: Insta
   }
 
   return (
-    <aside className="pwa-install-prompt" aria-label="Instalar Alaia">
-      <button type="button" className="pwa-install-dismiss" onClick={dismiss} aria-label="Ahora no">
-        ×
-      </button>
-      {platform === "ios" ? (
-        <p>
-          Para guardar Alaia en tu inicio, toca <strong>Compartir</strong> y luego <strong>Agregar a inicio</strong>.
-        </p>
-      ) : (
-        <>
-          <p>Alaia puede quedarse contigo, en tu pantalla de inicio.</p>
-          <button type="button" className="pwa-install-action" onClick={() => void install()}>
-            Dejarla en inicio
-          </button>
-        </>
-      )}
-    </aside>
+    <section className="personal-section personal-install" aria-labelledby="install-alaia-title">
+      <h2 id="install-alaia-title" className="personal-section-title">Instalar Alaia</h2>
+      <aside className="pwa-install-prompt" aria-label="Instalar Alaia">
+        <button type="button" className="pwa-install-dismiss" onClick={dismiss} aria-label="Ahora no">
+          ×
+        </button>
+        {platform === "ios" ? (
+          <p>En iPhone o iPad, toca <strong>Compartir</strong> y elige <strong>“Añadir a pantalla de inicio”</strong>.</p>
+        ) : (
+          <>
+            <p>Déjala cerca para volver a tus historias cuando quieras.</p>
+            <button type="button" className="pwa-install-action" onClick={() => void install()}>
+              Instalar Alaia
+            </button>
+          </>
+        )}
+      </aside>
+    </section>
   );
 }

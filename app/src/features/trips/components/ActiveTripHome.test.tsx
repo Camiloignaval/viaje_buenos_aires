@@ -66,8 +66,8 @@ describe("ActiveTripHome", () => {
     expect(screen.getByRole("img", { name: "Argentina" })).toHaveTextContent("🇦🇷");
     expect(screen.queryByText("AR")).not.toBeInTheDocument();
     expect(screen.getByText("18–21 de julio de 2026 · 3 noches")).toBeInTheDocument();
-    expect(screen.getByText("Faltan 8 días.")).toBeInTheDocument();
-    expect(screen.getByText("Cada vez falta menos para empezar esta historia.")).toBeInTheDocument();
+    expect(screen.getByText("La historia todavía está por comenzar.")).toBeInTheDocument();
+    expect(screen.getByText("Todo estará listo cuando llegue el momento.")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Entrar al viaje" })).toHaveAttribute(
       "href",
       "/experience?tripId=trip-1",
@@ -134,12 +134,12 @@ describe("ActiveTripHome", () => {
       <ActiveTripHome
         trip={TRIP}
         lifecycle="in-progress"
-        temporalState={{ kind: "in-progress", dayIndex: 2, totalDays: 4 }}
+        temporalState={{ kind: "in-progress", dayIndex: 2, totalDays: 4, isLastDay: false }}
         to={tripUrl(TRIP.id)}
       />,
     );
 
-    expect(screen.getByText("Día 2 de 4.")).toBeInTheDocument();
+    expect(screen.getByText("La historia se está escribiendo.")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Entrar al viaje" })).toHaveAttribute(
       "href",
       "/experience?tripId=trip-1",

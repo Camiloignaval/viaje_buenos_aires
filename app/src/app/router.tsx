@@ -4,19 +4,20 @@ import { RootLayout } from "@/components/layout/RootLayout";
 import { RouteError } from "@/components/feedback/RouteError";
 import { RequireAuth } from "@/features/auth/components/RequireAuth";
 import { RequireOnboarding } from "@/features/onboarding/components/RequireOnboarding";
+import { ContinuityRedirect } from "@/features/pwa/ContinuityRedirect";
 
 // Rutas por feature con lazy() + dynamic import: cada página es su propio chunk.
 // El Suspense de RootLayout provee el fallback mientras cargan.
 const LoginPage = lazy(() => import("@/features/auth/pages/LoginPage"));
 const OnboardingPage = lazy(() => import("@/features/onboarding/pages/OnboardingPage"));
 const TripsPage = lazy(() => import("@/features/trips/pages/TripsPage"));
+const PersonalPage = lazy(() => import("@/features/personal/pages/PersonalPage"));
 const TripHomePage = lazy(() => import("@/features/trips/pages/TripHomePage"));
-const FeedbackPage = lazy(() => import("@/features/feedback/pages/FeedbackPage"));
 const ExperiencePage = lazy(() => import("@/features/experience/pages/ExperiencePage"));
 const InvitePage = lazy(() => import("@/features/sharing/pages/InvitePage"));
 
 const children: RouteObject[] = [
-  { index: true, element: <Navigate to="/trips" replace /> },
+  { index: true, element: <ContinuityRedirect /> },
   { path: "login", element: <LoginPage /> },
   {
     path: "onboarding",
@@ -32,6 +33,16 @@ const children: RouteObject[] = [
       <RequireAuth>
         <RequireOnboarding>
           <TripsPage />
+        </RequireOnboarding>
+      </RequireAuth>
+    ),
+  },
+  {
+    path: "para-ustedes",
+    element: (
+      <RequireAuth>
+        <RequireOnboarding>
+          <PersonalPage />
         </RequireOnboarding>
       </RequireAuth>
     ),
@@ -53,7 +64,7 @@ const children: RouteObject[] = [
     element: (
       <RequireAuth>
         <RequireOnboarding>
-          <FeedbackPage />
+          <Navigate to="/para-ustedes" replace />
         </RequireOnboarding>
       </RequireAuth>
     ),

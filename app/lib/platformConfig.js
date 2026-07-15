@@ -36,6 +36,11 @@ export function buildPlatformConfig(env = process.env) {
       jwtSecret: readString(env, 'ALAIA_JWT_SECRET', { defaultValue: '' }),
       authCodeSecret: readString(env, 'ALAIA_AUTH_CODE_SECRET', { defaultValue: '' }),
     },
+    push: {
+      vapidPublicKey: readString(env, 'VAPID_PUBLIC_KEY', { defaultValue: '' }),
+      vapidPrivateKey: readString(env, 'VAPID_PRIVATE_KEY', { defaultValue: '' }),
+      vapidSubject: readString(env, 'VAPID_SUBJECT', { defaultValue: '' }),
+    },
     email: {
       resendApiKey: readString(env, 'RESEND_API_KEY', { defaultValue: '' }),
       from: readString(env, 'EMAIL_FROM', { defaultValue: '' }),

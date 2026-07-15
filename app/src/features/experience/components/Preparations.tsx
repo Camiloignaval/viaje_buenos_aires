@@ -5,7 +5,30 @@ import {
   getPreparationGroups,
 } from "../lib/preparations";
 import type { PreparationGroup as PreparationGroupData, PreparationProgress } from "../lib/preparations";
+import {
+  resolveTravelPreparations,
+  travelContextFromStory,
+} from "../lib/travelPreparations";
 import type { ChecklistItem, StoryPackage } from "@/features/story/engine/types";
+
+// Notas de preparativos que Alaia ya entendió del destino (context-driven).
+// Editorial, sin contadores; solo aparece si hay algo real que decir.
+function ContextPreparations({ storyPackage }: { storyPackage: StoryPackage }) {
+  const notes = resolveTravelPreparations(travelContextFromStory(storyPackage));
+  if (notes.length === 0) return null;
+  return (
+    <section className="preparation-context reveal reveal-3" aria-label="Lo que Alaia ya sabe del destino">
+      <p className="preparation-context-lead">Alaia ya conoce algunas cosas de este destino.</p>
+      <ul className="preparation-context-notes">
+        {notes.map((note) => (
+          <li key={note.id} className="preparation-context-note" data-category={note.category}>
+            {note.text}
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
 
 // Espejo de renderPreparationProgress.
 export function PreparationProgressBar({
@@ -173,6 +196,7 @@ export function PreparationsPage() {
           <br />
           Antes de salir, dejemos cerca lo esencial para que la historia pueda comenzar tranquila.
         </p>
+        <ContextPreparations storyPackage={storyPackage} />
         <div className="reveal reveal-4">
           <PreparationProgressBar progress={progress} className="preparation-page-progress" />
           <p

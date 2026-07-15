@@ -94,6 +94,8 @@ describe("InvitePage", () => {
     expect(screen.getByText("¿Quieres formar parte de esta historia?")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: /Aceptar invitación/ }));
 
+    expect(await screen.findByText("Esta historia ya forma parte de tus viajes.")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Continuar aquí →" }));
     expect(await screen.findByText("portada-del-viaje")).toBeInTheDocument();
     expect(acceptInvitation).toHaveBeenCalledWith("tok-1");
   });

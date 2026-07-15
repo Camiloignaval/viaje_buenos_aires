@@ -17,6 +17,8 @@ test('PLATFORM_COLLECTIONS expone colecciones de plataforma y Etapa 5', () => {
     notificationDeliveries: 'notificationDeliveries',
     tripInvitations: 'tripInvitations',
     contextExchangeRates: 'contextExchangeRates',
+    pushSubscriptions: 'pushSubscriptions',
+    pushEvents: 'pushEvents',
   });
 });
 

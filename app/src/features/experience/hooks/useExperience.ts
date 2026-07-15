@@ -594,6 +594,7 @@ export function useExperience(
 
   const value: ExperienceContextValue = {
     storyPackage,
+    scopeId: scope,
     view,
     now,
     interactive: true,

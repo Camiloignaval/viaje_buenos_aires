@@ -14,6 +14,8 @@ export const PLATFORM_COLLECTIONS = Object.freeze({
   notificationDeliveries: 'notificationDeliveries',
   tripInvitations: 'tripInvitations',
   contextExchangeRates: 'contextExchangeRates',
+  pushSubscriptions: 'pushSubscriptions',
+  pushEvents: 'pushEvents',
 });
 
 export function isPlatformMongoConfigured() {
@@ -70,3 +72,5 @@ export const getNotificationDeliveriesCollection = () => getPlatformCollection(P
 export const getTripInvitationsCollection = () => getPlatformCollection(PLATFORM_COLLECTIONS.tripInvitations);
 export const getContextExchangeRatesCollection = () =>
   getPlatformCollection(PLATFORM_COLLECTIONS.contextExchangeRates);
+export const getPushSubscriptionsCollection = () => getPlatformCollection(PLATFORM_COLLECTIONS.pushSubscriptions);
+export const getPushEventsCollection = () => getPlatformCollection(PLATFORM_COLLECTIONS.pushEvents);

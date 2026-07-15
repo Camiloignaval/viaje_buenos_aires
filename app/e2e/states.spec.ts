@@ -66,9 +66,9 @@ for (const state of STATES) {
       await expect(page.getByText(state === "trip-home" ? "AR" : "CL", { exact: true })).toHaveCount(0);
     }
     if (state === "feedback") {
-      await page.getByRole("combobox", { name: "Categoría" }).click();
+      await page.getByRole("combobox", { name: "Quiero compartir" }).click();
       const panel = await page.getByRole("listbox").boundingBox();
-      const message = await page.getByLabel("Mensaje").boundingBox();
+      const message = await page.getByLabel("Lo que quieren contarnos").boundingBox();
       expect(panel).not.toBeNull();
       expect(message).not.toBeNull();
       expect((panel?.y ?? 0) + (panel?.height ?? 0)).toBeLessThanOrEqual((message?.y ?? 0) + 1);

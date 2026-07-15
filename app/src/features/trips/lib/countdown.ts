@@ -30,12 +30,17 @@ function destinationCalendarDate(now: Date, timezone: string): string {
   }).format(now);
 }
 
+// Ventana en la que un viaje recién terminado todavía se siente "Finalizado"
+// (cierre) antes de volverse "Recuerdo" (memoria lejana).
+export const RECENTLY_FINISHED_WINDOW_DAYS = 7;
+
 export type TripTemporalState =
   | { kind: "upcoming"; days: number }
   | { kind: "tomorrow" }
   | { kind: "today" }
-  | { kind: "in-progress"; dayIndex: number; totalDays: number }
-  | { kind: "past" };
+  | { kind: "in-progress"; dayIndex: number; totalDays: number; isLastDay: boolean }
+  | { kind: "just-finished"; daysSinceEnd: number }
+  | { kind: "memory"; daysSinceEnd: number };
 
 export function tripTemporalState(
   now: Date,
@@ -47,10 +52,17 @@ export function tripTemporalState(
   const startOrdinal = calendarOrdinal(startDateTime);
   const endOrdinal = calendarOrdinal(endDateTime);
 
-  if (todayOrdinal > endOrdinal) return { kind: "past" };
+  if (todayOrdinal > endOrdinal) {
+    const daysSinceEnd = todayOrdinal - endOrdinal;
+    return daysSinceEnd <= RECENTLY_FINISHED_WINDOW_DAYS
+      ? { kind: "just-finished", daysSinceEnd }
+      : { kind: "memory", daysSinceEnd };
+  }
   if (todayOrdinal === startOrdinal) return { kind: "today" };
   if (todayOrdinal > startOrdinal) {
-    return { kind: "in-progress", dayIndex: todayOrdinal - startOrdinal + 1, totalDays: endOrdinal - startOrdinal + 1 };
+    const totalDays = endOrdinal - startOrdinal + 1;
+    const dayIndex = todayOrdinal - startOrdinal + 1;
+    return { kind: "in-progress", dayIndex, totalDays, isLastDay: dayIndex === totalDays };
   }
 
   const days = startOrdinal - todayOrdinal;
@@ -81,33 +93,41 @@ export function safeTripTemporalState(
 /** Mensaje editorial para cada estado — nunca un número técnico suelto. */
 export function describeTripTemporalState(state: TripTemporalState): string {
   switch (state.kind) {
-    case "past":
-      return "Ya es un recuerdo de esta historia.";
+    case "memory":
+      return "Una historia que sigue cerca.";
+    case "just-finished":
+      return "Hace poco, esta historia volvía con ustedes.";
     case "today":
       return "Hoy comienza esta historia.";
     case "tomorrow":
-      return "Mañana comienza esta historia.";
+      return "Mañana empieza esta historia.";
     case "in-progress":
-      return `Día ${state.dayIndex} de ${state.totalDays}.`;
+      return state.isLastDay
+        ? "Todavía queda historia en este último día."
+        : "La historia se está escribiendo.";
     case "upcoming":
-      return `Faltan ${state.days} días.`;
+      return "La historia todavía está por comenzar.";
   }
 }
 
 /** Segunda línea emocional; el estado factual de arriba sigue siendo la fuente única. */
 export function describeTripTemporalCompanion(state: TripTemporalState): string {
   switch (state.kind) {
-    case "past":
-      return "Ahora esta historia vive en sus recuerdos.";
+    case "memory":
+      return "Algunas historias acompañan mucho después.";
+    case "just-finished":
+      return "Lo vivido va encontrando su lugar, sin apuro.";
     case "today":
       return "La historia empieza hoy.";
     case "tomorrow":
       return "Todo está listo para cuando quieras entrar.";
     case "in-progress":
-      return "El viaje ya se está escribiendo.";
+      return state.isLastDay
+        ? "Todavía queda un día para guardar."
+        : "El viaje está ocurriendo ahora.";
     case "upcoming":
-      if (state.days > 30) return "La historia ya tiene un destino.";
-      if (state.days >= 8) return "Cada vez falta menos para empezar esta historia.";
-      return "Ya casi es hora de entrar.";
+      return state.days > 30
+        ? "La historia ya tiene un lugar en el horizonte."
+        : "Todo estará listo cuando llegue el momento.";
   }
 }

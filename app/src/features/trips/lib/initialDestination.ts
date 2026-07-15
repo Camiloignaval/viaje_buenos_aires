@@ -43,7 +43,8 @@ export function resolveTripLifecycle(trip: Trip, now: Date): {
   );
 
   switch (temporalState.kind) {
-    case "past":
+    case "just-finished":
+    case "memory":
       return { lifecycle: "finished", temporalState };
     case "today":
       return { lifecycle: "starting-today", temporalState };

@@ -9,11 +9,11 @@ import {
 const TZ = "America/Argentina/Buenos_Aires";
 
 describe("tripTemporalState", () => {
-  it("faltan 8 días (10 de julio → 18 de julio)", () => {
+  it("mantiene la preparación serena antes del viaje", () => {
     const now = new Date("2026-07-10T15:00:00-03:00");
     const state = tripTemporalState(now, "2026-07-18T09:30", "2026-07-21T22:00", TZ);
     expect(state).toEqual({ kind: "upcoming", days: 8 });
-    expect(describeTripTemporalState(state)).toBe("Faltan 8 días.");
+    expect(describeTripTemporalState(state)).toBe("La historia todavía está por comenzar.");
   });
 
   it("sigue mostrando 8 días aunque hoy sean las 23:59 (no trunca por hora del día)", () => {
@@ -26,7 +26,7 @@ describe("tripTemporalState", () => {
     const now = new Date("2026-07-17T10:00:00-03:00");
     const state = tripTemporalState(now, "2026-07-18T09:30", "2026-07-21T22:00", TZ);
     expect(state).toEqual({ kind: "tomorrow" });
-    expect(describeTripTemporalState(state)).toBe("Mañana comienza esta historia.");
+    expect(describeTripTemporalState(state)).toBe("Mañana empieza esta historia.");
   });
 
   it("hoy (día de llegada)", () => {
@@ -36,26 +36,46 @@ describe("tripTemporalState", () => {
     expect(describeTripTemporalState(state)).toBe("Hoy comienza esta historia.");
   });
 
-  it("viaje en curso: día 2 de 4", () => {
+  it("viaje en curso: comunica el presente sin convertirlo en contador", () => {
     const now = new Date("2026-07-19T10:00:00-03:00");
     const state = tripTemporalState(now, "2026-07-18T09:30", "2026-07-21T22:00", TZ);
-    expect(state).toEqual({ kind: "in-progress", dayIndex: 2, totalDays: 4 });
-    expect(describeTripTemporalState(state)).toBe("Día 2 de 4.");
+    expect(state).toEqual({ kind: "in-progress", dayIndex: 2, totalDays: 4, isLastDay: false });
+    expect(describeTripTemporalState(state)).toBe("La historia se está escribiendo.");
   });
 
-  it("último día del viaje: día 4 de 4", () => {
+  it("último día del viaje: día 4 de 4, marcado como último día", () => {
     const now = new Date("2026-07-21T08:00:00-03:00");
     const state = tripTemporalState(now, "2026-07-18T09:30", "2026-07-21T22:00", TZ);
-    expect(state).toEqual({ kind: "in-progress", dayIndex: 4, totalDays: 4 });
+    expect(state).toEqual({ kind: "in-progress", dayIndex: 4, totalDays: 4, isLastDay: true });
+    expect(describeTripTemporalState(state)).toBe("Todavía queda historia en este último día.");
+    expect(describeTripTemporalCompanion(state)).toBe("Todavía queda un día para guardar.");
   });
 
-  it("viaje terminado: nunca dice 'faltan días'", () => {
+  it("viaje recién terminado: conserva cercanía, nunca un estado administrativo", () => {
     const now = new Date("2026-07-25T10:00:00-03:00");
     const state = tripTemporalState(now, "2026-07-18T09:30", "2026-07-21T22:00", TZ);
-    expect(state).toEqual({ kind: "past" });
+    expect(state).toEqual({ kind: "just-finished", daysSinceEnd: 4 });
     const message = describeTripTemporalState(state);
-    expect(message).toBe("Ya es un recuerdo de esta historia.");
+    expect(message).toBe("Hace poco, esta historia volvía con ustedes.");
     expect(message.toLowerCase()).not.toContain("faltan");
+    expect(describeTripTemporalCompanion(state)).toBe("Lo vivido va encontrando su lugar, sin apuro.");
+  });
+
+  it("viaje del pasado lejano: permanece como recuerdo sin fecha administrativa", () => {
+    const now = new Date("2026-08-15T10:00:00-03:00");
+    const state = tripTemporalState(now, "2026-07-18T09:30", "2026-07-21T22:00", TZ);
+    expect(state.kind).toBe("memory");
+    expect(describeTripTemporalState(state)).toBe("Una historia que sigue cerca.");
+    expect(describeTripTemporalCompanion(state)).toBe("Algunas historias acompañan mucho después.");
+  });
+
+  it("la frontera Finalizado → Recuerdo respeta la ventana de días", () => {
+    const start = "2026-07-18T09:30";
+    const end = "2026-07-21T22:00";
+    const atWindow = tripTemporalState(new Date("2026-07-28T10:00:00-03:00"), start, end, TZ);
+    const pastWindow = tripTemporalState(new Date("2026-07-29T10:00:00-03:00"), start, end, TZ);
+    expect(atWindow.kind).toBe("just-finished"); // 7 días después
+    expect(pastWindow.kind).toBe("memory"); // 8 días después
   });
 
   it("calcula 'hoy' en el timezone del DESTINO, no en el del dispositivo", () => {
@@ -76,30 +96,30 @@ describe("tripTemporalState", () => {
     expect(state).toEqual({ kind: "upcoming", days: 9 });
   });
 
-  it("describeTripTemporalState mantiene visible el estado factual en todos los baldes", () => {
-    expect(describeTripTemporalState({ kind: "upcoming", days: 90 })).toBe("Faltan 90 días.");
-    expect(describeTripTemporalState({ kind: "upcoming", days: 45 })).toBe("Faltan 45 días.");
-    expect(describeTripTemporalState({ kind: "upcoming", days: 20 })).toBe("Faltan 20 días.");
-    expect(describeTripTemporalState({ kind: "upcoming", days: 10 })).toBe("Faltan 10 días.");
-    expect(describeTripTemporalState({ kind: "upcoming", days: 3 })).toBe("Faltan 3 días.");
+  it("describeTripTemporalState evita cuentas regresivas en todos los viajes próximos", () => {
+    expect(describeTripTemporalState({ kind: "upcoming", days: 90 })).toBe("La historia todavía está por comenzar.");
+    expect(describeTripTemporalState({ kind: "upcoming", days: 45 })).toBe("La historia todavía está por comenzar.");
+    expect(describeTripTemporalState({ kind: "upcoming", days: 20 })).toBe("La historia todavía está por comenzar.");
+    expect(describeTripTemporalState({ kind: "upcoming", days: 10 })).toBe("La historia todavía está por comenzar.");
+    expect(describeTripTemporalState({ kind: "upcoming", days: 3 })).toBe("La historia todavía está por comenzar.");
   });
 
   it("el copy complementario evoluciona sin duplicar el cálculo temporal", () => {
-    expect(describeTripTemporalCompanion({ kind: "upcoming", days: 31 })).toBe("La historia ya tiene un destino.");
+    expect(describeTripTemporalCompanion({ kind: "upcoming", days: 31 })).toBe("La historia ya tiene un lugar en el horizonte.");
     expect(describeTripTemporalCompanion({ kind: "upcoming", days: 30 })).toBe(
-      "Cada vez falta menos para empezar esta historia.",
+      "Todo estará listo cuando llegue el momento.",
     );
     expect(describeTripTemporalCompanion({ kind: "upcoming", days: 8 })).toBe(
-      "Cada vez falta menos para empezar esta historia.",
+      "Todo estará listo cuando llegue el momento.",
     );
-    expect(describeTripTemporalCompanion({ kind: "upcoming", days: 7 })).toBe("Ya casi es hora de entrar.");
+    expect(describeTripTemporalCompanion({ kind: "upcoming", days: 7 })).toBe("Todo estará listo cuando llegue el momento.");
     expect(describeTripTemporalCompanion({ kind: "tomorrow" })).toBe("Todo está listo para cuando quieras entrar.");
     expect(describeTripTemporalCompanion({ kind: "today" })).toBe("La historia empieza hoy.");
-    expect(describeTripTemporalCompanion({ kind: "in-progress", dayIndex: 2, totalDays: 4 })).toBe(
-      "El viaje ya se está escribiendo.",
+    expect(describeTripTemporalCompanion({ kind: "in-progress", dayIndex: 2, totalDays: 4, isLastDay: false })).toBe(
+      "El viaje está ocurriendo ahora.",
     );
-    expect(describeTripTemporalCompanion({ kind: "past" })).toBe(
-      "Ahora esta historia vive en sus recuerdos.",
+    expect(describeTripTemporalCompanion({ kind: "memory", daysSinceEnd: 30 })).toBe(
+      "Algunas historias acompañan mucho después.",
     );
   });
 

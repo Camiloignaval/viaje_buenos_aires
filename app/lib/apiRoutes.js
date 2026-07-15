@@ -31,6 +31,10 @@ export const apiRoutes = Object.freeze([
   { path: '/api/diagnose-env', handler: lazyHandler(() => import('../routes/diagnose-env.js')) },
   { path: '/api/feedback', handler: lazyHandler(() => import('../routes/feedback.js')) },
   { path: '/api/health', handler: lazyHandler(() => import('../routes/health.js')) },
+  { path: '/api/push/public-key', handler: lazyHandler(() => import('../routes/push/public-key.js')) },
+  { path: '/api/push/subscriptions', handler: lazyHandler(() => import('../routes/push/subscriptions.js')) },
+  { path: '/api/push/test', handler: lazyHandler(() => import('../routes/push/test.js')) },
+  { path: '/api/push/preferences', handler: lazyHandler(() => import('../routes/push/preferences.js')) },
   {
     path: '/api/invitations/:token',
     handler: lazyHandler(() => import('../routes/invitations/[token].js')),
