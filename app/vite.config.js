@@ -107,7 +107,9 @@ export default defineConfig({
           "dia4-ateneo.jpg",
           "hotel.jpg",
         ],
-        navigateFallback: "/index.html",
+        // El fallback de navegación (SPA → /index.html) se define dentro del
+        // propio Service Worker (src/sw.ts): en modo injectManifest Workbox no
+        // acepta navigateFallback en la config.
         // Assets emocionales (cover-hero.jpg, video_intro_2.mp4) superan el
         // límite por defecto de Workbox (2 MiB); sin esto el offline completo
         // dejaría afuera la primera impresión.

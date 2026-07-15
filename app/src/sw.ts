@@ -1,6 +1,7 @@
 /// <reference lib="webworker" />
 import { clientsClaim } from "workbox-core";
-import { cleanupOutdatedCaches, precacheAndRoute } from "workbox-precaching";
+import { cleanupOutdatedCaches, createHandlerBoundToURL, precacheAndRoute } from "workbox-precaching";
+import { NavigationRoute, registerRoute } from "workbox-routing";
 
 declare const self: ServiceWorkerGlobalScope & { __WB_MANIFEST: Array<unknown> };
 
@@ -8,6 +9,11 @@ self.skipWaiting();
 clientsClaim();
 precacheAndRoute(self.__WB_MANIFEST);
 cleanupOutdatedCaches();
+
+// Fallback SPA: cualquier navegación offline resuelve a /index.html para que
+// React Router tome el control de la ruta (equivale al navigateFallback de
+// generateSW, pero explícito porque usamos injectManifest).
+registerRoute(new NavigationRoute(createHandlerBoundToURL("/index.html")));
 
 const SAFE_PATH = /^\/trips(?:\/[^/?#]+)?$/;
 const FALLBACK_PATH = "/trips";
