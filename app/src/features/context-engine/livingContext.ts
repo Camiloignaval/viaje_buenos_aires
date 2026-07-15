@@ -3,11 +3,10 @@ import type { StoryPackage, StoryView } from "@/features/story/engine/types";
 import type { TripTemporalState } from "@/features/trips/lib/countdown";
 import type { Trip } from "@/features/trips/types";
 import { resolvePreferredCurrency } from "./preferredCurrencyResolver";
-import type { TravelContext } from "./travelContext";
-import { resolveDestinationContext } from "./destinationContext";
+import { resolveDestinationContext, type DestinationLivingContext } from "./destinationContext";
 import { resolveTemporalContext } from "./temporalContext";
 import { resolveNarrativeContext } from "./narrativeContext";
-import { availableResult, unavailableResult } from "./livingContextResult";
+import { availableResult, categoricalFinancialSource, unavailableResult } from "./livingContextResult";
 import type {
   FinancialContext,
   LivingContextModuleName,
@@ -41,7 +40,7 @@ export interface LivingContextCapabilities {
 
 export interface LivingTravelContext {
   resolvedAt: string;
-  destination: ModuleResult<TravelContext>;
+  destination: ModuleResult<DestinationLivingContext>;
   temporal: ModuleResult<TemporalLivingContext>;
   financial: ModuleResult<FinancialContext>;
   narrative: ModuleResult<NarrativeLivingContext>;
@@ -87,6 +86,8 @@ export interface LivingContextDependencies {
   financialAdapter?: (input: FinancialAdapterInput) => Promise<FinancialContext>;
   observer?: (event: LivingContextObservation) => void;
   signal?: AbortSignal;
+  /** Reloj monotónico inyectable reservado para métricas; no afecta resolvedAt. */
+  timingNow?: () => number;
 }
 
 
@@ -143,7 +144,8 @@ export function createLivingContextResolution(
 
   if (!canResolveFinancial) return { initial, settled: Promise.resolve(initial) };
 
-  const startedAt = Date.now();
+  const timingNow = dependencies.timingNow ?? (() => 0);
+  const startedAt = timingNow();
   const preferredCurrency = resolvePreferredCurrency({
     explicitPreference: input.user?.preferredCurrency,
     residenceCountryCode: input.user?.residenceCountryCode,
@@ -163,13 +165,13 @@ export function createLivingContextResolution(
         "financial",
         outcome.value,
         "adapter",
-        outcome.value.source ?? "financial.adapter",
+        categoricalFinancialSource(outcome.value.source),
         outcome.value.fetchedAt ?? input.observedAt?.financial,
         now,
-        outcome.value.freshness === "stale" ? "stale" : "fresh",
+        outcome.value.freshness === "stale" ? "stale" : undefined,
       );
     }
-    observe(dependencies.observer, "financial", financialResult, Math.max(0, Date.now() - startedAt));
+    observe(dependencies.observer, "financial", financialResult, Math.max(0, timingNow() - startedAt));
     return withCapabilities({ resolvedAt, destination, temporal, financial: financialResult, narrative });
   });
 

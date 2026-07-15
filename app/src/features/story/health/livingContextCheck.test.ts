@@ -25,12 +25,14 @@ describe("checkLivingContext", () => {
   it("metadata declarada pero parcial produce warnings con códigos y paths estables", () => {
     const story = pkg();
     story.metadata.livingContext = { countryCode: "AR", locale: "" };
+    const original = structuredClone(story);
     const findings = checkLivingContext(story, {});
     expect(findings.map(({ code, path, severity }) => ({ code, path, severity }))).toEqual([
       { code: "living-context.missing-locale", path: "metadata.livingContext.locale", severity: "warning" },
       { code: "living-context.missing-timezone", path: "metadata.livingContext.timezone", severity: "warning" },
       { code: "living-context.missing-currency", path: "metadata.livingContext.currency", severity: "warning" },
     ]);
+    expect(story).toEqual(original);
   });
 
   it("detecta el baseStoryId cargado para otra identidad sin comparar con storyId", () => {
@@ -69,5 +71,15 @@ describe("checkLivingContext", () => {
       "living-context.invalid-currency",
     ]);
     expect(JSON.stringify(findings)).not.toMatch(/not_a_locale|Mars\/Olympus|ZZZ/);
+  });
+
+  it("advierte locale incoherente con el destino efectivo", () => {
+    const story = pkg();
+    story.metadata.livingContext = { countryCode: "AR", locale: "es-CL", timezone: "America/Argentina/Buenos_Aires", currency: "ARS" };
+    const findings = checkLivingContext(story, { livingContext: {
+      destination: { countryCode: "AR", timezone: "America/Argentina/Buenos_Aires", locale: "es-AR" },
+    } });
+    expect(findings.map((item) => item.code)).toEqual(["living-context.locale-mismatch"]);
+    expect(findings[0].path).toBe("metadata.livingContext.locale");
   });
 });

@@ -56,3 +56,9 @@ Chain strategy: size-exception
 - [x] 5.1 **RED:** crear `story/health/livingContextCheck.test.ts` para legacy, metadata parcial, ids/destino/timezone incoherentes y mensajes sin PII/coordenadas.
 - [x] 5.2 **GREEN:** crear `livingContextCheck.ts` e integrarlo mediante `healthCheck.ts`/`types.ts` con códigos/path estables `info|warning`, nunca `critical` por dinámicos futuros.
 - [x] 5.3 **REFACTOR:** ejecutar `npm test`, `npm run test:react` y `npm run typecheck`; Playwright no aplica al no haber UI. Corregir regresiones, crear commit tests/health y no build.
+
+## Phase 6: Remediación post-verify
+
+- [x] 6.1 **RED:** agregar cobertura runtime para contexto completo/freshness/capability futura, React all-data/finanzas lentas/rerenders/cache por par, ownership/provenance/observer seguro y Health no-mutación/coherencia locale.
+- [x] 6.2 **GREEN:** completar dependencias de memoización, separar tasa remota de cálculo local, aplicar freshness con reloj, ownership factual y observabilidad categórica/duración inyectada.
+- [x] 6.3 **REFACTOR:** ejecutar focales, `npm test`, `npm run test:react`, `npm run typecheck` y `git diff --check`; actualizar apply-progress acumulativo y crear commit de remediación.

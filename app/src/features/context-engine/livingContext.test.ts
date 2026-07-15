@@ -131,4 +131,73 @@ describe("createLivingContextResolution", () => {
     expect(resolution.initial.financial).toMatchObject({ status: "unavailable", reason: "missing_financial_input" });
     expect((await resolution.settled).capabilities).toEqual({ destination: true, temporal: false, financial: false, narrative: false });
   });
+  it("resuelve los cuatro módulos disponibles en el snapshot settled", async () => {
+    const resolution = createLivingContextResolution({
+      trip: trip(), story: { baseStoryId: "ba-2026", package: storyPackage() },
+      user: { preferredCurrency: "CLP", residenceCountryCode: "CL" },
+      financial: { localMoney: { amount: 1000, currency: "ARS" } },
+    }, {
+      now: () => now,
+      financialAdapter: async () => ({
+        localMoney: { amount: 1000, currency: "ARS" }, convertedMoney: { amount: 750, currency: "CLP" },
+        rateDate: "2026-10-03", freshness: "fresh", available: true,
+        source: "frankfurter", fetchedAt: "2026-10-03T14:30:00.000Z",
+      }),
+    });
+    const settled = await resolution.settled;
+    expect(settled.capabilities).toEqual({ destination: true, temporal: true, financial: true, narrative: true });
+    expect([settled.destination, settled.temporal, settled.financial, settled.narrative].map((item) => item.status)).toEqual([
+      "available", "available", "available", "available",
+    ]);
+  });
+
+  it("marca stale según el reloj aunque el adapter financiero declare fresh", async () => {
+    const settled = await createLivingContextResolution({
+      trip: { ...trip(), updatedAt: "2026-10-01T12:00:00.000Z" },
+      story: { baseStoryId: "ba-2026", package: storyPackage() },
+      user: { preferredCurrency: "CLP", residenceCountryCode: "CL" },
+      financial: { localMoney: { amount: 1000, currency: "ARS" } },
+      observedAt: { story: "2026-10-01T12:00:00.000Z" },
+    }, {
+      now: () => now,
+      financialAdapter: async () => ({
+        localMoney: { amount: 1000, currency: "ARS" }, convertedMoney: { amount: 750, currency: "CLP" },
+        rateDate: "2026-10-01", freshness: "fresh", available: true,
+        source: "frankfurter", fetchedAt: "2026-10-01T12:00:00.000Z",
+      }),
+    }).settled;
+    expect(settled.destination.freshness).toBe("stale");
+    expect(settled.narrative.freshness).toBe("stale");
+    expect(settled.financial.freshness).toBe("stale");
+  });
+
+  it("ignora capabilities futuras sin adapter ni request implícito", async () => {
+    const futureAdapter = vi.fn();
+    const input = { trip: trip(), weather: { adapter: futureAdapter } } as Parameters<typeof createLivingContextResolution>[0];
+    const settled = await createLivingContextResolution(input, { now: () => now }).settled;
+    expect(settled.capabilities).toEqual({ destination: true, temporal: true, financial: false, narrative: false });
+    expect(Object.keys(settled.capabilities)).toEqual(["destination", "temporal", "financial", "narrative"]);
+    expect(futureAdapter).not.toHaveBeenCalled();
+  });
+
+  it("categoriza source financiero sensible y usa timing inyectado determinista", async () => {
+    const observer = vi.fn();
+    const ticks = [100, 145];
+    await createLivingContextResolution({
+      trip: trip(), user: { preferredCurrency: "CLP", residenceCountryCode: "CL" },
+      financial: { localMoney: { amount: 1000, currency: "ARS" } },
+    }, {
+      now: () => now,
+      timingNow: () => ticks.shift() ?? 145,
+      observer,
+      financialAdapter: async () => ({
+        localMoney: { amount: 1000, currency: "ARS" }, convertedMoney: { amount: 750, currency: "CLP" },
+        rateDate: "2026-10-03", freshness: "fresh", available: true,
+        source: "kari@example.com token=secret -34.6037,-58.3816", fetchedAt: "2026-10-03T14:30:00.000Z",
+      }),
+    }).settled;
+    const financeEvent = observer.mock.calls.map(([event]) => event).find((event) => event.module === "financial");
+    expect(financeEvent).toEqual({ module: "financial", status: "available", reason: null, source: "financial.adapter", durationMs: 45 });
+    expect(JSON.stringify(observer.mock.calls)).not.toMatch(/kari|secret|34\.6037|58\.3816/);
+  });
 });

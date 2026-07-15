@@ -2,7 +2,7 @@ import { useMemo, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { resolvePreferredCurrency } from "./preferredCurrencyResolver";
 import { financialContextQueryOptions } from "./financialContextQuery";
-import { availableResult, unavailableResult } from "./livingContextResult";
+import { availableResult, categoricalFinancialSource, unavailableResult } from "./livingContextResult";
 import {
   createLivingContextResolution,
   type LivingContextInput,
@@ -23,18 +23,46 @@ export function livingContextPreferredCurrency(input: UseLivingContextInput): st
   });
 }
 
+function livingContextIdentity(input: UseLivingContextInput, now: Date, preferredCurrency: string): string {
+  const destination = input.trip?.destination;
+  return JSON.stringify({
+    trip: input.trip ? {
+      id: input.trip.id,
+      updatedAt: input.trip.updatedAt,
+      baseStoryId: input.trip.baseStoryId,
+      startDateTime: input.trip.startDateTime,
+      endDateTime: input.trip.endDateTime,
+      destination: typeof destination === "object" ? {
+        countryCode: destination.countryCode,
+        countryName: destination.countryName,
+        cityId: destination.cityId,
+        cityName: destination.cityName,
+        timezone: destination.timezone,
+      } : destination,
+    } : null,
+    story: input.story ? {
+      baseStoryId: input.story.baseStoryId,
+      storyId: input.story.package.storyId,
+      destinationLanguage: input.story.package.metadata.destinationLanguage,
+      storyMood: input.story.package.storyMood,
+      baseCopy: input.story.package.baseCopy,
+      view: input.story.view ?? null,
+    } : null,
+    observedAt: input.observedAt ?? null,
+    user: input.user ?? null,
+    localMoney: input.financial?.localMoney ?? null,
+    preferredCurrency,
+    now: now.toISOString(),
+  });
+}
+
 export function useLivingContext(input: UseLivingContextInput): LivingTravelContext {
   const fallbackNow = useRef(new Date());
   const now = input.now ?? fallbackNow.current;
   const preferredCurrency = livingContextPreferredCurrency(input);
   const localMoney = input.financial?.localMoney ?? null;
   const financeQuery = useQuery(financialContextQueryOptions(localMoney, preferredCurrency));
-  const identity = JSON.stringify([
-    input.trip?.id, input.trip?.updatedAt, input.trip?.baseStoryId,
-    typeof input.trip?.destination === "object" ? input.trip.destination.cityId : input.trip?.destination,
-    input.story?.baseStoryId, input.story?.package.storyId, input.observedAt?.story,
-    preferredCurrency, localMoney?.currency, localMoney?.amount, now.toISOString(),
-  ]);
+  const identity = livingContextIdentity(input, now, preferredCurrency);
   const initial = useMemo(() => createLivingContextResolution(
     { ...input, financial: null },
     { now: () => now, observer: input.observer },
@@ -44,7 +72,15 @@ export function useLivingContext(input: UseLivingContextInput): LivingTravelCont
   if (localMoney && localMoney.currency !== preferredCurrency) {
     if (financeQuery.data?.available) {
       const data = financeQuery.data as FinancialContext;
-      financial = availableResult("financial", data, "adapter", data.source ?? "financial.adapter", data.fetchedAt ?? input.observedAt?.financial, now, data.freshness === "stale" ? "stale" : "fresh");
+      financial = availableResult(
+        "financial",
+        data,
+        "adapter",
+        categoricalFinancialSource(data.source),
+        data.fetchedAt ?? input.observedAt?.financial,
+        now,
+        data.freshness === "stale" ? "stale" : undefined,
+      );
     } else if (financeQuery.isError || (financeQuery.data && !financeQuery.data.available)) {
       financial = unavailableResult("financial_failed", "financial.adapter", "adapter");
     } else {

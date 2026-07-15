@@ -29,7 +29,16 @@ describe("resolveDestinationContext", () => {
       trip: trip({ countryCode: "AR", countryName: "Argentina", cityId: "ba", cityName: "Buenos Aires", latitude: -34, longitude: -58, timezone: "America/Argentina/Buenos_Aires" }),
       story: { baseStoryId: "ba-2026", package: story },
     }, new Date("2026-07-15T00:00:00Z"));
-    expect(result.value).toMatchObject({ country: { code: "AR" }, city: "Buenos Aires", currency: "UYU", locale: "es-AR" });
+    expect(result.value).toMatchObject({
+      country: { code: "AR" }, city: "Buenos Aires", currency: "ARS", locale: "es-AR",
+      sources: {
+        country: { owner: "trip", source: "trip.destination" },
+        city: { owner: "trip", source: "trip.destination" },
+        timezone: { owner: "trip", source: "trip.destination" },
+        currency: { owner: "catalog", source: "currencyCatalog" },
+        locale: { owner: "story", source: "story.metadata" },
+      },
+    });
     expect(result.provenance).toMatchObject({ owner: "trip", source: "trip.destination" });
   });
 

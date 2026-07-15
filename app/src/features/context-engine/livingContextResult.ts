@@ -13,3 +13,9 @@ export function availableResult<T>(module: LivingContextModuleName, value: T, ow
   }
   return { status: "available", value, reason: null, freshness, provenance: { owner, source, observedAt: observedAt ?? null } };
 }
+
+export function categoricalFinancialSource(source: string | null | undefined): string {
+  if (source === "frankfurter" || source === "provider") return "financial.provider";
+  if (source === "cache" || source === "memory-cache" || source === "mongo-cache") return "financial.cache";
+  return "financial.adapter";
+}

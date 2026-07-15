@@ -65,6 +65,9 @@ export function checkLivingContext(pkg: StoryPackage, ctx: HealthCheckContext): 
     if (metadata.timezone && runtimeDestination.timezone && metadata.timezone !== runtimeDestination.timezone) {
       findings.push(mismatch("living-context.timezone-mismatch", "metadata.livingContext.timezone", "La timezone curada contradice el destino efectivo."));
     }
+    if (metadata.locale && runtimeDestination.locale && metadata.locale !== runtimeDestination.locale) {
+      findings.push(mismatch("living-context.locale-mismatch", "metadata.livingContext.locale", "El locale curado contradice el destino efectivo."));
+    }
   }
   return findings;
 }

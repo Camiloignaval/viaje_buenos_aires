@@ -65,6 +65,7 @@ export interface HealthCheckContext {
     destination?: {
       countryCode?: string | null;
       timezone?: string | null;
+      locale?: string | null;
       [key: string]: unknown;
     };
   };
