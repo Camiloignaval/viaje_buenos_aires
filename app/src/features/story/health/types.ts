@@ -58,6 +58,8 @@ export interface HealthReport {
  */
 export interface HealthCheckContext {
   assetExists?: (assetPath: string) => boolean;
+  /** Optional sanitized decision metadata inspected only by an injected checker. */
+  decisionManifest?: unknown;
   livingContext?: {
     /** Identidad solicitada por Trip y la identidad externa realmente cargada. */
     baseStoryId?: string | null;

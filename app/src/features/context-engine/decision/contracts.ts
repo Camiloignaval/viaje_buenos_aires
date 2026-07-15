@@ -138,12 +138,16 @@ export interface ActDecision extends ActDecisionDraft {
   readonly id: `decision:${string}`;
   readonly ruleId: RuleId;
   readonly priority: DecisionPriority;
+  readonly requiredCapabilities: readonly DecisionCapability[];
+  readonly sourceModules: readonly LivingContextModuleName[];
 }
 
 export interface AbstainDecision extends Omit<AbstainDecisionDraft, "dedupeKey" | "window"> {
   readonly id: `abstain:${string}`;
   readonly ruleId: RuleId | "engine";
   readonly priority: DecisionPriority | null;
+  readonly requiredCapabilities: readonly DecisionCapability[];
+  readonly sourceModules: readonly LivingContextModuleName[];
   readonly dedupeKey: string | null;
   readonly window: DecisionWindow | null;
 }

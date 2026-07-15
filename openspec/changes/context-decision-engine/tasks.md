@@ -47,8 +47,8 @@ Apply uses these as local thematic commits on `etapa-7-living-context`; no PR br
 
 ## Phase 4: Health + abstention boundaries
 
-- [ ] 4.1 **RED** — Extend `decision/engine.test.ts`: Explicación, Observer, Fronteras, Alcance.
-- [ ] 4.2 **RED** — Create `app/src/features/story/health/decisionManifestCheck.test.ts`: Id duplicado, Capability desconocida, Reason desconocida, Ventana inválida, Dedupe/expiración ausente, Contrato válido, Metadata incompatible, Legacy, Weather ausente, Valor sensible inválido, Proveedor no configurado.
-- [ ] 4.3 **GREEN** — Create `decisionManifestCheck.ts` and extend `health/{types,healthCheck}.ts` optionally; produce stable warning-only safe paths, no I/O or rule execution.
-- [ ] 4.4 **REFACTOR** — Confirm no Companion/Editorial copy/Memory persistence, UI, delivery, IA, geofencing, Experience, endpoints or production activation; keep tests with local slice 4.
-- [ ] 4.5 Preserve docs as a separate planning commit; archive only Foundation → Weather → Decision after authorization, and do not advance to 7.4.
+- [x] 4.1 **RED** — Extend `decision/engine.test.ts`: Explicación, Observer, Fronteras, Alcance.
+- [x] 4.2 **RED** — Create `app/src/features/story/health/decisionManifestCheck.test.ts`: Id duplicado, Capability desconocida, Reason desconocida, Ventana inválida, Dedupe/expiración ausente, Contrato válido, Metadata incompatible, Legacy, Weather ausente, Valor sensible inválido, Proveedor no configurado.
+- [x] 4.3 **GREEN** — Create `decisionManifestCheck.ts` and extend `health/{types,healthCheck}.ts` optionally; produce stable warning-only safe paths, no I/O or rule execution.
+- [x] 4.4 **REFACTOR** — Confirm no Companion/Editorial copy/Memory persistence, UI, delivery, IA, geofencing, Experience, endpoints or production activation; keep tests with local slice 4.
+- [x] 4.5 Preserve docs as a separate planning commit; archive only Foundation → Weather → Decision after authorization, and do not advance to 7.4.

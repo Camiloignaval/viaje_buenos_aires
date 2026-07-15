@@ -1,3 +1,6 @@
+import { readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { describe, expect, it, vi } from "vitest";
 import type {
   DecisionInput,
@@ -343,5 +346,103 @@ describe("createContextDecisionRun", () => {
       durationMs: 0,
     });
     expect(JSON.stringify(observer.mock.calls)).not.toMatch(/trip-private|kari|token|secret|dedupe|payload/i);
+  });
+
+  it("explica acciones y abstenciones con capabilities y modulos declarados", () => {
+    const weatherRule = rule("weather-attention-candidate", act("weather:curated", {
+      kind: "weather_attention_candidate",
+      category: "weather_attention",
+    }), {
+      requiredCapabilities: ["weather"],
+      requiredModules: ["weather"],
+      freshnessPolicy: "fresh_weather",
+    });
+    const missingRule = rule("light-moment-candidate", abstain("missing_activity_metadata"), {
+      requiredCapabilities: ["weather", "narrative"],
+      requiredModules: ["weather", "narrative"],
+      freshnessPolicy: "fresh_weather",
+    });
+
+    const run = createContextDecisionRun(input(), {
+      now: () => new Date(NOW),
+      rules: [weatherRule, missingRule],
+    });
+
+    expect(run.evaluations).toMatchObject([
+      {
+        outcome: "act",
+        requiredCapabilities: ["weather"],
+        sourceModules: ["weather"],
+        evidence: [{ kind: "signal", state: "present" }],
+        freshness: [{ module: "temporal", state: "fresh" }],
+        window: WINDOW,
+        reasonCode: "actionable",
+        confidence: "sufficient",
+      },
+      {
+        outcome: "abstain",
+        requiredCapabilities: ["weather", "narrative"],
+        sourceModules: ["weather", "narrative"],
+        reasonCode: "missing_activity_metadata",
+        confidence: "insufficient",
+      },
+    ]);
+    expect(JSON.stringify(run.evaluations)).not.toMatch(/score|suggestedChannels|editorialCopy/i);
+  });
+
+  it.each([
+    [Number.POSITIVE_INFINITY, 0],
+    [-50, 0],
+    [70_001, 60_000],
+  ])("sanitiza la duracion del observer (%s)", (finishedAt, expectedDuration) => {
+    const observer = vi.fn();
+    const timingNow = vi.fn().mockReturnValueOnce(0).mockReturnValueOnce(finishedAt);
+
+    createContextDecisionRun(input(), {
+      now: () => new Date(NOW),
+      timingNow,
+      observer,
+      rules: [rule("trip-start-today", abstain("invalid_context"))],
+    });
+
+    expect(observer).toHaveBeenCalledWith(expect.objectContaining({
+      ruleId: "trip-start-today",
+      phase: "abstained",
+      outcome: "abstain",
+      reasonCode: "invalid_context",
+      availability: "partial",
+      freshness: "unavailable",
+      durationMs: expectedDuration,
+    }));
+  });
+
+  it("mantiene el silencio como resultado aunque el observer falle", () => {
+    const observer = vi.fn(() => { throw new Error("private raw failure kari@example.com"); });
+
+    const run = createContextDecisionRun(input(), {
+      now: () => new Date(NOW),
+      observer,
+      rules: [rule("trip-start-today", abstain("incomplete_context"))],
+    });
+
+    expect(run.selected).toBeNull();
+    expect(run.decision).toMatchObject({
+      outcome: "abstain",
+      ruleId: "engine",
+      reasonCode: "incomplete_context",
+      confidence: "insufficient",
+    });
+    expect(observer).toHaveBeenCalledTimes(1);
+  });
+
+  it("conserva la frontera pura sin Companion, Push, Experience, IA, geofence, endpoints ni providers", () => {
+    const directory = dirname(fileURLToPath(import.meta.url));
+    const productionFiles = ["contracts.ts", "constants.ts", "time.ts", "rules.ts", "engine.ts", "observer.ts", "index.ts"];
+    const imports = productionFiles
+      .flatMap((file) => readFileSync(join(directory, file), "utf8").match(/^import .*$/gm) ?? [])
+      .join("\n");
+
+    expect(imports).not.toMatch(/companion|push|experience|editorial|memory|open-?meteo|geofenc|\/api\//i);
+    expect(imports).not.toMatch(/react|fetch|mongodb|vercel|ai\/|openai/i);
   });
 });
