@@ -4,6 +4,7 @@ import { RootLayout } from "@/components/layout/RootLayout";
 import { RouteError } from "@/components/feedback/RouteError";
 import { RequireAuth } from "@/features/auth/components/RequireAuth";
 import { RequireOnboarding } from "@/features/onboarding/components/RequireOnboarding";
+import { ContinuityRedirect } from "@/features/pwa/ContinuityRedirect";
 
 // Rutas por feature con lazy() + dynamic import: cada página es su propio chunk.
 // El Suspense de RootLayout provee el fallback mientras cargan.
@@ -16,7 +17,7 @@ const ExperiencePage = lazy(() => import("@/features/experience/pages/Experience
 const InvitePage = lazy(() => import("@/features/sharing/pages/InvitePage"));
 
 const children: RouteObject[] = [
-  { index: true, element: <Navigate to="/trips" replace /> },
+  { index: true, element: <ContinuityRedirect /> },
   { path: "login", element: <LoginPage /> },
   {
     path: "onboarding",

@@ -1,4 +1,6 @@
+import { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
+import { rememberTrip } from "@/features/pwa/continuityStore";
 import { useConnectedTrip } from "@/features/connected/hooks/useConnectedTrip";
 import { useStoryContent } from "@/features/connected/hooks/useConnectedContent";
 import { resolveStory } from "@/features/experience/hooks/useResolvedStory";
@@ -20,6 +22,12 @@ export default function TripHomePage() {
   const tripState = useConnectedTrip(tripId ?? null);
   const content = useStoryContent(tripState);
   const resolved = resolveStory(tripState, content);
+
+  // Continuidad: recordar este viaje como el último abierto (restauración PWA).
+  const openedTripId = tripState.trip?.id ?? null;
+  useEffect(() => {
+    if (openedTripId) rememberTrip(openedTripId);
+  }, [openedTripId]);
 
   if (resolved.kind === "loading" || resolved.kind === "local") return <LoadingScreen />;
   if (resolved.kind === "not-found") return <ExperienceUnavailable variant="not-found" />;
