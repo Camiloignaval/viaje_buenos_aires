@@ -111,3 +111,58 @@ Al momento en que se autoría un Story Package, **no existe ninguna Memoria real
 ---
 
 *Sin código, sin implementación. El resto del contrato es idéntico a `STORY_PACKAGE_SCHEMA_v1.3.md`. A la espera de tu aprobación antes de volver a `STORY_PACKAGE_BA2026.md` para reemplazar su `specialChapter` (todavía borrador) por esta forma definitiva.*
+
+---
+
+## 8. Adición Etapa 6.8 — Story Intelligence Metadata (opcional, compatible)
+
+Nueva metadata **opcional** que describe el _significado_ de un momento o lugar,
+no solo su contenido. No es visible para el usuario; alimenta usos futuros
+(contexto, preparativos, recordatorios, resúmenes, narrativa e IA de la Etapa 7).
+Es **retrocompatible**: no requiere subir `schemaVersion`; toda historia previa
+sigue siendo válida sin declarar ningún campo.
+
+**Dónde vive:** en el campo `intelligence` de una `activity` (dentro de un
+capítulo) o de un `place` (`placesCatalog.restaurants[]` / `cafes[]`). Nunca en
+componentes React. Contrato TS en `src/features/story/engine/intelligence.ts`.
+
+**Campos (todos opcionales):**
+
+| Campo | Tipo | Uso |
+|---|---|---|
+| `emotion` | texto | emoción predominante del momento |
+| `energyLevel` | `low \| medium \| high` | energía que demanda |
+| `walkingDifficulty` | `easy \| moderate \| demanding` | dificultad para caminar |
+| `familyFriendly` | boolean | apto para ir con niños |
+| `rainFriendly` | boolean | se disfruta igual con lluvia |
+| `photoMoment` | boolean | momento fotográfico |
+| `bestMoment` | texto | mejor momento del día (ej. "atardecer") |
+| `reservationRecommended` | boolean | conviene reservar |
+| `cashPreferred` | boolean | conviene efectivo |
+| `durationEstimate` | texto | duración estimada (ej. "45–60 min") |
+| `crowdLevel` | `quiet \| moderate \| busy` | nivel de gente |
+| `indoor` | boolean | bajo techo |
+| `outdoor` | boolean | al aire libre |
+| `budgetLevel` | `budget \| moderate \| premium` | nivel de gasto |
+| `foodType` | texto | tipo de comida (lugares gastronómicos) |
+| `romanticLevel` / `culturalLevel` / `historicalLevel` / `relaxLevel` | `none \| low \| medium \| high` | dimensiones cualitativas |
+
+**Reglas de calidad:**
+- Nunca inventar. Un campo se declara solo cuando existe evidencia curada.
+- `indoor` y `outdoor` no pueden ser ambos `true`.
+- El **Health Check Engine** valida enums, tipos y consistencia (categoría
+  `intelligence`) como advertencias/sugerencias — **nunca bloquea**.
+
+**Ejemplo (fragmento real de BA 2026):**
+
+```
+{
+  "id": "la-cabrera",
+  "name": "La Cabrera",
+  "intelligence": { "reservationRecommended": true },
+  "recommendation": "…Reserva con unos días de anticipación…"
+}
+```
+
+*El campo `assets.heroImage` (capítulo y raíz) queda tipado explícitamente en el
+contrato TS (`StoryAssets`), apuntando al asset real bajo `public/`.*

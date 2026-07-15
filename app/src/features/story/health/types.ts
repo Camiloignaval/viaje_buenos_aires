@@ -14,7 +14,8 @@ export type HealthCategory =
   | "experience"
   | "references"
   | "accessibility"
-  | "context";
+  | "context"
+  | "intelligence";
 
 /** Un hallazgo: qué falló (message), dónde (path), y cómo corregirlo (suggestion). */
 export interface HealthFinding {

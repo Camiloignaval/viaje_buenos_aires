@@ -19,6 +19,13 @@ import type {
   Place,
   StoryPackage,
 } from "@/features/story/engine/types";
+import {
+  INTELLIGENCE_BOOLEAN_FIELDS,
+  INTELLIGENCE_ENUM_FIELDS,
+  INTELLIGENCE_KNOWN_FIELDS,
+  INTELLIGENCE_TEXT_FIELDS,
+  type StoryIntelligence,
+} from "@/features/story/engine/intelligence";
 import { isSupportedCurrency } from "@/features/context-engine/currencyCatalog";
 import type {
   HealthCategory,
@@ -45,6 +52,7 @@ const ALL_CATEGORIES: readonly HealthCategory[] = [
   "references",
   "accessibility",
   "context",
+  "intelligence",
 ];
 
 // Monedas que pueden aparecer como texto libre en el copy editorial.
@@ -379,6 +387,61 @@ function checkContext(pkg: StoryPackage): HealthFinding[] {
   return out;
 }
 
+function validateIntelligence(intel: StoryIntelligence, path: string): HealthFinding[] {
+  const out: HealthFinding[] = [];
+  const record = intel as Record<string, unknown>;
+
+  for (const key of Object.keys(record)) {
+    if (!INTELLIGENCE_KNOWN_FIELDS.includes(key)) {
+      out.push(finding("intelligence", "info", "intelligence.unknown-field", `Campo de intelligence desconocido: ${key}.`, { path }));
+    }
+  }
+
+  for (const [field, allowed] of Object.entries(INTELLIGENCE_ENUM_FIELDS)) {
+    const value = record[field];
+    if (value !== undefined && !(allowed as readonly string[]).includes(value as string)) {
+      out.push(finding("intelligence", "warning", "intelligence.invalid-enum", `intelligence.${field} tiene un valor inválido: ${String(value)} (esperado: ${allowed.join(" | ")}).`, { path }));
+    }
+  }
+
+  for (const field of INTELLIGENCE_BOOLEAN_FIELDS) {
+    const value = record[field];
+    if (value !== undefined && typeof value !== "boolean") {
+      out.push(finding("intelligence", "warning", "intelligence.invalid-boolean", `intelligence.${field} debe ser booleano.`, { path }));
+    }
+  }
+
+  for (const field of INTELLIGENCE_TEXT_FIELDS) {
+    const value = record[field];
+    if (value !== undefined && !isNonEmptyString(value)) {
+      out.push(finding("intelligence", "warning", "intelligence.empty-text", `intelligence.${field} está vacío; omitir el campo si no hay dato.`, { path }));
+    }
+  }
+
+  if (intel.indoor === true && intel.outdoor === true) {
+    out.push(finding("intelligence", "warning", "intelligence.indoor-outdoor-conflict", "intelligence declara indoor y outdoor a la vez.", { path }));
+  }
+
+  return out;
+}
+
+function checkIntelligence(pkg: StoryPackage): HealthFinding[] {
+  const out: HealthFinding[] = [];
+  (pkg.chapters ?? []).forEach((chapter, ci) => {
+    (chapter.activities ?? []).forEach((activity, ai) => {
+      if (activity.intelligence) {
+        out.push(...validateIntelligence(activity.intelligence, `chapters[${ci}].activities[${ai}].intelligence`));
+      }
+    });
+  });
+  collectPlaces(pkg).forEach(({ place, path }) => {
+    if (place.intelligence) {
+      out.push(...validateIntelligence(place.intelligence, `${path}.intelligence`));
+    }
+  });
+  return out;
+}
+
 const DEFAULT_CHECKERS: readonly StoryHealthChecker[] = [
   checkMetadata,
   checkStructure,
@@ -390,6 +453,7 @@ const DEFAULT_CHECKERS: readonly StoryHealthChecker[] = [
   checkReferences,
   checkAccessibility,
   checkContext,
+  checkIntelligence,
 ];
 
 const SEVERITY_PENALTY: Record<Severity, number> = { critical: 40, warning: 12, info: 4 };

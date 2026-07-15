@@ -3,6 +3,10 @@
 // Los muchos campos opcionales reflejan STORY_PACKAGE_SCHEMA_v1.4: casi todo el
 // contenido de un capítulo es opcional y el render decide si pintarlo o no.
 
+import type { StoryIntelligence } from "./intelligence";
+
+export type { StoryIntelligence } from "./intelligence";
+
 export const ChapterStatus = {
   LOCKED: "locked",
   AVAILABLE: "available",
@@ -41,6 +45,8 @@ export interface Place {
   websiteUrl?: string;
   recommendation?: string;
   relatedChapterId?: string;
+  /** Metadata de significado (opcional): reserva, tipo de comida, etc. */
+  intelligence?: StoryIntelligence;
 }
 
 export interface SuggestedMemory {
@@ -62,6 +68,8 @@ export interface Activity {
   websiteUrl?: string;
   relatedPlaceId?: string;
   image?: string;
+  /** Metadata de significado (opcional): energía, clima, foto, etc. */
+  intelligence?: StoryIntelligence;
 }
 
 export interface ChapterCopy {

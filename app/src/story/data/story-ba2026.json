@@ -593,6 +593,7 @@
       {
         "id": "cuartito",
         "name": "El Cuartito",
+        "intelligence": { "reservationRecommended": false },
         "location": {
           "name": "Talcahuano 937, CABA",
           "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=El+Cuartito,+Talcahuano+937,+CABA,+Buenos+Aires",
@@ -603,6 +604,7 @@
       {
         "id": "la-estancia-asador-criollo",
         "name": "La Estancia, Asador Criollo",
+        "intelligence": { "reservationRecommended": false },
         "location": {
           "name": "Lavalle 941, CABA",
           "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=La+Estancia+Asador+Criollo,+Lavalle+941,+CABA,+Buenos+Aires",
@@ -613,6 +615,7 @@
       {
         "id": "la-cabrera",
         "name": "La Cabrera",
+        "intelligence": { "reservationRecommended": true },
         "location": {
           "name": "José A. Cabrera 5099, Palermo",
           "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=La+Cabrera,+José+A.+Cabrera+5099,+Palermo,+Buenos+Aires",
@@ -623,6 +626,7 @@
       {
         "id": "cabana-las-lilas",
         "name": "Cabaña Las Lilas",
+        "intelligence": { "reservationRecommended": true },
         "location": {
           "name": "Av. Alicia M. de Justo 516, Puerto Madero",
           "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Cabaña+Las+Lilas,+Av.+Alicia+M.+de+Justo+516,+Puerto+Madero,+Buenos+Aires",
@@ -633,6 +637,7 @@
       {
         "id": "desnivel",
         "name": "Desnivel",
+        "intelligence": { "reservationRecommended": false },
         "location": {
           "name": "Defensa 855, San Telmo",
           "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Desnivel+Parrilla,+Defensa+855,+San+Telmo,+Buenos+Aires",

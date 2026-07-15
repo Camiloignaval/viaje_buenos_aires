@@ -130,6 +130,37 @@ describe("runHealthCheck — extensibilidad", () => {
   });
 });
 
+describe("runHealthCheck — Story Intelligence Metadata", () => {
+  function withPlaceIntel(intelligence: unknown): Record<string, unknown> {
+    const pkg = validPackage();
+    pkg.placesCatalog = { restaurants: [{ id: "r1", name: "R", intelligence }] };
+    return pkg;
+  }
+
+  it("acepta intelligence válida sin hallazgos de esa categoría", () => {
+    const report = runHealthCheck(withPlaceIntel({ reservationRecommended: true, energyLevel: "low" }));
+    expect(report.findings.filter((f) => f.category === "intelligence")).toHaveLength(0);
+  });
+
+  it("detecta un enum inválido", () => {
+    expect(codes(runHealthCheck(withPlaceIntel({ energyLevel: "extreme" })))).toContain("intelligence.invalid-enum");
+  });
+
+  it("detecta un booleano mal tipado", () => {
+    expect(codes(runHealthCheck(withPlaceIntel({ reservationRecommended: "sí" })))).toContain("intelligence.invalid-boolean");
+  });
+
+  it("detecta el conflicto indoor + outdoor", () => {
+    expect(codes(runHealthCheck(withPlaceIntel({ indoor: true, outdoor: true })))).toContain("intelligence.indoor-outdoor-conflict");
+  });
+
+  it("marca campos desconocidos como sugerencia, sin bloquear", () => {
+    const report = runHealthCheck(withPlaceIntel({ vibe: "cool" }));
+    expect(codes(report)).toContain("intelligence.unknown-field");
+    expect(report.counts.critical).toBe(0);
+  });
+});
+
 describe("runHealthCheck — Story Package real (gate de CI)", () => {
   it("story-ba2026 pasa sin críticos y con toda su media resuelta", () => {
     const publicDir = join(process.cwd(), "public");
