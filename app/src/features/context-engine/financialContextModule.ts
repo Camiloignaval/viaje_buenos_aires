@@ -21,6 +21,8 @@ function unavailable(
     freshness: "unavailable",
     available: false,
     reason,
+    source: null,
+    fetchedAt: null,
   };
 }
 
@@ -45,6 +47,8 @@ export const FinancialContextModule: ContextModule<FinancialContextInput, Financ
         freshness: "unavailable",
         available: false,
         reason: "same_currency",
+        source: null,
+        fetchedAt: null,
       };
     }
 
@@ -69,6 +73,8 @@ export const FinancialContextModule: ContextModule<FinancialContextInput, Financ
       rateDate: snapshot.date,
       freshness: snapshot.stale ? "stale" : "fresh",
       available: true,
+      source: snapshot.source,
+      fetchedAt: snapshot.fetchedAt,
     };
   },
 };

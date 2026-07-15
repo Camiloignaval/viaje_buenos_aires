@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { FinancialContextModule } from "./financialContextModule";
+import { financialContextQueryOptions } from "./financialContextQuery";
 import type { Money } from "./types";
 
 /**
@@ -8,20 +8,5 @@ import type { Money } from "./types";
  * misma llamada de red mientras el usuario navega la Experience.
  */
 export function useFinancialContext(localMoney: Money | null, preferredCurrency: string) {
-  const enabled = localMoney !== null && localMoney.currency !== preferredCurrency;
-
-  return useQuery({
-    queryKey: [
-      "context-engine",
-      "financial",
-      localMoney?.currency,
-      localMoney?.amount,
-      preferredCurrency,
-    ],
-    queryFn: ({ signal }) =>
-      FinancialContextModule.resolve({ localMoney, preferredCurrency, signal }),
-    enabled,
-    staleTime: 60 * 60 * 1000,
-    retry: false,
-  });
+  return useQuery(financialContextQueryOptions(localMoney, preferredCurrency));
 }

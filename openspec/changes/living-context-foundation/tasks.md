@@ -41,15 +41,15 @@ Chain strategy: size-exception
 
 ## Phase 3: Módulos concretos
 
-- [ ] 3.1 **RED:** crear tests de `destinationContext`, `temporalContext`, `narrativeContext` y `financialContextModule` para fallback, timezone/DST, narrativa literal, story/baseStory desacoplados y stale provenance.
-- [ ] 3.2 **GREEN:** crear `destinationContext.ts`, `temporalContext.ts`, `narrativeContext.ts` y `financialContext.ts`; reutilizar `safeTripTemporalState` sin cambiar copy y ampliar finanzas compatiblemente con `source/fetchedAt` reales.
-- [ ] 3.3 **REFACTOR:** consolidar helpers solo si reducen duplicación; ejecutar pruebas focalizadas + typecheck y crear commit de módulos.
+- [x] 3.1 **RED:** crear tests de `destinationContext`, `temporalContext`, `narrativeContext` y `financialContextModule` para fallback, timezone/DST, narrativa literal, story/baseStory desacoplados y stale provenance.
+- [x] 3.2 **GREEN:** crear `destinationContext.ts`, `temporalContext.ts`, `narrativeContext.ts` y `financialContext.ts`; reutilizar `safeTripTemporalState` sin cambiar copy y ampliar finanzas compatiblemente con `source/fetchedAt` reales.
+- [x] 3.3 **REFACTOR:** consolidar helpers solo si reducen duplicación; ejecutar pruebas focalizadas + typecheck y crear commit de módulos.
 
 ## Phase 4: Integración React/cache
 
-- [ ] 4.1 **RED:** probar `financialContextQuery.ts` y `useLivingContext.test.tsx`: entrega base inmediata, llegada sucesiva de Story, dos consumidores/un request, rerender estable y cambio de identidad aislado.
-- [ ] 4.2 **GREEN:** extraer query key/options, adaptar `useFinancialContext.ts`, crear `useLivingContext.ts` y exponer snapshots/`dataUpdatedAt` desde `connected/hooks/{useConnectedTrip,useConnectedContent}.ts`; sin queries nuevas de Trip/Story.
-- [ ] 4.3 **REFACTOR:** ejecutar pruebas focalizadas + `npm run test:react` + typecheck y crear commit de integración.
+- [x] 4.1 **RED:** probar `financialContextQuery.ts` y `useLivingContext.test.tsx`: entrega base inmediata, llegada sucesiva de Story, dos consumidores/un request, rerender estable y cambio de identidad aislado.
+- [x] 4.2 **GREEN:** extraer query key/options, adaptar `useFinancialContext.ts`, crear `useLivingContext.ts` y exponer snapshots/`dataUpdatedAt` desde `connected/hooks/{useConnectedTrip,useConnectedContent}.ts`; sin queries nuevas de Trip/Story.
+- [x] 4.3 **REFACTOR:** ejecutar pruebas focalizadas + `npm run test:react` + typecheck y crear commit de integración.
 
 ## Phase 5: Health y cierre
 

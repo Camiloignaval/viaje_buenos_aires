@@ -10,6 +10,7 @@ export interface StoryContentState {
   status: ContentStatusValue;
   story: ConnectedStory | null;
   error: string | null;
+  dataUpdatedAt?: number;
 }
 
 export interface TripMediaState {
@@ -49,28 +50,30 @@ export function useStoryContent(context: ConnectedTripState): StoryContentState 
       status: gated,
       story: null,
       error: gated === ContentStatus.ERROR ? context.error ?? "No se pudo determinar la historia del viaje." : null,
+      dataUpdatedAt: query.dataUpdatedAt,
     };
   }
   if (!baseStoryId) {
-    return { status: ContentStatus.EMPTY, story: null, error: null };
+    return { status: ContentStatus.EMPTY, story: null, error: null, dataUpdatedAt: query.dataUpdatedAt };
   }
   if (query.isPending) {
-    return { status: ContentStatus.LOADING, story: null, error: null };
+    return { status: ContentStatus.LOADING, story: null, error: null, dataUpdatedAt: query.dataUpdatedAt };
   }
   if (query.isError) {
     if (query.error instanceof PlatformApiError && query.error.status === 404) {
-      return { status: ContentStatus.EMPTY, story: null, error: null };
+      return { status: ContentStatus.EMPTY, story: null, error: null, dataUpdatedAt: query.dataUpdatedAt };
     }
     return {
       status: ContentStatus.ERROR,
       story: null,
       error: query.error instanceof Error ? query.error.message : "No se pudo cargar la historia.",
+      dataUpdatedAt: query.dataUpdatedAt,
     };
   }
   const story = query.data.story;
   return story
-    ? { status: ContentStatus.SUCCESS, story, error: null }
-    : { status: ContentStatus.EMPTY, story: null, error: null };
+    ? { status: ContentStatus.SUCCESS, story, error: null, dataUpdatedAt: query.dataUpdatedAt }
+    : { status: ContentStatus.EMPTY, story: null, error: null, dataUpdatedAt: query.dataUpdatedAt };
 }
 
 // Media (fotos/videos) del viaje conectado. Reemplaza a connectedMediaStore.js.
