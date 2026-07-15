@@ -28,7 +28,7 @@ function renderEntry(ui: React.ReactNode) {
 }
 
 describe("TripEntry", () => {
-  it("muestra 'Faltan X días' cuando el viaje tiene fechas", () => {
+  it("muestra un estado editorial sereno cuando el viaje tiene fechas", () => {
     const now = new Date("2026-07-10T15:00:00-03:00");
     renderEntry(
       <ul>
@@ -39,7 +39,7 @@ describe("TripEntry", () => {
         />
       </ul>,
     );
-    expect(screen.getByText("Faltan 8 días.")).toBeInTheDocument();
+    expect(screen.getByText("La historia todavía está por comenzar.")).toBeInTheDocument();
   });
 
   it("no muestra countdown en viajes legacy sin fechas", () => {
@@ -78,7 +78,7 @@ describe("TripEntry", () => {
       </ul>,
     );
     expect(screen.getByText("Buenos Aires, CABA")).toBeInTheDocument();
-    expect(screen.getByText("Faltan 8 días.")).toBeInTheDocument();
+    expect(screen.getByText("La historia todavía está por comenzar.")).toBeInTheDocument();
   });
 
   it("no muestra countdown si falta solo una de las dos fechas", () => {

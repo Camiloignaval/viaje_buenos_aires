@@ -60,21 +60,11 @@ body {
   min-height: 100dvh;
 }
 
-/* Instalación PWA: una nota al pie flotante, nunca modal ni panel técnico. */
+/* Instalación PWA: parte del espacio personal, nunca una alerta flotante. */
 .pwa-install-prompt {
-  position: fixed;
-  z-index: 40;
-  right: max(1rem, env(safe-area-inset-right));
-  bottom: max(1rem, env(safe-area-inset-bottom));
-  width: min(calc(100vw - 2rem), 23rem);
-  padding: 1rem 2.4rem 1rem 1.1rem;
-  border: 1px solid rgba(var(--gold-rgb), 0.2);
-  border-radius: 1rem;
-  background: rgba(var(--bg-rgb), 0.94);
-  box-shadow: 0 18px 52px rgba(0, 0, 0, 0.38);
-  backdrop-filter: blur(18px);
-  text-align: left;
-  animation: alaia-reveal-in 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+  position: relative;
+  padding-right: 2.35rem;
+  text-align: center;
 }
 
 .pwa-install-prompt p {
@@ -101,8 +91,8 @@ body {
 
 .pwa-install-dismiss {
   position: absolute;
-  top: 0.55rem;
-  right: 0.65rem;
+  top: -0.45rem;
+  right: 0;
   width: 2rem;
   height: 2rem;
   padding: 0;
@@ -1038,18 +1028,9 @@ body {
   outline-offset: 5px;
 }
 
-.feedback-page-content {
-  max-width: 36rem;
-}
-
 .feedback-section {
-  width: min(100%, 34rem);
-  margin: clamp(2.4rem, 6svh, 4rem) auto 1.4rem;
-  padding: clamp(1.15rem, 3svh, 1.7rem);
-  border: 1px solid rgba(var(--gold-rgb), 0.16);
-  border-radius: 28px;
-  background: rgba(var(--surface-rgb), 0.34);
-  backdrop-filter: blur(18px);
+  margin: 0;
+  padding: 0;
 }
 
 .feedback-kicker {
@@ -1094,7 +1075,7 @@ body {
   color: var(--ivory);
   background: rgba(var(--bg-rgb), 0.32);
   border: 1px solid rgba(var(--gold-rgb), 0.22);
-  border-radius: 18px;
+  border-radius: 0;
 }
 
 .feedback-textarea {
@@ -1108,6 +1089,80 @@ body {
   margin: 0.25rem 0;
   line-height: 1.55;
   color: var(--gold-soft);
+}
+
+/* “Para ustedes” es una carta breve: se organiza por ritmo y filetes, no por
+   tarjetas. La única jerarquía fuerte es el mensaje; lo demás acompaña. */
+.personal-page-content {
+  max-width: 34rem;
+}
+
+.personal-page .trips-secondary-nav {
+  margin-bottom: clamp(2.1rem, 5svh, 3rem);
+}
+
+.personal-page .trips-title {
+  margin-bottom: clamp(1.35rem, 3.4svh, 1.9rem);
+}
+
+.personal-message {
+  max-width: 34ch;
+  margin: 0 auto;
+  font-family: var(--font-display);
+  font-size: clamp(1.05rem, 2.6svh, 1.25rem);
+  font-style: italic;
+  line-height: 1.65;
+  color: rgba(var(--secondary-rgb), 0.9);
+}
+
+.personal-sections {
+  width: 100%;
+  margin: clamp(2.8rem, 7svh, 4.5rem) auto 0;
+}
+
+.personal-section {
+  width: min(100%, 30rem);
+  margin: 0 auto;
+  padding: clamp(1.8rem, 4.6svh, 2.7rem) 0 0;
+  border-top: 1px solid rgba(var(--gold-rgb), 0.17);
+  text-align: center;
+}
+
+.personal-section + .personal-section {
+  margin-top: clamp(2.2rem, 5.5svh, 3.4rem);
+}
+
+.personal-section-title {
+  margin: 0 0 0.75rem;
+  font-family: var(--font-display);
+  font-size: clamp(1.12rem, 2.5svh, 1.35rem);
+  font-weight: 500;
+  color: var(--ivory);
+}
+
+.personal-section > p,
+.personal-section .feedback-description {
+  color: rgba(var(--secondary-rgb), 0.82);
+}
+
+.personal-email {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 0.92rem;
+  font-style: italic;
+  color: var(--taupe) !important;
+}
+
+.personal-account .trips-logout {
+  margin: 0.7rem auto 0;
+}
+
+.personal-closing {
+  margin: clamp(3.2rem, 8svh, 5rem) auto 0;
+  font-family: var(--font-display);
+  font-size: 0.86rem;
+  font-style: italic;
+  color: rgba(var(--taupe-rgb), 0.82);
 }
 
 /* El formulario para crear un viaje — misma receta editorial que el umbral. */
@@ -2074,18 +2129,29 @@ body {
 
 /* Acompañamiento: una invitación editorial, no un panel de administración. */
 .pwa-companion {
-  max-width: 28rem;
-  margin: clamp(2.5rem, 6svh, 4rem) auto 0;
-  padding-top: 1.5rem;
-  border-top: 1px solid rgba(var(--gold-rgb), 0.18);
   text-align: center;
 }
 
-.pwa-companion h2 {
-  margin: 0.45rem 0 0.7rem;
+.trips-personal-link {
+  display: inline-block;
+  margin: 0 0 clamp(2.5rem, 6.5svh, 3.75rem);
+  padding: 0.25rem 0;
   font-family: var(--font-display);
-  font-weight: 500;
-  color: var(--ivory);
+  font-size: 0.92rem;
+  font-style: italic;
+  color: var(--taupe);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.trips-personal-link:hover,
+.trips-personal-link:focus-visible {
+  color: var(--gold-soft);
+}
+
+.trips-personal-link:focus-visible {
+  outline: 1px solid var(--focus-ring);
+  outline-offset: 5px;
 }
 
 .pwa-companion p { color: var(--taupe); line-height: 1.55; }

@@ -219,16 +219,16 @@ export const GALLERY_STATES: Record<string, GalleryState> = {
     render: () => (
       <TripsFrame title="Mis viajes">
         <TripsEmpty onCreate={noop} />
-        <button type="button" className="trips-logout">
-          Cerrar sesión
-        </button>
       </TripsFrame>
     ),
   },
   "trips-list": {
     label: "Mis viajes · lista",
     render: () => (
-      <TripsFrame title="Mis viajes" account="agus@ejemplo.com">
+      <TripsFrame title="Mis viajes">
+        <Link className="trips-personal-link" to="/para-ustedes">
+          Para ustedes →
+        </Link>
         <section className="trips-active" aria-label="Tu historia activa">
           <ul className="trips-active-list">
             <TripEntry trip={SAMPLE_ACTIVE_TRIP} index={0} now={new Date()} featured />
@@ -238,18 +238,6 @@ export const GALLERY_STATES: Record<string, GalleryState> = {
         <TripsIndex trips={SAMPLE_TRIPS.filter((trip) => trip.id !== SAMPLE_ACTIVE_TRIP.id)} />
         <button type="button" className="trips-create-link">
           + Un nuevo viaje
-        </button>
-        <section className="feedback-teaser" aria-labelledby="dev-feedback-teaser-title">
-          <h2 id="dev-feedback-teaser-title" className="feedback-teaser-title">
-            Ayúdanos a mejorar Alaia
-          </h2>
-          <p>Tu mirada también forma parte de esta historia.</p>
-          <Link className="feedback-teaser-link" to="/feedback">
-            Enviar sugerencia →
-          </Link>
-        </section>
-        <button type="button" className="trips-logout">
-          Cerrar sesión
         </button>
       </TripsFrame>
     ),
@@ -297,13 +285,32 @@ export const GALLERY_STATES: Record<string, GalleryState> = {
     ),
   },
   feedback: {
-    label: "Feedback",
+    label: "Para ustedes",
     render: () => (
-      <TripsFrame title="">
+      <TripsFrame title="Para ustedes">
         <Link className="trips-secondary-nav" to="/trips">
-          ← Volver a Mis viajes
+          ← Mis viajes
         </Link>
-        <FeedbackSection />
+        <p className="personal-message">
+          La próxima historia ya tiene un lugar en el horizonte. Alaia estará cerca cuando sea momento de empezar.
+        </p>
+        <div className="personal-sections">
+          <section className="personal-section">
+            <h2 className="personal-section-title">Acompañamiento</h2>
+            <p>Solo aparecerá cuando haya algo que valga la pena recordar.</p>
+          </section>
+          <section className="personal-section">
+            <h2 className="personal-section-title">Instalar Alaia</h2>
+            <p>Déjala cerca para volver a tus historias cuando quieras.</p>
+          </section>
+          <FeedbackSection />
+          <section className="personal-section personal-account">
+            <h2 className="personal-section-title">Cuenta</h2>
+            <p className="personal-email">agus@ejemplo.com</p>
+            <button type="button" className="trips-logout">Cerrar sesión</button>
+          </section>
+        </div>
+        <p className="personal-closing">Gracias por confiar sus historias a Alaia.</p>
       </TripsFrame>
     ),
   },

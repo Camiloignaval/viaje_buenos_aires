@@ -36,9 +36,9 @@ export function PushCompanion({ eligible }: { eligible: boolean }) {
     finally { setBusy(false); }
   }
   async function test() { setBusy(true); setMessage(""); try { await sendPushTest(); setMessage("La prueba fue enviada a tus dispositivos activos."); } catch { setMessage("No pudimos enviar una prueba ahora."); } finally { setBusy(false); } }
-  return <section className="pwa-companion" aria-labelledby="pwa-companion-title">
-    <p className="alaia-eyebrow">Alaia</p><h2 id="pwa-companion-title">Alaia puede acompañarlos</h2>
-    <p>Solo aparecerá cuando exista algo que realmente valga la pena recordar.</p>
+  return <section className="personal-section pwa-companion" aria-labelledby="pwa-companion-title">
+    <h2 id="pwa-companion-title" className="personal-section-title">Acompañamiento</h2>
+    <p>Solo aparecerá cuando haya algo que valga la pena recordar.</p>
     {iosBrowser ? <p>Para activarlo en iPhone o iPad, instala Alaia y ábrela desde la pantalla de inicio.</p> : preferences.enabled ? <><div className="pwa-companion-actions"><button type="button" onClick={() => void test()} disabled={busy}>Enviar una prueba</button><button type="button" onClick={() => void revoke()} disabled={busy}>Desactivar</button></div><button type="button" className="pwa-companion-secondary" onClick={() => void savePushPreferences({ ...preferences, futureMemories: !preferences.futureMemories }).then(({ preferences }) => setPreferences(preferences))}>{preferences.futureMemories ? "No guardar recuerdos futuros" : "Permitir recuerdos futuros"}</button></> : <div className="pwa-companion-actions"><button type="button" onClick={() => void enable()} disabled={busy || Notification.permission === "denied"}>Permitir acompañamiento</button><button type="button" onClick={() => setMessage("Está bien. No volveremos a insistir.")}>Ahora no</button></div>}
     {message && <p role="status">{message}</p>}
   </section>;

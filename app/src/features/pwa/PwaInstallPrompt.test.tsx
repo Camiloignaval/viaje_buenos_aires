@@ -24,10 +24,10 @@ describe("PwaInstallPrompt", () => {
     window.dispatchEvent(event);
 
     render(<PwaInstallPrompt store={store} />);
-    fireEvent.click(screen.getByRole("button", { name: "Dejarla en inicio" }));
+    fireEvent.click(screen.getByRole("button", { name: "Instalar Alaia" }));
 
     expect(prompt).toHaveBeenCalledOnce();
-    await waitFor(() => expect(screen.queryByRole("button", { name: "Dejarla en inicio" })).not.toBeInTheDocument());
+    await waitFor(() => expect(screen.queryByRole("button", { name: "Instalar Alaia" })).not.toBeInTheDocument());
     expect(requestPermission).not.toHaveBeenCalled();
   });
 

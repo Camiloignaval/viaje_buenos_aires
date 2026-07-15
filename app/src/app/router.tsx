@@ -11,8 +11,8 @@ import { ContinuityRedirect } from "@/features/pwa/ContinuityRedirect";
 const LoginPage = lazy(() => import("@/features/auth/pages/LoginPage"));
 const OnboardingPage = lazy(() => import("@/features/onboarding/pages/OnboardingPage"));
 const TripsPage = lazy(() => import("@/features/trips/pages/TripsPage"));
+const PersonalPage = lazy(() => import("@/features/personal/pages/PersonalPage"));
 const TripHomePage = lazy(() => import("@/features/trips/pages/TripHomePage"));
-const FeedbackPage = lazy(() => import("@/features/feedback/pages/FeedbackPage"));
 const ExperiencePage = lazy(() => import("@/features/experience/pages/ExperiencePage"));
 const InvitePage = lazy(() => import("@/features/sharing/pages/InvitePage"));
 
@@ -37,6 +37,16 @@ const children: RouteObject[] = [
       </RequireAuth>
     ),
   },
+  {
+    path: "para-ustedes",
+    element: (
+      <RequireAuth>
+        <RequireOnboarding>
+          <PersonalPage />
+        </RequireOnboarding>
+      </RequireAuth>
+    ),
+  },
   // Portada de un viaje concreto. `/trips/:tripId` es una ruta distinta de la
   // lista `/trips` (react-router las matchea por separado; no se solapan).
   {
@@ -54,7 +64,7 @@ const children: RouteObject[] = [
     element: (
       <RequireAuth>
         <RequireOnboarding>
-          <FeedbackPage />
+          <Navigate to="/para-ustedes" replace />
         </RequireOnboarding>
       </RequireAuth>
     ),

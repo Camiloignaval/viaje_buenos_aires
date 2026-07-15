@@ -94,17 +94,19 @@ export function safeTripTemporalState(
 export function describeTripTemporalState(state: TripTemporalState): string {
   switch (state.kind) {
     case "memory":
-      return "Ya es un recuerdo de esta historia.";
+      return "Una historia que sigue cerca.";
     case "just-finished":
-      return "El viaje llegó a su final.";
+      return "Hace poco, esta historia volvía con ustedes.";
     case "today":
       return "Hoy comienza esta historia.";
     case "tomorrow":
-      return "Mañana comienza esta historia.";
+      return "Mañana empieza esta historia.";
     case "in-progress":
-      return `Día ${state.dayIndex} de ${state.totalDays}.`;
+      return state.isLastDay
+        ? "Todavía queda historia en este último día."
+        : "La historia se está escribiendo.";
     case "upcoming":
-      return `Faltan ${state.days} días.`;
+      return "La historia todavía está por comenzar.";
   }
 }
 
@@ -112,20 +114,20 @@ export function describeTripTemporalState(state: TripTemporalState): string {
 export function describeTripTemporalCompanion(state: TripTemporalState): string {
   switch (state.kind) {
     case "memory":
-      return "Ahora esta historia vive en sus recuerdos.";
+      return "Algunas historias acompañan mucho después.";
     case "just-finished":
-      return "Este viaje ya forma parte de ustedes.";
+      return "Lo vivido va encontrando su lugar, sin apuro.";
     case "today":
       return "La historia empieza hoy.";
     case "tomorrow":
       return "Todo está listo para cuando quieras entrar.";
     case "in-progress":
       return state.isLastDay
-        ? "Hoy es el último día de esta historia."
-        : "El viaje ya se está escribiendo.";
+        ? "Todavía queda un día para guardar."
+        : "El viaje está ocurriendo ahora.";
     case "upcoming":
-      if (state.days > 30) return "La historia ya tiene un destino.";
-      if (state.days >= 8) return "Cada vez falta menos para empezar esta historia.";
-      return "Ya casi es hora de entrar.";
+      return state.days > 30
+        ? "La historia ya tiene un lugar en el horizonte."
+        : "Todo estará listo cuando llegue el momento.";
   }
 }

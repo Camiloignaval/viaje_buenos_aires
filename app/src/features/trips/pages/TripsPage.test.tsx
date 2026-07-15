@@ -76,24 +76,23 @@ describe("TripsPage", () => {
     expect(screen.queryByRole("button", { name: /enviar sugerencia/i })).not.toBeInTheDocument();
   });
 
-  it("deja un enlace discreto a /feedback cuando el feature flag está activo", async () => {
+  it("deja un enlace discreto hacia el espacio personal", async () => {
     listTrips.mockResolvedValue({ trips: [trip()] });
 
     renderTripsPage();
 
-    const link = await screen.findByRole("link", { name: "Enviar sugerencia →" });
-    expect(screen.getByRole("heading", { name: "Ayúdanos a mejorar Alaia" })).toBeInTheDocument();
-    expect(link).toHaveAttribute("href", "/feedback");
+    const link = await screen.findByRole("link", { name: "Para ustedes →" });
+    expect(link).toHaveAttribute("href", "/para-ustedes");
   });
 
-  it("oculta el bloque de feedback cuando VITE_ENABLE_FEEDBACK está desactivado", async () => {
+  it("mantiene el acceso al espacio personal aunque las sugerencias estén desactivadas", async () => {
     vi.stubEnv("VITE_ENABLE_FEEDBACK", "false");
     listTrips.mockResolvedValue({ trips: [trip()] });
 
     renderTripsPage();
 
     expect(await screen.findByRole("link", { name: /viaje activo/i })).toBeInTheDocument();
-    expect(screen.queryByRole("heading", { name: "Ayúdanos a mejorar Alaia" })).not.toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Para ustedes →" })).toHaveAttribute("href", "/para-ustedes");
   });
 
   it("no duplica el viaje activo en el índice inferior", async () => {

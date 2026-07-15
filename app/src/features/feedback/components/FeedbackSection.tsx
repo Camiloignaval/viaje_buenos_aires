@@ -57,16 +57,13 @@ export function FeedbackSection() {
   }
 
   return (
-    <section className="feedback-section alaia-reveal alaia-reveal-5" aria-labelledby="feedback-title">
+    <section className="personal-section feedback-section" aria-labelledby="feedback-title">
       <div>
-        <p className="feedback-kicker">Alaia mejora con vos</p>
-        <h2 id="feedback-title" className="feedback-title">
-          Queremos seguir mejorando contigo
-        </h2>
+        <h2 id="feedback-title" className="personal-section-title">Sugerencias</h2>
         <p className="feedback-description">
-          ¿Hay algo que podríamos hacer mejor?
+          Si algo de Alaia puede cuidar mejor sus historias, queremos leerlo.
           <br />
-          Tu mirada también forma parte de esta historia.
+          Su mirada también ayuda a construir este lugar.
         </p>
       </div>
 
@@ -74,7 +71,7 @@ export function FeedbackSection() {
         <SelectField
           id="feedback-category"
           className="feedback-select-field"
-          label="Categoría"
+          label="Quiero compartir"
           labelClassName="feedback-label"
           value={category}
           options={CATEGORIES}
@@ -82,7 +79,7 @@ export function FeedbackSection() {
         />
 
         <label className="feedback-label" htmlFor="feedback-message">
-          Mensaje
+          Lo que quieren contarnos
         </label>
         <textarea
           id="feedback-message"
@@ -90,7 +87,7 @@ export function FeedbackSection() {
           value={message}
           maxLength={3000}
           onChange={(event) => setMessage(event.target.value)}
-          placeholder="Cuéntanos qué viste, qué sentiste o qué podríamos cuidar mejor."
+          placeholder="Cuéntennos qué vieron, qué sintieron o qué podríamos cuidar mejor."
           required
         />
 
@@ -101,14 +98,14 @@ export function FeedbackSection() {
         )}
         {mutation.isSuccess && (
           <p className="feedback-success">
-            Gracias por ayudarnos a mejorar Alaia.
+            Gracias por compartirlo con Alaia.
             <br />
-            Leeremos tu mensaje con atención.
+            Lo leeremos con atención.
           </p>
         )}
 
         <button type="submit" className="trips-create-link" disabled={mutation.isPending || message.trim().length < 10}>
-          {mutation.isPending ? "Enviando..." : "Enviar sugerencia →"}
+          {mutation.isPending ? "Enviando…" : "Compartir con Alaia →"}
         </button>
       </form>
     </section>
