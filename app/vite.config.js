@@ -72,9 +72,12 @@ export default defineConfig({
     // PWA de Alaia. El Service Worker se registra desde la SPA React
     // (src/app/main.tsx, virtual:pwa-register) — nunca desde Studio.
     VitePWA({
+      strategies: "injectManifest",
+      srcDir: "src",
+      filename: "sw.ts",
       registerType: "autoUpdate",
       injectRegister: null, // registro manual desde React (main.tsx)
-      workbox: {
+      injectManifest: {
         globPatterns: ["**/*.{js,css,html,svg,png,jpg,mp4,webmanifest,ico}"],
         globIgnores: [
           // Studio no es la app instalable.

@@ -2072,6 +2072,28 @@ body {
   outline-offset: 5px;
 }
 
+/* Acompañamiento: una invitación editorial, no un panel de administración. */
+.pwa-companion {
+  max-width: 28rem;
+  margin: clamp(2.5rem, 6svh, 4rem) auto 0;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(var(--gold-rgb), 0.18);
+  text-align: center;
+}
+
+.pwa-companion h2 {
+  margin: 0.45rem 0 0.7rem;
+  font-family: var(--font-display);
+  font-weight: 500;
+  color: var(--ivory);
+}
+
+.pwa-companion p { color: var(--taupe); line-height: 1.55; }
+.pwa-companion-actions { display: flex; justify-content: center; flex-wrap: wrap; gap: 1rem; margin-top: 1rem; }
+.pwa-companion button { border: 0; background: transparent; border-bottom: 1px solid rgba(var(--gold-rgb), 0.5); padding: 0.35rem 0.2rem; color: var(--gold); font-family: var(--font-display); cursor: pointer; }
+.pwa-companion button:disabled { opacity: 0.45; cursor: default; }
+.pwa-companion-secondary { margin-top: 1rem; color: var(--taupe) !important; border-bottom-color: rgba(var(--taupe-rgb), 0.4) !important; font-size: 0.85rem; }
+
 /* ── Mobile: comprimido, no una versión angosta del desktop ─────────────────
    Los clamp()/svh de arriba ya ceden algo de aire en pantallas bajas, pero en
    un teléfono en vertical (alto real disponible, no ancho) siguen sintiéndose
