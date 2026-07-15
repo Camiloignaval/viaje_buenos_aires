@@ -3,6 +3,7 @@ artifact_store: openspec
 execution_mode: automatic
 delivery_strategy: exception-ok
 chain_strategy: size-exception
+status: ready-for-archive
 phases:
   explore: done
   proposal: done
@@ -10,5 +11,5 @@ phases:
   design: done
   tasks: done
   apply: done
-  verify: pending
+  verify: done
   archive: pending
