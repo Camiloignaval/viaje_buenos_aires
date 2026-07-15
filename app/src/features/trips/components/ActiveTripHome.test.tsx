@@ -134,7 +134,7 @@ describe("ActiveTripHome", () => {
       <ActiveTripHome
         trip={TRIP}
         lifecycle="in-progress"
-        temporalState={{ kind: "in-progress", dayIndex: 2, totalDays: 4 }}
+        temporalState={{ kind: "in-progress", dayIndex: 2, totalDays: 4, isLastDay: false }}
         to={tripUrl(TRIP.id)}
       />,
     );

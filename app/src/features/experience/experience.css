@@ -2487,6 +2487,37 @@ body:has(.cover-index-stage.is-index-writing) {
   line-height: 1.55;
 }
 
+.preparation-context {
+  max-width: 34ch;
+  margin: 0 auto 1.4rem;
+  text-align: left;
+}
+
+.preparation-context-lead {
+  margin: 0 0 0.5rem;
+  color: rgba(var(--text-secondary-rgb), 0.72);
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  font-style: italic;
+}
+
+.preparation-context-notes {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.preparation-context-note {
+  color: rgba(var(--text-primary-rgb), 0.82);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  padding-left: 0.9rem;
+  border-left: 2px solid rgba(var(--text-secondary-rgb), 0.22);
+}
+
 .preparation-page-progress {
   margin: 0 auto 0.75rem;
 }
