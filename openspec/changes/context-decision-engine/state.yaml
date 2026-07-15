@@ -1,0 +1,19 @@
+change: context-decision-engine
+artifact_store: openspec
+execution_mode: automatic
+delivery_strategy: auto-chain
+chain_strategy: feature-branch-chain
+status: ready-for-apply
+phases:
+  explore: done
+  proposal: done
+  specs: done       # 65 scenarios across context-decision-engine and living-context-health
+  design: done
+  tasks: done       # strict TDD; four autonomous local review slices
+  apply: pending
+  verify: pending
+  archive: pending  # archive Foundation -> Weather -> Decision only after authorization
+constraints:
+  - work only on etapa-7-living-context with local thematic commits; no PR branches or push
+  - do not implement UI, delivery, persistence, AI, copy, notifications, geofencing or Experience
+  - do not advance to etapa 7.4
