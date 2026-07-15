@@ -1,0 +1,20 @@
+change: companion-orchestrator
+artifact_store: openspec
+execution_mode: automatic
+delivery_strategy: auto-chain
+chain_strategy: feature-branch-chain
+status: ready-for-apply
+phases:
+  explore: done
+  proposal: done
+  specs: done       # 34 scenarios in companion-orchestrator
+  design: done
+  tasks: done       # strict TDD; three autonomous local review slices
+  apply: pending
+  verify: pending
+  archive: pending  # Foundation -> Weather -> Decision -> Orchestrator only after authorization
+constraints:
+  - work only on etapa-7-living-context with local thematic commits; no PR branches or push
+  - no UI, AI, copy, Push/delivery, persistence, new preferences, endpoints or configuration
+  - do not modify Foundation, Weather, Decision Engine or Legacy Companion
+  - do not advance to etapa 7.5
