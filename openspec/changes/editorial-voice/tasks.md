@@ -26,10 +26,10 @@ Chain strategy: feature-branch-chain
 
 ## Unit 1: Contracts, catalog and validation
 
-- [ ] 1.1 **RED:** Create `contracts.test.ts`, `catalog.test.ts`, `validation.test.ts` and `boundaries.test.ts` for scenarios **Cobertura cinco kinds, Límite inclusivo, Exceso exacto, Vacío, Prohibido normalizado, Fixture editorial, Placeholder rechazado, Catálogo inválido, Entrada editorial inválida**.
-- [ ] 1.2 **GREEN:** Add `contracts.ts`, `catalog.ts`, `validation.ts`: exact fields `{locale,catalogVersion,variantId,text,actionRef,channel}`; errors `INVALID_CATALOG`, `INVALID_LOCALE`, `MISSING_KIND`, `DUPLICATE_VARIANT_ID`, `INVALID_TEXT`, `TEXT_TOO_LONG`, `FORBIDDEN_TEXT`, `PLACEHOLDER_NOT_ALLOWED`; Unicode 160/161, tone and zero placeholders.
-- [ ] 1.3 Freeze these exact fixtures: `tomorrow-01` “Mañana comienza este viaje.”; `tomorrow-02` “Falta poco: el viaje empieza mañana.”; `today-01` “Hoy comienza una nueva historia.”; `today-02` “El viaje empieza hoy, a su propio ritmo.”; `last-day-01` “Hoy es el último día de este viaje.”; `last-day-02` “Este viaje llega hoy a su último día.”; `weather-01` “Quizás sea un buen momento para considerar el clima.”; `weather-02` “El clima puede ser relevante para este momento del viaje.”; `light-01` “Puede ser un buen momento para disfrutar la luz natural.”; `light-02` “La luz natural acompaña este momento del viaje.”
-- [ ] 1.4 **REFACTOR:** Centralize closed catalogs/allowlists; preserve immutable public contracts and rerun Unit 1 tests.
+- [x] 1.1 **RED:** Create `contracts.test.ts`, `catalog.test.ts`, `validation.test.ts` and `boundaries.test.ts` for scenarios **Cobertura cinco kinds, Límite inclusivo, Exceso exacto, Vacío, Prohibido normalizado, Fixture editorial, Placeholder rechazado, Catálogo inválido, Entrada editorial inválida**.
+- [x] 1.2 **GREEN:** Add `contracts.ts`, `catalog.ts`, `validation.ts`: exact fields `{locale,catalogVersion,variantId,text,actionRef,channel}`; errors `INVALID_CATALOG`, `INVALID_LOCALE`, `MISSING_KIND`, `DUPLICATE_VARIANT_ID`, `INVALID_TEXT`, `TEXT_TOO_LONG`, `FORBIDDEN_TEXT`, `PLACEHOLDER_NOT_ALLOWED`; Unicode 160/161, tone and zero placeholders.
+- [x] 1.3 Freeze these exact fixtures: `tomorrow-01` “Mañana comienza este viaje.”; `tomorrow-02` “Falta poco: el viaje empieza mañana.”; `today-01` “Hoy comienza una nueva historia.”; `today-02` “El viaje empieza hoy, a su propio ritmo.”; `last-day-01` “Hoy es el último día de este viaje.”; `last-day-02` “Este viaje llega hoy a su último día.”; `weather-01` “Quizás sea un buen momento para considerar el clima.”; `weather-02` “El clima puede ser relevante para este momento del viaje.”; `light-01` “Puede ser un buen momento para disfrutar la luz natural.”; `light-02` “La luz natural acompaña este momento del viaje.”
+- [x] 1.4 **REFACTOR:** Centralize closed catalogs/allowlists; preserve immutable public contracts and rerun Unit 1 tests.
 
 ## Unit 2: Deterministic rendering and failures
 

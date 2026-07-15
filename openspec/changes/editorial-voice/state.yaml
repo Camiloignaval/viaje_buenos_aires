@@ -10,7 +10,7 @@ phases:
   specs: done       # 25 scenarios in editorial-voice
   design: done
   tasks: done       # strict TDD; three autonomous local review slices
-  apply: pending
+  apply: in_progress  # 4/10 tasks complete; Unit 1 committed as autonomous slice
   verify: pending
   archive: pending  # Foundation -> Weather -> Decision -> Orchestrator -> Editorial
 constraints:
