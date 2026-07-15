@@ -3,7 +3,9 @@ import test from 'node:test';
 import { ObjectId } from 'mongodb';
 import {
   clientMemoryToDocument,
+  isSemanticMemoryDocument,
   mergeTripSyncState,
+  nonSemanticMemoryFilter,
   normalizeClientMemories,
   publicTripSyncState,
 } from './platformSync.js';
@@ -73,4 +75,41 @@ test('publicTripSyncState devuelve Memorias compatibles con el cliente local sin
     'videos',
   ].sort());
   assert.equal(state.memories[0].id, 'm1');
+});
+
+test('la partición semántica se reconoce por discriminador o prefijo reservado', () => {
+  assert.equal(isSemanticMemoryDocument({ recordKind: 'alaia_memory_record_v1', legacyId: 'otro' }), true);
+  assert.equal(isSemanticMemoryDocument({ legacyId: `semantic-v1:mk1_${'a'.repeat(64)}` }), true);
+  assert.equal(isSemanticMemoryDocument({ legacyId: 'album-1', note: 'legacy' }), false);
+  assert.deepEqual(nonSemanticMemoryFilter({ tripId: 'trip-1' }), {
+    $and: [
+      { tripId: 'trip-1' },
+      { recordKind: { $ne: 'alaia_memory_record_v1' } },
+      { legacyId: { $not: /^semantic-v1:/ } },
+    ],
+  });
+  assert.deepEqual(nonSemanticMemoryFilter({ tripId: 'trip-1', legacyId: 'album-1' }), {
+    $and: [
+      { tripId: 'trip-1', legacyId: 'album-1' },
+      { recordKind: { $ne: 'alaia_memory_record_v1' } },
+      { legacyId: { $not: /^semantic-v1:/ } },
+    ],
+  });
+});
+
+test('Album Sync ignora records semánticos remotos e ids semánticos entrantes', () => {
+  const merged = mergeTripSyncState({
+    incomingMemories: [
+      { id: `semantic-v1:mk1_${'b'.repeat(64)}`, note: 'intento' },
+      { id: 'album-local', note: 'válido' },
+    ],
+    remoteMemories: [
+      { recordKind: 'alaia_memory_record_v1', legacyId: `semantic-v1:mk1_${'a'.repeat(64)}`, meaning: { text: 'privado' } },
+      { legacyId: 'album-remote', note: 'visible' },
+    ],
+  });
+
+  assert.deepEqual(merged.memories.map((memory) => memory.id).sort(), ['album-local', 'album-remote']);
+  assert.doesNotMatch(JSON.stringify(merged), /privado|intento|semantic-v1/);
+  assert.equal(clientMemoryToDocument({ id: `semantic-v1:mk1_${'c'.repeat(64)}` }, new ObjectId()), null);
 });

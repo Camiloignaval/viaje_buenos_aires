@@ -1,5 +1,14 @@
 ﻿import { mergeChapterStatuses, mergeMemories } from '../src/sync/syncMerge.js';
 import { toObjectId } from './platformMongo.js';
+import {
+  SEMANTIC_MEMORY_LEGACY_PREFIX,
+  SEMANTIC_MEMORY_RECORD_KIND,
+} from './platformMemory.js';
+
+const SEMANTIC_CONTRACT_FIELDS = new Set([
+  'recordKind', 'memoryKey', 'identityVersion', 'owner', 'tripRef', 'storyRef',
+  'decisionRef', 'editorialRef', 'evidence', 'meaning', 'state', 'retention', 'origin',
+]);
 
 function asPlainObject(value) {
   return value && typeof value === 'object' && !Array.isArray(value) ? value : {};
@@ -19,7 +28,30 @@ export function normalizeChapterStatuses(input = {}) {
   );
 }
 
+export function isSemanticMemoryDocument(value = {}) {
+  const memory = asPlainObject(value);
+  return memory.recordKind === SEMANTIC_MEMORY_RECORD_KIND
+    || String(memory.legacyId ?? memory.id ?? '').startsWith(SEMANTIC_MEMORY_LEGACY_PREFIX);
+}
+
+export function isSemanticMemoryWrite(value = {}) {
+  const memory = asPlainObject(value);
+  return isSemanticMemoryDocument(memory)
+    || Object.keys(memory).some((key) => SEMANTIC_CONTRACT_FIELDS.has(key));
+}
+
+export function nonSemanticMemoryFilter(filter = {}) {
+  return {
+    $and: [
+      { ...filter },
+      { recordKind: { $ne: SEMANTIC_MEMORY_RECORD_KIND } },
+      { legacyId: { $not: /^semantic-v1:/ } },
+    ],
+  };
+}
+
 export function normalizeClientMemory(memory = {}) {
+  if (isSemanticMemoryWrite(memory)) return null;
   const legacyId = String(memory.legacyId ?? memory.id ?? '').trim();
   if (!legacyId) return null;
 
@@ -49,6 +81,7 @@ export function normalizeClientMemories(memories = []) {
 }
 
 export function memoryDocumentToClientMemory(doc = {}) {
+  if (isSemanticMemoryDocument(doc)) return null;
   const legacyId = String(doc.legacyId ?? '').trim();
   return normalizeClientMemory({
     ...doc,

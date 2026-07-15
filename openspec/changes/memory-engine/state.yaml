@@ -10,7 +10,7 @@ phases:
   specs: done       # 16 scenarios in memory-engine
   design: done
   tasks: done       # strict TDD; three autonomous local review slices
-  apply: in-progress # 4/12 tasks complete
+  apply: in-progress # 8/12 tasks complete
   verify: pending
   archive: pending
 constraints:

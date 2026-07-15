@@ -33,10 +33,10 @@ Chain strategy: feature-branch-chain
 
 ## Unit 2: Shared authenticated persistence
 
-- [ ] 2.1 **RED:** Add `lib/platformMemory.test.js` for **Retry and concurrency, Repository failure, Untrusted owner**: membership, atomic uniqueness, duplicate, confirmed read and no partial write. Verify: `node --test lib/platformMemory.test.js`.
-- [ ] 2.2 **GREEN:** Add `lib/platformMemory.js` over `memories`; satisfy 2.1 through session owner, membership, discriminator, reserved `legacyId`, schema/lifecycle guards and atomic idempotency. Verify: `node --test lib/platformMemory.test.js`.
-- [ ] 2.3 **TRIANGULATE:** Extend sync tests and add route tests for **Partition isolation** across trip sync and legacy read/update/delete/write. Verify: `node --test lib/platformMemory.test.js lib/platformSync.test.js routes/memories.test.js "routes/memories/[id].test.js" "routes/trips/[tripId]/sync.test.js"`.
-- [ ] 2.4 **REFACTOR:** Modify `lib/platformSync.js`, trip sync and both legacy routes; centralize partition guards for all Unit 2 scenarios without changing Album semantics. Verify: `npm test`.
+- [x] 2.1 **RED:** Add `lib/platformMemory.test.js` for **Retry and concurrency, Repository failure, Untrusted owner**: membership, atomic uniqueness, duplicate, confirmed read and no partial write. Verify: `node --test lib/platformMemory.test.js`.
+- [x] 2.2 **GREEN:** Add `lib/platformMemory.js` over `memories`; satisfy 2.1 through session owner, membership, discriminator, reserved `legacyId`, schema/lifecycle guards and atomic idempotency. Verify: `node --test lib/platformMemory.test.js`.
+- [x] 2.3 **TRIANGULATE:** Extend sync tests and add route tests for **Partition isolation** across trip sync and legacy read/update/delete/write. Verify: `node --test lib/platformMemory.test.js lib/platformSync.test.js routes/memories.test.js "routes/memories/[id].test.js" "routes/trips/[tripId]/sync.test.js"`.
+- [x] 2.4 **REFACTOR:** Modify `lib/platformSync.js`, trip sync and both legacy routes; centralize partition guards for all Unit 2 scenarios without changing Album semantics. Verify: `npm test`.
 
 ## Unit 3: Observation and isolation proof
 

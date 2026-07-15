@@ -1,8 +1,14 @@
-﻿import { applyCors } from '../../../lib/cors.js';
+import { applyCors } from '../../../lib/cors.js';
 import { requireTripRole } from '../../../lib/platformAuth.js';
 import { getMemoriesCollection, getTripStatesCollection, toObjectId } from '../../../lib/platformMongo.js';
 import { sendPlatformError } from '../../../lib/platformErrors.js';
-import { clientMemoryToDocument, ensureTripSyncIndexes, mergeTripSyncState, publicTripSyncState } from '../../../lib/platformSync.js';
+import {
+  clientMemoryToDocument,
+  ensureTripSyncIndexes,
+  mergeTripSyncState,
+  nonSemanticMemoryFilter,
+  publicTripSyncState,
+} from '../../../lib/platformSync.js';
 
 function readBody(req) {
   return typeof req.body === 'string' ? JSON.parse(req.body || '{}') : req.body ?? {};
@@ -12,56 +18,71 @@ function tripIdFrom(req) {
   return req.query?.tripId ?? req.query?.id;
 }
 
-export default async function handler(req, res) {
-  if (applyCors(req, res)) return;
+export function createTripSyncHandler(dependencies = {}) {
+  const cors = dependencies.applyCors ?? applyCors;
+  const authorize = dependencies.requireTripRole ?? requireTripRole;
+  const memoriesCollection = dependencies.getMemoriesCollection ?? getMemoriesCollection;
+  const tripStatesCollection = dependencies.getTripStatesCollection ?? getTripStatesCollection;
+  const objectId = dependencies.toObjectId ?? toObjectId;
+  const ensureIndexes = dependencies.ensureTripSyncIndexes ?? ensureTripSyncIndexes;
+  const sendError = dependencies.sendPlatformError ?? sendPlatformError;
+  const now = dependencies.now ?? (() => new Date().toISOString());
 
-  if (req.method !== 'POST') {
-    res.setHeader('Allow', ['POST']);
-    return res.status(405).json({ error: 'Método no permitido' });
-  }
+  return async function handler(req, res) {
+    if (cors(req, res)) return;
 
-  const tripId = tripIdFrom(req);
+    if (req.method !== 'POST') {
+      res.setHeader('Allow', ['POST']);
+      return res.status(405).json({ error: 'Método no permitido' });
+    }
 
-  try {
-    const context = await requireTripRole(req, res, tripId, ['owner', 'editor']);
-    if (!context) return;
+    const tripId = tripIdFrom(req);
 
-    const tripObjectId = toObjectId(tripId, 'tripId');
-    const body = readBody(req);
-    const tripStates = await getTripStatesCollection();
-    const memories = await getMemoriesCollection();
+    try {
+      const context = await authorize(req, res, tripId, ['owner', 'editor']);
+      if (!context) return;
 
-    await ensureTripSyncIndexes({ tripStates, memories });
+      const tripObjectId = objectId(tripId, 'tripId');
+      const body = readBody(req);
+      const tripStates = await tripStatesCollection();
+      const memories = await memoriesCollection();
 
-    const remoteTripState = await tripStates.findOne({ tripId: tripObjectId });
-    const remoteMemories = await memories.find({ tripId: tripObjectId }).toArray();
-    const merged = mergeTripSyncState({
-      incomingChapterStatuses: body.chapterStatuses,
-      incomingMemories: body.memories,
-      remoteTripState,
-      remoteMemories,
-    });
+      await ensureIndexes({ tripStates, memories });
 
-    const now = new Date().toISOString();
-    await tripStates.updateOne(
-      { tripId: tripObjectId },
-      { $set: { tripId: tripObjectId, chapterStatuses: merged.chapterStatuses, updatedAt: now }, $setOnInsert: { createdAt: now } },
-      { upsert: true }
-    );
+      const remoteTripState = await tripStates.findOne({ tripId: tripObjectId });
+      const remoteMemories = await memories.find(nonSemanticMemoryFilter({ tripId: tripObjectId })).toArray();
+      const merged = mergeTripSyncState({
+        incomingChapterStatuses: body.chapterStatuses,
+        incomingMemories: body.memories,
+        remoteTripState,
+        remoteMemories,
+      });
 
-    await Promise.all(
-      merged.memories.map((memory) => {
-        const { createdAt, ...doc } = clientMemoryToDocument(memory, tripObjectId);
-        return memories.updateOne(
-          { tripId: tripObjectId, legacyId: doc.legacyId },
-          { $set: doc, $setOnInsert: { createdAt } },
-          { upsert: true }
-        );
-      })
-    );
+      const updatedAt = now();
+      await tripStates.updateOne(
+        { tripId: tripObjectId },
+        { $set: { tripId: tripObjectId, chapterStatuses: merged.chapterStatuses, updatedAt }, $setOnInsert: { createdAt: updatedAt } },
+        { upsert: true },
+      );
 
-    return res.status(200).json(publicTripSyncState(merged));
-  } catch (error) {
-    return sendPlatformError(res, error);
-  }
+      await Promise.all(
+        merged.memories.map((memory) => {
+          const document = clientMemoryToDocument(memory, tripObjectId);
+          if (!document) return undefined;
+          const { createdAt, ...doc } = document;
+          return memories.updateOne(
+            nonSemanticMemoryFilter({ tripId: tripObjectId, legacyId: doc.legacyId }),
+            { $set: doc, $setOnInsert: { createdAt } },
+            { upsert: true },
+          );
+        }),
+      );
+
+      return res.status(200).json(publicTripSyncState(merged));
+    } catch (error) {
+      return sendError(res, error);
+    }
+  };
 }
+
+export default createTripSyncHandler();
