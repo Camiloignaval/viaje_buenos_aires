@@ -1,0 +1,15 @@
+change: living-context-weather
+artifact_store: openspec
+execution_mode: automatic
+delivery_strategy: auto-chain
+chain_strategy: feature-branch-chain
+status: ready-for-archive
+phases:
+  explore: done
+  proposal: done
+  specs: done
+  design: done
+  tasks: done
+  apply: done
+  verify: done    # 31/31 scenarios; Node 233, React 594, typecheck and diff-check pass
+  archive: pending # Foundation dependency and this change remain active/unarchived
