@@ -35,6 +35,7 @@ import type {
   QualityScore,
   Severity,
 } from "./types";
+import { checkLivingContext } from "./livingContextCheck";
 
 export type StoryHealthChecker = (
   pkg: StoryPackage,
@@ -454,6 +455,7 @@ const DEFAULT_CHECKERS: readonly StoryHealthChecker[] = [
   checkAccessibility,
   checkContext,
   checkIntelligence,
+  checkLivingContext,
 ];
 
 const SEVERITY_PENALTY: Record<Severity, number> = { critical: 40, warning: 12, info: 4 };

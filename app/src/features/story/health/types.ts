@@ -58,4 +58,14 @@ export interface HealthReport {
  */
 export interface HealthCheckContext {
   assetExists?: (assetPath: string) => boolean;
+  livingContext?: {
+    /** Identidad solicitada por Trip y la identidad externa realmente cargada. */
+    baseStoryId?: string | null;
+    loadedStoryBaseStoryId?: string | null;
+    destination?: {
+      countryCode?: string | null;
+      timezone?: string | null;
+      [key: string]: unknown;
+    };
+  };
 }

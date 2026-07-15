@@ -53,6 +53,6 @@ Chain strategy: size-exception
 
 ## Phase 5: Health y cierre
 
-- [ ] 5.1 **RED:** crear `story/health/livingContextCheck.test.ts` para legacy, metadata parcial, ids/destino/timezone incoherentes y mensajes sin PII/coordenadas.
-- [ ] 5.2 **GREEN:** crear `livingContextCheck.ts` e integrarlo mediante `healthCheck.ts`/`types.ts` con códigos/path estables `info|warning`, nunca `critical` por dinámicos futuros.
-- [ ] 5.3 **REFACTOR:** ejecutar `npm test`, `npm run test:react` y `npm run typecheck`; Playwright no aplica al no haber UI. Corregir regresiones, crear commit tests/health y no build.
+- [x] 5.1 **RED:** crear `story/health/livingContextCheck.test.ts` para legacy, metadata parcial, ids/destino/timezone incoherentes y mensajes sin PII/coordenadas.
+- [x] 5.2 **GREEN:** crear `livingContextCheck.ts` e integrarlo mediante `healthCheck.ts`/`types.ts` con códigos/path estables `info|warning`, nunca `critical` por dinámicos futuros.
+- [x] 5.3 **REFACTOR:** ejecutar `npm test`, `npm run test:react` y `npm run typecheck`; Playwright no aplica al no haber UI. Corregir regresiones, crear commit tests/health y no build.

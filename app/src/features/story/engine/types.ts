@@ -183,6 +183,13 @@ export interface StoryMetadata {
   destinationCountryCode?: string;
   /** Idioma predominante del destino (ISO 639-1), si difiere del contenido. */
   destinationLanguage?: string;
+  /** Metadata curada opcional para Living Context; ausente en packages legacy. */
+  livingContext?: {
+    countryCode?: string;
+    locale?: string;
+    timezone?: string;
+    currency?: string;
+  };
 }
 
 /** Presupuesto editorial de la historia; su moneda es la moneda local del destino. */
