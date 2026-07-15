@@ -138,6 +138,83 @@ describe("createLivingContextResolution", () => {
     expect(JSON.stringify(observer.mock.calls)).not.toMatch(/kari|34\.6037|secret|provider-json/i);
   });
 
+  it("conserva Foundation completa cuando solo Weather falla", async () => {
+    const observer = vi.fn();
+    const resolution = createLivingContextResolution({
+      trip: trip(), story: { baseStoryId: "ba-2026", package: storyPackage() },
+      user: { preferredCurrency: "CLP", residenceCountryCode: "CL" },
+      financial: { localMoney: { amount: 1000, currency: "ARS" } },
+    }, {
+      now: () => now,
+      observer,
+      financialAdapter: async () => ({
+        localMoney: { amount: 1000, currency: "ARS" }, convertedMoney: { amount: 750, currency: "CLP" },
+        rateDate: "2026-10-03", freshness: "fresh", available: true,
+        source: "frankfurter", fetchedAt: "2026-10-03T14:30:00.000Z",
+      }),
+      weatherAdapter: async () => {
+        throw new Error("kari@example.com -34.6037 token=secret provider-json");
+      },
+    });
+
+    expect(resolution.initial.financial).toMatchObject({ status: "unavailable", reason: "pending" });
+    expect(resolution.initial.weather).toMatchObject({ status: "unavailable", reason: "weather_pending" });
+    expect([resolution.initial.destination, resolution.initial.temporal, resolution.initial.narrative].map((item) => item.status)).toEqual([
+      "available", "available", "available",
+    ]);
+
+    const settled = await resolution.settled;
+    expect([settled.destination, settled.temporal, settled.financial, settled.narrative].map((item) => item.status)).toEqual([
+      "available", "available", "available", "available",
+    ]);
+    expect(settled.weather).toMatchObject({
+      status: "unavailable", reason: "weather_failed", freshness: "unavailable",
+      provenance: { source: "weather.adapter" },
+    });
+    expect(settled.capabilities).toEqual({ destination: true, temporal: true, financial: true, narrative: true, weather: false });
+    const weatherEvent = observer.mock.calls.map(([event]) => event).find((event) => event.module === "weather");
+    expect(weatherEvent).toMatchObject({ module: "weather", status: "unavailable", reason: "weather_failed", source: "weather.adapter" });
+    expect(JSON.stringify(observer.mock.calls)).not.toMatch(/kari|34\.6037|secret|provider-json/i);
+  });
+
+  it("conserva Weather y Foundation no financiera cuando solo finanzas falla", async () => {
+    const observer = vi.fn();
+    const settled = await createLivingContextResolution({
+      trip: trip(), story: { baseStoryId: "ba-2026", package: storyPackage() },
+      user: { preferredCurrency: "CLP", residenceCountryCode: "CL" },
+      financial: { localMoney: { amount: 1000, currency: "ARS" } },
+    }, {
+      now: () => now,
+      observer,
+      financialAdapter: async () => {
+        throw new Error("email=kari@example.com budget=1000 token=secret");
+      },
+      weatherAdapter: async () => ({
+        value: {
+          condition: "rain" as const, temperatureC: 16, precipitationProbability: 85,
+          isRaining: true, isStorm: false, isSnow: false, sunrise: null, sunset: null,
+          effectiveAt: { localDateTime: "2026-10-03T12:00", timezone: "America/Argentina/Buenos_Aires" },
+          expiresAt: "2026-10-03T15:15:00.000Z", confidence: "unknown" as const,
+        },
+        fetchedAt: "2026-10-03T15:00:00.000Z", source: "open-meteo",
+      }),
+    }).settled;
+
+    expect(settled.financial).toMatchObject({ status: "unavailable", reason: "financial_failed", freshness: "unavailable" });
+    expect([settled.destination, settled.temporal, settled.narrative].map((item) => item.status)).toEqual([
+      "available", "available", "available",
+    ]);
+    expect(settled.weather).toMatchObject({
+      status: "available", freshness: "fresh",
+      value: { condition: "rain", temperatureC: 16, precipitationProbability: 85, isRaining: true },
+      provenance: { source: "weather.provider", observedAt: "2026-10-03T15:00:00.000Z" },
+    });
+    expect(settled.capabilities).toEqual({ destination: true, temporal: true, financial: false, narrative: true, weather: true });
+    const financeEvent = observer.mock.calls.map(([event]) => event).find((event) => event.module === "financial");
+    expect(financeEvent).toMatchObject({ module: "financial", status: "unavailable", reason: "financial_failed", source: "financial.adapter" });
+    expect(JSON.stringify(observer.mock.calls)).not.toMatch(/kari|budget|1000|secret/i);
+  });
+
   it("fuera de ventana o sin dependencia no llama Weather y explica indisponibilidad", async () => {
     const weatherAdapter = vi.fn();
     const outside = await createLivingContextResolution({
