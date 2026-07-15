@@ -10,6 +10,7 @@ import { TripEntry } from "../components/TripEntry";
 import { TripsEmpty } from "../components/TripsEmpty";
 import { CreateTripWizard } from "../components/CreateTripWizard";
 import { resolveInitialAlaiaDestination } from "../lib/initialDestination";
+import { PushCompanion } from "@/features/pwa/PushCompanion";
 
 // "Mis viajes" — la página siguiente del mismo libro. Reúne índice, escena
 // vacía y creación en una sola pantalla editorial, igual que el viejo
@@ -101,6 +102,7 @@ export default function TripsPage() {
             + Un nuevo viaje
           </button>
         )}
+        <PushCompanion eligible={hasTrips} />
 
         {feedbackEnabled && !trips.isPending && !trips.isError && (
           <section className="feedback-teaser alaia-reveal alaia-reveal-5" aria-labelledby="feedback-teaser-title">
