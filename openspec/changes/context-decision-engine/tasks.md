@@ -35,9 +35,9 @@ Apply uses these as local thematic commits on `etapa-7-living-context`; no PR br
 
 ## Phase 2: Temporal rules
 
-- [ ] 2.1 **RED** — Create `decision/temporalRules.test.ts`: Inicio mañana, Inicio hoy, Durante, Ya iniciado, Timezone, DST, Duplicado, Último día, Día anterior, Finalizado, Fechas incompletas, Un día.
-- [ ] 2.2 **GREEN** — Implement tomorrow/today/last-day in `decision/rules.ts` using injected clock, destination IANA day, derived-temporal policy and local-day expiry.
-- [ ] 2.3 **REFACTOR** — Share only proven time helpers; preserve single-day precedence and local slice 2 rollback.
+- [x] 2.1 **RED** — Create `decision/temporalRules.test.ts`: Inicio mañana, Inicio hoy, Durante, Ya iniciado, Timezone, DST, Duplicado, Último día, Día anterior, Finalizado, Fechas incompletas, Un día.
+- [x] 2.2 **GREEN** — Implement tomorrow/today/last-day in `decision/rules.ts` using injected clock, destination IANA day, derived-temporal policy and local-day expiry.
+- [x] 2.3 **REFACTOR** — Share only proven time helpers; preserve single-day precedence and local slice 2 rollback.
 
 ## Phase 3: Weather + Light
 

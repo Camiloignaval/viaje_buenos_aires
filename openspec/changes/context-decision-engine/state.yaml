@@ -10,7 +10,7 @@ phases:
   specs: done       # 65 scenarios across context-decision-engine and living-context-health
   design: done
   tasks: done       # strict TDD; four autonomous local review slices
-  apply: in_progress  # slice 1/4 complete: contracts + deterministic engine
+  apply: in_progress  # slices 1-2/4 complete: contracts, deterministic engine and temporal rules
   verify: pending
   archive: pending  # archive Foundation -> Weather -> Decision only after authorization
 constraints:
