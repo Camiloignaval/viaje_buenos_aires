@@ -3,6 +3,7 @@ import type { DecisionWindow } from "./contracts";
 export type WindowState = "active" | "outside" | "invalid";
 
 const CALENDAR_DATE = /^(\d{4})-(\d{2})-(\d{2})(?:$|T)/;
+const LOCAL_DATE_TIME = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2}))?$/;
 
 interface CalendarDateParts {
   readonly year: number;
@@ -83,6 +84,33 @@ function destinationMidnight(value: string, timezone: string): Date | null {
   const candidate = new Date(candidateMs);
   const local = dateTimeParts(candidate, timezone);
   if (!local || calendarDate(local) !== value || local.hour !== 0 || local.minute !== 0 || local.second !== 0) return null;
+  return candidate;
+}
+
+export function resolveDestinationLocalDateTime(value: string, timezone: string): Date | null {
+  const match = LOCAL_DATE_TIME.exec(value);
+  if (!match || !formatter(timezone)) return null;
+  const target = {
+    year: Number(match[1]),
+    month: Number(match[2]),
+    day: Number(match[3]),
+    hour: Number(match[4]),
+    minute: Number(match[5]),
+    second: Number(match[6] ?? "0"),
+  };
+  const date = parseCalendarDate(`${match[1]}-${match[2]}-${match[3]}`);
+  if (!date || target.hour > 23 || target.minute > 59 || target.second > 59) return null;
+  const targetAsUtc = Date.UTC(target.year, target.month - 1, target.day, target.hour, target.minute, target.second);
+  let candidateMs = targetAsUtc;
+  for (let attempt = 0; attempt < 4; attempt += 1) {
+    const local = dateTimeParts(new Date(candidateMs), timezone);
+    if (!local) return null;
+    const localAsUtc = Date.UTC(local.year, local.month - 1, local.day, local.hour, local.minute, local.second);
+    candidateMs += targetAsUtc - localAsUtc;
+  }
+  const candidate = new Date(candidateMs);
+  const local = dateTimeParts(candidate, timezone);
+  if (!local || Object.entries(target).some(([key, expected]) => local[key as keyof typeof local] !== expected)) return null;
   return candidate;
 }
 

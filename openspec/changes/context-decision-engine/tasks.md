@@ -41,9 +41,9 @@ Apply uses these as local thematic commits on `etapa-7-living-context`; no PR br
 
 ## Phase 3: Weather + Light
 
-- [ ] 3.1 **RED** — Create `decision/weatherLightRules.test.ts`: Lluvia outdoor, Indoor, Stale, Unavailable, Sin metadata, Señal débil, Fuera ventana, Inexistente, Contradicción, Financial aislado, Weather aislado, Luz válida, Luz sin metadata, Luz stale, Luz pasada, Texto libre.
-- [ ] 3.2 **GREEN** — Implement fresh/coherent Weather and Light-window rules in `decision/rules.ts`; require curated candidates, isolate partial failures and abstain on production Story metadata.
-- [ ] 3.3 **REFACTOR** — Centralize named thresholds/intersections without provider imports; keep local slice 3 autonomous.
+- [x] 3.1 **RED** — Create `decision/weatherLightRules.test.ts`: Lluvia outdoor, Indoor, Stale, Unavailable, Sin metadata, Señal débil, Fuera ventana, Inexistente, Contradicción, Financial aislado, Weather aislado, Luz válida, Luz sin metadata, Luz stale, Luz pasada, Texto libre.
+- [x] 3.2 **GREEN** — Implement fresh/coherent Weather and Light-window rules in `decision/rules.ts`; require curated candidates, isolate partial failures and abstain on production Story metadata.
+- [x] 3.3 **REFACTOR** — Centralize named thresholds/intersections without provider imports; keep local slice 3 autonomous.
 
 ## Phase 4: Health + abstention boundaries
 

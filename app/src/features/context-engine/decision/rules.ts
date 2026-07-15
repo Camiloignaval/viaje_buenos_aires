@@ -7,9 +7,31 @@ import type {
   DecisionRule,
   RuleEvaluationDraft,
 } from "./contracts";
-import { normalizedCalendarDate, resolveDestinationLocalDayWindow } from "./time";
+import type { WeatherContext } from "../types";
+import {
+  normalizedCalendarDate,
+  resolveDestinationLocalDate,
+  resolveDestinationLocalDateTime,
+  resolveDestinationLocalDayWindow,
+} from "./time";
 
-const PLACEHOLDER_REASONS = Object.freeze(["incomplete_context"] as const satisfies readonly DecisionReason[]);
+export const WEATHER_ATTENTION_PRECIPITATION_PERCENT = 60;
+const LIGHT_MOMENT_RADIUS_MS = 60 * 60 * 1_000;
+
+const WEATHER_LIGHT_REASONS = Object.freeze([
+  "actionable",
+  "incomplete_context",
+  "missing_capability",
+  "module_unavailable",
+  "module_stale",
+  "missing_activity_metadata",
+  "weak_signal",
+  "outside_effective_window",
+  "preference_disabled",
+  "already_processed",
+  "conflicting_signals",
+  "invalid_context",
+] as const satisfies readonly DecisionReason[]);
 const TEMPORAL_REASONS = Object.freeze([
   "actionable",
   "invalid_context",
@@ -19,23 +41,243 @@ const TEMPORAL_REASONS = Object.freeze([
   "outside_effective_window",
 ] as const satisfies readonly DecisionReason[]);
 
-function notImplementedYet(): readonly RuleEvaluationDraft[] {
-  return [Object.freeze({
-    outcome: "abstain",
-    reasonCode: "incomplete_context",
-    confidence: "unknown",
-    evidence: Object.freeze([{ kind: "signal", state: "missing" }] as const),
-    freshness: Object.freeze([]),
-    missingCapabilities: Object.freeze([]),
-    missingModules: Object.freeze([]),
-    staleModules: Object.freeze([]),
-    conflictingSignals: Object.freeze([]),
-    nextUsefulEvaluationAt: null,
-  })];
-}
-
 function defineRule(rule: DecisionRule): DecisionRule {
   return Object.freeze(rule);
+}
+
+function dynamicAbstention(
+  reasonCode: AbstainDecisionDraft["reasonCode"],
+  details: Partial<AbstainDecisionDraft> = {},
+): AbstainDecisionDraft {
+  return Object.freeze({
+    outcome: "abstain",
+    reasonCode,
+    confidence: details.confidence ?? "insufficient",
+    evidence: Object.freeze([...(details.evidence ?? [{ kind: "signal", state: "missing" }])]),
+    freshness: Object.freeze([...(details.freshness ?? [])]),
+    missingCapabilities: Object.freeze([...(details.missingCapabilities ?? [])]),
+    missingModules: Object.freeze([...(details.missingModules ?? [])]),
+    staleModules: Object.freeze([...(details.staleModules ?? [])]),
+    conflictingSignals: Object.freeze([...(details.conflictingSignals ?? [])]),
+    nextUsefulEvaluationAt: details.nextUsefulEvaluationAt ?? null,
+    dedupeKey: details.dedupeKey,
+    window: details.window ? Object.freeze({ ...details.window }) : details.window,
+  });
+}
+
+function weatherCoherent(weather: WeatherContext): boolean {
+  if (
+    !Number.isFinite(weather.temperatureC)
+    || (weather.precipitationProbability !== null && (
+      !Number.isFinite(weather.precipitationProbability)
+      || weather.precipitationProbability < 0
+      || weather.precipitationProbability > 100
+    ))
+    || typeof weather.isRaining !== "boolean"
+    || typeof weather.isStorm !== "boolean"
+    || typeof weather.isSnow !== "boolean"
+  ) return false;
+  const conditionFlags: Readonly<Record<WeatherContext["condition"], readonly [boolean, boolean, boolean]>> = {
+    clear: [false, false, false],
+    cloudy: [false, false, false],
+    fog: [false, false, false],
+    rain: [true, false, false],
+    storm: [true, true, false],
+    snow: [false, false, true],
+    freezing: [true, false, false],
+    unknown: [false, false, false],
+  };
+  const expected = conditionFlags[weather.condition];
+  return Boolean(expected)
+    && weather.isRaining === expected[0]
+    && weather.isStorm === expected[1]
+    && weather.isSnow === expected[2];
+}
+
+function validActivityWindow(activity: Parameters<DecisionRule["evaluate"]>[0]["activities"][number]) {
+  const validFrom = Date.parse(activity.window.validFrom);
+  const validUntil = Date.parse(activity.window.validUntil);
+  if (!activity.activityId.trim() || !resolveDestinationLocalDate(new Date(validFrom), activity.window.timezone)) return null;
+  if (!Number.isFinite(validFrom) || !Number.isFinite(validUntil) || validUntil <= validFrom) return null;
+  return { validFrom, validUntil };
+}
+
+type WeatherBase =
+  | Readonly<{ ok: false; abstention: AbstainDecisionDraft }>
+  | Readonly<{
+      ok: true;
+      weather: WeatherContext;
+      freshness: AbstainDecisionDraft["freshness"];
+      effectiveAt: number;
+      expiresAt: number;
+    }>;
+
+function weatherBase(input: Parameters<DecisionRule["evaluate"]>[0], now: Date): WeatherBase {
+  const module = input.context.weather;
+  const freshness = Object.freeze([{ module: "weather" as const, state: module.freshness }]);
+  if (module.freshness !== "fresh") {
+    return { ok: false, abstention: dynamicAbstention("module_stale", { freshness, staleModules: ["weather"] }) };
+  }
+  const weather = module.value;
+  if (!weather) return { ok: false, abstention: dynamicAbstention("incomplete_context", { freshness }) };
+  const expiresAt = Date.parse(weather.expiresAt);
+  const effectiveAt = resolveDestinationLocalDateTime(weather.effectiveAt.localDateTime, weather.effectiveAt.timezone);
+  if (!Number.isFinite(now.getTime()) || !effectiveAt || !Number.isFinite(expiresAt) || expiresAt <= effectiveAt.getTime()) {
+    return { ok: false, abstention: dynamicAbstention("invalid_context", { freshness }) };
+  }
+  if (now.getTime() >= expiresAt) {
+    return { ok: false, abstention: dynamicAbstention("module_stale", { freshness, staleModules: ["weather"] }) };
+  }
+  return { ok: true, weather, freshness, effectiveAt: effectiveAt.getTime(), expiresAt };
+}
+
+function intersection(
+  left: Readonly<{ validFrom: number; validUntil: number }>,
+  right: Readonly<{ validFrom: number; validUntil: number }>,
+) {
+  const validFrom = Math.max(left.validFrom, right.validFrom);
+  const validUntil = Math.min(left.validUntil, right.validUntil);
+  return validUntil > validFrom ? { validFrom, validUntil } : null;
+}
+
+function actWindow(bounds: Readonly<{ validFrom: number; validUntil: number }>, now: Date) {
+  return Object.freeze({
+    validFrom: new Date(bounds.validFrom).toISOString(),
+    validUntil: new Date(bounds.validUntil).toISOString(),
+    effectiveAt: now.toISOString(),
+    expiresAt: new Date(bounds.validUntil).toISOString(),
+  });
+}
+
+function evaluateWeatherRule(input: Parameters<DecisionRule["evaluate"]>[0], now: Date): readonly RuleEvaluationDraft[] {
+  const base = weatherBase(input, now);
+  if (!base.ok) return [base.abstention];
+  if (input.activities.length === 0) return [dynamicAbstention("incomplete_context", { freshness: base.freshness })];
+  if (!weatherCoherent(base.weather)) {
+    return [dynamicAbstention("conflicting_signals", {
+      freshness: base.freshness,
+      evidence: [{ kind: "signal", state: "conflicting" }],
+      conflictingSignals: ["weather_signal"],
+    })];
+  }
+  const relevantSignal = base.weather.isRaining
+    || base.weather.isStorm
+    || base.weather.isSnow
+    || (base.weather.precipitationProbability ?? -1) >= WEATHER_ATTENTION_PRECIPITATION_PERCENT;
+  if (!relevantSignal) return [dynamicAbstention("weak_signal", { freshness: base.freshness })];
+
+  return input.activities.map((activity) => {
+    const activityWindow = validActivityWindow(activity);
+    if (!activityWindow || activity.window.timezone !== base.weather.effectiveAt.timezone) {
+      return dynamicAbstention("invalid_context", { freshness: base.freshness });
+    }
+    if (activity.intelligence.outdoor !== true || activity.intelligence.indoor === true || activity.intelligence.rainFriendly !== false) {
+      return dynamicAbstention("missing_activity_metadata", {
+        freshness: base.freshness,
+        evidence: [{ kind: "activity_metadata", state: "missing" }],
+      });
+    }
+    const bounds = intersection(activityWindow, { validFrom: base.effectiveAt, validUntil: base.expiresAt });
+    if (!bounds || now.getTime() < bounds.validFrom || now.getTime() >= bounds.validUntil) {
+      return dynamicAbstention("outside_effective_window", {
+        freshness: base.freshness,
+        evidence: [{ kind: "window", state: "outside" }],
+      });
+    }
+    const localDate = resolveDestinationLocalDate(new Date(bounds.validFrom), activity.window.timezone);
+    if (!localDate) return dynamicAbstention("invalid_context", { freshness: base.freshness });
+    const draft: ActDecisionDraft = {
+      outcome: "act",
+      kind: "weather_attention_candidate",
+      category: "weather_attention",
+      reasonCode: "actionable",
+      confidence: "sufficient",
+      evidence: Object.freeze([
+        { kind: "module", state: "available" },
+        { kind: "freshness", state: "fresh" },
+        { kind: "activity_metadata", state: "present" },
+        { kind: "signal", state: "coherent" },
+        { kind: "window", state: "inside" },
+      ]),
+      freshness: base.freshness,
+      dedupeKey: `${input.tripId}:weather_attention_candidate:${activity.activityId}:${localDate}`,
+      window: actWindow(bounds, now),
+      payload: Object.freeze({ attentionSignal: "weather", activityCandidate: "curated" }),
+    };
+    return Object.freeze(draft);
+  });
+}
+
+function evaluateLightRule(input: Parameters<DecisionRule["evaluate"]>[0], now: Date): readonly RuleEvaluationDraft[] {
+  const base = weatherBase(input, now);
+  if (!base.ok) return [base.abstention];
+  if (input.activities.length === 0) return [dynamicAbstention("incomplete_context", { freshness: base.freshness })];
+  const lightMoments = [
+    { kind: "sunrise" as const, value: base.weather.sunrise },
+    { kind: "sunset" as const, value: base.weather.sunset },
+  ];
+  if (lightMoments.some(({ value }) => !value)) {
+    return [dynamicAbstention("incomplete_context", { freshness: base.freshness })];
+  }
+  const effectiveDate = normalizedCalendarDate(base.weather.effectiveAt.localDateTime);
+  const normalizedMoments = lightMoments.map(({ kind, value }) => {
+    const localDate = value ? normalizedCalendarDate(value.localDateTime) : null;
+    if (!value || !effectiveDate || localDate !== effectiveDate || value.timezone !== base.weather.effectiveAt.timezone) return null;
+    const instant = resolveDestinationLocalDateTime(value.localDateTime, value.timezone);
+    return instant ? { instant: instant.getTime(), kind, localDate } : null;
+  });
+  if (normalizedMoments.some((moment) => !moment)) {
+    return [dynamicAbstention("invalid_context", { freshness: base.freshness })];
+  }
+
+  return input.activities.map((activity) => {
+    const activityWindow = validActivityWindow(activity);
+    if (!activityWindow || activity.window.timezone !== base.weather.effectiveAt.timezone) {
+      return dynamicAbstention("invalid_context", { freshness: base.freshness });
+    }
+    if (activity.intelligence.photoMoment !== true) {
+      return dynamicAbstention("missing_activity_metadata", {
+        freshness: base.freshness,
+        evidence: [{ kind: "activity_metadata", state: "missing" }],
+      });
+    }
+    const candidates = normalizedMoments.flatMap((moment) => {
+      if (!moment) return [];
+      const lightWindow = {
+        validFrom: moment.instant - LIGHT_MOMENT_RADIUS_MS,
+        validUntil: moment.instant + LIGHT_MOMENT_RADIUS_MS,
+      };
+      const weatherLight = intersection(lightWindow, { validFrom: base.effectiveAt, validUntil: base.expiresAt });
+      const bounds = weatherLight ? intersection(activityWindow, weatherLight) : null;
+      return bounds ? [{ bounds, moment }] : [];
+    });
+    const active = candidates.find(({ bounds }) => now.getTime() >= bounds.validFrom && now.getTime() < bounds.validUntil);
+    if (!active) {
+      return dynamicAbstention("outside_effective_window", {
+        freshness: base.freshness,
+        evidence: [{ kind: "window", state: "outside" }],
+      });
+    }
+    const draft: ActDecisionDraft = {
+      outcome: "act",
+      kind: "light_moment_candidate",
+      category: "light_moment",
+      reasonCode: "actionable",
+      confidence: "sufficient",
+      evidence: Object.freeze([
+        { kind: "module", state: "available" },
+        { kind: "freshness", state: "fresh" },
+        { kind: "activity_metadata", state: "present" },
+        { kind: "signal", state: "coherent" },
+        { kind: "window", state: "inside" },
+      ]),
+      freshness: base.freshness,
+      dedupeKey: `${input.tripId}:light_moment_candidate:${activity.activityId}:${active.moment.localDate}:${active.moment.kind}`,
+      window: actWindow(active.bounds, now),
+      payload: Object.freeze({ attentionSignal: "light", activityCandidate: "curated" }),
+    };
+    return Object.freeze(draft);
+  });
 }
 
 type TemporalRuleKind = "tomorrow" | "today" | "last-day";
@@ -165,8 +407,8 @@ export const DECISION_RULES: readonly DecisionRule[] = Object.freeze([
     priority: "high",
     preference: "during_trip",
     freshnessPolicy: "fresh_weather",
-    abstainReasons: PLACEHOLDER_REASONS,
-    evaluate: notImplementedYet,
+    abstainReasons: WEATHER_LIGHT_REASONS,
+    evaluate: evaluateWeatherRule,
   }),
   defineRule({
     id: "light-moment-candidate",
@@ -177,7 +419,7 @@ export const DECISION_RULES: readonly DecisionRule[] = Object.freeze([
     priority: "normal",
     preference: "during_trip",
     freshnessPolicy: "fresh_weather",
-    abstainReasons: PLACEHOLDER_REASONS,
-    evaluate: notImplementedYet,
+    abstainReasons: WEATHER_LIGHT_REASONS,
+    evaluate: evaluateLightRule,
   }),
 ]);
