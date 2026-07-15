@@ -33,9 +33,9 @@ Chain strategy: feature-branch-chain
 
 ## Unit 2: Deterministic rendering and failures
 
-- [ ] 2.1 **RED:** Create `hash.test.ts` and `editorialVoice.test.ts` for **Determinismo exacto, Inmutabilidad profunda, Sin fallback, Kind no soportado, Seed estable, Variación alcanzable, Versión identitaria, IDs ocultos, Contrato exacto, Canal conceptual, Sin interpolación, Input inválido, Canal inválido**.
-- [ ] 2.2 **GREEN:** Add `hash.ts`, `editorialVoice.ts`, `index.ts`; implement UTF-8 FNV-1a, strict validation order, deep freeze, preservation of action reference/channel, and `EditorialContractError` codes `INVALID_ACTION`, `UNSUPPORTED_KIND`, `INVALID_CHANNEL` plus all Unit 1 codes.
-- [ ] 2.3 **REFACTOR:** Remove incidental fallback/state and keep behavior/catalog/tests in this rollback-safe local commit.
+- [x] 2.1 **RED:** Create `hash.test.ts` and `editorialVoice.test.ts` for **Determinismo exacto, Inmutabilidad profunda, Sin fallback, Kind no soportado, Seed estable, Variación alcanzable, Versión identitaria, IDs ocultos, Contrato exacto, Canal conceptual, Sin interpolación, Input inválido, Canal inválido**.
+- [x] 2.2 **GREEN:** Add `hash.ts`, `editorialVoice.ts`, `index.ts`; implement UTF-8 FNV-1a, strict validation order, deep freeze, preservation of action reference/channel, and `EditorialContractError` codes `INVALID_ACTION`, `UNSUPPORTED_KIND`, `INVALID_CHANNEL` plus all Unit 1 codes.
+- [x] 2.3 **REFACTOR:** Remove incidental fallback/state and keep behavior/catalog/tests in this rollback-safe local commit.
 
 ## Unit 3: Observation and dependency safety
 
