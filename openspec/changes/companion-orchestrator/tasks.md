@@ -28,9 +28,9 @@ Apply as rollback-safe thematic commits on `etapa-7-living-context`; tests stay 
 
 ## Phase 1: Contracts and pure orchestration
 
-- [ ] 1.1 **RED** - Create `app/src/features/context-engine/companion/orchestrator.test.ts` mapping: Determinismo, Inmutabilidad, Sin seleccion, Preferencia, Act unica, No Act, Malformada, Preserva, Futura, Inicio exacto, Fin exacto, Expiry exacto, Ventana invalida, Explicacion, Proximo incierto.
-- [ ] 1.2 **GREEN** - Create `companion/{contracts,orchestrator,index}.ts`; consume only `selected`, capture injected clock once, preserve a deeply frozen Act, and return closed action/silence with ordered gates and exact `nextUsefulAt` rules.
-- [ ] 1.3 **REFACTOR** - Keep contracts minimal and pure; verify work unit 1 tests and commit behavior plus tests together.
+- [x] 1.1 **RED** - Create `app/src/features/context-engine/companion/orchestrator.test.ts` mapping: Determinismo, Inmutabilidad, Sin seleccion, Preferencia, Act unica, No Act, Malformada, Preserva, Futura, Inicio exacto, Fin exacto, Expiry exacto, Ventana invalida, Explicacion, Proximo incierto.
+- [x] 1.2 **GREEN** - Create `companion/{contracts,orchestrator,index}.ts`; consume only `selected`, capture injected clock once, preserve a deeply frozen Act, and return closed action/silence with ordered gates and exact `nextUsefulAt` rules.
+- [x] 1.3 **REFACTOR** - Keep contracts minimal and pure; verify work unit 1 tests and commit behavior plus tests together.
 
 ## Phase 2: History, frequency and channels
 

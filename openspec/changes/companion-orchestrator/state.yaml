@@ -3,14 +3,14 @@ artifact_store: openspec
 execution_mode: automatic
 delivery_strategy: auto-chain
 chain_strategy: feature-branch-chain
-status: ready-for-apply
+status: applying
 phases:
   explore: done
   proposal: done
   specs: done       # 34 scenarios in companion-orchestrator
   design: done
   tasks: done       # strict TDD; three autonomous local review slices
-  apply: pending
+  apply: in_progress # work unit 1 complete; work units 2-3 pending
   verify: pending
   archive: pending  # Foundation -> Weather -> Decision -> Orchestrator only after authorization
 constraints:
