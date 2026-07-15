@@ -7,12 +7,16 @@ import { resolveDestinationContext, type DestinationLivingContext } from "./dest
 import { resolveTemporalContext } from "./temporalContext";
 import { resolveNarrativeContext } from "./narrativeContext";
 import { availableResult, categoricalFinancialSource, unavailableResult } from "./livingContextResult";
+import { resolveWeatherEligibility, resolveWeatherSnapshot, type WeatherRequestInput } from "./weatherContext";
+import { isWeatherAdapterSnapshot } from "./weatherContextClient";
 import type {
   FinancialContext,
   LivingContextModuleName,
   LivingContextReason,
   ModuleResult,
   Money,
+  WeatherAdapterSnapshot,
+  WeatherContext,
 } from "./types";
 export { LIVING_CONTEXT_FRESHNESS_MS, LIVING_CONTEXT_REASONS } from "./livingContextConstants";
 
@@ -36,6 +40,7 @@ export interface LivingContextCapabilities {
   temporal: boolean;
   financial: boolean;
   narrative: boolean;
+  weather: boolean;
 }
 
 export interface LivingTravelContext {
@@ -44,6 +49,7 @@ export interface LivingTravelContext {
   temporal: ModuleResult<TemporalLivingContext>;
   financial: ModuleResult<FinancialContext>;
   narrative: ModuleResult<NarrativeLivingContext>;
+  weather: ModuleResult<WeatherContext>;
   capabilities: LivingContextCapabilities;
 }
 
@@ -73,6 +79,10 @@ export interface FinancialAdapterInput {
   signal?: AbortSignal;
 }
 
+export interface WeatherAdapterInput extends WeatherRequestInput {
+  signal?: AbortSignal;
+}
+
 export interface LivingContextObservation {
   module: LivingContextModuleName;
   status: "available" | "unavailable";
@@ -84,6 +94,7 @@ export interface LivingContextObservation {
 export interface LivingContextDependencies {
   now: () => Date;
   financialAdapter?: (input: FinancialAdapterInput) => Promise<FinancialContext>;
+  weatherAdapter?: (input: WeatherAdapterInput) => Promise<WeatherAdapterSnapshot | null>;
   observer?: (event: LivingContextObservation) => void;
   signal?: AbortSignal;
   /** Reloj monotónico inyectable reservado para métricas; no afecta resolvedAt. */
@@ -97,6 +108,7 @@ function capabilities(context: Omit<LivingTravelContext, "capabilities">): Livin
     temporal: context.temporal.status === "available",
     financial: context.financial.status === "available",
     narrative: context.narrative.status === "available",
+    weather: context.weather.status === "available",
   };
 }
 
@@ -135,14 +147,27 @@ export function createLivingContextResolution(
   const financial = canResolveFinancial
     ? unavailableResult<FinancialContext>("pending", "financial.adapter", "adapter")
     : unavailableResult<FinancialContext>("missing_financial_input");
+  const weatherEligibility = resolveWeatherEligibility({ trip: input.trip, now });
+  const weatherRequest = weatherEligibility.eligible ? weatherEligibility.request : null;
+  const canResolveWeather = Boolean(weatherRequest && dependencies.weatherAdapter);
+  const weather = canResolveWeather
+    ? unavailableResult<WeatherContext>("weather_pending", "weather.adapter", "adapter")
+    : weatherEligibility.eligible
+      ? unavailableResult<WeatherContext>("missing_weather_input", "weather.adapter")
+      : unavailableResult<WeatherContext>(
+          weatherEligibility.reason,
+          "weather.adapter",
+          weatherEligibility.reason === "weather_outside_window" ? "trip" : "none",
+        );
 
-  const initial = withCapabilities({ resolvedAt, destination, temporal, financial, narrative });
+  const initial = withCapabilities({ resolvedAt, destination, temporal, financial, narrative, weather });
   observe(dependencies.observer, "destination", destination);
   observe(dependencies.observer, "temporal", temporal);
   observe(dependencies.observer, "narrative", narrative);
   if (!canResolveFinancial) observe(dependencies.observer, "financial", financial);
+  if (!canResolveWeather) observe(dependencies.observer, "weather", weather);
 
-  if (!canResolveFinancial) return { initial, settled: Promise.resolve(initial) };
+  if (!canResolveFinancial && !canResolveWeather) return { initial, settled: Promise.resolve(initial) };
 
   const timingNow = dependencies.timingNow ?? (() => 0);
   const startedAt = timingNow();
@@ -151,28 +176,43 @@ export function createLivingContextResolution(
     residenceCountryCode: input.user?.residenceCountryCode,
   });
   const settled = Promise.allSettled([
-    dependencies.financialAdapter!({
-      localMoney: input.financial!.localMoney,
-      preferredCurrency,
-      signal: dependencies.signal,
-    }),
-  ]).then(([outcome]) => {
-    let financialResult: ModuleResult<FinancialContext>;
-    if (outcome.status === "rejected" || !outcome.value.available) {
-      financialResult = unavailableResult("financial_failed", "financial.adapter", "adapter");
-    } else {
-      financialResult = availableResult(
-        "financial",
-        outcome.value,
-        "adapter",
-        categoricalFinancialSource(outcome.value.source),
-        outcome.value.fetchedAt ?? input.observedAt?.financial,
-        now,
-        outcome.value.freshness === "stale" ? "stale" : undefined,
-      );
+    canResolveFinancial
+      ? dependencies.financialAdapter!({
+          localMoney: input.financial!.localMoney,
+          preferredCurrency,
+          signal: dependencies.signal,
+        })
+      : Promise.resolve(null),
+    canResolveWeather
+      ? dependencies.weatherAdapter!({ ...weatherRequest!, signal: dependencies.signal })
+      : Promise.resolve(null),
+  ]).then(([financialOutcome, weatherOutcome]) => {
+    let financialResult = financial;
+    if (canResolveFinancial) {
+      if (financialOutcome.status === "rejected" || !financialOutcome.value?.available) {
+        financialResult = unavailableResult("financial_failed", "financial.adapter", "adapter");
+      } else {
+        financialResult = availableResult(
+          "financial",
+          financialOutcome.value,
+          "adapter",
+          categoricalFinancialSource(financialOutcome.value.source),
+          financialOutcome.value.fetchedAt ?? input.observedAt?.financial,
+          now,
+          financialOutcome.value.freshness === "stale" ? "stale" : undefined,
+        );
+      }
+      observe(dependencies.observer, "financial", financialResult, Math.max(0, timingNow() - startedAt));
     }
-    observe(dependencies.observer, "financial", financialResult, Math.max(0, timingNow() - startedAt));
-    return withCapabilities({ resolvedAt, destination, temporal, financial: financialResult, narrative });
+
+    let weatherResult = weather;
+    if (canResolveWeather) {
+      weatherResult = weatherOutcome.status === "fulfilled" && isWeatherAdapterSnapshot(weatherOutcome.value, weatherRequest!)
+        ? resolveWeatherSnapshot(weatherOutcome.value, now)
+        : unavailableResult("weather_failed", "weather.adapter", "adapter");
+      observe(dependencies.observer, "weather", weatherResult, Math.max(0, timingNow() - startedAt));
+    }
+    return withCapabilities({ resolvedAt, destination, temporal, financial: financialResult, narrative, weather: weatherResult });
   });
 
   return { initial, settled };

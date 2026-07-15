@@ -19,3 +19,9 @@ export function categoricalFinancialSource(source: string | null | undefined): s
   if (source === "cache" || source === "memory-cache" || source === "mongo-cache") return "financial.cache";
   return "financial.adapter";
 }
+
+export function categoricalWeatherSource(source: string | null | undefined): string {
+  if (source === "open-meteo" || source === "provider") return "weather.provider";
+  if (source === "cache" || source === "memory-cache") return "weather.cache";
+  return "weather.adapter";
+}

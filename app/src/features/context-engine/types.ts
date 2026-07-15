@@ -1,6 +1,6 @@
 // Contratos del Context Engine. Financial Context es el primer módulo; los
-// tipos genéricos (ContextModule) existen para que futuros módulos (clima,
-// huso horario, contexto cultural) se sumen por composición, sin que
+// tipos genéricos (ContextModule) permiten que cada módulo se sume por
+// composición, sin que
 // Financial Context dependa de ellos ni al revés.
 
 /** Código de moneda ISO 4217, ya normalizado a mayúsculas. */
@@ -57,6 +57,7 @@ export const LIVING_CONTEXT_MODULES = [
   "temporal",
   "financial",
   "narrative",
+  "weather",
 ] as const;
 
 export type LivingContextModuleName = (typeof LIVING_CONTEXT_MODULES)[number];
@@ -86,4 +87,44 @@ export type LivingContextReason =
   | "pending"
   | "financial_failed"
   | "missing_story"
-  | "story_mismatch";
+  | "story_mismatch"
+  | "missing_weather_input"
+  | "weather_outside_window"
+  | "weather_pending"
+  | "weather_failed"
+  | "weather_refresh_failed";
+
+export type WeatherCondition =
+  | "clear"
+  | "cloudy"
+  | "fog"
+  | "rain"
+  | "storm"
+  | "snow"
+  | "freezing"
+  | "unknown";
+
+export interface LocalDateTime {
+  localDateTime: string;
+  timezone: string;
+}
+
+export interface WeatherContext {
+  condition: WeatherCondition;
+  temperatureC: number;
+  precipitationProbability: number | null;
+  isRaining: boolean;
+  isStorm: boolean;
+  isSnow: boolean;
+  sunrise: LocalDateTime | null;
+  sunset: LocalDateTime | null;
+  effectiveAt: LocalDateTime;
+  expiresAt: string;
+  confidence: "unknown";
+}
+
+export interface WeatherAdapterSnapshot {
+  value: WeatherContext;
+  fetchedAt: string;
+  source: string;
+}

@@ -65,13 +65,101 @@ describe("createLivingContextResolution", () => {
       "financial_failed",
       "missing_story",
       "story_mismatch",
+      "missing_weather_input",
+      "weather_outside_window",
+      "weather_pending",
+      "weather_failed",
+      "weather_refresh_failed",
     ]);
     expect(LIVING_CONTEXT_FRESHNESS_MS).toEqual({
       destination: 86_400_000,
       temporal: 60_000,
       financial: 3_600_000,
       narrative: 86_400_000,
+      weather: 900_000,
     });
+  });
+
+  it("incorpora Weather como quinto módulo dentro del resolver existente", async () => {
+    const weatherAdapter = vi.fn(async () => ({
+      value: {
+        condition: "clear" as const, temperatureC: 22, precipitationProbability: 5,
+        isRaining: false, isStorm: false, isSnow: false, sunrise: null, sunset: null,
+        effectiveAt: { localDateTime: "2026-10-03T12:00", timezone: "America/Argentina/Buenos_Aires" },
+        expiresAt: "2026-10-03T15:15:00.000Z", confidence: "unknown" as const,
+      },
+      fetchedAt: "2026-10-03T15:00:00.000Z", source: "open-meteo",
+    }));
+    const resolution = createLivingContextResolution({
+      trip: trip(), story: { baseStoryId: "ba-2026", package: storyPackage() },
+      user: { preferredCurrency: "CLP", residenceCountryCode: "CL" },
+      financial: { localMoney: { amount: 1000, currency: "ARS" } },
+    }, {
+      now: () => now,
+      financialAdapter: async () => ({
+        localMoney: { amount: 1000, currency: "ARS" }, convertedMoney: { amount: 750, currency: "CLP" },
+        rateDate: "2026-10-03", freshness: "fresh", available: true,
+        source: "frankfurter", fetchedAt: "2026-10-03T14:30:00.000Z",
+      }),
+      weatherAdapter,
+    });
+
+    expect(resolution.initial.weather).toMatchObject({ status: "unavailable", reason: "weather_pending" });
+    const settled = await resolution.settled;
+    expect(settled.capabilities).toEqual({ destination: true, temporal: true, financial: true, narrative: true, weather: true });
+    expect([settled.destination, settled.temporal, settled.financial, settled.narrative, settled.weather].map((item) => item.status)).toEqual([
+      "available", "available", "available", "available", "available",
+    ]);
+    expect(weatherAdapter).toHaveBeenCalledWith({
+      latitude: -34.6037, longitude: -58.3816, timezone: "America/Argentina/Buenos_Aires", localDate: "2026-10-03", signal: undefined,
+    });
+  });
+
+  it("aísla fallas Weather y financieras sin perder módulos elegibles", async () => {
+    const observer = vi.fn();
+    const settled = await createLivingContextResolution({
+      trip: trip(), story: { baseStoryId: "ba-2026", package: storyPackage() },
+      user: { preferredCurrency: "CLP", residenceCountryCode: "CL" },
+      financial: { localMoney: { amount: 1000, currency: "ARS" } },
+    }, {
+      now: () => now, observer,
+      financialAdapter: async () => { throw new Error("financial secret"); },
+      weatherAdapter: async () => { throw new Error("kari@example.com -34.6037 token=secret provider-json"); },
+    }).settled;
+
+    expect(settled.destination.status).toBe("available");
+    expect(settled.temporal.status).toBe("available");
+    expect(settled.narrative.status).toBe("available");
+    expect(settled.financial).toMatchObject({ status: "unavailable", reason: "financial_failed" });
+    expect(settled.weather).toMatchObject({ status: "unavailable", reason: "weather_failed" });
+    expect(settled.capabilities.weather).toBe(false);
+    const weatherEvent = observer.mock.calls.map(([event]) => event).find((event) => event.module === "weather");
+    expect(weatherEvent).toMatchObject({ module: "weather", status: "unavailable", reason: "weather_failed", source: "weather.adapter" });
+    expect(JSON.stringify(observer.mock.calls)).not.toMatch(/kari|34\.6037|secret|provider-json/i);
+  });
+
+  it("fuera de ventana o sin dependencia no llama Weather y explica indisponibilidad", async () => {
+    const weatherAdapter = vi.fn();
+    const outside = await createLivingContextResolution({
+      trip: { ...trip(), startDateTime: "2026-10-05", endDateTime: "2026-10-06" },
+    }, { now: () => now, weatherAdapter }).settled;
+    expect(outside.weather).toMatchObject({ status: "unavailable", reason: "weather_outside_window", provenance: { source: "weather.adapter" } });
+    expect(weatherAdapter).not.toHaveBeenCalled();
+
+    const missingProvider = await createLivingContextResolution({ trip: trip() }, { now: () => now }).settled;
+    expect(missingProvider.weather).toMatchObject({ status: "unavailable", reason: "missing_weather_input" });
+    expect(missingProvider.destination.status).toBe("available");
+  });
+
+  it("descarta un snapshot Weather runtime inválido sin afectar Foundation", async () => {
+    const settled = await createLivingContextResolution({ trip: trip() }, {
+      now: () => now,
+      weatherAdapter: async () => ({ value: { condition: "clear" }, source: "raw -34.6037", fetchedAt: "bad" }) as never,
+    }).settled;
+
+    expect(settled.weather).toMatchObject({ status: "unavailable", reason: "weather_failed", freshness: "unavailable" });
+    expect(settled.destination.status).toBe("available");
+    expect(settled.temporal.status).toBe("available");
   });
 
   it("mantiene precedencia Trip/Story, ids literales y no muta inputs", async () => {
@@ -117,7 +205,7 @@ describe("createLivingContextResolution", () => {
     const settled = await resolution.settled;
     expect(settled.financial).toMatchObject({ status: "unavailable", reason: "financial_failed" });
     expect(settled.destination).toEqual(resolution.initial.destination);
-    expect(settled.capabilities).toEqual({ destination: true, temporal: true, financial: false, narrative: true });
+    expect(settled.capabilities).toEqual({ destination: true, temporal: true, financial: false, narrative: true, weather: false });
     expect(JSON.stringify(observer.mock.calls)).not.toMatch(/kari|34\.60|58\.38|secret|trip-private/i);
   });
 
@@ -129,7 +217,7 @@ describe("createLivingContextResolution", () => {
     expect(resolution.initial.temporal).toMatchObject({ status: "unavailable", reason: "missing_dates" });
     expect(resolution.initial.narrative).toMatchObject({ status: "unavailable", reason: "missing_story" });
     expect(resolution.initial.financial).toMatchObject({ status: "unavailable", reason: "missing_financial_input" });
-    expect((await resolution.settled).capabilities).toEqual({ destination: true, temporal: false, financial: false, narrative: false });
+    expect((await resolution.settled).capabilities).toEqual({ destination: true, temporal: false, financial: false, narrative: false, weather: false });
   });
   it("resuelve los cuatro módulos disponibles en el snapshot settled", async () => {
     const resolution = createLivingContextResolution({
@@ -145,7 +233,7 @@ describe("createLivingContextResolution", () => {
       }),
     });
     const settled = await resolution.settled;
-    expect(settled.capabilities).toEqual({ destination: true, temporal: true, financial: true, narrative: true });
+    expect(settled.capabilities).toEqual({ destination: true, temporal: true, financial: true, narrative: true, weather: false });
     expect([settled.destination, settled.temporal, settled.financial, settled.narrative].map((item) => item.status)).toEqual([
       "available", "available", "available", "available",
     ]);
@@ -175,8 +263,8 @@ describe("createLivingContextResolution", () => {
     const futureAdapter = vi.fn();
     const input = { trip: trip(), weather: { adapter: futureAdapter } } as Parameters<typeof createLivingContextResolution>[0];
     const settled = await createLivingContextResolution(input, { now: () => now }).settled;
-    expect(settled.capabilities).toEqual({ destination: true, temporal: true, financial: false, narrative: false });
-    expect(Object.keys(settled.capabilities)).toEqual(["destination", "temporal", "financial", "narrative"]);
+    expect(settled.capabilities).toEqual({ destination: true, temporal: true, financial: false, narrative: false, weather: false });
+    expect(Object.keys(settled.capabilities)).toEqual(["destination", "temporal", "financial", "narrative", "weather"]);
     expect(futureAdapter).not.toHaveBeenCalled();
   });
 

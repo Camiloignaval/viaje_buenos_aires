@@ -34,9 +34,9 @@ Las slices son commits temáticos locales sobre `etapa-7-living-context`; no cre
 
 ## Phase 2: Domain resolver (RED → GREEN → REFACTOR)
 
-- [ ] 2.1 **RED:** En `app/src/features/context-engine/`, crear `weatherContext.test.ts`, `weatherContextClient.test.ts` y ampliar `livingContext.test.ts`; evidenciar: **Dentro de ventana con cruce DST**, **Fuera de ventana**, **Dato vence**, **Falla aislada**, **Contexto completo con Weather**, **Weather falla**, **Adapter financiero falla**, **Inputs mínimos**, **Snapshot envejecido**, **Falla Weather observada de forma segura**, **Cambio DST**, **Ownership Weather**, **Narrativa literal**, **Dependencia Weather no configurada**.
-- [ ] 2.2 **GREEN:** En `app/src/features/context-engine/`, crear `weatherContext.ts`, `weatherContextClient.ts`; modificar `types.ts`, `livingContextConstants.ts`, `livingContextResult.ts`, `livingContext.ts`: quinto módulo pending/settled, reasons, provenance/freshness, capability por status y observer categórico.
-- [ ] 2.3 **REFACTOR:** Mantener Trip ownership, `{ initial, settled }` y Foundation intactos; ejecutar tests React focales y typecheck.
+- [x] 2.1 **RED:** En `app/src/features/context-engine/`, crear `weatherContext.test.ts`, `weatherContextClient.test.ts` y ampliar `livingContext.test.ts`; evidenciar: **Dentro de ventana con cruce DST**, **Fuera de ventana**, **Dato vence**, **Falla aislada**, **Contexto completo con Weather**, **Weather falla**, **Adapter financiero falla**, **Inputs mínimos**, **Snapshot envejecido**, **Falla Weather observada de forma segura**, **Cambio DST**, **Ownership Weather**, **Narrativa literal**, **Dependencia Weather no configurada**.
+- [x] 2.2 **GREEN:** En `app/src/features/context-engine/`, crear `weatherContext.ts`, `weatherContextClient.ts`; modificar `types.ts`, `livingContextConstants.ts`, `livingContextResult.ts`, `livingContext.ts`: quinto módulo pending/settled, reasons, provenance/freshness, capability por status y observer categórico.
+- [x] 2.3 **REFACTOR:** Mantener Trip ownership, `{ initial, settled }` y Foundation intactos; ejecutar tests React focales y typecheck.
 
 ## Phase 3: React y Health (RED → GREEN → REFACTOR)
 
@@ -71,3 +71,26 @@ Las slices son commits temáticos locales sobre `etapa-7-living-context`; no cre
 - Capas: unitarias y route integration; sin E2E.
 - Approval tests: ninguna; no se refactorizó comportamiento legacy.
 - Funciones puras creadas: validación de input/snapshot, normalización WMO y cache identity SHA-256.
+
+### Slice 2 — Domain resolver
+
+- Estado: completo; frontera autónoma `Weather domain + client contract + fifth resolver module`.
+- Tests focales: `npm.cmd run test:react -- src/features/context-engine/weatherContext.test.ts src/features/context-engine/weatherContextClient.test.ts src/features/context-engine/livingContext.test.ts` — 21/21.
+- Safety net Context Engine: `npm.cmd run test:react -- src/features/context-engine` — 115/115.
+- Typecheck: `npm.cmd run typecheck` — PASS.
+- Build/Node/E2E: no ejecutados; fuera del alcance de esta slice.
+
+### TDD Cycle Evidence — Slice 2
+
+| Task | Test File | Layer | Safety Net | RED | GREEN | TRIANGULATE | REFACTOR |
+|---|---|---|---|---|---|---|---|
+| 2.1 | `weatherContext.test.ts`, `weatherContextClient.test.ts`, `livingContext.test.ts` | Unit + resolver integration | 8/8 `livingContext` baseline | Imports y quinto módulo ausentes; 4 fallas + 2 suites sin resolver | 19/19 iniciales | DST inicio/fin, fuera de ventana, missing/range, fresh/stale, HTTP/runtime/network | 21/21 focales |
+| 2.2 | mismos archivos | Unit + resolver integration | N/A (contratos Weather nuevos) | Contratos y escenarios escritos antes de producción | 19/19 tras mínimo dominio/resolver | Snapshot runtime inválido y timezone/fecha contradictorias | Validator cerrado y source categórico; 21/21 |
+| 2.3 | mismos + `useLivingContext.test.tsx` | Regression | 113 tests Context Engine, 1 expectativa legacy detectada | Source fuera de ventana y coordenada fuera de rango fallaron antes del ajuste | 21/21 focales | Foundation con falla financiera/Weather independientes | 115/115 safety net + typecheck PASS |
+
+### Test Summary — Slice 2
+
+- Tests focales ejecutados: 21; safety net Context Engine: 115.
+- Capas: unitarias y resolver/client integration; sin E2E.
+- Approval tests: 8 tests baseline del resolver antes de modificarlo.
+- Funciones puras creadas: elegibilidad local DST-safe, validación cerrada de snapshot y mapeo snapshot→ModuleResult.

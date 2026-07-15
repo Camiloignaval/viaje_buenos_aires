@@ -89,7 +89,7 @@ describe("useLivingContext", () => {
     expect(result.current.narrative.status).toBe("available");
     expect(result.current.financial).toMatchObject({ status: "unavailable", reason: "pending" });
 
-    await waitFor(() => expect(result.current.capabilities).toEqual({ destination: true, temporal: true, financial: true, narrative: true }));
+    await waitFor(() => expect(result.current.capabilities).toEqual({ destination: true, temporal: true, financial: true, narrative: true, weather: false }));
     expect(resolveFinancialRate).toHaveBeenCalledTimes(1);
   });
 
