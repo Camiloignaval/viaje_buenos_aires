@@ -35,9 +35,9 @@ Chain strategy: size-exception
 
 ## Phase 2: Foundation resolver/types
 
-- [ ] 2.1 **RED:** crear `app/src/features/context-engine/livingContext.test.ts` para catálogo cerrado de razones/umbrales, precedencia, ids literales, no mutación, `initial/settled`, falla aislada y observer sin datos sensibles.
-- [ ] 2.2 **GREEN:** extender `types.ts` y crear `livingContext.ts` con envelopes, provenance/freshness, capabilities derivadas, reloj/adapters inyectados y `Promise.allSettled`.
-- [ ] 2.3 **REFACTOR:** eliminar duplicación sin tocar el registry legacy; ejecutar Vitest focalizado + `npm run typecheck` y crear commit foundation.
+- [x] 2.1 **RED:** crear `app/src/features/context-engine/livingContext.test.ts` para catálogo cerrado de razones/umbrales, precedencia, ids literales, no mutación, `initial/settled`, falla aislada y observer sin datos sensibles.
+- [x] 2.2 **GREEN:** extender `types.ts` y crear `livingContext.ts` con envelopes, provenance/freshness, capabilities derivadas, reloj/adapters inyectados y `Promise.allSettled`.
+- [x] 2.3 **REFACTOR:** eliminar duplicación sin tocar el registry legacy; ejecutar Vitest focalizado + `npm run typecheck` y crear commit foundation.
 
 ## Phase 3: Módulos concretos
 
