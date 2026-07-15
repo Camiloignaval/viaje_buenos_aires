@@ -6,6 +6,7 @@ import { ChapterTopbar } from "./ReadingTopbar";
 import { formatChapterDate, toRoman } from "../lib/format";
 import { heroImageForChapter } from "../lib/chapterSummary";
 import { FavoriteHeart, PrivateNote } from "./StoryAffinity";
+import { resolveContextualLines } from "../lib/contextualInfo";
 import { byCreatedAt, groupMemoriesByActivity, mostRecent } from "../lib/memoryGrouping";
 import { photoSlotKey } from "../lib/photoSlot";
 import { getChapterReferenceDate } from "@/features/story/engine/storyProgress";
@@ -326,6 +327,18 @@ export function ActivityCard({
       </div>
       {location?.name ? <p className="location">{location.name}</p> : null}
       {place?.recommendation ? <p className="recommendation">{place.recommendation}</p> : null}
+      {(() => {
+        const contextualLines = resolveContextualLines(activity.intelligence, place?.intelligence);
+        return contextualLines.length > 0 ? (
+          <ul className="contextual-info" aria-label="Información útil">
+            {contextualLines.map((line) => (
+              <li key={line.id} className="contextual-info-line">
+                {line.text}
+              </li>
+            ))}
+          </ul>
+        ) : null;
+      })()}
       <Links location={location} websiteUrl={websiteUrl} />
       <ActivityMemorySlot
         chapterId={chapterId}

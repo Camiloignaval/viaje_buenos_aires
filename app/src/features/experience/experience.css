@@ -3352,3 +3352,28 @@ body:has(.cover-index-stage.is-index-writing) {
     transform: none;
   }
 }
+
+/* ---- Información contextual (Etapa 6.8) — secundaria, nunca protagonista ---- */
+.contextual-info {
+  margin: 0.6rem 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.contextual-info-line {
+  color: rgba(var(--text-secondary-rgb), 0.68);
+  font-size: 0.82rem;
+  line-height: 1.45;
+  padding-left: 0.8rem;
+  position: relative;
+}
+
+.contextual-info-line::before {
+  content: "·";
+  position: absolute;
+  left: 0.15rem;
+  color: rgba(var(--text-secondary-rgb), 0.45);
+}
