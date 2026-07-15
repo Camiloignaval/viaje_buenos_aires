@@ -3,7 +3,7 @@ artifact_store: openspec
 execution_mode: automatic
 delivery_strategy: auto-chain
 chain_strategy: feature-branch-chain
-status: ready-for-verify
+status: ready-for-archive
 phases:
   explore: done
   proposal: done
@@ -11,7 +11,7 @@ phases:
   design: done
   tasks: done       # strict TDD; four autonomous local review slices
   apply: done         # 14/14 tasks complete across four autonomous review slices
-  verify: pending
+  verify: done        # PASS; 65/65 scenarios, 14/14 tasks, 0 findings
   archive: pending  # archive Foundation -> Weather -> Decision only after authorization
 constraints:
   - work only on etapa-7-living-context with local thematic commits; no PR branches or push
