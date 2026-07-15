@@ -1,0 +1,14 @@
+change: living-context-foundation
+artifact_store: openspec
+execution_mode: automatic
+delivery_strategy: exception-ok
+chain_strategy: size-exception
+phases:
+  explore: done
+  proposal: done
+  specs: done
+  design: done
+  tasks: done
+  apply: pending
+  verify: pending
+  archive: pending
