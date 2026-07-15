@@ -3277,3 +3277,78 @@ body:has(.cover-index-stage.is-index-writing) {
     font-size: 0.74rem;
   }
 }
+
+/* ---- Favoritos y notas privadas (Etapa 6.8) ---- */
+.activity-title-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+
+.favorite-heart {
+  flex: none;
+  background: none;
+  border: none;
+  padding: 0.15rem;
+  cursor: pointer;
+  font-size: 1.15rem;
+  line-height: 1;
+  color: rgba(var(--text-secondary-rgb), 0.45);
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.favorite-heart:hover {
+  color: rgba(var(--text-secondary-rgb), 0.7);
+  transform: scale(1.12);
+}
+
+.favorite-heart.is-active {
+  color: #c76b7f;
+}
+
+.private-note {
+  display: block;
+  margin-top: 0.7rem;
+}
+
+.private-note-label {
+  display: block;
+  margin-bottom: 0.25rem;
+  color: rgba(var(--text-secondary-rgb), 0.6);
+  font-size: 0.75rem;
+  letter-spacing: 0.02em;
+}
+
+.private-note-field {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px dashed rgba(var(--text-secondary-rgb), 0.3);
+  padding: 0.3rem 0;
+  color: rgba(var(--text-primary-rgb), 0.9);
+  font-family: inherit;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  resize: none;
+}
+
+.private-note-field:focus {
+  outline: none;
+  border-bottom-color: rgba(var(--text-secondary-rgb), 0.6);
+}
+
+.private-note-static {
+  margin-top: 0.6rem;
+  color: rgba(var(--text-primary-rgb), 0.8);
+  font-style: italic;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .favorite-heart {
+    transition: color 0.2s ease;
+  }
+  .favorite-heart:hover {
+    transform: none;
+  }
+}

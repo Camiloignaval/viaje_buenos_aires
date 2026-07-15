@@ -58,6 +58,8 @@ export interface ExperienceActions {
 /** Todo lo que el árbol de componentes necesita — espejo de las `options` de renderExperience. */
 export interface ExperienceContextValue {
   storyPackage: StoryPackage;
+  /** Scope de persistencia por viaje (tripId; en demo, el id del package). */
+  scopeId: string;
   view: StoryView;
   now: Date;
   interactive: boolean;

@@ -5,6 +5,7 @@ import { SavedMemory, MemoryInvitation, MemoryCard } from "./Memories";
 import { ChapterTopbar } from "./ReadingTopbar";
 import { formatChapterDate, toRoman } from "../lib/format";
 import { heroImageForChapter } from "../lib/chapterSummary";
+import { FavoriteHeart, PrivateNote } from "./StoryAffinity";
 import { byCreatedAt, groupMemoriesByActivity, mostRecent } from "../lib/memoryGrouping";
 import { photoSlotKey } from "../lib/photoSlot";
 import { getChapterReferenceDate } from "@/features/story/engine/storyProgress";
@@ -307,14 +308,17 @@ export function ActivityCard({
       {activity.image ? (
         <img className="activity-photo" src={`/${activity.image}`} alt={activity.moment ?? activity.title} loading="lazy" />
       ) : null}
-      <p className="activity-title">
-        {activity.moment ? (
-          <Fragment>
-            <em>{activity.moment}.</em>{" "}
-          </Fragment>
-        ) : null}
-        {activity.title}
-      </p>
+      <div className="activity-title-row">
+        <p className="activity-title">
+          {activity.moment ? (
+            <Fragment>
+              <em>{activity.moment}.</em>{" "}
+            </Fragment>
+          ) : null}
+          {activity.title}
+        </p>
+        <FavoriteHeart targetId={`activity:${activity.id}`} label={activity.title} />
+      </div>
       {activity.description ? <p className="activity-description">{activity.description}</p> : null}
       <div className="activity-head">
         {activity.timeWindow ? <span className="time">{activity.timeWindow}</span> : null}
@@ -330,6 +334,7 @@ export function ActivityCard({
         existingMemory={existingMemory}
         staged={staged}
       />
+      <PrivateNote targetId={`activity:${activity.id}`} />
     </li>
   );
 }
