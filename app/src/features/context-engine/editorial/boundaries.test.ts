@@ -11,7 +11,7 @@ function productionSources(): string {
     .join("\n");
 }
 
-describe("Editorial Voice Unit 1 boundaries", () => {
+describe("Editorial Voice boundaries", () => {
   it("does not depend on runtime context, Story, providers, UI, delivery, storage or AI", () => {
     const source = productionSources();
     const banned = [
@@ -22,6 +22,8 @@ describe("Editorial Voice Unit 1 boundaries", () => {
       /PushCompanion|web-push|sendNotification|authorizeDelivery/i,
       /openai|anthropic|prompt|generateText|chatCompletion/i,
       /lib\/companionEngine|lib\\companionEngine/i,
+      /from\s+["'][^"']*\/companion(?:\/|["'])/i,
+      /console\.(?:log|warn|error)|navigator\.|document\.|window\./i,
     ];
 
     for (const boundary of banned) expect(source).not.toMatch(boundary);
@@ -31,5 +33,12 @@ describe("Editorial Voice Unit 1 boundaries", () => {
     const source = readFileSync(path.join(DIRECTORY, "catalog.ts"), "utf8");
     expect(source).not.toMatch(/\$\{|\{(?:action|decision|trip|user|destination)Id\}/i);
     expect(source).not.toMatch(/\bMath\.random\b|\bDate\.now\b/);
+  });
+
+  it("keeps observation free of identifiers, copy and runtime payload shapes", () => {
+    const source = readFileSync(path.join(DIRECTORY, "observer.ts"), "utf8");
+
+    expect(source).not.toMatch(/actionId|decisionId|dedupeKey|actionRef|\btext\b|payload|evidence|rawError|\bstack\b/);
+    expect(source).not.toMatch(/\bfetch\s*\(|localStorage|sessionStorage|indexedDB|openai|prompt/i);
   });
 });

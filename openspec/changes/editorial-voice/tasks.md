@@ -39,8 +39,8 @@ Chain strategy: feature-branch-chain
 
 ## Unit 3: Observation and dependency safety
 
-- [ ] 3.1 **RED:** Add `observer.test.ts` and full fixtures/static boundary checks for **Frontera aislada, Observer seguro, Observer falla**, plus regression coverage for all 25 scenarios.
-- [ ] 3.2 **GREEN:** Add `observer.ts`; emit only categorical fields and sanitized duration, preserve original output/error, and forbid AI, context, Story, providers, decisions runtime, React/UI, Push/delivery, storage and legacy Companion dependencies.
-- [ ] 3.3 **REFACTOR:** Consolidate exports/fixtures and run focal editorial, React safety, Node safety, typecheck and diff-check; do not build, integrate, push, archive or start 7.6.
+- [x] 3.1 **RED:** Add `observer.test.ts` and full fixtures/static boundary checks for **Frontera aislada, Observer seguro, Observer falla**, plus regression coverage for all 25 scenarios.
+- [x] 3.2 **GREEN:** Add `observer.ts`; emit only categorical fields and sanitized duration, preserve original output/error, and forbid AI, context, Story, providers, decisions runtime, React/UI, Push/delivery, storage and legacy Companion dependencies.
+- [x] 3.3 **REFACTOR:** Consolidate exports/fixtures and run focal editorial, React safety, Node safety, typecheck and diff-check; do not build, integrate, push, archive or start 7.6.
 
 Archive order: Foundation -> Weather -> Decision -> Orchestrator -> Editorial.

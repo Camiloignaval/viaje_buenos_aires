@@ -3,14 +3,14 @@ artifact_store: openspec
 execution_mode: automatic
 delivery_strategy: auto-chain
 chain_strategy: feature-branch-chain
-status: ready-for-apply
+status: ready-for-verify
 phases:
   explore: done
   proposal: done
   specs: done       # 25 scenarios in editorial-voice
   design: done
   tasks: done       # strict TDD; three autonomous local review slices
-  apply: in_progress  # 7/10 tasks complete; Units 1-2 committed as autonomous slices
+  apply: done         # 10/10 tasks complete; three autonomous local slices
   verify: pending
   archive: pending  # Foundation -> Weather -> Decision -> Orchestrator -> Editorial
 constraints:

@@ -13,3 +13,10 @@ export type {
 } from "./contracts";
 export { EditorialContractError } from "./contracts";
 export { createEditorialMessage, type EditorialCompanionAction } from "./editorialVoice";
+export {
+  emitEditorialObservation,
+  sanitizeEditorialDuration,
+  type EditorialDependencies,
+  type EditorialObservation,
+  type EditorialObserver,
+} from "./observer";

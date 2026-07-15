@@ -7,6 +7,11 @@ import {
   type EditorialMessage,
 } from "./contracts";
 import { selectEditorialVariantIndex } from "./hash";
+import {
+  emitEditorialObservation,
+  type EditorialDependencies,
+  type EditorialObserver,
+} from "./observer";
 import { validateEditorialCatalog } from "./validation";
 
 const ACTION_KEYS = [
@@ -226,6 +231,72 @@ function validateChannel(channel: string): asserts channel is EditorialChannel {
 export function createEditorialMessage(
   action: EditorialCompanionAction,
   catalog: EditorialCatalog = EDITORIAL_V1_CATALOG,
+  dependencies?: EditorialDependencies,
+): EditorialMessage {
+  let observer: EditorialObserver | undefined;
+  let timingNow: (() => number) | undefined;
+  try { observer = dependencies?.observer; } catch { observer = undefined; }
+  try { timingNow = dependencies?.timingNow; } catch { timingNow = undefined; }
+  const startedAt = readTime(timingNow);
+
+  try {
+    const message = createMessage(action, catalog);
+    emitEditorialObservation(observer, {
+      outcome: "success",
+      errorCode: "none",
+      kind: message.actionRef.kind,
+      variantId: message.variantId,
+      catalogVersion: message.catalogVersion,
+      durationMs: elapsed(startedAt, timingNow),
+    });
+    return message;
+  } catch (error) {
+    const contractError = error instanceof EditorialContractError
+      ? error
+      : new EditorialContractError("INVALID_ACTION");
+    emitEditorialObservation(observer, {
+      outcome: "error",
+      errorCode: contractError.code,
+      kind: observableKind(action),
+      variantId: "none",
+      catalogVersion: "editorial-v1",
+      durationMs: elapsed(startedAt, timingNow),
+    });
+    throw contractError;
+  }
+}
+
+function readTime(timingNow: (() => number) | undefined): number | undefined {
+  if (!timingNow) return undefined;
+  try {
+    const value = timingNow();
+    return Number.isFinite(value) ? value : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+function elapsed(startedAt: number | undefined, timingNow: (() => number) | undefined): number {
+  const finishedAt = readTime(timingNow);
+  return startedAt === undefined || finishedAt === undefined ? 0 : finishedAt - startedAt;
+}
+
+function observableKind(action: unknown): EditorialDecisionKind | "unknown" {
+  try {
+    if (!isRecord(action) || !isRecord(action.decision) || typeof action.decision.kind !== "string") {
+      return "unknown";
+    }
+    return EDITORIAL_V1_KINDS.includes(action.decision.kind as EditorialDecisionKind)
+      ? action.decision.kind as EditorialDecisionKind
+      : "unknown";
+  } catch {
+    return "unknown";
+  }
+}
+
+function createMessage(
+  action: EditorialCompanionAction,
+  catalog: EditorialCatalog,
 ): EditorialMessage {
   try {
     validateActionStructure(action);
