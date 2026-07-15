@@ -69,6 +69,12 @@ export interface ChapterCopy {
   close?: string;
 }
 
+/** Assets asociados a un capítulo o al paquete (imagen hero, etc.). */
+export interface StoryAssets {
+  heroImage?: string;
+  [key: string]: unknown;
+}
+
 export interface Tradition {
   title: string;
   body: string;
@@ -87,6 +93,7 @@ export interface Chapter {
   nightNote?: string;
   ourMoment?: string;
   suggestedMemories?: SuggestedMemory[];
+  assets?: StoryAssets;
   [key: string]: unknown;
 }
 
@@ -191,6 +198,7 @@ export interface StoryPackage {
   collections?: Collection[];
   checklist?: ChecklistItem[];
   baseCopy: BaseCopy;
+  assets?: StoryAssets;
   [key: string]: unknown;
 }
 
