@@ -242,7 +242,16 @@ describe("orchestrateCompanion contracts and pure gates", () => {
         priority: "normal",
         dedupeKey: "trip-start:trip-1:2026-10-03",
       },
-      evaluatedGates: ["preference", "selection", "decision_contract", "temporal_window", "channel"],
+      evaluatedGates: [
+        "preference",
+        "selection",
+        "decision_contract",
+        "temporal_window",
+        "history",
+        "dedupe",
+        "frequency",
+        "channel",
+      ],
     });
   });
 

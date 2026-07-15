@@ -29,6 +29,14 @@ export interface CompanionInput {
   readonly context: LivingTravelContext;
   readonly decisionRun: ContextDecisionRun;
   readonly preferences: Readonly<{ enabled: boolean }>;
+  readonly processedKeys?: ReadonlySet<string> | null;
+  readonly history?: readonly CompanionHistoryEntry[] | null;
+}
+
+export interface CompanionHistoryEntry {
+  readonly dedupeKey: string;
+  readonly priority: DecisionPriority;
+  readonly processedAt: string;
 }
 
 export interface CompanionDecisionRef {

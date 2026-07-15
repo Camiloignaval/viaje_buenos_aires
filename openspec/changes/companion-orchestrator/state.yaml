@@ -10,7 +10,7 @@ phases:
   specs: done       # 34 scenarios in companion-orchestrator
   design: done
   tasks: done       # strict TDD; three autonomous local review slices
-  apply: in_progress # work unit 1 complete; work units 2-3 pending
+  apply: in_progress # work units 1-2 complete; work unit 3 pending
   verify: pending
   archive: pending  # Foundation -> Weather -> Decision -> Orchestrator only after authorization
 constraints:

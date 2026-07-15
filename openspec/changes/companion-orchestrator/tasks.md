@@ -34,10 +34,10 @@ Apply as rollback-safe thematic commits on `etapa-7-living-context`; tests stay 
 
 ## Phase 2: History, frequency and channels
 
-- [ ] 2.1 **RED** - Create `companion/policy.test.ts` mapping: Procesada, Historica, Vacio, Inseguro, Normal/low reciente, Seis horas, High temprana, High limite, High reciente, High dedupe/vencida, Proximo exacto, Mapping, Kind desconocido, Frontera.
-- [ ] 2.2 **GREEN** - Create `companion/policy.ts`; validate caller-owned history before dedupe, then apply `CONSERVATIVE_INTERVAL_WITH_DISTINCT_HIGH_BYPASS`: 6h default, distinct high at `>=60m`, and no high aged `<60m`; never bypass invalidity, expiry or dedupe.
-- [ ] 2.3 **GREEN** - Map exactly: `trip_start_tomorrow->timeline`, `trip_start_today->in_app`, `trip_last_day->memory`, `weather_attention_candidate->push`, `light_moment_candidate->editorial`; labels MUST NOT authorize delivery.
-- [ ] 2.4 **REFACTOR** - Name temporal boundaries, use no scores, verify work unit 2 tests, and commit behavior plus tests together.
+- [x] 2.1 **RED** - Create `companion/policy.test.ts` mapping: Procesada, Historica, Vacio, Inseguro, Normal/low reciente, Seis horas, High temprana, High limite, High reciente, High dedupe/vencida, Proximo exacto, Mapping, Kind desconocido, Frontera.
+- [x] 2.2 **GREEN** - Create `companion/policy.ts`; validate caller-owned history before dedupe, then apply `CONSERVATIVE_INTERVAL_WITH_DISTINCT_HIGH_BYPASS`: 6h default, distinct high at `>=60m`, and no high aged `<60m`; never bypass invalidity, expiry or dedupe.
+- [x] 2.3 **GREEN** - Map exactly: `trip_start_tomorrow->timeline`, `trip_start_today->in_app`, `trip_last_day->memory`, `weather_attention_candidate->push`, `light_moment_candidate->editorial`; labels MUST NOT authorize delivery.
+- [x] 2.4 **REFACTOR** - Name temporal boundaries, use no scores, verify work unit 2 tests, and commit behavior plus tests together.
 
 ## Phase 3: Observer and isolation
 

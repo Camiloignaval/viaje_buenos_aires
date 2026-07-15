@@ -11,14 +11,12 @@ import {
   type CompanionSilence,
   type CompanionSilenceReason,
 } from "./contracts";
+import {
+  evaluateCompanionFrequency,
+  resolveCompanionChannel,
+  validateCompanionHistory,
+} from "./policy";
 
-const DECISION_KINDS = new Set<DecisionKind>([
-  "trip_start_tomorrow",
-  "trip_start_today",
-  "trip_last_day",
-  "weather_attention_candidate",
-  "light_moment_candidate",
-]);
 const RULE_IDS = new Set([
   "trip-start-tomorrow",
   "trip-start-today",
@@ -54,14 +52,6 @@ const EVIDENCE_STATES = new Set([
   "coherent",
   "conflicting",
 ]);
-const CHANNEL_BY_KIND: Readonly<Record<DecisionKind, CompanionChannel>> = Object.freeze({
-  trip_start_tomorrow: "timeline",
-  trip_start_today: "in_app",
-  trip_last_day: "memory",
-  weather_attention_candidate: "push",
-  light_moment_candidate: "editorial",
-});
-
 interface ValidatedSelection {
   readonly decision: ActDecision;
   readonly decisionRef: CompanionDecisionRef;
@@ -122,6 +112,7 @@ function cloneSelected(selected: unknown): ActDecision | null {
 
 function validateSelection(selected: unknown): ValidatedSelection | null {
   try {
+    const channel = isRecord(selected) ? resolveCompanionChannel(selected.kind) : null;
     if (!isRecord(selected)
       || selected.outcome !== "act"
       || !isNonEmptyString(selected.id)
@@ -129,7 +120,7 @@ function validateSelection(selected: unknown): ValidatedSelection | null {
       || typeof selected.ruleId !== "string"
       || !RULE_IDS.has(selected.ruleId)
       || typeof selected.kind !== "string"
-      || !DECISION_KINDS.has(selected.kind as DecisionKind)
+      || channel === null
       || typeof selected.category !== "string"
       || !CATEGORIES.has(selected.category)
       || typeof selected.priority !== "string"
@@ -171,7 +162,7 @@ function validateSelection(selected: unknown): ValidatedSelection | null {
         priority,
         dedupeKey: selected.dedupeKey,
       }),
-      channel: CHANNEL_BY_KIND[kind],
+      channel,
       validFromMs,
       validUntilMs,
       expiresAtMs,
@@ -246,6 +237,26 @@ export function orchestrateCompanion(
   }
   if (nowMs >= validated.validUntilMs || nowMs >= validated.expiresAtMs) {
     return silence("decision_expired", validated.decisionRef, gates);
+  }
+
+  gates.push("history");
+  let history;
+  try {
+    history = validateCompanionHistory(input.processedKeys, input.history, nowMs);
+  } catch {
+    return silence("invalid_history", validated.decisionRef, gates);
+  }
+  if (!history.valid) return silence("invalid_history", validated.decisionRef, gates);
+
+  gates.push("dedupe");
+  if (history.value.dedupeKeys.has(validated.decisionRef.dedupeKey)) {
+    return silence("already_processed", validated.decisionRef, gates);
+  }
+
+  gates.push("frequency");
+  const frequency = evaluateCompanionFrequency(validated.decisionRef.priority, history.value, nowMs);
+  if (!frequency.allowed) {
+    return silence(frequency.reason, validated.decisionRef, gates, frequency.nextUsefulAt);
   }
 
   gates.push("channel");
