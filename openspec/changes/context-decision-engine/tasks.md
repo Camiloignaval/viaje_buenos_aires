@@ -29,9 +29,9 @@ Apply uses these as local thematic commits on `etapa-7-living-context`; no PR br
 
 ## Phase 1: Contracts + deterministic engine
 
-- [ ] 1.1 **RED** — Create `app/src/features/context-engine/decision/engine.test.ts`: Determinismo, Inmutabilidad, Reloj, Orden, Actúa, Abstiene, Múltiples, Conflicto, Dedupe, Ventana, Expiración; Capability, Preferencia, Insuficiente, Inválida, Parcial, Conflictiva, Procesado, Prioridad, Coexistencia, Equivalencia, Entrega.
-- [ ] 1.2 **GREEN** — Create `decision/{contracts,constants,time,rules,engine,observer,index}.ts`; implement immutable `Act|Abstain`, complete ordered trace, processed keys, conflict/dedupe/expiry and one selection.
-- [ ] 1.3 **REFACTOR** — Freeze the explicit rule order, stable dedupe identities and sanitized observer contract; keep behavior/tests together in local slice 1.
+- [x] 1.1 **RED** — Create `app/src/features/context-engine/decision/engine.test.ts`: Determinismo, Inmutabilidad, Reloj, Orden, Actúa, Abstiene, Múltiples, Conflicto, Dedupe, Ventana, Expiración; Capability, Preferencia, Insuficiente, Inválida, Parcial, Conflictiva, Procesado, Prioridad, Coexistencia, Equivalencia, Entrega.
+- [x] 1.2 **GREEN** — Create `decision/{contracts,constants,time,rules,engine,observer,index}.ts`; implement immutable `Act|Abstain`, complete ordered trace, processed keys, conflict/dedupe/expiry and one selection.
+- [x] 1.3 **REFACTOR** — Freeze the explicit rule order, stable dedupe identities and sanitized observer contract; keep behavior/tests together in local slice 1.
 
 ## Phase 2: Temporal rules
 
