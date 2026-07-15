@@ -16,6 +16,7 @@ import {
   resolveCompanionChannel,
   validateCompanionHistory,
 } from "./policy";
+import { notifyCompanionObserver, readCompanionTiming } from "./observer";
 
 const RULE_IDS = new Set([
   "trip-start-tomorrow",
@@ -201,7 +202,7 @@ function action(selection: ValidatedSelection, evaluatedGates: readonly Companio
   });
 }
 
-export function orchestrateCompanion(
+function resolveCompanion(
   input: CompanionInput,
   dependencies: CompanionDependencies,
 ): CompanionResult {
@@ -261,4 +262,14 @@ export function orchestrateCompanion(
 
   gates.push("channel");
   return action(validated, gates);
+}
+
+export function orchestrateCompanion(
+  input: CompanionInput,
+  dependencies: CompanionDependencies,
+): CompanionResult {
+  const startedAt = readCompanionTiming(dependencies);
+  const result = resolveCompanion(input, dependencies);
+  notifyCompanionObserver(result, dependencies, startedAt);
+  return result;
 }

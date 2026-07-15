@@ -68,6 +68,23 @@ export interface CompanionSilence {
 
 export type CompanionResult = CompanionAction | CompanionSilence;
 
+export type CompanionObservationReason = "actionable" | CompanionSilenceReason;
+export type CompanionObservationPriority = DecisionPriority | "none";
+export type CompanionObservationChannel = CompanionChannel | "none";
+
+export interface CompanionObservation {
+  readonly outcome: CompanionResult["outcome"];
+  readonly reason: CompanionObservationReason;
+  readonly policy: CompanionPolicy;
+  readonly priority: CompanionObservationPriority;
+  readonly channel: CompanionObservationChannel;
+  readonly durationMs: number;
+}
+
+export type CompanionObserver = (observation: CompanionObservation) => void;
+
 export interface CompanionDependencies {
   readonly now: () => Date;
+  readonly observer?: CompanionObserver;
+  readonly timingNow?: () => number;
 }

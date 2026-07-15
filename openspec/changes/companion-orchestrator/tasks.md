@@ -41,7 +41,7 @@ Apply as rollback-safe thematic commits on `etapa-7-living-context`; tests stay 
 
 ## Phase 3: Observer and isolation
 
-- [ ] 3.1 **RED** - Create `companion/observer.test.ts` for Observer seguro and Observer falla; create `companion/boundaries.test.ts` for Sin I/O, Limites legacy and Compatibilidad.
-- [ ] 3.2 **GREEN** - Create `companion/observer.ts`; emit only outcome, closed reason, policy, priority/channel categories and finite duration capped at 60s; swallow observer failure without changing output.
-- [ ] 3.3 **REFACTOR** - Prove imports exclude React, providers, storage, Push/delivery, UI, IA, legacy and prior-engine mutation; run focal/full React safety, typecheck and diff-check, never build.
-- [ ] 3.4 Preserve archive order Foundation -> Weather -> Decision -> Orchestrator; do not archive, activate a consumer, persist history, modify preferences/config/endpoints, or advance to 7.5.
+- [x] 3.1 **RED** - Create `companion/observer.test.ts` for Observer seguro and Observer falla; create `companion/boundaries.test.ts` for Sin I/O, Limites legacy and Compatibilidad.
+- [x] 3.2 **GREEN** - Create `companion/observer.ts`; emit only outcome, closed reason, policy, priority/channel categories and finite duration capped at 60s; swallow observer failure without changing output.
+- [x] 3.3 **REFACTOR** - Prove imports exclude React, providers, storage, Push/delivery, UI, IA, legacy and prior-engine mutation; run focal/full React safety, typecheck and diff-check, never build.
+- [x] 3.4 Preserve archive order Foundation -> Weather -> Decision -> Orchestrator; do not archive, activate a consumer, persist history, modify preferences/config/endpoints, or advance to 7.5.
