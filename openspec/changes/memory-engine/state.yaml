@@ -1,0 +1,19 @@
+change: memory-engine
+artifact_store: openspec
+execution_mode: automatic
+delivery_strategy: auto-chain
+chain_strategy: feature-branch-chain
+status: ready-for-apply
+phases:
+  explore: done
+  proposal: done
+  specs: done       # 16 scenarios in memory-engine
+  design: done
+  tasks: done       # strict TDD; three autonomous local review slices
+  apply: pending    # 0/12 tasks complete
+  verify: pending
+  archive: pending
+constraints:
+  - use sequential local thematic commits on the existing feature branch
+  - do not modify prior stages or add consumers, UI, providers, AI, logs or a second store
+  - never build, run Playwright, push, tag, archive or create PRs
