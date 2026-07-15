@@ -35,6 +35,20 @@ function validTimezone(value: string): boolean {
   try { new Intl.DateTimeFormat("en", { timeZone: value }).format(0); return true; } catch { return false; }
 }
 
+function weatherFinding(
+  severity: "warning" | "info",
+  code: string,
+  path: "$context.weather.providerStatus" | "$context.weather.snapshotStatus",
+): HealthFinding {
+  return {
+    category: "context",
+    severity,
+    code,
+    path,
+    message: "El estado local de Weather no es utilizable por Living Context.",
+  };
+}
+
 export function checkLivingContext(pkg: StoryPackage, ctx: HealthCheckContext): HealthFinding[] {
   const findings: HealthFinding[] = [];
   const metadata = pkg.metadata.livingContext;
@@ -67,6 +81,30 @@ export function checkLivingContext(pkg: StoryPackage, ctx: HealthCheckContext): 
     }
     if (metadata.locale && runtimeDestination.locale && metadata.locale !== runtimeDestination.locale) {
       findings.push(mismatch("living-context.locale-mismatch", "metadata.livingContext.locale", "El locale curado contradice el destino efectivo."));
+    }
+  }
+
+  const runtimeWeather = ctx.livingContext?.weather;
+  if (runtimeWeather) {
+    if (runtimeWeather.providerStatus === "unconfigured") {
+      findings.push(weatherFinding(
+        "info",
+        "living-context.weather-provider-unconfigured",
+        "$context.weather.providerStatus",
+      ));
+    } else if (runtimeWeather.providerStatus !== undefined && runtimeWeather.providerStatus !== "configured") {
+      findings.push(weatherFinding(
+        "warning",
+        "living-context.invalid-weather-provider-status",
+        "$context.weather.providerStatus",
+      ));
+    }
+    if (runtimeWeather.snapshotStatus !== undefined && runtimeWeather.snapshotStatus !== "valid") {
+      findings.push(weatherFinding(
+        "warning",
+        "living-context.invalid-weather-snapshot",
+        "$context.weather.snapshotStatus",
+      ));
     }
   }
   return findings;

@@ -82,4 +82,39 @@ describe("checkLivingContext", () => {
     expect(findings.map((item) => item.code)).toEqual(["living-context.locale-mismatch"]);
     expect(findings[0].path).toBe("metadata.livingContext.locale");
   });
+
+  it("provider y snapshot Weather saludables no agregan warnings", () => {
+    const story = pkg();
+    story.metadata.livingContext = { countryCode: "AR", locale: "es-AR", timezone: "America/Argentina/Buenos_Aires", currency: "ARS" };
+    expect(checkLivingContext(story, { livingContext: {
+      weather: { providerStatus: "configured", snapshotStatus: "valid" },
+    } })).toEqual([]);
+  });
+
+  it("diagnostica provider no configurado sin invalidar Stories legacy", () => {
+    const report = runHealthCheck(pkg(), { livingContext: {
+      weather: { providerStatus: "unconfigured" },
+    } });
+    const weatherFindings = report.findings.filter((item) => item.code.startsWith("living-context.weather"));
+    expect(report.status).toBe("ok");
+    expect(report.counts.critical).toBe(0);
+    expect(weatherFindings.map(({ code, path, severity }) => ({ code, path, severity }))).toEqual([{
+      code: "living-context.weather-provider-unconfigured",
+      path: "$context.weather.providerStatus",
+      severity: "info",
+    }]);
+  });
+
+  it("sanitiza estados runtime Weather inválidos", () => {
+    const sensitive = "kari@example.com token=secret -34.6037,-58.3816 budget=999 provider-payload";
+    const findings = checkLivingContext(pkg(), { livingContext: {
+      weather: { providerStatus: sensitive, snapshotStatus: sensitive } as never,
+    } });
+
+    expect(findings.map(({ code, path, severity }) => ({ code, path, severity }))).toEqual([
+      { code: "living-context.invalid-weather-provider-status", path: "$context.weather.providerStatus", severity: "warning" },
+      { code: "living-context.invalid-weather-snapshot", path: "$context.weather.snapshotStatus", severity: "warning" },
+    ]);
+    expect(JSON.stringify(findings)).not.toMatch(/kari|secret|34\.6037|58\.3816|999|provider-payload/);
+  });
 });

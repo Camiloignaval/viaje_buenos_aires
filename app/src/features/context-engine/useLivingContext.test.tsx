@@ -6,10 +6,17 @@ import type { StoryPackage } from "@/features/story/engine/types";
 import type { Trip } from "@/features/trips/types";
 import { useLivingContext, type UseLivingContextInput } from "./useLivingContext";
 
-const { resolveFinancialRate } = vi.hoisted(() => ({ resolveFinancialRate: vi.fn() }));
+const { resolveFinancialRate, fetchWeatherContext } = vi.hoisted(() => ({
+  resolveFinancialRate: vi.fn(),
+  fetchWeatherContext: vi.fn(),
+}));
 vi.mock("./financialContext", async (importOriginal) => ({
   ...(await importOriginal<typeof import("./financialContext")>()),
   resolveFinancialRate,
+}));
+vi.mock("./weatherContextClient", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("./weatherContextClient")>()),
+  fetchWeatherContext,
 }));
 
 const trip: Trip = {
@@ -34,7 +41,10 @@ function wrapper(client: QueryClient) {
 }
 
 describe("useLivingContext", () => {
-  beforeEach(() => resolveFinancialRate.mockReset());
+  beforeEach(() => {
+    resolveFinancialRate.mockReset();
+    fetchWeatherContext.mockReset();
+  });
 
   it("entrega base inmediata y suma Story en un render sucesivo", async () => {
     const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
@@ -137,5 +147,64 @@ describe("useLivingContext", () => {
     const { result } = renderHook(() => useLivingContext(baseInput), { wrapper: wrapper(client) });
     await waitFor(() => expect(result.current.financial.status).toBe("available"));
     expect(result.current.financial.freshness).toBe("stale");
+  });
+
+  it("dos consumidores elegibles comparten un request Weather sin consultar Trip ni Story", async () => {
+    const weatherTrip = { ...trip, startDateTime: "2026-07-15" };
+    fetchWeatherContext.mockResolvedValue({
+      value: {
+        condition: "clear", temperatureC: 18, precipitationProbability: 0,
+        isRaining: false, isStorm: false, isSnow: false, sunrise: null, sunset: null,
+        effectiveAt: { localDateTime: "2026-07-15T12:00", timezone: "America/Argentina/Buenos_Aires" },
+        expiresAt: "2026-07-15T15:15:00.000Z", confidence: "unknown",
+      },
+      fetchedAt: "2026-07-15T15:00:00.000Z", source: "provider",
+    });
+    const input = { ...baseInput, trip: weatherTrip, financial: null };
+    const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    const { result } = renderHook(() => [useLivingContext(input), useLivingContext(input)] as const, { wrapper: wrapper(client) });
+
+    expect(result.current[0].destination.status).toBe("available");
+    expect(result.current[0].weather).toMatchObject({ status: "unavailable", reason: "weather_pending" });
+    await waitFor(() => expect(result.current[0].weather.status).toBe("available"));
+    expect(result.current[1].weather.status).toBe("available");
+    expect(result.current[0].capabilities.weather).toBe(true);
+    expect(fetchWeatherContext).toHaveBeenCalledTimes(1);
+  });
+
+  it("un Trip no elegible hace cero requests Weather y conserva Foundation", () => {
+    const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    const { result } = renderHook(() => useLivingContext({ ...baseInput, financial: null }), { wrapper: wrapper(client) });
+
+    expect(result.current.destination.status).toBe("available");
+    expect(result.current.weather).toMatchObject({ status: "unavailable", reason: "weather_outside_window" });
+    expect(result.current.capabilities.weather).toBe(false);
+    expect(fetchWeatherContext).not.toHaveBeenCalled();
+  });
+
+  it("descarta dato Weather retenido cuando su refresh confirmado falla", async () => {
+    const weatherTrip = { ...trip, startDateTime: "2026-07-15" };
+    const input = { ...baseInput, trip: weatherTrip, financial: null };
+    const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    client.setQueryData(
+      ["context-engine", "weather", "ba", "America/Argentina/Buenos_Aires", "2026-07-15"],
+      {
+        value: {
+          condition: "rain", temperatureC: 12, precipitationProbability: 80,
+          isRaining: true, isStorm: false, isSnow: false, sunrise: null, sunset: null,
+          effectiveAt: { localDateTime: "2026-07-15T10:00", timezone: "America/Argentina/Buenos_Aires" },
+          expiresAt: "2026-07-15T14:00:00.000Z", confidence: "unknown",
+        },
+        fetchedAt: "2026-07-15T13:45:00.000Z", source: "cache",
+      },
+      { updatedAt: Date.parse("2026-07-15T13:45:00.000Z") },
+    );
+    fetchWeatherContext.mockResolvedValue(null);
+    const { result } = renderHook(() => useLivingContext(input), { wrapper: wrapper(client) });
+
+    await waitFor(() => expect(result.current.weather.reason).toBe("weather_refresh_failed"));
+    expect(result.current.weather).toMatchObject({ status: "unavailable", value: null, freshness: "unavailable" });
+    expect(result.current.destination.status).toBe("available");
+    expect(result.current.capabilities.weather).toBe(false);
   });
 });

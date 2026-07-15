@@ -3,6 +3,9 @@ import { useQuery } from "@tanstack/react-query";
 import { resolvePreferredCurrency } from "./preferredCurrencyResolver";
 import { financialContextQueryOptions } from "./financialContextQuery";
 import { availableResult, categoricalFinancialSource, unavailableResult } from "./livingContextResult";
+import { resolveWeatherSnapshot } from "./weatherContext";
+import { isWeatherAdapterSnapshot } from "./weatherContextClient";
+import { weatherContextQueryOptions } from "./weatherContextQuery";
 import {
   createLivingContextResolution,
   type LivingContextInput,
@@ -62,6 +65,8 @@ export function useLivingContext(input: UseLivingContextInput): LivingTravelCont
   const preferredCurrency = livingContextPreferredCurrency(input);
   const localMoney = input.financial?.localMoney ?? null;
   const financeQuery = useQuery(financialContextQueryOptions(localMoney, preferredCurrency));
+  const weatherOptions = weatherContextQueryOptions(input.trip, now);
+  const weatherQuery = useQuery(weatherOptions);
   const identity = livingContextIdentity(input, now, preferredCurrency);
   const initial = useMemo(() => createLivingContextResolution(
     { ...input, financial: null },
@@ -88,9 +93,27 @@ export function useLivingContext(input: UseLivingContextInput): LivingTravelCont
     }
   }
 
+  let weather = initial.weather;
+  if (weatherOptions.enabled) {
+    if (weatherQuery.isRefetchError) {
+      weather = unavailableResult("weather_refresh_failed", "weather.adapter", "adapter");
+    } else if (weatherQuery.data && isWeatherAdapterSnapshot(weatherQuery.data)) {
+      weather = resolveWeatherSnapshot(weatherQuery.data, now);
+    } else if (weatherQuery.isError) {
+      weather = unavailableResult("weather_failed", "weather.adapter", "adapter");
+    } else {
+      weather = unavailableResult("weather_pending", "weather.adapter", "adapter");
+    }
+  }
+
   return {
     ...initial,
     financial,
-    capabilities: { ...initial.capabilities, financial: financial.status === "available" },
+    weather,
+    capabilities: {
+      ...initial.capabilities,
+      financial: financial.status === "available",
+      weather: weather.status === "available",
+    },
   };
 }

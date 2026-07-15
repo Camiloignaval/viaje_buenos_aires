@@ -68,5 +68,9 @@ export interface HealthCheckContext {
       locale?: string | null;
       [key: string]: unknown;
     };
+    weather?: {
+      providerStatus?: "configured" | "unconfigured";
+      snapshotStatus?: "valid" | "invalid";
+    };
   };
 }
