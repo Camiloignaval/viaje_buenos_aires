@@ -32,10 +32,10 @@ Chain strategy: feature-branch-chain
 
 ## Phase 2: Production seam (Unit 2)
 
-- [ ] 2.1 **RED:** Create `app/src/features/experience/hooks/useFirstVisibleExperience.test.ts` for **Authorized inputs**, settled fail-closed behavior, one logical instant, empty caller-owned sets/history and no durable dedupe/storage claim.
-- [ ] 2.2 **GREEN:** Create `app/src/features/experience/hooks/useFirstVisibleExperience.ts`; map current trip/user/story/preferences into `composeFirstRealExperience`, project its result, and never invoke simulator, delivery or lower-layer rules directly.
-- [ ] 2.3 **RED:** Extend `app/src/features/trips/components/ActiveTripHome.test.tsx` and `app/src/features/trips/pages/TripHomePage.test.tsx` for active-home-only placement, silent fallback, unchanged CTA interaction and the real five-engine composer path.
-- [ ] 2.4 **GREEN→REFACTOR:** Add a `ReactNode` slot to `app/src/features/trips/components/ActiveTripHome.tsx` and minimal hook/moment composition in `app/src/features/trips/pages/TripHomePage.tsx`; preserve existing preparations when silent and avoid new route/provider/loading authority.
+- [x] 2.1 **RED:** Create `app/src/features/experience/hooks/useFirstVisibleExperience.test.ts` for **Authorized inputs**, settled fail-closed behavior, one logical instant, empty caller-owned sets/history and no durable dedupe/storage claim.
+- [x] 2.2 **GREEN:** Create `app/src/features/experience/hooks/useFirstVisibleExperience.ts`; map current trip/user/story/preferences into `composeFirstRealExperience`, project its result, and never invoke simulator, delivery or lower-layer rules directly.
+- [x] 2.3 **RED:** Extend `app/src/features/trips/components/ActiveTripHome.test.tsx` and `app/src/features/trips/pages/TripHomePage.test.tsx` for active-home-only placement, silent fallback, unchanged CTA interaction and the real five-engine composer path.
+- [x] 2.4 **GREEN→REFACTOR:** Add a `ReactNode` slot to `app/src/features/trips/components/ActiveTripHome.tsx` and minimal hook/moment composition in `app/src/features/trips/pages/TripHomePage.tsx`; preserve existing preparations when silent and avoid new route/provider/loading authority.
 
 ## Phase 3: Consolidated safety (Unit 3)
 

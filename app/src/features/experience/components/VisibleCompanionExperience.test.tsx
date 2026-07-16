@@ -29,12 +29,14 @@ describe("VisibleCompanionExperience", () => {
   it("Keyboard close: dismisses locally and emits exactly once", async () => {
     const user = userEvent.setup();
     const observer = vi.fn();
-    render(<VisibleCompanionExperience viewModel={VIEW_MODEL} observer={observer} />);
+    const storageWrite = vi.spyOn(Storage.prototype, "setItem");
+    const { rerender } = render(<VisibleCompanionExperience viewModel={VIEW_MODEL} observer={observer} />);
     const close = screen.getByRole("button", { name: "Cerrar mensaje de Alaia" });
 
     close.focus();
     await user.keyboard("{Enter}");
     close.click();
+    rerender(<VisibleCompanionExperience viewModel={VIEW_MODEL} observer={observer} />);
 
     expect(screen.queryByRole("complementary", { name: "Alaia" })).not.toBeInTheDocument();
     expect(observer.mock.calls.map(([event]) => event)).toEqual([
@@ -42,6 +44,7 @@ describe("VisibleCompanionExperience", () => {
       { kind: "dismiss" },
     ]);
     expect(VIEW_MODEL).toEqual({ label: "Alaia", text: "Hoy comienza una nueva historia." });
+    expect(storageWrite).not.toHaveBeenCalled();
   });
 
   it("Observed lifecycle: freezes categorical events in render and dismiss order", async () => {

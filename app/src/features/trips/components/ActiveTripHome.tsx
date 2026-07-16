@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import type { ReactNode } from "react";
 import type { Trip } from "../types";
 import {
   describeTripTemporalCompanion,
@@ -25,8 +26,9 @@ export function ActiveTripHome(props: {
   temporalState: TripTemporalState | null;
   to: string;
   showAction?: boolean;
+  companionMoment?: ReactNode;
 }) {
-  const { trip, temporalState, to, showAction = true } = props;
+  const { trip, temporalState, to, showAction = true, companionMoment = null } = props;
   const countdown = temporalLabel(temporalState);
   const companion = temporalState
     ? describeTripTemporalCompanion(temporalState)
@@ -52,7 +54,7 @@ export function ActiveTripHome(props: {
       {dates && <p className="active-trip-home-dates">{dates}</p>}
       <div className="active-trip-home-temporal">
         {countdown && <p className="active-trip-home-countdown">{countdown}</p>}
-        <p className="active-trip-home-preparations">{companion}</p>
+        {companionMoment ?? <p className="active-trip-home-preparations">{companion}</p>}
       </div>
       {showAction && (
         <Link className="active-trip-home-action" to={to}>

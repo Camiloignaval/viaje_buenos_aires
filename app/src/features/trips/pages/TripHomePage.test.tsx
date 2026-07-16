@@ -1,4 +1,4 @@
-import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
@@ -6,7 +6,11 @@ import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { PlatformApiError } from "@/services/platformClient";
 import TripHomePage from "./TripHomePage";
 
-const { getTrip, getStory } = vi.hoisted(() => ({ getTrip: vi.fn(), getStory: vi.fn() }));
+const { getTrip, getStory, getPushPreferences } = vi.hoisted(() => ({
+  getTrip: vi.fn(),
+  getStory: vi.fn(),
+  getPushPreferences: vi.fn(),
+}));
 vi.mock("@/features/trips/api/tripsApi", async (orig) => ({
   ...(await orig<typeof import("@/features/trips/api/tripsApi")>()),
   getTrip,
@@ -14,6 +18,22 @@ vi.mock("@/features/trips/api/tripsApi", async (orig) => ({
 vi.mock("@/features/connected/api/connectedApi", async (orig) => ({
   ...(await orig<typeof import("@/features/connected/api/connectedApi")>()),
   getStory,
+}));
+vi.mock("@/features/pwa/pushApi", () => ({ getPushPreferences }));
+vi.mock("@/features/auth/hooks/useSession", () => ({
+  useSession: () => ({
+    status: "authenticated",
+    user: {
+      id: "user-1",
+      email: "private@example.com",
+      displayName: "Kari",
+      residenceCountryCode: "CL",
+      preferredCurrency: "CLP",
+      emailVerifiedAt: "2026-07-01T12:00:00.000Z",
+      onboardingCompleted: true,
+    },
+    refetch: vi.fn(),
+  }),
 }));
 
 beforeAll(() => {
@@ -23,7 +43,10 @@ beforeAll(() => {
     value: vi.fn().mockResolvedValue(undefined),
   });
 });
-afterEach(() => vi.clearAllMocks());
+afterEach(() => {
+  vi.useRealTimers();
+  vi.clearAllMocks();
+});
 
 const trip = (overrides = {}) => ({
   id: "trip-1",
@@ -60,6 +83,12 @@ function renderPortada() {
     </QueryClientProvider>,
   );
 }
+
+function preferences(enabled: boolean) {
+  return { preferences: { enabled, beforeTrip: true, duringTrip: true, afterTrip: true, futureMemories: true } };
+}
+
+beforeEach(() => getPushPreferences.mockResolvedValue(preferences(false)));
 
 describe("TripHomePage (Portada del viaje)", () => {
   it("READY: muestra el viaje y el CTA voluntario 'Entrar al viaje' → Experience", async () => {
@@ -118,5 +147,40 @@ describe("TripHomePage (Portada del viaje)", () => {
     renderPortada();
 
     expect(await screen.findByText("No encontramos este viaje.")).toBeInTheDocument();
+  });
+
+  it("monta el momento visible solo tras el pipeline real de cinco motores y mantiene el CTA", async () => {
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(new Date("2026-07-18T15:00:00.000Z"));
+    const { demoStoryPackage } = await import("@/features/experience/data/demoStory");
+    getTrip.mockResolvedValue({ trip: trip() });
+    getStory.mockResolvedValue({ story: { storyId: "ba-2026", storyPackage: demoStoryPackage } });
+    getPushPreferences.mockResolvedValue(preferences(true));
+
+    renderPortada();
+
+    const moment = await screen.findByRole("complementary", { name: "Alaia" });
+    expect(moment).toHaveTextContent("Hoy comienza una nueva historia.");
+    expect(screen.queryByText(/la historia empieza hoy/i)).not.toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Entrar al viaje" })).toHaveAttribute(
+      "href",
+      "/experience?tripId=trip-1",
+    );
+    expect(getPushPreferences).toHaveBeenCalled();
+  });
+
+  it("un terminal silencioso conserva preparativos y no monta wrapper vacio", async () => {
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(new Date("2026-07-18T15:00:00.000Z"));
+    const { demoStoryPackage } = await import("@/features/experience/data/demoStory");
+    getTrip.mockResolvedValue({ trip: trip() });
+    getStory.mockResolvedValue({ story: { storyId: "ba-2026", storyPackage: demoStoryPackage } });
+    getPushPreferences.mockResolvedValue(preferences(false));
+
+    const { container } = renderPortada();
+
+    expect(await screen.findByText(/la historia empieza hoy/i)).toBeInTheDocument();
+    expect(container.querySelector(".visible-companion-experience")).toBeNull();
+    expect(container.querySelector(".active-trip-home-companion-moment")).toBeNull();
   });
 });

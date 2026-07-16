@@ -10,7 +10,7 @@ phases:
   specs: done       # 19 scenarios
   design: done
   tasks: done       # strict TDD; 10 tasks across three review slices
-  apply: in-progress # 4/10 tasks complete
+  apply: in-progress # 8/10 tasks complete
   verify: pending
   archive: pending
 constraints:

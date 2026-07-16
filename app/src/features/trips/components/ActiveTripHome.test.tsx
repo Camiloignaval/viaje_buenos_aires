@@ -160,4 +160,39 @@ describe("ActiveTripHome", () => {
     expect(screen.queryByRole("img")).not.toBeInTheDocument();
     expect(screen.queryByText(/noches/)).not.toBeInTheDocument();
   });
+
+  it("monta el momento autorizado despues del countdown y antes del CTA, reemplazando preparativos", () => {
+    renderInRouter(
+      <ActiveTripHome
+        trip={TRIP}
+        lifecycle="in-progress"
+        temporalState={{ kind: "in-progress", dayIndex: 1, totalDays: 4, isLastDay: false }}
+        to={tripUrl(TRIP.id)}
+        companionMoment={<aside aria-label="Momento de Alaia">Hoy comienza una nueva historia.</aside>}
+      />,
+    );
+
+    const countdown = screen.getByText(/la historia se est.* escribiendo/i);
+    const moment = screen.getByRole("complementary", { name: "Momento de Alaia" });
+    const cta = screen.getByRole("link", { name: "Entrar al viaje" });
+    expect(countdown.compareDocumentPosition(moment) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(moment.compareDocumentPosition(cta) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(screen.queryByText(/el viaje est.* ocurriendo ahora/i)).not.toBeInTheDocument();
+    expect(cta).toHaveAttribute("href", "/experience?tripId=trip-1");
+  });
+
+  it("con slot nulo conserva exactamente los preparativos y no crea wrapper", () => {
+    const { container } = renderInRouter(
+      <ActiveTripHome
+        trip={TRIP}
+        lifecycle="in-progress"
+        temporalState={{ kind: "in-progress", dayIndex: 1, totalDays: 4, isLastDay: false }}
+        to={tripUrl(TRIP.id)}
+        companionMoment={null}
+      />,
+    );
+
+    expect(screen.getByText(/el viaje est.* ocurriendo ahora/i)).toBeInTheDocument();
+    expect(container.querySelector(".active-trip-home-companion-moment")).toBeNull();
+  });
 });
