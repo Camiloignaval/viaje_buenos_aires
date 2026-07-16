@@ -187,7 +187,7 @@ describe("useLivingContext", () => {
     const input = { ...baseInput, trip: weatherTrip, financial: null };
     const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
     client.setQueryData(
-      ["context-engine", "weather", "ba", "America/Argentina/Buenos_Aires", "2026-07-15"],
+      ["context-engine", "weather", "trip-1", "ba", "America/Argentina/Buenos_Aires", "2026-07-15"],
       {
         value: {
           condition: "rain", temperatureC: 12, precipitationProbability: 80,

@@ -57,6 +57,7 @@ export function buildPlatformConfig(env = process.env) {
       enableSystemAlerts: readBoolean(env, 'ENABLE_SYSTEM_ALERTS', false),
       enableTripFailureAlerts: readBoolean(env, 'ENABLE_TRIP_FAILURE_ALERTS', false),
       enableAiGeneration: readBoolean(env, 'ENABLE_AI_GENERATION', false),
+      enableWeatherProvider: readBoolean(env, 'ENABLE_WEATHER_PROVIDER', false),
     },
   };
 }

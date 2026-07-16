@@ -26,12 +26,13 @@ describe("weatherContextQuery", () => {
       enabled: true,
       staleTime: 900_000,
       retry: false,
-      queryKey: ["context-engine", "weather", "ba", "America/Argentina/Buenos_Aires", "2026-07-15"],
+      queryKey: ["context-engine", "weather", "trip-weather", "ba", "America/Argentina/Buenos_Aires", "2026-07-15"],
     });
     expect(JSON.stringify(options.queryKey)).not.toMatch(/-34\.6037|-58\.3816/);
 
     await expect(options.queryFn({ signal: new AbortController().signal } as never)).resolves.toBe(snapshot);
     expect(fetchWeatherContext).toHaveBeenCalledWith({
+      tripId: "trip-weather",
       latitude: -34.6037,
       longitude: -58.3816,
       timezone: "America/Argentina/Buenos_Aires",
@@ -47,7 +48,18 @@ describe("weatherContextQuery", () => {
     );
 
     expect(options.enabled).toBe(false);
-    expect(options.queryKey).toEqual(["context-engine", "weather", "unavailable", "unavailable", "unavailable"]);
+    expect(options.queryKey).toEqual(["context-engine", "weather", "unavailable", "unavailable", "unavailable", "unavailable"]);
+    expect(fetchWeatherContext).not.toHaveBeenCalled();
+  });
+
+  it("deshabilita Weather para un Trip sin membresia caller-owned", () => {
+    const options = weatherContextQueryOptions(
+      { ...trip, role: null },
+      new Date("2026-07-15T15:00:00.000Z"),
+    );
+
+    expect(options.enabled).toBe(false);
+    expect(options.queryKey).toEqual(["context-engine", "weather", "unavailable", "unavailable", "unavailable", "unavailable"]);
     expect(fetchWeatherContext).not.toHaveBeenCalled();
   });
 

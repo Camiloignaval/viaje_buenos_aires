@@ -32,10 +32,10 @@ Chain strategy: feature-branch-chain
 
 ## Phase 2: Weather gate and productive query
 
-- [ ] 2.1 **RED:** Cover disabled/membership/trip zero-call routes and fresh/stale/error/Financial isolation in `routes/context/weather.test.js` and `weatherContext{Client,Query}.test.ts` (S06-S09,S24).
-- [ ] 2.2 **GREEN:** Add default-false `ENABLE_WEATHER_PROVIDER` in `platformConfig.js`; validate membership/trip before provider in `routes/context/weather.js`.
-- [ ] 2.3 **TRIANGULATE:** Wire trip-scoped client/query and `hooks/useAdaptiveJourney.ts` with stable identity and unavailable degradation.
-- [ ] 2.4 **REFACTOR:** Verify gate off and no provider/rule added; persist progress; commit Unit 2.
+- [x] 2.1 **RED:** Cover disabled/membership/trip zero-call routes and fresh/stale/error/Financial isolation in `routes/context/weather.test.js` and `weatherContext{Client,Query}.test.ts` (S06-S09,S24).
+- [x] 2.2 **GREEN:** Add default-false `ENABLE_WEATHER_PROVIDER` in `platformConfig.js`; validate membership/trip before provider in `routes/context/weather.js`.
+- [x] 2.3 **TRIANGULATE:** Wire trip-scoped client/query and `hooks/useAdaptiveJourney.ts` with stable identity and unavailable degradation.
+- [x] 2.4 **REFACTOR:** Verify gate off and no provider/rule added; persist progress; commit Unit 2.
 
 ## Phase 3: Semantic Memory API
 

@@ -2,6 +2,8 @@ import { platformRequest } from "@/services/platformClient";
 import type { LocalDateTime, WeatherAdapterSnapshot, WeatherCondition, WeatherContext } from "./types";
 import type { WeatherRequestInput } from "./weatherContext";
 
+export type TripWeatherRequestInput = WeatherRequestInput & Readonly<{ tripId: string }>;
+
 const CONDITIONS = new Set<WeatherCondition>([
   "clear", "cloudy", "fog", "rain", "storm", "snow", "freezing", "unknown",
 ]);
@@ -79,11 +81,17 @@ export function isWeatherAdapterSnapshot(
     && times.every((item) => item.timezone === expected.timezone && item.localDateTime.startsWith(`${expected.localDate}T`));
 }
 
-export async function fetchWeatherContext(input: WeatherRequestInput & { signal?: AbortSignal }): Promise<WeatherAdapterSnapshot | null> {
+function publicWeatherSnapshot(value: unknown, expected: Pick<WeatherRequestInput, "timezone" | "localDate">): WeatherAdapterSnapshot | null {
+  if (!exactKeys(value, ["available", "value", "fetchedAt"]) || value.available !== true) return null;
+  const snapshot = { value: value.value, fetchedAt: value.fetchedAt, source: "weather" };
+  return isWeatherAdapterSnapshot(snapshot, expected) ? snapshot : null;
+}
+
+export async function fetchWeatherContext(input: TripWeatherRequestInput & { signal?: AbortSignal }): Promise<WeatherAdapterSnapshot | null> {
   const { signal, ...body } = input;
   try {
     const snapshot = await platformRequest<unknown>("/api/context/weather", { method: "POST", body, signal });
-    return isWeatherAdapterSnapshot(snapshot, body) ? snapshot : null;
+    return publicWeatherSnapshot(snapshot, body);
   } catch {
     return null;
   }
