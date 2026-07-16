@@ -3,7 +3,7 @@ artifact_store: openspec
 execution_mode: automatic
 delivery_strategy: auto-chain
 chain_strategy: feature-branch-chain
-status: ready-for-verify
+status: verified
 phases:
   explore: done
   proposal: done
@@ -11,7 +11,7 @@ phases:
   design: done       # companion experience closure
   tasks: done        # strict TDD; 19/19 complete across six review slices
   apply: done        # companion experience closure implemented and validated
-  verify: superseded # prior PASS belongs to the pre-closure baseline
+  verify: done       # final closure PASS; prior pre-closure report superseded
   archive: pending
 constraints:
   - preserve all five engines, Story, composer semantics and existing visible behavior

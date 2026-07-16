@@ -1,85 +1,81 @@
-# Verification Report: First Visible Experience
+# Verification Report: First Visible Experience — Companion Experience Closure
 
 ## Verdict
 
-**PASS** — 10/10 tasks and 19/19 specification scenarios are compliant. Runtime, static boundary, accessibility/CSS, regression, type and protected-range evidence all pass.
+**PASS** — 19/19 tasks and 15/15 consolidated closure scenarios are compliant. The original visible, silence, dismiss, accessibility, responsive, motion, intent-authority and isolation behavior also remains verified. The prior pre-closure verification is superseded by this report.
 
 ## Completeness
 
 | Area | Result | Evidence |
 |---|---|---|
-| Tasks | PASS | 10/10 checked in `tasks.md` |
-| Scenarios | PASS | 19/19 mapped below |
-| Focal suite | PASS | 49/49 tests, 6/6 files |
-| React regression | PASS | 887/887 tests, 121/121 files |
+| Tasks | PASS | 19/19 checked in `tasks.md`; all 19 rows have cumulative TDD evidence in Engram #1035 |
+| Consolidated scenarios | PASS | 15/15 mapped below to passing runtime/static tests |
+| Preserved original behavior | PASS | Projection, component, hook, active-home and page regressions pass in the 101-test focal suite |
+| Focal closure suite | PASS | 9/9 files; 101/101 tests |
+| React regression | PASS | 123/123 files; 930/930 tests |
 | Node regression | PASS | 244/244 tests |
 | Type checking | PASS | `tsc -p tsconfig.json --noEmit` |
-| Diff integrity | PASS | `git diff --check` |
-| Protected range | PASS | No protected path changed from `0159bc1` through `4bd8686` |
+| Diff integrity | PASS | repository and `871b1d8..01db57b` range checks |
+| Protected architecture | PASS | protected name-only ranges are empty from both `398e579` and `871b1d8` |
 
-## Specification Compliance Matrix
+## Consolidated Specification Compliance Matrix
 
-| # | Scenario | Evidence | Result |
+| # | Scenario | Runtime/static evidence | Result |
 |---:|---|---|---|
-| 1 | Approved moment | `visibleExperience.test.ts` projects the real composed result; `TripHomePage.test.tsx` renders the real five-engine path with one complementary region and unchanged text. | PASS |
-| 2 | Wrong surface | `visibleExperience.test.ts` rejects the same approved result for `surface: other`. | PASS |
-| 3 | Abstention | Terminal table in `visibleExperience.test.ts` returns null and emits categorical silence. | PASS |
-| 4 | Silence | Terminal table and disabled-preference hook/page tests settle null with no visible wrapper. | PASS |
-| 5 | Discard | Terminal table returns null rather than exposing a memory-discard result. | PASS |
-| 6 | Error | Terminal table and hostile/error paths fail closed without raw error exposure. | PASS |
-| 7 | Missing intent | Projection rejects composed results with zero intents. | PASS |
-| 8 | Unsupported intent | Projection rejects unsupported destination and non-pending state. | PASS |
-| 9 | Multiple intents | Projection rejects ambiguity instead of choosing an intent. | PASS |
-| 10 | Mismatch | Projection rejects destination/reference order/reference count mismatches. | PASS |
-| 11 | Literal copy | Projection and component assert exact `EditorialMessage.text`; production page shows `Hoy comienza una nueva historia.` unchanged. | PASS |
-| 12 | Keyboard close | Component test activates the named 44px button by keyboard and again by click; one dismiss emits, no storage write occurs, and the node stays absent. | PASS |
-| 13 | Observed lifecycle | Hook + component integration asserts exactly `flow_started -> result_layer -> render_success -> dismiss`; terminal flow asserts `flow_started -> result_layer -> silence`. | PASS |
-| 14 | Hostile observer | Projection and component tests use throwing/mutating observers and a hostile getter; visibility and dismissal remain correct. | PASS |
-| 15 | Viewports | Executed CSS contracts prove `width:min(100%,30rem)`, `min-width:0`, flexible content and no fixed-width rule; copy allows emergency wrapping. | PASS |
-| 16 | Assistive access | Runtime DOM assertions prove labelled complementary region, heading, named button, hidden decoration, and absence of alert/`aria-live`; CSS proves visible focus and 44px target. | PASS |
-| 17 | Motion reduced | Executed CSS assertions prove opacity/translate-only entry under `no-preference` and `animation:none` under `reduce`, with unchanged flow geometry. | PASS |
-| 18 | Authorized inputs | Mapper/hook tests prove current trip/user/story/preferences, one captured instant, fresh empty caller-owned histories/sets, read-only preference getter and real composer use. | PASS |
-| 19 | Isolation | Five executed boundary tests forbid simulator, lower engines, Story rules, delivery, Push activation, network, new storage and domain props; protected-range proof is empty. | PASS |
+| 1 | Today is visible | `firstVisibleExperience.pipeline.test.ts` proves the unmocked five-engine result is `trip_start_today`, `pending/in_app`; `TripHomePage.test.tsx` renders one complementary moment with literal Editorial copy. | PASS |
+| 2 | Existing non-in-app outcomes | Real-pipeline and page tests preserve tomorrow as `timeline`/`memory_discard` and last-day as `memory`; neither creates an in-app node or receipt. | PASS |
+| 3 | Rejected result | Projection tests reject terminal, wrong-surface, missing, multiple, unsupported and mismatched intents; page/hook terminal tests leave zero residual UI. | PASS |
+| 4 | Legal lifecycle | `visibleDeliverySession.test.ts` proves pending→visible→dismissed and authorized expiry, idempotency and one-time `processedAt`; hook/component integration persists visible before copy and dismiss once. | PASS |
+| 5 | Illegal transition | Lifecycle tests reject pending→dismissed, visible→pending and expired→visible without delivery or partial state. | PASS |
+| 6 | Same-trip continuity | Hook and page tests prove rerender, unmount/remount, route return and same-tab reload suppression after a visible/dismissed receipt. | PASS |
+| 7 | Pending retry | A never-visible pending receipt is excluded from history and successfully recomposes on remount before expiry. | PASS |
+| 8 | Scope switch | User/trip scopes hash independently; hook/page tests prove trip/user isolation and restoration when returning to the original scope. | PASS |
+| 9 | Valid record | Exact V1 document/receipt keys, stable hashed scope/identity fixtures, earliest boundary, property-order independence and frozen cloned reads pass. Serialized records exclude separate scope/action fields, copy, payload, PII and errors. | PASS |
+| 10 | Storage failure | Getter, probe get/set/remove, malformed JSON, unknown version/key, quota, pending-write and visible-write failures all fail closed without exception or UI. | PASS |
+| 11 | History projection | Only receipts with non-null `processedAt`—visible, dismissed and visible-expired—supply exact caller-owned Decision/Companion keys and history; pending and never-visible expired receipts do not. | PASS |
+| 12 | Observation | Executed tests prove ordered frozen `{kind}`-only events for pending, visible, dismissed, expired and silence semantics; hostile observers cannot alter behavior or expose content/identity/time/payload/error. | PASS |
+| 13 | Access and viewports | Component/CSS/page tests prove named complementary non-alert region, keyboard close, 44px target, visible focus, hidden decoration, fluid width/min-width and preserved CTA/page interaction. | PASS |
+| 14 | Reduced or suppressed | CSS contracts prove opacity/translation-only motion and `animation:none` under reduce; rehydrated suppression produces no wrapper, reserved slot or animation node. | PASS |
+| 15 | Dependencies | Executed boundary tests and protected Git ranges prove feature-local `sessionStorage` only, allowed type/hash imports, no timers, durable store, lower-engine runtime bypass, simulator, delivery executor or new layer/provider/rule. | PASS |
 
-## Correctness and Architecture
+## Preserved Original Capability
 
-| Contract | Result | Evidence |
+| Behavior | Result | Evidence |
 |---|---|---|
-| Natural placement | PASS | `ActiveTripHome` places the slot after countdown and before CTA; DOM-order test passes. |
-| Silent fallback | PASS | Null slot restores existing preparations and leaves CTA behavior unchanged, without an extra wrapper. |
-| View-model-only UI | PASS | Component props expose only nullable readonly view model and observer; projection returns a frozen `{label,text}` object only. |
-| Intent authority | PASS | Projection requires exactly one `pending/in_app` intent, channel agreement and exact two-reference tuple. |
-| Local one-shot dismiss | PASS | Component-local refs/state; no domain import, reinvocation, event, persistence or durable-dedupe claim. |
-| Safe observation | PASS | Frozen one-key `{kind}` events only; best-effort dispatch; no copy, IDs, dates, payload, PII or raw errors. |
-| Production seam | PASS | Existing composer is the sole domain authority; `getPushPreferences` is the established read-only PWA exception. |
-| Protected architecture | PASS | Engines, Story, composer, simulator, router, API and lib paths are byte-unchanged in the protected range. |
+| Literal editorial copy | PASS | Projection and page assert `Hoy comienza una nueva historia.` unchanged. |
+| Silent fallback | PASS | Terminal and disabled-preference flows render no wrapper, slot, placeholder or motion and retain the prior temporal copy/CTA. |
+| Dismiss | PASS | Keyboard/click dismissal hides locally, emits once, never recomposes engines and remains hidden even when the dismissal write fails. |
+| Intent authority | PASS | Exactly one matching `pending/in_app` intent and exact references remain mandatory. |
+| Accessibility | PASS | Complementary semantics, accessible heading/close, no alert/live region, keyboard and focus contracts pass. |
+| Responsive and motion | PASS | Existing CSS is unchanged; fluid, overflow-safe and reduced-motion contracts pass. |
+| Architectural isolation | PASS | Engines, Story, composer/tests, simulator, router, API/lib, PWA and CSS are byte-unchanged in the closure ranges. |
 
 ## TDD Compliance
 
 | Check | Result | Details |
 |---|---|---|
-| TDD evidence reported | PASS | Full 10-row cycle table retrieved from Engram observation #1035. |
-| All tasks have tests | PASS | 10/10 tasks reference existing test files. |
-| RED confirmed | PASS | Unit 1/2 records import/integration failures before implementation; Unit 3 truthfully records immediate-green boundary verification rather than fabricating RED. |
-| GREEN confirmed | PASS | All referenced focal files pass now, 49/49. |
-| Triangulation adequate | PASS | Success, terminal, invalid-intent, viewport, observer, hook and integration variants cover distinct outcomes. |
-| Safety net | PASS | Existing composer/home suites were executed before modified integrations; consolidated safety ran 405/405. |
+| TDD evidence reported | PASS | Full 19-row cumulative table retrieved from Engram #1035. |
+| All tasks have tests | PASS | 19/19 task rows reference existing focal/regression test files. |
+| RED chronology honest | PASS | Units 1–5 record import/behavior failures; verification-only Unit 6 explicitly records inherited GREEN and does not fabricate product RED. |
+| GREEN confirmed | PASS | All referenced closure tests pass now, including 101/101 focal tests. |
+| Triangulation adequate | PASS | Distinct success, terminal, lifecycle, storage, scope, observer, real-pipeline and UI variants cover every scenario. |
+| Safety net | PASS | Prior suites are recorded per slice; independent full React/Node regressions pass. |
 
-**TDD compliance:** 10/10 tasks have complete, credible evidence.
+**TDD compliance:** 19/19 tasks have complete and credible evidence.
 
 ## Test Layer Distribution
 
-| Layer | Tests | Files | Tool |
+| Layer | Tests / evidence | Files | Tool |
 |---|---:|---:|---|
-| Unit / hook | 21 | 2 | Vitest + Testing Library |
-| React integration | 20 | 3 | Vitest + Testing Library + jsdom |
-| Static boundary / CSS contract | 8 | 2 | Vitest + source assertions |
+| Unit / pure contracts | Included in 101 focal | 3 | Vitest |
+| Hook / React integration | Included in 101 focal | 4 | Vitest + Testing Library + jsdom |
+| Real pipeline integration | 5 outcomes | 1 | Vitest, unmocked engines |
+| Static boundary / CSS contract | Included in 101 focal | 2 | Vitest + source assertions |
 | E2E | 0 | 0 | Not run by explicit constraint |
-| **Total focal** | **49** | **6 unique files** | |
 
 ## Assertion Quality
 
-**PASS** — no tautologies, ghost loops, assertion-free production paths, smoke-only cases, or mock-heavy files were found. Empty-result assertions are paired with approved non-empty controls. Source/CSS assertions verify requirements that are explicitly architectural or static.
+**PASS** — no tautologies, ghost loops, assertion-free production paths, smoke-only tests or mock-heavy files were found. Empty and null assertions have approved non-empty controls, and static assertions cover explicitly architectural/CSS requirements.
 
 ## Coverage and Quality Metrics
 
@@ -91,11 +87,11 @@
 ## Command Evidence
 
 ```text
-npm.cmd --prefix app run test:react -- --run <six focal files>
-  6 files passed; 49 tests passed
+npm.cmd --prefix app run test:react -- --run <nine focal files>
+  9 files passed; 101 tests passed
 
 npm.cmd --prefix app run test:react
-  121 files passed; 887 tests passed
+  123 files passed; 930 tests passed
 
 npm.cmd --prefix app test
   244 tests passed
@@ -104,19 +100,28 @@ npm.cmd --prefix app run typecheck
   PASS
 
 git diff --check
-  PASS
+git diff --check 871b1d8..01db57b
+  PASS / PASS
 
-git diff --name-only 0159bc1..4bd8686 -- <protected paths>
-  empty
+git diff --name-only <398e579|871b1d8>..01db57b -- <protected paths>
+  empty / empty
 ```
+
+## Commits Verified
+
+- `871b1d8388cdd8ab7ce7f539fe39b20dc178e6ad` — closure planning
+- `675be334835cea1b931a7b438fbe75e4ea9dabaa` — session delivery receipts
+- `99862bf4833a2244d51a736ce021014daeab92a2` — session continuity
+- `01db57b00ecef9c0f44f2ad5eccf01254f2fb718` — real-pipeline and closure proof
 
 ## Risks and Limitations
 
-- The existing preference getter is invoked once per mount and may use the established API; the new feature adds no provider or delivery capability.
-- Empty caller-owned sets/history intentionally provide no durable dedupe or cross-reload frequency guarantee.
-- Static CSS contracts prove the specified responsive/accessibility mechanics; browser visual regression was out of scope because Playwright was explicitly forbidden.
+- Continuity is intentionally scoped to one browser tab session through `sessionStorage`; no cross-tab, cross-browser or durable claim exists.
+- Exact replay may stop at Decision `already_processed`; a distinct recent visible receipt independently proves Companion `frequency_limited` authority.
+- Responsive/accessibility layout evidence is DOM/CSS-contract based because Playwright was explicitly excluded.
+- Coverage and lint remain unavailable in the repository.
 - Unrelated working-tree changes remain untouched.
 
 ## Final Decision
 
-**PASS.** `first-visible-experience` is ready for archive when explicitly authorized; archive remains pending.
+**PASS. Companion Experience can be considered closed as a product capability for the authorized in-app, same-tab session scope.** All specified delivery lifecycle, continuity, silence, dismiss, accessibility, responsive, observation and real-pipeline behaviors are verified. Archive remains pending explicit authorization.
