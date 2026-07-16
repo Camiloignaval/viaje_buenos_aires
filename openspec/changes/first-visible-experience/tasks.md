@@ -25,10 +25,10 @@ Chain strategy: feature-branch-chain
 
 ## Phase 1: Visible contract (Unit 1)
 
-- [ ] 1.1 **RED:** Create `app/src/features/experience/lib/visibleExperience.test.ts` for **Approved moment**, **Wrong surface**, **Abstention**, **Silence**, **Discard**, **Error**, **Missing intent**, **Unsupported intent**, **Multiple intents**, **Mismatch** and **Literal copy**.
-- [ ] 1.2 **GREEN:** Create `app/src/features/experience/lib/visibleExperience.ts` with the nullable frozen view model, exact intent/reference checks and categorical best-effort observer; never mutate copy, infer authority or expose private fields.
-- [ ] 1.3 **RED:** Create `app/src/features/experience/components/VisibleCompanionExperience.test.tsx` and CSS contract tests for **Keyboard close**, **Observed lifecycle**, **Hostile observer**, **Viewports**, **Assistive access** and **Motion reduced**.
-- [ ] 1.4 **GREEN→REFACTOR:** Add `app/src/features/experience/components/VisibleCompanionExperience.tsx` and scoped rules in `app/src/styles/shell.css`: in-flow aside, literal copy, local one-shot dismiss, 44px control, visible focus, hidden decoration, fluid width and reduced-motion override.
+- [x] 1.1 **RED:** Create `app/src/features/experience/lib/visibleExperience.test.ts` for **Approved moment**, **Wrong surface**, **Abstention**, **Silence**, **Discard**, **Error**, **Missing intent**, **Unsupported intent**, **Multiple intents**, **Mismatch** and **Literal copy**.
+- [x] 1.2 **GREEN:** Create `app/src/features/experience/lib/visibleExperience.ts` with the nullable frozen view model, exact intent/reference checks and categorical best-effort observer; never mutate copy, infer authority or expose private fields.
+- [x] 1.3 **RED:** Create `app/src/features/experience/components/VisibleCompanionExperience.test.tsx` and CSS contract tests for **Keyboard close**, **Observed lifecycle**, **Hostile observer**, **Viewports**, **Assistive access** and **Motion reduced**.
+- [x] 1.4 **GREEN→REFACTOR:** Add `app/src/features/experience/components/VisibleCompanionExperience.tsx` and scoped rules in `app/src/styles/shell.css`: in-flow aside, literal copy, local one-shot dismiss, 44px control, visible focus, hidden decoration, fluid width and reduced-motion override.
 
 ## Phase 2: Production seam (Unit 2)
 

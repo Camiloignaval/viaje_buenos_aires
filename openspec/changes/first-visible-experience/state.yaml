@@ -3,14 +3,14 @@ artifact_store: openspec
 execution_mode: automatic
 delivery_strategy: auto-chain
 chain_strategy: feature-branch-chain
-status: ready-for-apply
+status: in-progress
 phases:
   explore: done
   proposal: done
   specs: done       # 19 scenarios
   design: done
   tasks: done       # strict TDD; 10 tasks across three review slices
-  apply: pending    # 0/10 tasks complete
+  apply: in-progress # 4/10 tasks complete
   verify: pending
   archive: pending
 constraints:
