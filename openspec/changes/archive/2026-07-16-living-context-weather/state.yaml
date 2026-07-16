@@ -3,7 +3,7 @@ artifact_store: openspec
 execution_mode: automatic
 delivery_strategy: auto-chain
 chain_strategy: feature-branch-chain
-status: ready-for-archive
+status: archived
 phases:
   explore: done
   proposal: done
@@ -12,4 +12,4 @@ phases:
   tasks: done
   apply: done
   verify: done    # 31/31 scenarios; Node 233, React 594, typecheck and diff-check pass
-  archive: pending # Foundation dependency and this change remain active/unarchived
+  archive: done    # Canonical specs synced; archived 2026-07-16 after Foundation
