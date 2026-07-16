@@ -36,9 +36,9 @@ The specification governs terminal behavior: abstention, silence, Memory discard
 
 ## Phase 2: Internal evidence (Unit 2)
 
-- [ ] 2.1 **RED:** Create `app/src/features/dev/firstRealExperienceSimulator.test.ts` for **Fixture repetible**, hostile-observer equivalence, exact five-stage snapshot and absence of network, storage, UI or ambient clock.
-- [ ] 2.2 **GREEN:** Create `app/src/features/dev/firstRealExperienceSimulator.ts` with only the canonical fixed fixture and `simulateFirstRealExperience()`; expose no route, React component, delivery or persistence.
-- [ ] 2.3 **TRIANGULATE→REFACTOR:** Add static assertions for **Ausencia productiva** and **Prueba byte-unchanged**: no simulator production import and no I/O, UI, providers, AI, Story, lifecycle/repository or new rule; run both focal Vitest files and `git diff --check`.
+- [x] 2.1 **RED:** Create `app/src/features/dev/firstRealExperienceSimulator.test.ts` for **Fixture repetible**, hostile-observer equivalence, exact five-stage snapshot and absence of network, storage, UI or ambient clock.
+- [x] 2.2 **GREEN:** Create `app/src/features/dev/firstRealExperienceSimulator.ts` with only the canonical fixed fixture and `simulateFirstRealExperience()`; expose no route, React component, delivery or persistence.
+- [x] 2.3 **TRIANGULATE→REFACTOR:** Add static assertions for **Ausencia productiva** and **Prueba byte-unchanged**: no simulator production import and no I/O, UI, providers, AI, Story, lifecycle/repository or new rule; run both focal Vitest files and `git diff --check`.
 
 ## Phase 3: Consolidated safety (Unit 3)
 
