@@ -146,7 +146,18 @@
           "timeWindow": "10:30–11:40",
           "category": "caminata",
           "location": { "name": "Floralis Genérica" },
-          "image": "images/dia2-floralis.jpg"
+          "image": "images/dia2-floralis.jpg",
+          "intelligence": {
+            "outdoor": true,
+            "indoor": false,
+            "rainFriendly": false,
+            "photoMoment": true
+          },
+          "contextWindow": {
+            "validFrom": "2026-07-19T13:15:00.000Z",
+            "validUntil": "2026-07-19T15:00:00.000Z",
+            "timezone": "America/Argentina/Buenos_Aires"
+          }
         },
         {
           "id": "act-2-3",
@@ -184,7 +195,18 @@
           "category": "caminata",
           "location": { "name": "Rosedal de Palermo" },
           "moment": "Caminar sin rumbo, sin mirar el reloj",
-          "image": "images/dia2-rosedal.jpg"
+          "image": "images/dia2-rosedal.jpg",
+          "intelligence": {
+            "outdoor": true,
+            "indoor": false,
+            "rainFriendly": false,
+            "photoMoment": true
+          },
+          "contextWindow": {
+            "validFrom": "2026-07-19T17:45:00.000Z",
+            "validUntil": "2026-07-19T20:15:00.000Z",
+            "timezone": "America/Argentina/Buenos_Aires"
+          }
         },
         {
           "id": "act-2-7",
@@ -203,7 +225,18 @@
           "location": { "name": "Puerto Madero" },
           "moment": "El primer atardecer del viaje en Puerto Madero",
           "insight": "En la mitad del puente, de noche, el agua queda tan quieta que el dique se ve distinto a como se veía de día — vale la pena llegar al restaurante un minuto más tarde por eso.",
-          "image": "images/dia2-puertomadero.jpg"
+          "image": "images/dia2-puertomadero.jpg",
+          "intelligence": {
+            "outdoor": true,
+            "indoor": false,
+            "rainFriendly": false,
+            "photoMoment": true
+          },
+          "contextWindow": {
+            "validFrom": "2026-07-19T22:45:00.000Z",
+            "validUntil": "2026-07-20T01:45:00.000Z",
+            "timezone": "America/Argentina/Buenos_Aires"
+          }
         },
         {
           "id": "act-2-9",
@@ -333,7 +366,18 @@
           "timeWindow": "13:00",
           "category": "cultura",
           "location": { "name": "Caminito, La Boca" },
-          "image": "images/dia3-caminito.jpg"
+          "image": "images/dia3-caminito.jpg",
+          "intelligence": {
+            "outdoor": true,
+            "indoor": false,
+            "rainFriendly": false,
+            "photoMoment": true
+          },
+          "contextWindow": {
+            "validFrom": "2026-07-20T15:45:00.000Z",
+            "validUntil": "2026-07-20T17:30:00.000Z",
+            "timezone": "America/Argentina/Buenos_Aires"
+          }
         },
         {
           "id": "act-3-6",

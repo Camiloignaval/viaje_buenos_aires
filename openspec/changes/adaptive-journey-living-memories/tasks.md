@@ -25,10 +25,10 @@ Chain strategy: feature-branch-chain
 
 ## Phase 1: Story evidence and composition
 
-- [ ] 1.1 **RED:** Add exact/unsafe Story and authoritative-selection tests in `features/story/{engine,health}` and `features/experience/firstRealExperience.test.ts` (S01-S04,S13,S25).
-- [ ] 1.2 **GREEN:** Extend `engine/types.ts`, `health/healthCheck.ts`, `story-ba2026.json`; add pure `experience/lib/adaptiveJourney.ts` using official context and transient Weather/Light after `MemoryDiscard`.
-- [ ] 1.3 **TRIANGULATE:** Extend `firstRealExperience.ts` and `visibleDeliverySession.ts` references while keeping today/receipts compatible.
-- [ ] 1.4 **REFACTOR:** Prove rules/mappings/catalog/Memory core unchanged; persist progress; commit Unit 1.
+- [x] 1.1 **RED:** Add exact/unsafe Story and authoritative-selection tests in `features/story/{engine,health}` and `features/experience/firstRealExperience.test.ts` (S01-S04,S13,S25).
+- [x] 1.2 **GREEN:** Extend `engine/types.ts`, `health/healthCheck.ts`, `story-ba2026.json`; add pure `experience/lib/adaptiveJourney.ts` using official context and transient Weather/Light after `MemoryDiscard`.
+- [x] 1.3 **TRIANGULATE:** Extend `firstRealExperience.ts` and `visibleDeliverySession.ts` references while keeping today/receipts compatible.
+- [x] 1.4 **REFACTOR:** Prove rules/mappings/catalog/Memory core unchanged; persist progress; commit Unit 1.
 
 ## Phase 2: Weather gate and productive query
 

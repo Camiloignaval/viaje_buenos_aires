@@ -30,6 +30,7 @@ import {
   type MemoryType,
   type DiscardReason,
 } from "@/features/context-engine/memory";
+import { authorizeAdaptiveDecisionSurface } from "./lib/adaptiveJourney";
 
 export type DeliveryDestination = "push" | "in_app" | "timeline" | "memory";
 export type FirstRealExperienceErrorCode =
@@ -65,7 +66,7 @@ export type ExperienceTraceReason =
 export type DeliveryIntent = Readonly<{
   destination: DeliveryDestination;
   state: "pending";
-  references: readonly ["editorial_message", "memory_candidate"];
+  references: readonly ["editorial_message"] | readonly ["editorial_message", "memory_candidate"];
 }>;
 
 export type ExperienceTraceEvent = Readonly<{
@@ -74,13 +75,17 @@ export type ExperienceTraceEvent = Readonly<{
   reason: ExperienceTraceReason;
 }>;
 
-export type FirstRealExperienceInput = Readonly<{
+type FirstRealExperienceInputCommon = Readonly<{
   logicalInstant: string;
-  livingContext: LivingContextInput;
   decision: Omit<DecisionInput, "context">;
   companion: Omit<CompanionInput, "context" | "decisionRun">;
   memory: Readonly<{ scope: MemoryScope; facts: MemoryClassificationFacts }>;
 }>;
+
+export type FirstRealExperienceInput = FirstRealExperienceInputCommon & (
+  | Readonly<{ livingContext: LivingContextInput; resolvedLivingContext?: never }>
+  | Readonly<{ livingContext?: never; resolvedLivingContext: LivingTravelContext }>
+);
 
 type TerminalBase = Readonly<{
   deliveryIntents: readonly [];
@@ -98,8 +103,23 @@ export type FirstRealExperienceComposed = Readonly<{
   trace: readonly ExperienceTraceEvent[];
 }>;
 
+export type FirstRealExperienceTransientComposed = Readonly<{
+  outcome: "transient_composed";
+  livingContext: LivingTravelContext;
+  decisionRun: ContextDecisionRun & Readonly<{ selected: ActDecision }>;
+  action: CompanionAction;
+  message: EditorialMessage;
+  memoryDiscard: MemoryDiscard & Readonly<{ reason: "transient_context" }>;
+  deliveryIntents: readonly [DeliveryIntent & Readonly<{
+    destination: "in_app";
+    references: readonly ["editorial_message"];
+  }>];
+  trace: readonly ExperienceTraceEvent[];
+}>;
+
 export type FirstRealExperienceResult =
   | FirstRealExperienceComposed
+  | FirstRealExperienceTransientComposed
   | (TerminalBase & Readonly<{
       outcome: "decision_abstain";
       livingContext: LivingTravelContext;
@@ -129,7 +149,7 @@ export type FirstRealExperienceDependencies = Readonly<{
   observer?: (event: ExperienceTraceEvent) => void;
 }>;
 
-const DELIVERY_DESTINATIONS = new Set<DeliveryDestination>(["push", "in_app", "timeline", "memory"]);
+const COMPANION_CHANNELS = new Set(["push", "in_app", "timeline", "memory", "editorial"]);
 
 function deepFreeze<T>(value: T, seen = new Set<object>()): Readonly<T> {
   if (typeof value !== "object" || value === null || seen.has(value)) return value;
@@ -197,8 +217,16 @@ function hasPendingModule(context: LivingTravelContext): boolean {
 }
 
 function lineageMatchesTrip(input: FirstRealExperienceInput): boolean {
+  if (input.decision.tripId !== input.memory.scope.tripId) return false;
+  if (!("livingContext" in input) || input.livingContext === undefined) return true;
   const trip = input.livingContext.trip;
-  return Boolean(trip && typeof trip.id === "string" && trip.id === input.decision.tripId && trip.id === input.memory.scope.tripId);
+  return Boolean(trip && typeof trip.id === "string" && trip.id === input.decision.tripId);
+}
+
+function inputContextMode(input: FirstRealExperienceInput): "legacy" | "resolved" | null {
+  const legacy = "livingContext" in input && input.livingContext !== undefined;
+  const resolved = "resolvedLivingContext" in input && input.resolvedLivingContext !== undefined;
+  return legacy === resolved ? null : legacy ? "legacy" : "resolved";
 }
 
 export async function composeFirstRealExperience(
@@ -220,9 +248,18 @@ export async function composeFirstRealExperience(
 
   let livingContext: LivingTravelContext;
   try {
-    livingContext = await createLivingContextResolution(input.livingContext, {
-      now: () => new Date(instant.getTime()),
-    }).settled;
+    const contextMode = inputContextMode(input);
+    if (!contextMode) return errorResult(trace, observer, "living_context", "invalid_input");
+    if (contextMode === "resolved") {
+      livingContext = input.resolvedLivingContext as LivingTravelContext;
+      if (!livingContext || livingContext.resolvedAt !== input.logicalInstant) {
+        return errorResult(trace, observer, "living_context", "invalid_input");
+      }
+    } else {
+      livingContext = await createLivingContextResolution(input.livingContext as LivingContextInput, {
+        now: () => new Date(instant.getTime()),
+      }).settled;
+    }
   } catch {
     return errorResult(trace, observer, "living_context", "dependency_error");
   }
@@ -285,7 +322,7 @@ export async function composeFirstRealExperience(
     || companionResult.decision.dedupeKey !== selectedDecisionRun.selected.dedupeKey) {
     return errorResult(trace, observer, "companion", "lineage_error");
   }
-  if (!DELIVERY_DESTINATIONS.has(companionResult.channel as DeliveryDestination)) {
+  if (!COMPANION_CHANNELS.has(companionResult.channel)) {
     return errorResult(trace, observer, "companion", "unsupported_destination");
   }
   addTrace(trace, observer, "companion", "action", "none");
@@ -316,6 +353,26 @@ export async function composeFirstRealExperience(
   }
   if (memoryResult.outcome === "discard") {
     addTrace(trace, observer, "memory_engine", "discard", memoryResult.reason);
+    const authorization = memoryResult.reason === "transient_context"
+      ? authorizeAdaptiveDecisionSurface(companionResult.decision.kind)
+      : null;
+    if (authorization) {
+      const intent = Object.freeze({
+        destination: authorization.destination,
+        state: "pending" as const,
+        references: authorization.references,
+      });
+      return finish({
+        outcome: "transient_composed" as const,
+        livingContext,
+        decisionRun: selectedDecisionRun,
+        action: companionResult,
+        message,
+        memoryDiscard: memoryResult as MemoryDiscard & Readonly<{ reason: "transient_context" }>,
+        deliveryIntents: Object.freeze([intent] as const),
+        trace,
+      });
+    }
     return finish({
       outcome: "memory_discard" as const,
       livingContext,

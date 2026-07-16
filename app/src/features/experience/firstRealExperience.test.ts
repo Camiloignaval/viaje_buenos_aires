@@ -1,9 +1,13 @@
 import { describe, expect, it } from "vitest";
 import type { Trip } from "@/features/trips/types";
+import { createLivingContextResolution, type LivingContextInput, type LivingTravelContext } from "@/features/context-engine/livingContext";
+import type { StoryPackage } from "@/features/story/engine/types";
+import realStory from "@/story/data/story-ba2026.json";
 import {
   composeFirstRealExperience,
   type FirstRealExperienceInput,
 } from "./firstRealExperience";
+import { adaptStoryActivity } from "./lib/adaptiveJourney";
 
 const LOGICAL_INSTANT = "2026-10-03T15:00:00.000Z";
 
@@ -30,7 +34,13 @@ function trip(overrides: Partial<Trip> = {}): Trip {
   };
 }
 
-function input(overrides: Partial<FirstRealExperienceInput> = {}): FirstRealExperienceInput {
+function input(overrides: Partial<{
+  logicalInstant: string;
+  livingContext: LivingContextInput;
+  decision: FirstRealExperienceInput["decision"];
+  companion: FirstRealExperienceInput["companion"];
+  memory: FirstRealExperienceInput["memory"];
+}> = {}): FirstRealExperienceInput {
   return {
     logicalInstant: LOGICAL_INSTANT,
     livingContext: { trip: trip() },
@@ -58,6 +68,52 @@ function expectDeepFrozen(value: unknown, seen = new Set<object>()): void {
   seen.add(value);
   expect(Object.isFrozen(value)).toBe(true);
   for (const child of Object.values(value)) expectDeepFrozen(child, seen);
+}
+
+async function resolvedWeatherContext(kind: "weather" | "light"): Promise<LivingTravelContext> {
+  return createLivingContextResolution({
+    trip: trip({ startDateTime: "2026-10-02", endDateTime: "2026-10-06" }),
+    story: { baseStoryId: "story-1", package: realStory as StoryPackage },
+  }, {
+    now: () => new Date(LOGICAL_INSTANT),
+    weatherAdapter: async () => ({
+      value: {
+        condition: kind === "weather" ? "rain" : "clear",
+        temperatureC: 18,
+        precipitationProbability: kind === "weather" ? 80 : 0,
+        isRaining: kind === "weather",
+        isStorm: false,
+        isSnow: false,
+        sunrise: { localDateTime: "2026-10-03T06:30:00", timezone: "America/Argentina/Buenos_Aires" },
+        sunset: { localDateTime: "2026-10-03T12:00:00", timezone: "America/Argentina/Buenos_Aires" },
+        effectiveAt: { localDateTime: "2026-10-03T11:45:00", timezone: "America/Argentina/Buenos_Aires" },
+        expiresAt: "2026-10-03T15:15:00.000Z",
+        confidence: "unknown",
+      },
+      fetchedAt: LOGICAL_INSTANT,
+      source: "authorized-test-adapter",
+    }),
+  }).settled;
+}
+
+async function adaptiveInput(kind: "weather" | "light"): Promise<FirstRealExperienceInput> {
+  const base = input();
+  const adapted = adaptStoryActivity({
+    id: `activity-${kind}`,
+    intelligence: { outdoor: true, indoor: false, rainFriendly: false, photoMoment: true },
+    contextWindow: {
+      validFrom: "2026-10-03T14:00:00.000Z",
+      validUntil: "2026-10-03T16:00:00.000Z",
+      timezone: "America/Argentina/Buenos_Aires",
+    },
+  });
+  if (!adapted) throw new Error("Expected curated activity");
+  const { livingContext: _legacy, ...common } = base;
+  return {
+    ...common,
+    resolvedLivingContext: await resolvedWeatherContext(kind),
+    decision: { ...base.decision, activities: [adapted.candidate] },
+  };
 }
 
 describe("composeFirstRealExperience", () => {
@@ -245,5 +301,72 @@ describe("composeFirstRealExperience", () => {
       result.decisionRun.selected?.window.effectiveAt,
       result.memoryCandidate.occurredAt,
     ]).toEqual([LOGICAL_INSTANT, LOGICAL_INSTANT, LOGICAL_INSTANT]);
+  });
+});
+
+describe("adaptive contextual composition", () => {
+  it.each([
+    ["weather", "weather_attention_candidate", "push", "weather-"],
+    ["light", "light_moment_candidate", "editorial", "light-"],
+  ] as const)("composes authorized %s intervention after transient Memory discard", async (fixture, decisionKind, companionChannel, variantPrefix) => {
+    const result = await composeFirstRealExperience(await adaptiveInput(fixture));
+
+    expect(result.outcome).toBe("transient_composed");
+    if (result.outcome !== "transient_composed") throw new Error("Expected transient composition");
+    expect(result.decisionRun.selected).toMatchObject({ kind: decisionKind });
+    expect(result.decisionRun.evaluations.filter(({ disposition }) => disposition === "selected")).toHaveLength(1);
+    expect(result.action.channel).toBe(companionChannel);
+    expect(result.message.variantId.startsWith(variantPrefix)).toBe(true);
+    expect(result.memoryDiscard).toEqual({ outcome: "discard", reason: "transient_context", type: null });
+    expect(result.deliveryIntents).toEqual([{
+      destination: "in_app",
+      state: "pending",
+      references: ["editorial_message"],
+    }]);
+    expect("memoryCandidate" in result).toBe(false);
+    expect(result.trace.at(-1)).toEqual({ stage: "memory_engine", outcome: "discard", reason: "transient_context" });
+    expectDeepFrozen(result);
+  });
+
+  it("continues only the single selected authority when multiple activities are actionable", async () => {
+    const adaptive = await adaptiveInput("weather");
+    const first = adaptive.decision.activities[0];
+    const result = await composeFirstRealExperience({
+      ...adaptive,
+      decision: {
+        ...adaptive.decision,
+        activities: [first, { ...first, activityId: "activity-weather-second" }],
+      },
+    });
+
+    expect(result.outcome).toBe("transient_composed");
+    if (result.outcome !== "transient_composed") throw new Error("Expected transient composition");
+    expect(result.decisionRun.evaluations.filter(({ disposition }) => disposition === "selected")).toHaveLength(1);
+    expect(result.decisionRun.evaluations.filter(({ outcome, reasonCode }) => outcome === "abstain" && reasonCode === "not_selected").length).toBeGreaterThanOrEqual(1);
+    expect(result.deliveryIntents).toHaveLength(1);
+  });
+
+  it("fails closed when productive input has ambiguous or invalid lineage", async () => {
+    const productive = await adaptiveInput("weather");
+    if (!("resolvedLivingContext" in productive) || !productive.resolvedLivingContext) {
+      throw new Error("Expected resolved context fixture");
+    }
+    const ambiguous = await composeFirstRealExperience({
+      ...productive,
+      livingContext: { trip: trip() },
+    } as unknown as FirstRealExperienceInput);
+    const mismatch = await composeFirstRealExperience({
+      ...productive,
+      decision: { ...productive.decision, tripId: "another-trip" },
+    });
+    const staleReference = await composeFirstRealExperience({
+      ...productive,
+      resolvedLivingContext: { ...productive.resolvedLivingContext, resolvedAt: "2026-10-03T14:59:59.000Z" },
+    });
+
+    expect(ambiguous).toMatchObject({ outcome: "error", stage: "living_context", errorCode: "invalid_input", deliveryIntents: [] });
+    expect(mismatch).toMatchObject({ outcome: "error", stage: "decision_engine", errorCode: "lineage_error", deliveryIntents: [] });
+    expect(staleReference).toMatchObject({ outcome: "error", stage: "living_context", errorCode: "invalid_input", deliveryIntents: [] });
+    expect([ambiguous, mismatch, staleReference].every((result) => !("action" in result) && !("message" in result))).toBe(true);
   });
 });

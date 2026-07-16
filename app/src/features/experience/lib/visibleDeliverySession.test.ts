@@ -45,6 +45,19 @@ function pending(overrides: Partial<DeliveryReceiptV1> = {}): DeliveryReceiptV1 
   return Object.freeze({ ...receipt, ...overrides });
 }
 
+function transientPending() {
+  return createPendingVisibleDeliveryReceipt({
+    scope: SCOPE,
+    actionId: "action-weather",
+    destination: "in_app",
+    references: ["editorial_message"],
+    dedupeKey: "safe-weather-dedupe",
+    priority: "normal",
+    pendingAt: NOW,
+    expiryBoundaries: [EXPIRES],
+  });
+}
+
 function document(receipts: readonly DeliveryReceiptV1[] = [pending()]): DeliverySessionDocumentV1 {
   return Object.freeze({ version: 1, receipts: Object.freeze([...receipts]) });
 }
@@ -77,6 +90,34 @@ describe("visible delivery session identity and allowlist", () => {
       "pendingAt", "processedAt", "dismissedAt", "expiresAt",
     ]);
     expect(Object.isFrozen(receipt)).toBe(true);
+  });
+
+  it("accepts the exact editorial-only reference while preserving the V1 private receipt", () => {
+    const receipt = transientPending();
+
+    expect(receipt).toEqual({
+      version: 1,
+      identity: "vdr1_6efe294e",
+      state: "pending",
+      destination: "in_app",
+      dedupeKey: "safe-weather-dedupe",
+      priority: "normal",
+      pendingAt: NOW,
+      processedAt: null,
+      dismissedAt: null,
+      expiresAt: EXPIRES,
+    });
+    expect(JSON.stringify(receipt)).not.toMatch(/editorial|action-weather|user-a|trip-a/);
+    expect(createPendingVisibleDeliveryReceipt({
+      scope: SCOPE,
+      actionId: "action-weather",
+      destination: "in_app",
+      references: [] as unknown as readonly ["editorial_message"],
+      dedupeKey: "safe-weather-dedupe",
+      priority: "normal",
+      pendingAt: NOW,
+      expiryBoundaries: [EXPIRES],
+    })).toBeNull();
   });
 
   it("stores no raw scope, action, text, payload, PII or error fields", () => {

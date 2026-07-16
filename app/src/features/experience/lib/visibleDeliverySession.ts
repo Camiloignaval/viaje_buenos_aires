@@ -37,12 +37,15 @@ export type DeliverySessionDocumentV1 = Readonly<{
 
 export type VisibleDeliveryScope = Readonly<{ userId: string; tripId: string }>;
 export type VisibleDeliveryStorage = Readonly<{ getStorage: () => Storage }>;
+export type VisibleDeliveryReferences =
+  | readonly ["editorial_message"]
+  | readonly ["editorial_message", "memory_candidate"];
 
 export type PendingVisibleDeliveryInput = Readonly<{
   scope: VisibleDeliveryScope;
   actionId: string;
   destination: "in_app";
-  references: readonly ["editorial_message", "memory_candidate"];
+  references: VisibleDeliveryReferences;
   dedupeKey: string;
   priority: DecisionPriority;
   pendingAt: string;
@@ -148,9 +151,9 @@ export function createPendingVisibleDeliveryReceipt(
       || !isNonEmptyString(input.scope.tripId)
       || !isNonEmptyString(input.actionId)
       || input.destination !== DESTINATION
-      || input.references.length !== 2
       || input.references[0] !== "editorial_message"
-      || input.references[1] !== "memory_candidate"
+      || !(input.references.length === 1
+        || input.references.length === 2 && input.references[1] === "memory_candidate")
       || !isNonEmptyString(input.dedupeKey)
       || !PRIORITIES.has(input.priority)
       || !isIsoInstant(input.pendingAt)) return null;

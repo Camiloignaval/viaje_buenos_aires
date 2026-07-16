@@ -174,3 +174,45 @@ describe("runHealthCheck — Story Package real (gate de CI)", () => {
     expect(report.score.overall).toBeGreaterThanOrEqual(85);
   });
 });
+
+describe("runHealthCheck - evidencia contextual adaptativa", () => {
+  function withActivity(overrides: Record<string, unknown>): Record<string, unknown> {
+    const pkg = validPackage();
+    (pkg.chapters as Array<Record<string, unknown>>)[0].activities = [{
+      id: "outdoor-1",
+      title: "Paseo curado",
+      intelligence: {
+        outdoor: true,
+        indoor: false,
+        rainFriendly: false,
+        photoMoment: true,
+      },
+      contextWindow: {
+        validFrom: "2026-07-10T14:00:00.000Z",
+        validUntil: "2026-07-10T16:00:00.000Z",
+        timezone: "America/Argentina/Buenos_Aires",
+      },
+      ...overrides,
+    }];
+    return pkg;
+  }
+
+  it("acepta cuatro banderas exactas y una ventana ISO/IANA ordenada", () => {
+    const findings = runHealthCheck(withActivity({})).findings
+      .filter(({ code }) => code.startsWith("intelligence.adaptive-") || code.startsWith("context-window."));
+
+    expect(findings).toEqual([]);
+  });
+
+  it.each([
+    ["claves parciales", { intelligence: { outdoor: true, indoor: false, rainFriendly: false } }, "intelligence.adaptive-exact-keys"],
+    ["claves desconocidas", { intelligence: { outdoor: true, indoor: false, rainFriendly: false, photoMoment: true, privateCopy: "no" } }, "intelligence.adaptive-exact-keys"],
+    ["booleanos contradictorios", { intelligence: { outdoor: true, indoor: true, rainFriendly: false, photoMoment: true } }, "intelligence.indoor-outdoor-conflict"],
+    ["instante no ISO", { contextWindow: { validFrom: "2026-07-10 14:00", validUntil: "2026-07-10T16:00:00.000Z", timezone: "America/Argentina/Buenos_Aires" } }, "context-window.invalid-instant"],
+    ["timezone no IANA", { contextWindow: { validFrom: "2026-07-10T14:00:00.000Z", validUntil: "2026-07-10T16:00:00.000Z", timezone: "ART" } }, "context-window.invalid-timezone"],
+    ["orden invertido", { contextWindow: { validFrom: "2026-07-10T16:00:00.000Z", validUntil: "2026-07-10T14:00:00.000Z", timezone: "America/Argentina/Buenos_Aires" } }, "context-window.invalid-order"],
+    ["clave extra", { contextWindow: { validFrom: "2026-07-10T14:00:00.000Z", validUntil: "2026-07-10T16:00:00.000Z", timezone: "America/Argentina/Buenos_Aires", label: "privado" } }, "context-window.exact-keys"],
+  ])("rechaza %s sin inferir desde contenido", (_case, overrides, expectedCode) => {
+    expect(codes(runHealthCheck(withActivity(overrides as Record<string, unknown>)))).toContain(expectedCode);
+  });
+});

@@ -49,6 +49,12 @@ export interface Place {
   intelligence?: StoryIntelligence;
 }
 
+export interface ContextWindow {
+  validFrom: string;
+  validUntil: string;
+  timezone: string;
+}
+
 export interface SuggestedMemory {
   id: string;
   relatedActivityId?: string | null;
@@ -70,6 +76,8 @@ export interface Activity {
   image?: string;
   /** Metadata de significado (opcional): energía, clima, foto, etc. */
   intelligence?: StoryIntelligence;
+  /** Structured curated window for contextual decisions; never derived from `timeWindow`. */
+  contextWindow?: ContextWindow;
 }
 
 export interface ChapterCopy {

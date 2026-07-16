@@ -443,6 +443,62 @@ function checkIntelligence(pkg: StoryPackage): HealthFinding[] {
   return out;
 }
 
+const ADAPTIVE_INTELLIGENCE_KEYS = ["outdoor", "indoor", "rainFriendly", "photoMoment"] as const;
+const CONTEXT_WINDOW_KEYS = ["validFrom", "validUntil", "timezone"] as const;
+
+function hasExactKeys(value: Record<string, unknown>, keys: readonly string[]): boolean {
+  const actual = Object.keys(value);
+  const allowed = new Set(keys);
+  return actual.length === keys.length && actual.every((key) => allowed.has(key));
+}
+
+function isIsoInstant(value: unknown): value is string {
+  if (typeof value !== "string") return false;
+  const parsed = Date.parse(value);
+  return Number.isFinite(parsed) && new Date(parsed).toISOString() === value;
+}
+
+function isIanaTimezone(value: unknown): value is string {
+  if (!isNonEmptyString(value) || (!value.includes("/") && value !== "UTC")) return false;
+  try {
+    new Intl.DateTimeFormat("en-US", { timeZone: value }).format(0);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function checkAdaptiveContextEvidence(pkg: StoryPackage): HealthFinding[] {
+  const out: HealthFinding[] = [];
+  (pkg.chapters ?? []).forEach((chapter, ci) => {
+    (chapter.activities ?? []).forEach((activity, ai) => {
+      if (activity.contextWindow === undefined) return;
+      const path = `chapters[${ci}].activities[${ai}]`;
+      const intelligence = asRecord(activity.intelligence);
+      if (!intelligence || !hasExactKeys(intelligence, ADAPTIVE_INTELLIGENCE_KEYS)) {
+        out.push(finding("intelligence", "warning", "intelligence.adaptive-exact-keys", "La evidencia adaptativa debe declarar exactamente outdoor, indoor, rainFriendly y photoMoment.", { path: `${path}.intelligence` }));
+      }
+
+      const window = asRecord(activity.contextWindow);
+      if (!window || !hasExactKeys(window, CONTEXT_WINDOW_KEYS)) {
+        out.push(finding("intelligence", "warning", "context-window.exact-keys", "contextWindow debe declarar exactamente validFrom, validUntil y timezone.", { path: `${path}.contextWindow` }));
+        return;
+      }
+      const validFrom = window.validFrom;
+      const validUntil = window.validUntil;
+      if (!isIsoInstant(validFrom) || !isIsoInstant(validUntil)) {
+        out.push(finding("intelligence", "warning", "context-window.invalid-instant", "contextWindow requiere instantes ISO exactos.", { path: `${path}.contextWindow` }));
+      } else if (Date.parse(validUntil) <= Date.parse(validFrom)) {
+        out.push(finding("intelligence", "warning", "context-window.invalid-order", "contextWindow.validUntil debe ser posterior a validFrom.", { path: `${path}.contextWindow` }));
+      }
+      if (!isIanaTimezone(window.timezone)) {
+        out.push(finding("intelligence", "warning", "context-window.invalid-timezone", "contextWindow.timezone debe ser una zona IANA valida.", { path: `${path}.contextWindow.timezone` }));
+      }
+    });
+  });
+  return out;
+}
+
 const DEFAULT_CHECKERS: readonly StoryHealthChecker[] = [
   checkMetadata,
   checkStructure,
@@ -455,6 +511,7 @@ const DEFAULT_CHECKERS: readonly StoryHealthChecker[] = [
   checkAccessibility,
   checkContext,
   checkIntelligence,
+  checkAdaptiveContextEvidence,
   checkLivingContext,
 ];
 

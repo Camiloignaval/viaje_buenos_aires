@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { loadStoryPackage, StoryPackageValidationError } from "./storyPackage";
+import realStory from "@/story/data/story-ba2026.json";
 
 function minimalPackage(overrides: Record<string, unknown> = {}) {
   return {
@@ -95,5 +96,21 @@ describe("loadStoryPackage", () => {
       },
     });
     expect(() => loadStoryPackage(pkg)).toThrow(StoryPackageValidationError);
+  });
+});
+
+describe("adaptive Story evidence", () => {
+  it("curates only the four evidence-backed activities with exact structured metadata", () => {
+    const pkg = loadStoryPackage(realStory);
+    const curated = pkg.chapters.flatMap((chapter) => chapter.activities ?? [])
+      .filter((activity) => activity.contextWindow);
+
+    expect(curated.map(({ id }) => id)).toEqual(["act-2-2", "act-2-6", "act-2-8", "act-3-5"]);
+    expect(curated).toHaveLength(4);
+    for (const activity of curated) {
+      expect(Object.keys(activity.intelligence ?? {}).sort()).toEqual(["indoor", "outdoor", "photoMoment", "rainFriendly"]);
+      expect(Object.keys(activity.contextWindow ?? {}).sort()).toEqual(["timezone", "validFrom", "validUntil"]);
+    }
+    expect(pkg.chapters.flatMap((chapter) => chapter.activities ?? [])).toHaveLength(28);
   });
 });

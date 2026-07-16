@@ -68,7 +68,11 @@ describe("Memory isolation boundaries", () => {
       "src/story",
     ], { cwd: APP_DIRECTORY, encoding: "utf8" });
 
-    expect(changed.trim()).toBe("");
+    const unexpected = changed.trim().split(/\r?\n/u)
+      .filter(Boolean)
+      .filter((file) => !file.endsWith("src/story/data/story-ba2026.json"));
+
+    expect(unexpected).toEqual([]);
   });
 
   it("does not invoke getters, network or logs for invalid/private input", () => {
