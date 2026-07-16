@@ -3,7 +3,7 @@ artifact_store: openspec
 execution_mode: automatic
 delivery_strategy: auto-chain
 chain_strategy: feature-branch-chain
-status: verified
+status: archived
 phases:
   explore: done
   proposal: done
@@ -12,7 +12,7 @@ phases:
   tasks: done       # strict TDD; three autonomous local review slices
   apply: done        # 12/12 tasks complete
   verify: done         # PASS; 16/16 scenarios and 12/12 Strict TDD evidence
-  archive: pending
+  archive: done
 verification:
   verdict: PASS
   report: verify-report.md
