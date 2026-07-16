@@ -29,7 +29,7 @@ function expectDeepFrozen(value: unknown, seen = new Set<object>()): void {
 }
 
 describe("simulateFirstRealExperience", () => {
-  it("repeats the canonical real five-engine result without ambient time", async () => {
+  it("Fixture repetible: repeats the canonical real five-engine result without ambient time", async () => {
     const first = await simulateFirstRealExperience();
     const second = await simulateFirstRealExperience();
 
@@ -77,10 +77,14 @@ describe("simulateFirstRealExperience", () => {
     expectDeepFrozen(actual);
   });
 
-  it("has no production importer and contains no forbidden runtime capability", () => {
+  it("Ausencia productiva: has no production importer or forbidden runtime capability", () => {
     const simulatorPath = join(HERE, "firstRealExperienceSimulator.ts");
     const composerPath = join(SRC_ROOT, "features", "experience", "firstRealExperience.ts");
     const runtimeSource = [simulatorPath, composerPath].map((path) => readFileSync(path, "utf8")).join("\n");
+    const testSource = [
+      join(HERE, "firstRealExperienceSimulator.test.ts"),
+      join(SRC_ROOT, "features", "experience", "firstRealExperience.test.ts"),
+    ].map((path) => readFileSync(path, "utf8")).join("\n");
     const productionImporters = sourceFiles(SRC_ROOT)
       .filter((path) => path !== simulatorPath && !path.endsWith(".test.ts") && !path.endsWith(".test.tsx"))
       .filter((path) => readFileSync(path, "utf8").includes("firstRealExperienceSimulator"))
@@ -91,6 +95,12 @@ describe("simulateFirstRealExperience", () => {
     expect(runtimeSource).not.toMatch(/from\s+["'][^"']*(?:react|provider|story|lifecycle|repository|rules)[^"']*["']/i);
     expect(runtimeSource).not.toMatch(/\b(?:openai|llm|embedding|prompt|Math\.random|Date\.now|new Date\s*\(\s*\))\b/i);
     expect(runtimeSource).not.toMatch(/\b(?:window|document|navigator)\b|\.tsx["']/);
+    const bannedTestApi = new RegExp([
+      ["vi", "mo" + "ck"].join("\\."),
+      "toMatch" + "Snapshot",
+      "toMatchInline" + "Snapshot",
+    ].join("|"));
+    expect(testSource).not.toMatch(bannedTestApi);
   });
 
   it("keeps unsupported delivery destinations fail-closed without replacing an engine", () => {
@@ -110,7 +120,7 @@ describe("simulateFirstRealExperience", () => {
     );
   });
 
-  it("keeps the five engine trees byte-unchanged from the planning base", () => {
+  it("Prueba byte-unchanged: keeps the five engine trees unchanged from the planning base", () => {
     const protectedPaths = [
       "app/src/features/context-engine/livingContext.ts",
       "app/src/features/context-engine/types.ts",

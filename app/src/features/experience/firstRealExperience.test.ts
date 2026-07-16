@@ -61,12 +61,19 @@ function expectDeepFrozen(value: unknown, seen = new Set<object>()): void {
 }
 
 describe("composeFirstRealExperience", () => {
-  it("composes the real five-engine trip-start-today chain with exact lineage", async () => {
+  it("Primer día local exitoso / Lineage exitoso / Intent exitoso / Trace exitoso: composes the real five-engine chain", async () => {
     const result = await composeFirstRealExperience(input());
 
     expect(result.outcome).toBe("composed");
     if (result.outcome !== "composed") throw new Error("Expected composed result");
     expect(result.livingContext.resolvedAt).toBe(LOGICAL_INSTANT);
+    expect([result.livingContext.destination.status, result.livingContext.temporal.status]).toEqual(["available", "available"]);
+    expect([result.livingContext.financial.reason, result.livingContext.weather.reason])
+      .not.toContain("pending");
+    expect([result.livingContext.financial.reason, result.livingContext.weather.reason])
+      .not.toContain("weather_pending");
+    expect(result.decisionRun.selected).toMatchObject({ outcome: "act", kind: "trip_start_today" });
+    expect(result.action.outcome).toBe("action");
     expect(result.action.decision).toEqual(result.decisionRun.selected);
     expect(result.action.decisionRef.id).toBe(result.decisionRun.selected.id);
     expect(result.message).toMatchObject({
@@ -96,14 +103,14 @@ describe("composeFirstRealExperience", () => {
     ]);
   });
 
-  it("deeply freezes the successful result and every final value", async () => {
+  it("Valores finales inmutables: deeply freezes the successful result and every final value", async () => {
     const result = await composeFirstRealExperience(input());
 
     expect(result.outcome).toBe("composed");
     expectDeepFrozen(result);
   });
 
-  it("terminates on Decision abstention without later stages or intents", async () => {
+  it("Abstención de Decision / Resultado terminal / Trace terminal: stops without bypass or intents", async () => {
     const result = await composeFirstRealExperience(input({
       decision: {
         tripId: "trip-1",
@@ -116,10 +123,14 @@ describe("composeFirstRealExperience", () => {
     expect(result).toMatchObject({ outcome: "decision_abstain", deliveryIntents: [] });
     expect(result.trace.map(({ stage }) => stage)).toEqual(["living_context", "decision_engine"]);
     expect(result.trace.at(-1)).toMatchObject({ outcome: "abstained", reason: "incomplete_context" });
+    expect("silence" in result).toBe(false);
+    expect("action" in result).toBe(false);
+    expect("message" in result).toBe(false);
+    expect("memoryCandidate" in result || "memoryDiscard" in result).toBe(false);
     expectDeepFrozen(result);
   });
 
-  it("preserves Companion silence and never renders Editorial or classifies Memory", async () => {
+  it("Silencio de Companion / Resultado terminal / Trace terminal: never renders Editorial or classifies Memory", async () => {
     const result = await composeFirstRealExperience(input({
       companion: {
         preferences: { enabled: false },
@@ -134,10 +145,13 @@ describe("composeFirstRealExperience", () => {
       deliveryIntents: [],
     });
     expect(result.trace.map(({ stage }) => stage)).toEqual(["living_context", "decision_engine", "companion"]);
+    expect("action" in result).toBe(false);
+    expect("message" in result).toBe(false);
+    expect("memoryCandidate" in result || "memoryDiscard" in result).toBe(false);
     expectDeepFrozen(result);
   });
 
-  it("preserves a real Memory discard for tomorrow without creating a delivery intent", async () => {
+  it("Descarte de Memory / Resultado terminal / Trace terminal: preserves discard without an intent", async () => {
     const tomorrowTrip = trip({ startDateTime: "2026-10-04", endDateTime: "2026-10-07" });
     const result = await composeFirstRealExperience(input({ livingContext: { trip: tomorrowTrip } }));
 
@@ -154,9 +168,10 @@ describe("composeFirstRealExperience", () => {
       { stage: "editorial_voice", outcome: "rendered", reason: "none" },
       { stage: "memory_engine", outcome: "discard", reason: "unsupported_kind" },
     ]);
+    expect("memoryCandidate" in result).toBe(false);
   });
 
-  it("fails closed for invalid input, unsettled required context and invalid lineage", async () => {
+  it("Contexto no settled / Lineage inválido: fails closed with zero intents and no downstream bypass", async () => {
     const invalid = await composeFirstRealExperience(input({ logicalInstant: "not-an-instant" }));
     const unsettled = await composeFirstRealExperience(input({
       livingContext: { trip: trip({ startDateTime: undefined }) },
@@ -179,11 +194,13 @@ describe("composeFirstRealExperience", () => {
     });
     expect(unsettled).toMatchObject({ outcome: "error", stage: "living_context", errorCode: "unsettled_context", deliveryIntents: [] });
     expect(unsettled.trace.map(({ stage }) => stage)).toEqual(["living_context"]);
+    expect("decisionRun" in unsettled || "action" in unsettled || "message" in unsettled).toBe(false);
     expect(lineage).toMatchObject({ outcome: "error", stage: "decision_engine", errorCode: "lineage_error", deliveryIntents: [] });
     expect(lineage.trace.map(({ stage }) => stage)).toEqual(["living_context", "decision_engine"]);
+    expect("decisionRun" in lineage || "action" in lineage || "message" in lineage).toBe(false);
   });
 
-  it("categorizes dependency failures without leaking raw errors or continuing", async () => {
+  it("Error de dependencia: categorizes failure without raw errors, intents or downstream bypass", async () => {
     const hostileLivingContext = Object.defineProperty({}, "trip", {
       get: () => { throw new Error("kari@example.com token=secret -34.6037"); },
     });
@@ -194,6 +211,7 @@ describe("composeFirstRealExperience", () => {
 
     expect(result).toMatchObject({ outcome: "error", stage: "living_context", errorCode: "dependency_error", deliveryIntents: [] });
     expect(result.trace).toEqual([{ stage: "living_context", outcome: "error", reason: "dependency_error" }]);
+    expect("decisionRun" in result || "action" in result || "message" in result).toBe(false);
     expect(serialized).not.toMatch(/kari@|secret|-34\.6037/);
   });
 

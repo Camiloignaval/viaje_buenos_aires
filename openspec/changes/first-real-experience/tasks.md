@@ -42,5 +42,5 @@ The specification governs terminal behavior: abstention, silence, Memory discard
 
 ## Phase 3: Consolidated safety (Unit 3)
 
-- [ ] 3.1 **RED→GREEN:** Map all 16 scenarios above to named assertions and add missing negative cases only in the two new test files; no engine mocks, snapshots hiding fields or weakened contracts.
-- [ ] 3.2 **TRIANGULATE→REFACTOR:** Run `npm run test:react`, `npm test`, `npm run typecheck`, existing Living/Decision/Companion/Editorial/Memory safety tests, `git diff --check`, and a baseline range diff proving the five engine trees and production entrypoints byte-unchanged; do not build.
+- [x] 3.1 **RED→GREEN:** Map all 16 scenarios above to named assertions and add missing negative cases only in the two new test files; no engine mocks, snapshots hiding fields or weakened contracts.
+- [x] 3.2 **TRIANGULATE→REFACTOR:** Run `npm run test:react`, `npm test`, `npm run typecheck`, existing Living/Decision/Companion/Editorial/Memory safety tests, `git diff --check`, and a baseline range diff proving the five engine trees and production entrypoints byte-unchanged; do not build.
