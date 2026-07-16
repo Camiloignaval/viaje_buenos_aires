@@ -60,6 +60,7 @@ const ALL_CATEGORIES: readonly HealthCategory[] = [
 const CURRENCY_TOKEN_PATTERN = /\b(ARS|CLP|USD|EUR|BRL|MXN|GBP|UYU|PEN|COP|JPY)\b/g;
 // Palabras que encuadran un monto extranjero como referencia/conversión (permitido).
 const REFERENCE_FRAMING_PATTERN = /referencia|cambio|equivale|aproximad|convers|al cambio/i;
+const SUPPORTED_MEMORY_TYPES = new Set(["photo", "note"]);
 
 function finding(
   category: HealthCategory,
@@ -276,6 +277,29 @@ function checkMonetary(pkg: StoryPackage): HealthFinding[] {
     });
   });
 
+  // Un importe escrito dentro del copy no puede pasar por Financial Context:
+  // queda congelado y cualquier referencia secundaria envejece. Los montos
+  // estructurados mantienen importe y moneda en campos separados, por lo que no
+  // disparan este diagnóstico.
+  if (localCurrency) {
+    for (const { text, path } of collectTextLeaves(pkg)) {
+      const tokens = new Set((text.match(CURRENCY_TOKEN_PATTERN) ?? []).map((token) => token.toUpperCase()));
+      for (const token of tokens) {
+        if (!containsHardcodedAmount(text, token)) continue;
+        out.push(finding(
+          "monetary",
+          "warning",
+          "monetary.hardcoded-editorial-amount",
+          "El copy contiene un importe fijo que no puede actualizar Financial Context.",
+          {
+            path,
+            suggestion: `Expresar el monto como dato estructurado en ${localCurrency}; Financial Context debe resolver cualquier referencia secundaria.`,
+          },
+        ));
+      }
+    }
+  }
+
   // Consistencia editorial: montos en moneda extranjera sin encuadre de referencia.
   const places = collectPlaces(pkg);
   places.forEach(({ place, path }) => {
@@ -283,6 +307,7 @@ function checkMonetary(pkg: StoryPackage): HealthFinding[] {
     if (!isNonEmptyString(text)) return;
     const tokens = new Set((text.match(CURRENCY_TOKEN_PATTERN) ?? []).map((t) => t.toUpperCase()));
     for (const token of tokens) {
+      if (containsHardcodedAmount(text, token)) continue;
       if (localCurrency && token !== localCurrency && !REFERENCE_FRAMING_PATTERN.test(text)) {
         out.push(finding("monetary", "warning", "monetary.unframed-foreign-currency", `Menciona ${token} (moneda no local) sin encuadrarla como referencia.`, {
           path: `${path}.recommendation`,
@@ -325,6 +350,7 @@ function checkReferences(pkg: StoryPackage): HealthFinding[] {
 
   const seenActivityIds = new Set<string>();
   (pkg.chapters ?? []).forEach((chapter, ci) => {
+    const activityIds = new Set((chapter.activities ?? []).map((activity) => activity.id).filter(isNonEmptyString));
     (chapter.activities ?? []).forEach((activity, ai) => {
       const path = `chapters[${ci}].activities[${ai}]`;
       if (isNonEmptyString(activity.id)) {
@@ -338,6 +364,23 @@ function checkReferences(pkg: StoryPackage): HealthFinding[] {
         out.push(finding("references", "warning", "references.dangling-place-ref", `relatedPlaceId inexistente: ${activity.relatedPlaceId}.`, { path }));
       }
     });
+    (chapter.suggestedMemories ?? []).forEach((memory, mi) => {
+      const path = `chapters[${ci}].suggestedMemories[${mi}]`;
+      if (isNonEmptyString(memory.relatedActivityId) && !activityIds.has(memory.relatedActivityId)) {
+        out.push(finding("references", "warning", "references.dangling-activity-ref", `relatedActivityId inexistente: ${memory.relatedActivityId}.`, { path }));
+      }
+      if (isNonEmptyString(memory.type) && !SUPPORTED_MEMORY_TYPES.has(memory.type)) {
+        out.push(finding("experience", "warning", "experience.unsupported-memory-type", `Tipo de recuerdo no soportado por la experiencia: ${memory.type}.`, { path: `${path}.type` }));
+      }
+    });
+  });
+
+  (pkg.specialChapter?.prompts ?? []).forEach((prompt, pi) => {
+    if (isNonEmptyString(prompt.memoryType) && !SUPPORTED_MEMORY_TYPES.has(prompt.memoryType)) {
+      out.push(finding("experience", "warning", "experience.unsupported-memory-type", `Tipo de recuerdo no soportado por la experiencia: ${prompt.memoryType}.`, {
+        path: `specialChapter.prompts[${pi}].memoryType`,
+      }));
+    }
   });
 
   (pkg.photoSpots ?? []).forEach((spot, i) => {
@@ -450,6 +493,41 @@ function hasExactKeys(value: Record<string, unknown>, keys: readonly string[]): 
   const actual = Object.keys(value);
   const allowed = new Set(keys);
   return actual.length === keys.length && actual.every((key) => allowed.has(key));
+}
+
+interface TextLeaf {
+  text: string;
+  path: string;
+}
+
+/** Recorre copy editorial sin asumir una forma cerrada ni entrar en ciclos. */
+function collectTextLeaves(root: unknown): TextLeaf[] {
+  const out: TextLeaf[] = [];
+  const pending: Array<{ value: unknown; path: string }> = [{ value: root, path: "" }];
+  const seen = new WeakSet<object>();
+  while (pending.length > 0) {
+    const current = pending.pop()!;
+    if (typeof current.value === "string") {
+      out.push({ text: current.value, path: current.path });
+      continue;
+    }
+    if (!current.value || typeof current.value !== "object" || seen.has(current.value)) continue;
+    seen.add(current.value);
+    if (Array.isArray(current.value)) {
+      current.value.forEach((value, index) => pending.push({ value, path: `${current.path}[${index}]` }));
+      continue;
+    }
+    Object.entries(current.value).forEach(([key, value]) => pending.push({
+      value,
+      path: current.path ? `${current.path}.${key}` : key,
+    }));
+  }
+  return out;
+}
+
+function containsHardcodedAmount(text: string, currency: string): boolean {
+  const amount = String.raw`(?:[$€£¥]\s*)?\d[\d.,]*(?:\s*[–-]\s*(?:[$€£¥]\s*)?\d[\d.,]*)?`;
+  return new RegExp(`(?:\\b${currency}\\b\\s*${amount}|${amount}\\s*\\b${currency}\\b)`, "i").test(text);
 }
 
 function isIsoInstant(value: unknown): value is string {

@@ -108,16 +108,46 @@ describe("runHealthCheck — media", () => {
 });
 
 describe("runHealthCheck — monetario", () => {
-  it("marca una moneda extranjera sin encuadre de referencia", () => {
-    const pkg = validPackage();
-    pkg.placesCatalog = { restaurants: [{ id: "r1", name: "R", recommendation: "Costó $40.000 CLP." }] };
-    expect(codes(runHealthCheck(pkg))).toContain("monetary.unframed-foreign-currency");
-  });
-
-  it("acepta una moneda extranjera encuadrada como referencia", () => {
+  it("marca un importe editorial extranjero aunque tenga encuadre", () => {
     const pkg = validPackage();
     pkg.placesCatalog = { restaurants: [{ id: "r1", name: "R", recommendation: "Unos $40.000 CLP como referencia al cambio." }] };
-    expect(codes(runHealthCheck(pkg))).not.toContain("monetary.unframed-foreign-currency");
+    const report = runHealthCheck(pkg);
+    expect(codes(report)).toContain("monetary.hardcoded-editorial-amount");
+    expect(report.findings.find(({ code }) => code === "monetary.hardcoded-editorial-amount")?.path)
+      .toBe("placesCatalog.restaurants[0].recommendation");
+  });
+
+  it("marca también importes locales escritos dentro del copy", () => {
+    const pkg = validPackage();
+    pkg.placesCatalog = { restaurants: [{ id: "r1", name: "R", recommendation: "Para dos, ARS 48.000." }] };
+    expect(codes(runHealthCheck(pkg))).toContain("monetary.hardcoded-editorial-amount");
+  });
+
+  it("acepta un monto local estructurado para que Financial Context resuelva la referencia", () => {
+    const pkg = validPackage();
+    pkg.collections = [{ id: "c1", title: "Compras", items: [{ id: "i1", name: "Mate", estimatedPrice: "$48.000", currency: "ARS" }] }];
+    expect(codes(runHealthCheck(pkg))).not.toContain("monetary.hardcoded-editorial-amount");
+  });
+
+  it("conserva el diagnóstico para moneda extranjera sin importe ni encuadre", () => {
+    const pkg = validPackage();
+    pkg.placesCatalog = { restaurants: [{ id: "r1", name: "R", recommendation: "El menú también se publica en CLP." }] };
+    expect(codes(runHealthCheck(pkg))).toContain("monetary.unframed-foreign-currency");
+  });
+});
+
+describe("runHealthCheck — recuerdos curados", () => {
+  it("detecta tipos que la captura actual no puede producir", () => {
+    const pkg = validPackage();
+    (pkg.chapters as Array<Record<string, unknown>>)[0].activities = [{ id: "a1", title: "Actividad" }];
+    (pkg.chapters as Array<Record<string, unknown>>)[0].suggestedMemories = [{ id: "m1", relatedActivityId: "a1", type: "video", prompt: "Grabar" }];
+    expect(codes(runHealthCheck(pkg))).toContain("experience.unsupported-memory-type");
+  });
+
+  it("detecta recuerdos asociados a una actividad inexistente", () => {
+    const pkg = validPackage();
+    (pkg.chapters as Array<Record<string, unknown>>)[0].suggestedMemories = [{ id: "m1", relatedActivityId: "no-existe", type: "photo", prompt: "Foto" }];
+    expect(codes(runHealthCheck(pkg))).toContain("references.dangling-activity-ref");
   });
 });
 
@@ -162,16 +192,14 @@ describe("runHealthCheck — Story Intelligence Metadata", () => {
 });
 
 describe("runHealthCheck — Story Package real (gate de CI)", () => {
-  it("story-ba2026 pasa sin críticos y con toda su media resuelta", () => {
+  it("story-ba2026 no deja hallazgos evitables y resuelve toda su media", () => {
     const publicDir = join(process.cwd(), "public");
     const assetExists = (ref: string) => existsSync(join(publicDir, ref));
     const report = runHealthCheck(realStory, { assetExists });
 
     expect(report.status).toBe("ok");
-    expect(report.counts.critical).toBe(0);
-    expect(codes(report)).not.toContain("media.missing-asset");
-    expect(codes(report)).not.toContain("monetary.unframed-foreign-currency");
-    expect(report.score.overall).toBeGreaterThanOrEqual(85);
+    expect(report.findings).toEqual([]);
+    expect(report.score.overall).toBe(100);
   });
 });
 

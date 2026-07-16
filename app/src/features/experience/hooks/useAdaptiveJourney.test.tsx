@@ -72,11 +72,11 @@ describe("useAdaptiveJourney", () => {
     fetchWeatherContext.mockReset();
   });
 
-  it("prepara solo los cuatro candidatos Story sin copy privado", () => {
+  it("prepara solo los cinco candidatos Story sin copy privado", () => {
     const candidates = collectAdaptiveJourneyActivities(storyPackage);
 
-    expect(candidates.map(({ activityId }) => activityId)).toEqual(["act-2-2", "act-2-6", "act-2-8", "act-3-5"]);
-    expect(JSON.stringify(candidates)).not.toMatch(/Floralis|Rosedal|Puerto Madero|Caminito|description|title/);
+    expect(candidates.map(({ activityId }) => activityId)).toEqual(["act-1-3", "act-2-2", "act-2-6", "act-2-8", "act-3-5"]);
+    expect(JSON.stringify(candidates)).not.toMatch(/Obelisco|Floralis|Rosedal|Puerto Madero|Caminito|description|title/);
     expect(Object.isFrozen(candidates)).toBe(true);
   });
 
@@ -130,6 +130,6 @@ describe("useAdaptiveJourney", () => {
     await waitFor(() => expect(result.current.livingContext.weather.reason).toBe("weather_failed"));
     expect(result.current.livingContext.temporal.status).toBe("available");
     expect(result.current.livingContext.narrative.status).toBe("available");
-    expect(result.current.activities).toHaveLength(4);
+    expect(result.current.activities).toHaveLength(5);
   });
 });

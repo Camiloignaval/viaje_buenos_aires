@@ -58,7 +58,18 @@
           "location": { "name": "Obelisco de Buenos Aires" },
           "moment": "La primera caminata sin apuro",
           "insight": "Desde la esquina, de costado, antes de quedar de frente, es donde más se nota la escala de la avenida — ahí se entiende por qué le dicen la más ancha del mundo.",
-          "image": "images/dia1-corrientes.jpg"
+          "image": "images/dia1-corrientes.jpg",
+          "intelligence": {
+            "outdoor": true,
+            "indoor": false,
+            "rainFriendly": false,
+            "photoMoment": true
+          },
+          "contextWindow": {
+            "validFrom": "2026-07-18T19:45:00.000Z",
+            "validUntil": "2026-07-18T21:30:00.000Z",
+            "timezone": "America/Argentina/Buenos_Aires"
+          }
         },
         {
           "id": "act-1-5",
@@ -101,24 +112,24 @@
           "id": "mem-1-1",
           "relatedActivityId": "act-1-3",
           "type": "photo",
-          "prompt": "El símbolo de la ciudad, con el movimiento de la 9 de Julio de fondo — la primera postal clásica del primer viaje juntos. Mejor entre 09:00 y 10:30, desde Corrientes con 9 de Julio."
+          "prompt": "El símbolo de la ciudad, con el movimiento de la 9 de Julio de fondo — la primera postal clásica del primer viaje juntos. A las 17:00, desde Corrientes con 9 de Julio."
         },
         {
           "id": "mem-1-2",
           "relatedActivityId": "act-1-3",
           "type": "photo",
-          "prompt": "La misma postal, de noche — la avenida iluminada le da otra vida. Entre 20:30 y 22:00, esperando el cambio de luces del Obelisco."
+          "prompt": "La avenida todavía en movimiento y la luz bajando detrás del Obelisco — otra forma de guardar la primera caminata."
         },
         {
           "id": "mem-1-3",
           "relatedActivityId": "act-1-3",
-          "type": "video",
-          "prompt": "Caminar de noche por Av. Corrientes — el cierre de la primera caminata juntos en la ciudad."
+          "type": "photo",
+          "prompt": "Una foto caminando por Av. Corrientes — el comienzo de la primera tarde juntos en la ciudad."
         },
         {
           "id": "mem-1-4",
           "relatedActivityId": "act-1-4",
-          "type": "video",
+          "type": "photo",
           "prompt": "El helado de Rapanui, compartido caminando — un momento simple que va a valer la pena recordar."
         }
       ]
@@ -191,7 +202,7 @@
         {
           "id": "act-2-6",
           "title": "Bosques de Palermo y Rosedal",
-          "timeWindow": "15:00–17:00",
+          "timeWindow": "15:00–17:45",
           "category": "caminata",
           "location": { "name": "Rosedal de Palermo" },
           "moment": "Caminar sin rumbo, sin mirar el reloj",
@@ -204,7 +215,7 @@
           },
           "contextWindow": {
             "validFrom": "2026-07-19T17:45:00.000Z",
-            "validUntil": "2026-07-19T20:15:00.000Z",
+            "validUntil": "2026-07-19T21:00:00.000Z",
             "timezone": "America/Argentina/Buenos_Aires"
           }
         },
@@ -219,11 +230,11 @@
         },
         {
           "id": "act-2-8",
-          "title": "Atardecer y caminata nocturna en Puerto Madero",
-          "timeWindow": "20:00–22:30",
+          "title": "Caminata nocturna en Puerto Madero",
+          "timeWindow": "20:00–20:30",
           "category": "caminata",
           "location": { "name": "Puerto Madero" },
-          "moment": "El primer atardecer del viaje en Puerto Madero",
+          "moment": "La primera noche del viaje en Puerto Madero",
           "insight": "En la mitad del puente, de noche, el agua queda tan quieta que el dique se ve distinto a como se veía de día — vale la pena llegar al restaurante un minuto más tarde por eso.",
           "image": "images/dia2-puertomadero.jpg",
           "intelligence": {
@@ -234,7 +245,7 @@
           },
           "contextWindow": {
             "validFrom": "2026-07-19T22:45:00.000Z",
-            "validUntil": "2026-07-20T01:45:00.000Z",
+            "validUntil": "2026-07-19T23:45:00.000Z",
             "timezone": "America/Argentina/Buenos_Aires"
           }
         },
@@ -273,14 +284,14 @@
         {
           "id": "mem-2-2",
           "relatedActivityId": "act-2-2",
-          "type": "video",
-          "prompt": "Los pétalos de la Floralis moviéndose — su movimiento hidráulico es único."
+          "type": "photo",
+          "prompt": "Los pétalos de la Floralis abiertos sobre el espejo de agua — una forma de guardar su movimiento incluso en una foto."
         },
         {
           "id": "mem-2-3",
           "relatedActivityId": "act-2-5",
-          "type": "video",
-          "prompt": "El primer corte del bife en La Cabrera."
+          "type": "photo",
+          "prompt": "El bife recién servido en La Cabrera, antes del primer corte."
         },
         {
           "id": "mem-2-4",
@@ -292,18 +303,18 @@
           "id": "mem-2-5",
           "relatedActivityId": "act-2-8",
           "type": "photo",
-          "prompt": "El Puente de la Mujer de noche, con las luces reflejadas en el dique — a las 20:30."
+          "prompt": "El Puente de la Mujer de noche, con las luces reflejadas en el dique — cerca de las 20:15."
         },
         {
           "id": "mem-2-6",
           "relatedActivityId": "act-2-8",
           "type": "photo",
-          "prompt": "Los diques iluminados — un cierre elegante para el día, a las 21:00."
+          "prompt": "Los diques iluminados — una postal para guardar si vuelven a caminar después de la cena."
         },
         {
           "id": "mem-2-7",
           "relatedActivityId": "act-2-9",
-          "type": "video",
+          "type": "photo",
           "prompt": "Un brindis en Puerto Madero, antes o durante la cena."
         }
       ]
@@ -439,8 +450,8 @@
         {
           "id": "mem-3-2",
           "relatedActivityId": "act-3-4",
-          "type": "video",
-          "prompt": "Si hay una pareja bailando tango en Plaza Dorrego, vale la pena detenerse y grabarlo."
+          "type": "photo",
+          "prompt": "Si hay una pareja bailando tango en Plaza Dorrego, vale la pena detenerse y guardar ese instante."
         },
         {
           "id": "mem-3-3",
@@ -451,7 +462,7 @@
         {
           "id": "mem-3-4",
           "relatedActivityId": "act-3-5",
-          "type": "video",
+          "type": "photo",
           "prompt": "Caminando por Caminito, entre las casas de colores."
         }
       ]
@@ -528,8 +539,8 @@
         {
           "id": "mem-4-1",
           "relatedActivityId": "act-4-1",
-          "type": "video",
-          "prompt": "Kari probando una medialuna de las mejores de la ciudad."
+          "type": "photo",
+          "prompt": "Kari con una medialuna de las mejores de la ciudad, justo antes de probarla."
         },
         {
           "id": "mem-4-2",
@@ -540,14 +551,14 @@
         {
           "id": "mem-4-3",
           "relatedActivityId": "act-4-2",
-          "type": "video",
-          "prompt": "Entrando a El Ateneo Grand Splendid."
+          "type": "photo",
+          "prompt": "La entrada a El Ateneo Grand Splendid, justo antes de descubrir la antigua sala."
         },
         {
           "id": "mem-4-4",
           "relatedActivityId": "act-4-5",
-          "type": "video",
-          "prompt": "Un mensaje juntos antes de subir al avión de regreso."
+          "type": "note",
+          "prompt": "Unas palabras escritas juntos antes de subir al avión de regreso."
         },
         {
           "id": "mem-4-5",
@@ -621,8 +632,7 @@
         "label": "Carta",
         "type": "creation",
         "memoryType": "note",
-        "creationPrompt": "Una carta para leer de nuevo cada aniversario.",
-        "resurfaceOnAnniversary": true
+        "creationPrompt": "Una carta para leer de nuevo cada aniversario."
       },
       {
         "id": "prompt-7",
@@ -644,7 +654,7 @@
           "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=El+Cuartito,+Talcahuano+937,+CABA,+Buenos+Aires",
           "uberDeepLink": "https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[formatted_address]=Talcahuano+937,+CABA,+Buenos+Aires"
         },
-        "recommendation": "Elegimos El Cuartito a propósito para la primera comida del viaje: pizzería porteña desde 1934, de esas que no cambiaron el mostrador ni el mármol en décadas — mozos de toda la vida, mesas altas, cero pretensión. Pide fugazzeta y una de jamón; entre las dos, con algo para tomar, unos $40.000 CLP para hacerse una idea al cambio de estos días. Aquí la pizza se come parada, apoyada en el mostrador — nadie se sienta a esperar."
+        "recommendation": "Elegimos El Cuartito a propósito para la primera comida del viaje: pizzería porteña desde 1934, de esas que no cambiaron el mostrador ni el mármol en décadas — mozos de toda la vida, mesas altas, cero pretensión. Pide fugazzeta y una de jamón para compartir. Aquí la pizza se come parada, apoyada en el mostrador — nadie se sienta a esperar."
       },
       {
         "id": "la-estancia-asador-criollo",
@@ -655,7 +665,7 @@
           "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=La+Estancia+Asador+Criollo,+Lavalle+941,+CABA,+Buenos+Aires",
           "uberDeepLink": "https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[formatted_address]=Lavalle+941,+CABA,+Buenos+Aires"
         },
-        "recommendation": "Para la primera noche buscamos algo que se sintiera genuinamente porteño sin depender de una reserva. Este asador tiene el fogón a la vista desde 1962 — se nota que el fuego manda, no el menú. Pide empanadas criollas para empezar y el asado de fogón; entre los dos, calcula unos $55.000–$70.000 CLP según cómo esté el cambio. Llegando temprano casi no hay espera."
+        "recommendation": "Para la primera noche buscamos algo que se sintiera genuinamente porteño sin depender de una reserva. Este asador tiene el fogón a la vista desde 1962 — se nota que el fuego manda, no el menú. Pide empanadas criollas para empezar y el asado de fogón. Llegando temprano casi no hay espera."
       },
       {
         "id": "la-cabrera",
@@ -666,7 +676,7 @@
           "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=La+Cabrera,+José+A.+Cabrera+5099,+Palermo,+Buenos+Aires",
           "uberDeepLink": "https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[formatted_address]=José+A.+Cabrera+5099,+Palermo,+Buenos+Aires"
         },
-        "recommendation": "Si hay una comida que no se puede saltar en este viaje, es esta. La Cabrera tiene todo lo que se espera de una parrilla porteña — mesas llenas, guarniciones que no paran de llegar — pero sin la fila interminable de otras parrillas famosas. Pide provoleta para empezar y bife de chorizo para compartir; como referencia, alrededor de $95.000 CLP al cambio del momento. Reserva con unos días de anticipación, y guarda espacio: las guarniciones solas ya llenan."
+        "recommendation": "Si hay una comida que no se puede saltar en este viaje, es esta. La Cabrera tiene todo lo que se espera de una parrilla porteña — mesas llenas, guarniciones que no paran de llegar — pero sin la fila interminable de otras parrillas famosas. Pide provoleta para empezar y bife de chorizo para compartir. Reserva con unos días de anticipación, y guarda espacio: las guarniciones solas ya llenan."
       },
       {
         "id": "cabana-las-lilas",
@@ -677,7 +687,7 @@
           "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Cabaña+Las+Lilas,+Av.+Alicia+M.+de+Justo+516,+Puerto+Madero,+Buenos+Aires",
           "uberDeepLink": "https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[formatted_address]=Av.+Alicia+M.+de+Justo+516,+Puerto+Madero,+Buenos+Aires"
         },
-        "recommendation": "La reservamos para la noche que cierra el día más lindo del viaje: mesa con vista directa al dique de Puerto Madero, carne de cabañas propias. Probablemente la cena más especial de los cuatro días — para dos, unos $80.000 CLP aproximados según el cambio. Reserva con tiempo y pide mesa junto a la ventana; las luces del dique de noche valen tanto como el asado."
+        "recommendation": "La reservamos para la noche que cierra el día más lindo del viaje: mesa con vista directa al dique de Puerto Madero, carne de cabañas propias. Probablemente sea la cena más especial de los cuatro días. Reserva con tiempo y pide mesa junto a la ventana; las luces del dique de noche valen tanto como el asado."
       },
       {
         "id": "desnivel",
@@ -688,7 +698,7 @@
           "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Desnivel+Parrilla,+Defensa+855,+San+Telmo,+Buenos+Aires",
           "uberDeepLink": "https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[formatted_address]=Defensa+855,+San+Telmo,+Buenos+Aires"
         },
-        "recommendation": "Después de una mañana caminando San Telmo, esto es lo opuesto a un restaurante de guía turística: parrilla ruidosa, mesas pegadas, mozos que gritan los pedidos desde 1993. Pide milanesa napolitana o vacío; para dos, cerca de $55.000 CLP para tener una referencia en pesos chilenos. Si el lugar está lleno y hay que esperar afuera un rato, es buena señal — significa que vale la pena."
+        "recommendation": "Después de una mañana caminando San Telmo, esto es lo opuesto a un restaurante de guía turística: parrilla ruidosa, mesas pegadas, mozos que gritan los pedidos desde 1993. Pide milanesa napolitana o vacío. Si el lugar está lleno y hay que esperar afuera un rato, es buena señal — significa que vale la pena."
       },
       {
         "id": "el-correo",
@@ -698,7 +708,7 @@
           "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=El+Correo,+Recoleta,+Buenos+Aires",
           "uberDeepLink": "https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[formatted_address]=El+Correo,+Recoleta,+Buenos+Aires"
         },
-        "recommendation": "Para el último almuerzo elegimos algo tranquilo, lejos de cualquier circuito turístico — un rincón rústico, casi escondido, cerca de Recoleta. Pide un sándwich de milanesa o una tarta salada; para dos, unos $45.000 CLP a modo de referencia. Es el tipo de lugar donde da gusto quedarse un rato de más, sin nada más planeado después."
+        "recommendation": "Para el último almuerzo elegimos algo tranquilo, lejos de cualquier circuito turístico — un rincón rústico, casi escondido, cerca de Recoleta. Pide un sándwich de milanesa o una tarta salada. Es el tipo de lugar donde da gusto quedarse un rato de más, sin nada más planeado después."
       },
       {
         "id": "floreria-atlantico",
@@ -708,7 +718,7 @@
           "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Florería+Atlántico,+Arroyo+872,+Buenos+Aires",
           "uberDeepLink": "https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[formatted_address]=Arroyo+872,+Buenos+Aires"
         },
-        "recommendation": "Se entra literalmente por una florería — nadie que pase por la vereda sabe que abajo hay uno de los bares más premiados del mundo. Pide el cóctel de autor de temporada; para dos, alrededor de $25.000 CLP según el cambio de esos días. No hace falta quedarse hasta tarde, pero sí hace falta quedarse un rato — es de esos lugares que se disfrutan más despacio."
+        "recommendation": "Se entra literalmente por una florería — nadie que pase por la vereda sabe que abajo hay uno de los bares más premiados del mundo. Pide el cóctel de autor de temporada. No hace falta quedarse hasta tarde, pero sí hace falta quedarse un rato — es de esos lugares que se disfrutan más despacio."
       }
     ],
     "cafes": [
@@ -720,7 +730,7 @@
           "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Rapanui,+Av.+Corrientes,+CABA,+Buenos+Aires",
           "uberDeepLink": "https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[formatted_address]=Rapanui,+Av.+Corrientes,+CABA,+Buenos+Aires"
         },
-        "recommendation": "Nada elegante, nada de fotos perfectas — solo una heladería de barrio en plena Corrientes, ideal para cerrar la primera caminata. Pide chocolate, dulce de leche y frambuesa; con dos gustos cada uno, unos $10.000 CLP para hacerse una idea al cambio. Cómanselo caminando, no hace falta sentarse."
+        "recommendation": "Nada elegante, nada de fotos perfectas — solo una heladería de barrio en plena Corrientes, ideal para cerrar la primera caminata. Pide chocolate, dulce de leche y frambuesa. Cómanselo caminando, no hace falta sentarse."
       },
       {
         "id": "la-biela",
@@ -729,7 +739,7 @@
           "name": "Av. Quintana 596, Recoleta",
           "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=La+Biela,+Av.+Quintana+596,+Recoleta,+Buenos+Aires"
         },
-        "recommendation": "La favorita de Kari, y no por casualidad: mesas bajo un gomero centenario, justo frente a Plaza Francia, en uno de los cafés notables más icónicos de la ciudad. Pide café con leche y medialunas de manteca; para dos, cerca de $12.000 CLP como referencia en pesos chilenos. Este es el lugar para no mirar el reloj — quedarse una hora de más es, literalmente, el plan."
+        "recommendation": "La favorita de Kari, y no por casualidad: mesas bajo un gomero centenario, justo frente a Plaza Francia, en uno de los cafés notables más icónicos de la ciudad. Pide café con leche y medialunas de manteca. Este es el lugar para no mirar el reloj — quedarse una hora de más es, literalmente, el plan."
       },
       {
         "id": "lattente",
@@ -739,7 +749,7 @@
           "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Lattente,+Palermo+Soho,+Buenos+Aires",
           "uberDeepLink": "https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[formatted_address]=Lattente,+Palermo+Soho,+Buenos+Aires"
         },
-        "recommendation": "La otra favorita de Kari, esta vez en Palermo Soho: moderna, con buena pastelería y varios métodos de extracción para elegir. Pide un flat white; para dos, unos $18.000 CLP aproximados al cambio del momento. Ideal para una pausa corta antes de seguir caminando hacia Puerto Madero."
+        "recommendation": "La otra favorita de Kari, esta vez en Palermo Soho: moderna, con buena pastelería y varios métodos de extracción para elegir. Pide un flat white. Ideal para una pausa corta antes de seguir caminando hacia Puerto Madero."
       },
       {
         "id": "confiteria-ideal",
@@ -759,7 +769,7 @@
           "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Las+Violetas,+Av.+Rivadavia+3899,+Almagro,+Buenos+Aires",
           "uberDeepLink": "https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[formatted_address]=Av.+Rivadavia+3899,+Almagro,+Buenos+Aires"
         },
-        "recommendation": "Los otros días desayunamos en el hotel — el último, vale la pena romper la rutina en esta confitería emblemática desde 1884, con vitrales y mármoles italianos que no cambiaron en más de un siglo. Pide café con leche y medialunas de manteca — están entre las mejores de la ciudad; para dos, unos $20.000 CLP a modo de referencia según el cambio. Es el desayuno con el que conviene despedirse de Buenos Aires."
+        "recommendation": "Los otros días desayunamos en el hotel — el último, vale la pena romper la rutina en esta confitería emblemática desde 1884, con vitrales y mármoles italianos que no cambiaron en más de un siglo. Pide café con leche y medialunas de manteca — están entre las mejores de la ciudad. Es el desayuno con el que conviene despedirse de Buenos Aires."
       }
     ]
   },
@@ -792,7 +802,7 @@
       "id": "spot-puente-mujer",
       "title": "Puente de la Mujer",
       "location": { "name": "Mitad del puente, mirando hacia Catalinas" },
-      "bestTime": "20:30, de noche",
+      "bestTime": "20:15, de noche",
       "tip": "De noche, el puente entero se refleja en el agua quieta del dique — esa simetría es lo que hace especial la foto. Párense en la mitad, mirando hacia Catalinas, y apoyen el celular en la baranda para que no salga movida.",
       "relatedChapterId": "chapter-2"
     },
@@ -800,8 +810,8 @@
       "id": "spot-caminito",
       "title": "Caminito",
       "location": { "name": "Esquina de las casas multicolores" },
-      "bestTime": "Antes de las 12:00",
-      "tip": "Lo que hace especial esta foto es el color, no la pose — las fachadas parecen pintadas para una postal. Busquen una esquina con pocas casas de souvenirs a la vista y esperen un segundo entre grupos de turistas. Antes de las 12:00 hay bastante menos gente.",
+      "bestTime": "13:00, buscando una esquina tranquila",
+      "tip": "Lo que hace especial esta foto es el color, no la pose — las fachadas parecen pintadas para una postal. Busquen una esquina con pocas casas de souvenirs a la vista y esperen un segundo entre grupos de turistas.",
       "relatedChapterId": "chapter-3"
     },
     {
@@ -1165,14 +1175,7 @@
       "label": "Un rato en El Ateneo sin el celular"
     }
   ],
-  "budget": {
-    "currency": "ARS",
-    "categories": [
-      { "name": "Comidas y salidas", "estimatedAmount": 400000 },
-      { "name": "Cafés, medialunas y helados", "estimatedAmount": 96000 },
-      { "name": "Uber / Cabify", "estimatedAmount": 44000 }
-    ]
-  },
+  "budget": { "currency": "ARS" },
   "baseCopy": {
     "welcomeMessage": "Este no es solo un viaje. Es un recuerdo que comenzamos a escribir juntos.",
     "dailyOpenTemplate": "Buenos días. Hoy comienza un nuevo capítulo de este viaje.",
