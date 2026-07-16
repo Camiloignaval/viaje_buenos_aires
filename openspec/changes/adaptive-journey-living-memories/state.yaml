@@ -1,0 +1,24 @@
+change: adaptive-journey-living-memories
+artifact_store: openspec
+execution_mode: automatic
+delivery_strategy: auto-chain
+chain_strategy: feature-branch-chain
+status: ready-for-apply
+phases:
+  explore: done
+  proposal: done
+  specs: done
+  design: done
+  tasks: done
+  apply: pending
+  verify: pending
+  archive: pending
+progress:
+  tasks_completed: 0
+  tasks_total: 20
+  scenarios_verified: 0
+  scenarios_total: 25
+constraints:
+  weather_gate_default: false
+  build_forbidden: true
+  archive_requires_authorization: true
