@@ -21,6 +21,8 @@ import {
   Traditions,
 } from "./ChapterSections";
 import { MemoryCard } from "./Memories";
+import { VisibleCompanionExperience } from "./VisibleCompanionExperience";
+import { LivingMemoryMoment } from "./LivingMemoryMoment";
 import { resolveChapterContent } from "@/features/story/engine/chapterContent";
 import { getChapterReferenceDate } from "@/features/story/engine/storyProgress";
 import { ChapterStatus } from "@/features/story/engine/types";
@@ -54,7 +56,7 @@ export function PreTrip() {
 
 // Espejo de renderInProgress.
 export function InProgress() {
-  const { view, storyPackage, memories, stagedPhotosBySlot } = useExperienceCtx();
+  const { view, storyPackage, memories, stagedPhotosBySlot, contextualCompanion } = useExperienceCtx();
   const chapter = view.visibleChapter;
 
   if (!chapter) {
@@ -79,6 +81,16 @@ export function InProgress() {
       <section className="book-page page-chapter">
         <div className="chapter">
           <ChapterHero chapter={chapter} openLine={openLine} />
+          {contextualCompanion?.viewModel ? (
+            <div className="active-story-contextual-slot">
+              <VisibleCompanionExperience
+                viewModel={contextualCompanion.viewModel}
+                observer={contextualCompanion.observer}
+                onVisible={contextualCompanion.onVisible}
+                onDismiss={contextualCompanion.onDismiss}
+              />
+            </div>
+          ) : null}
           <ul className="activities">
             {content.activitiesWithPlaces.map((entry) => (
               <ActivityCard
@@ -202,7 +214,7 @@ export function MemoryMode() {
 
 // Espejo de renderTripAlbum.
 export function TripAlbum() {
-  const { storyPackage, tripMemories } = useExperienceCtx();
+  const { storyPackage, tripMemories, semanticMemoryScope } = useExperienceCtx();
   const allChapters: Chapter[] = [
     ...storyPackage.chapters,
     ...(storyPackage.specialChapter ? [storyPackage.specialChapter] : []),
@@ -228,6 +240,7 @@ export function TripAlbum() {
         <p className="eyebrow reveal reveal-1">{storyPackage.metadata.title}</p>
         <h1 className="reveal reveal-2">Nuestro Buenos Aires</h1>
         <p className="open reveal reveal-3">Lo que quedó del viaje, tal como decidió quedarse.</p>
+        {semanticMemoryScope ? <LivingMemoryMoment {...semanticMemoryScope} /> : null}
         {chaptersWithMemories.length > 0 ? (
           chaptersWithMemories.map((chapter) => {
             const { byActivityId, general } = groupMemoriesByActivity(byChapter.get(chapter.id) ?? []);

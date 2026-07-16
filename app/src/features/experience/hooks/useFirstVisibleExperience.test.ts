@@ -1,7 +1,7 @@
 import { act, render, renderHook, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createElement } from "react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { User } from "@/features/auth/types";
 import { demoStoryPackage } from "@/features/experience/data/demoStory";
 import type { Trip } from "@/features/trips/types";
@@ -15,8 +15,12 @@ import {
   type VisibleDeliveryStorage,
 } from "../lib/visibleDeliverySession";
 
-const { getPushPreferences } = vi.hoisted(() => ({ getPushPreferences: vi.fn() }));
+const { getPushPreferences, persistSemanticMemory } = vi.hoisted(() => ({
+  getPushPreferences: vi.fn(),
+  persistSemanticMemory: vi.fn(),
+}));
 vi.mock("@/features/pwa/pushApi", () => ({ getPushPreferences }));
+vi.mock("../api/semanticMemoryApi", () => ({ persistSemanticMemory }));
 
 import {
   createFirstVisibleExperienceInput,
@@ -87,6 +91,11 @@ afterEach(() => {
   vi.useRealTimers();
   vi.restoreAllMocks();
   getPushPreferences.mockReset();
+  persistSemanticMemory.mockReset();
+});
+
+beforeEach(() => {
+  persistSemanticMemory.mockResolvedValue({ status: "persisted", type: "trip_started" });
 });
 
 describe("createFirstVisibleExperienceInput", () => {
@@ -173,9 +182,8 @@ describe("useFirstVisibleExperience", () => {
     expect(result.current.viewModel).toEqual({ label: "Alaia", text: "Hoy comienza una nueva historia." });
     expect(result.current.observer).toBe(props.observer);
     expect(events).toEqual([
-      { kind: "flow_started" },
-      { kind: "result_layer" },
-      { kind: "delivery_pending" },
+      { kind: "adaptive_flow_started" },
+      { kind: "adaptive_result_layer" },
     ]);
 
     vi.setSystemTime(new Date("2026-10-03T20:00:00.000Z"));
@@ -204,9 +212,9 @@ describe("useFirstVisibleExperience", () => {
 
     expect(result.current.viewModel).toBeNull();
     expect(events).toEqual([
-      { kind: "flow_started" },
-      { kind: "result_layer" },
-      { kind: "silence" },
+      { kind: "adaptive_flow_started" },
+      { kind: "adaptive_result_layer" },
+      { kind: "contextual_silence" },
     ]);
     expect(storage.getItem(buildVisibleDeliverySessionKey({ userId: USER.id, tripId: TRIP.id }))).toBeNull();
   });
@@ -225,7 +233,7 @@ describe("useFirstVisibleExperience", () => {
 
     await waitFor(() => expect(result.current.status).toBe("settled"));
     expect(result.current.viewModel).toBeNull();
-    expect(events).toEqual([{ kind: "flow_started" }, { kind: "silence" }]);
+    expect(events).toEqual([{ kind: "adaptive_flow_started" }, { kind: "contextual_silence" }]);
 
     const missing = renderHook(() => useFirstVisibleExperience({
       trip: TRIP,
@@ -254,6 +262,7 @@ describe("useFirstVisibleExperience", () => {
 
     await act(async () => { await Promise.resolve(); await Promise.resolve(); await Promise.resolve(); });
     await waitFor(() => expect(result.current.status).toBe("settled"));
+    expect(persistSemanticMemory).not.toHaveBeenCalled();
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
     render(createElement(VisibleCompanionExperience, {
       viewModel: result.current.viewModel,
@@ -263,12 +272,13 @@ describe("useFirstVisibleExperience", () => {
     }));
     await user.click(screen.getByRole("button", { name: "Cerrar mensaje de Alaia" }));
 
+    await waitFor(() => expect(persistSemanticMemory).toHaveBeenCalledTimes(1));
+
     expect(events).toEqual([
-      { kind: "flow_started" },
-      { kind: "result_layer" },
-      { kind: "delivery_pending" },
-      { kind: "render_success" },
-      { kind: "dismiss" },
+      { kind: "adaptive_flow_started" },
+      { kind: "adaptive_result_layer" },
+      { kind: "contextual_rendered" },
+      { kind: "memory_persisted" },
     ]);
     expect(getPushPreferences).toHaveBeenCalledTimes(1);
     const stored = storage.getItem(buildVisibleDeliverySessionKey({ userId: USER.id, tripId: TRIP.id }));
@@ -366,7 +376,7 @@ describe("useFirstVisibleExperience", () => {
 
     await waitFor(() => expect(result.current.status).toBe("settled"));
     expect(result.current.viewModel).toBeNull();
-    expect(events).toEqual([{ kind: "flow_started" }, { kind: "silence" }]);
+    expect(events).toEqual([{ kind: "adaptive_flow_started" }, { kind: "contextual_silence" }]);
     expect(getPushPreferences).not.toHaveBeenCalled();
   });
 
@@ -388,9 +398,9 @@ describe("useFirstVisibleExperience", () => {
     await waitFor(() => expect(first.result.current.status).toBe("settled"));
     expect(first.result.current.viewModel).toBeNull();
     expect(pendingEvents).toEqual([
-      { kind: "flow_started" },
-      { kind: "result_layer" },
-      { kind: "silence" },
+      { kind: "adaptive_flow_started" },
+      { kind: "adaptive_result_layer" },
+      { kind: "contextual_silence" },
     ]);
     first.unmount();
 
@@ -414,11 +424,11 @@ describe("useFirstVisibleExperience", () => {
     }));
     expect(screen.queryByText("Hoy comienza una nueva historia.")).not.toBeInTheDocument();
     expect(visibleEvents).toEqual([
-      { kind: "flow_started" },
-      { kind: "result_layer" },
-      { kind: "delivery_pending" },
-      { kind: "silence" },
+      { kind: "adaptive_flow_started" },
+      { kind: "adaptive_result_layer" },
+      { kind: "contextual_silence" },
     ]);
+    expect(persistSemanticMemory).not.toHaveBeenCalled();
   });
 
   it("observes visible receipt expiry categorically and keeps it deduped", async () => {
@@ -445,10 +455,10 @@ describe("useFirstVisibleExperience", () => {
 
     expect(second.result.current.viewModel).toBeNull();
     expect(events).toEqual([
-      { kind: "flow_started" },
+      { kind: "adaptive_flow_started" },
       { kind: "delivery_expired" },
-      { kind: "result_layer" },
-      { kind: "silence" },
+      { kind: "adaptive_result_layer" },
+      { kind: "contextual_silence" },
     ]);
   });
 
@@ -491,9 +501,9 @@ describe("useFirstVisibleExperience", () => {
 
     expect(result.current.viewModel).toBeNull();
     expect(events).toEqual([
-      { kind: "flow_started" },
-      { kind: "result_layer" },
-      { kind: "silence" },
+      { kind: "adaptive_flow_started" },
+      { kind: "adaptive_result_layer" },
+      { kind: "contextual_silence" },
     ]);
     expect(JSON.parse(storage.getItem(buildVisibleDeliverySessionKey(scope)) ?? "{}").receipts)
       .toEqual([expect.objectContaining({ dedupeKey: "other-recent-dedupe", state: "visible" })]);

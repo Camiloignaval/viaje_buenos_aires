@@ -2,7 +2,9 @@ import { useEffect, useRef, useState } from "react";
 import type { User } from "@/features/auth/types";
 import type { StoryPackage } from "@/features/story/engine/types";
 import type { Trip } from "@/features/trips/types";
+import { acceptMemoryCandidate, type MemoryCandidate } from "@/features/context-engine/memory";
 import { getPushPreferences, type PushPreferences } from "@/features/pwa/pushApi";
+import { persistSemanticMemory } from "../api/semanticMemoryApi";
 import {
   composeFirstRealExperience,
   type FirstRealExperienceInput,
@@ -129,14 +131,16 @@ function createReceiptCallbacks(input: Readonly<{
   scope: VisibleDeliveryScope;
   storage: VisibleDeliveryStorage;
   observer: VisibleExperienceObserver | undefined;
+  memory?: Readonly<{ tripId: string; candidate: MemoryCandidate }>;
 }>): Readonly<{ onVisible: () => boolean; onDismiss: () => boolean }> {
   let document = input.document;
   let receipt = input.receipt;
+  let persistenceStarted = false;
 
   const move = (target: DeliveryReceiptState): boolean => {
     const transition = transitionVisibleDeliveryReceipt(receipt, target, new Date().toISOString());
     if (transition.status !== "transitioned") {
-      observeVisibleExperience(input.observer, "silence");
+      observeVisibleExperience(input.observer, "contextual_silence");
       return false;
     }
     const nextDocument = withReceipt(document, transition.receipt);
@@ -146,7 +150,7 @@ function createReceiptCallbacks(input: Readonly<{
       document: nextDocument,
     });
     if (write.status !== "available") {
-      observeVisibleExperience(input.observer, "silence");
+      observeVisibleExperience(input.observer, "contextual_silence");
       return false;
     }
     receipt = transition.receipt;
@@ -159,7 +163,21 @@ function createReceiptCallbacks(input: Readonly<{
   };
 
   return Object.freeze({
-    onVisible: () => move("visible"),
+    onVisible: () => {
+      const visible = move("visible");
+      if (visible && input.memory && !persistenceStarted) {
+        persistenceStarted = true;
+        try {
+          const accepted = acceptMemoryCandidate(input.memory.candidate);
+          void persistSemanticMemory({ tripId: input.memory.tripId, accepted })
+            .then(() => observeVisibleExperience(input.observer, "memory_persisted"))
+            .catch(() => observeVisibleExperience(input.observer, "contextual_silence"));
+        } catch {
+          observeVisibleExperience(input.observer, "contextual_silence");
+        }
+      }
+      return visible;
+    },
     onDismiss: () => move("dismissed"),
   });
 }
@@ -184,7 +202,7 @@ export function useFirstVisibleExperience(
       return;
     }
     if (!runRef.current) {
-      observeVisibleExperience(observer, "flow_started");
+      observeVisibleExperience(observer, "adaptive_flow_started");
       runRef.current = (async () => {
         try {
           const storage = snapshot.storage ?? browserSessionStorage;
@@ -195,7 +213,7 @@ export function useFirstVisibleExperience(
             now: logicalInstant,
           });
           if (stored.status !== "available") {
-            observeVisibleExperience(observer, "silence");
+            observeVisibleExperience(observer, "contextual_silence");
             return finalState(null, observer);
           }
           if (stored.document.receipts.some(({ state }) => state === "expired")) {
@@ -227,25 +245,27 @@ export function useFirstVisibleExperience(
             ],
           });
           if (!receipt) {
-            observeVisibleExperience(observer, "silence");
+            observeVisibleExperience(observer, "contextual_silence");
             return finalState(null, observer);
           }
           const document = withReceipt(stored.document, receipt);
           const write = writeVisibleDeliverySession({ dependencies: storage, scope, document });
           if (write.status !== "available") {
-            observeVisibleExperience(observer, "silence");
+            observeVisibleExperience(observer, "contextual_silence");
             return finalState(null, observer);
           }
-          observeVisibleExperience(observer, "delivery_pending");
           return finalState(viewModel, observer, createReceiptCallbacks({
             document,
             receipt,
             scope,
             storage,
             observer,
+            memory: result.memoryCandidate.type === "trip_started"
+              ? { tripId: snapshot.trip.id, candidate: result.memoryCandidate }
+              : undefined,
           }));
         } catch {
-          observeVisibleExperience(observer, "silence");
+          observeVisibleExperience(observer, "contextual_silence");
           return finalState(null, observer);
         }
       })();

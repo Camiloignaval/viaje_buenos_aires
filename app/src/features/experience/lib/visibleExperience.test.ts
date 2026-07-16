@@ -3,6 +3,7 @@ import type { Trip } from "@/features/trips/types";
 import {
   composeFirstRealExperience,
   type FirstRealExperienceComposed,
+  type FirstRealExperienceTransientComposed,
   type FirstRealExperienceInput,
   type FirstRealExperienceResult,
 } from "../firstRealExperience";
@@ -14,6 +15,7 @@ import {
 
 const NOW = "2026-10-03T15:00:00.000Z";
 let composed: FirstRealExperienceComposed;
+let transient: FirstRealExperienceTransientComposed;
 
 function trip(): Trip {
   return {
@@ -57,7 +59,7 @@ function input(): FirstRealExperienceInput {
 
 function project(
   result: FirstRealExperienceResult,
-  surface: "active_trip_home" | "other" = "active_trip_home",
+  surface: "active_trip_home" | "active_story_chapter" | "other" = "active_trip_home",
   observer?: (event: VisibleExperienceEvent) => void,
 ) {
   return toVisibleCompanionExperience(result, { surface, observer });
@@ -67,10 +69,29 @@ beforeAll(async () => {
   const result = await composeFirstRealExperience(input());
   if (result.outcome !== "composed") throw new Error("Expected composed fixture");
   composed = result;
+  transient = Object.freeze({
+    ...result,
+    outcome: "transient_composed" as const,
+    memoryDiscard: Object.freeze({ outcome: "discard" as const, reason: "transient_context" as const, type: null }),
+    deliveryIntents: Object.freeze([Object.freeze({
+      destination: "in_app" as const,
+      state: "pending" as const,
+      references: Object.freeze(["editorial_message"] as const),
+    })]),
+  }) as unknown as FirstRealExperienceTransientComposed;
 });
 
 describe("toVisibleCompanionExperience", () => {
-  it.each(["delivery_pending", "delivery_expired"] as const)("allows the frozen categorical event %s", (kind) => {
+  it.each([
+    "adaptive_flow_started",
+    "adaptive_result_layer",
+    "contextual_rendered",
+    "contextual_silence",
+    "memory_persisted",
+    "memory_discarded",
+    "memory_rendered",
+    "delivery_expired",
+  ] as const)("allows the frozen categorical event %s", (kind) => {
     const events: VisibleExperienceEvent[] = [];
     observeVisibleExperience((event) => events.push(event), kind);
 
@@ -85,9 +106,19 @@ describe("toVisibleCompanionExperience", () => {
     expect(viewModel).toEqual({ label: "Alaia", text: "Hoy comienza una nueva historia." });
     expect(Object.keys(viewModel ?? {})).toEqual(["label", "text"]);
     expect(Object.isFrozen(viewModel)).toBe(true);
-    expect(events).toEqual([{ kind: "result_layer" }]);
+    expect(events).toEqual([{ kind: "adaptive_result_layer" }]);
     expect(events.every(Object.isFrozen)).toBe(true);
     expect(JSON.stringify(viewModel)).not.toMatch(/trip-private|user-private|story-private|2026-/);
+  });
+
+  it("Weather/Light chapter surface: projects exactly one literal editorial message with editorial-only lineage", () => {
+    const events: VisibleExperienceEvent[] = [];
+    const viewModel = project(transient, "active_story_chapter", (event) => events.push(event));
+
+    expect(viewModel).toEqual({ label: "Alaia", text: transient.message.text });
+    expect(Object.keys(viewModel ?? {})).toEqual(["label", "text"]);
+    expect(project(transient, "active_trip_home")).toBeNull();
+    expect(events).toEqual([{ kind: "adaptive_result_layer" }]);
   });
 
   it("Wrong surface: rejects the same approved result outside active trip home", () => {
@@ -170,7 +201,7 @@ describe("toVisibleCompanionExperience", () => {
     });
 
     expect(project(hostileResult as FirstRealExperienceResult, "active_trip_home", (event) => events.push(event))).toBeNull();
-    expect(events).toEqual([{ kind: "silence" }]);
+    expect(events).toEqual([{ kind: "contextual_silence" }]);
     expect(JSON.stringify(events)).not.toMatch(/kari@|trip-private/);
   });
 });

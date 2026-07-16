@@ -5,6 +5,8 @@ import type { StoryPackage, StoryView } from "@/features/story/engine/types";
 import type { Theme } from "./lib/format";
 import type { StagedPhoto } from "./lib/photoSlot";
 import type { LockedChapterNotice } from "./lib/lockedChapter";
+import type { ProductiveAdaptiveJourneyState } from "./hooks/useProductiveAdaptiveJourney";
+import type { VisibleExperienceObserver } from "./lib/visibleExperience";
 
 export type CoverIntroState = "idle" | "video" | "revealing" | "done";
 
@@ -79,5 +81,11 @@ export interface ExperienceContextValue {
   lockedChapterNotice: LockedChapterNotice | null;
   showingPreparations: boolean;
   preparationCompletedIds: string[];
+  contextualCompanion: ProductiveAdaptiveJourneyState | null;
+  semanticMemoryScope: Readonly<{
+    tripId: string;
+    storyId: string;
+    observer?: VisibleExperienceObserver;
+  }> | null;
   actions: ExperienceActions;
 }

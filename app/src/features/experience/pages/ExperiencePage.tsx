@@ -7,11 +7,16 @@ import { LoadingScreen } from "@/components/feedback/LoadingScreen";
 import { RequireAuth } from "@/features/auth/components/RequireAuth";
 import { RequireOnboarding } from "@/features/onboarding/components/RequireOnboarding";
 import { useTripId } from "@/features/connected/hooks/useTripId";
+import { useConnectedTrip } from "@/features/connected/hooks/useConnectedTrip";
+import { useSession } from "@/features/auth/hooks/useSession";
 import { useExperience } from "../hooks/useExperience";
+import { useProductiveAdaptiveJourney, type ProductiveAdaptiveJourneyState } from "../hooks/useProductiveAdaptiveJourney";
 import { useResolvedStory } from "../hooks/useResolvedStory";
 import { useRevealOnScroll } from "../hooks/useRevealOnScroll";
 import { demoStoryPackage } from "../data/demoStory";
 import type { StoryPackage } from "@/features/story/engine/types";
+import type { Trip } from "@/features/trips/types";
+import type { User } from "@/features/auth/types";
 import "../experience.css";
 
 function ExperienceTripsNavigation() {
@@ -37,17 +42,28 @@ function ExperienceTripsNavigation() {
 function ExperienceRuntime({
   storyPackage,
   scopeId,
+  contextualCompanion = null,
 }: {
   storyPackage: StoryPackage;
   scopeId?: string;
+  contextualCompanion?: ProductiveAdaptiveJourneyState | null;
 }) {
   const { value, appRef, revealSignature } = useExperience(storyPackage, scopeId);
+  const productiveValue = scopeId ? {
+    ...value,
+    contextualCompanion,
+    semanticMemoryScope: {
+      tripId: scopeId,
+      storyId: storyPackage.storyId,
+      observer: contextualCompanion?.observer,
+    },
+  } : value;
   useRevealOnScroll(appRef, revealSignature);
 
   return (
     <>
       <div id="app" ref={appRef}>
-        <ExperienceContext.Provider value={value}>
+        <ExperienceContext.Provider value={productiveValue}>
           {scopeId ? <ExperienceTripsNavigation /> : null}
           <ExperienceView />
         </ExperienceContext.Provider>
@@ -57,12 +73,35 @@ function ExperienceRuntime({
   );
 }
 
+function ProductiveExperienceRuntime({
+  storyPackage,
+  scopeId,
+  trip,
+  user,
+}: Readonly<{ storyPackage: StoryPackage; scopeId: string; trip: Trip; user: User }>) {
+  const contextualCompanion = useProductiveAdaptiveJourney({
+    trip,
+    user,
+    storyPackage,
+    storyObservedAt: trip.updatedAt,
+  });
+  return (
+    <ExperienceRuntime
+      storyPackage={storyPackage}
+      scopeId={scopeId}
+      contextualCompanion={contextualCompanion}
+    />
+  );
+}
+
 // La rama conectada se monta RECIÉN después de auth + onboarding. Mantener este
 // hook en un hijo de ambos guards evita que el deep link dispare getTrip/getStory
 // mientras todavía no se ha validado la sesión.
 function ConnectedExperience() {
   const resolved = useResolvedStory();
   const tripId = useTripId();
+  const tripState = useConnectedTrip(tripId);
+  const session = useSession();
 
   switch (resolved.kind) {
     case "loading":
@@ -70,7 +109,14 @@ function ConnectedExperience() {
     case "local":
       return <Navigate to="/trips" replace />;
     case "ready":
-      return <ExperienceRuntime storyPackage={resolved.storyPackage} scopeId={resolved.scopeId} />;
+      return tripState.trip && session.user ? (
+        <ProductiveExperienceRuntime
+          storyPackage={resolved.storyPackage}
+          scopeId={resolved.scopeId}
+          trip={tripState.trip}
+          user={session.user}
+        />
+      ) : <ExperienceRuntime storyPackage={resolved.storyPackage} scopeId={resolved.scopeId} />;
     case "empty":
       return <ExperienceUnavailable variant="empty" tripId={tripId} />;
     case "not-found":

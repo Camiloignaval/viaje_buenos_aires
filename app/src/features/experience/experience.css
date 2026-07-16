@@ -103,6 +103,48 @@
   --radius-pill: 999px;
 }
 
+/* Productive adaptive moments remain subordinate to the chapter and album. */
+.active-story-contextual-slot,
+.living-memory-moment {
+  box-sizing: border-box;
+  width: min(100%, 52rem);
+  min-width: 0;
+  margin-inline: auto;
+  overflow-wrap: anywhere;
+}
+
+.active-story-contextual-slot {
+  margin-block: clamp(1rem, 3vw, 1.75rem);
+  padding-inline:
+    max(0px, env(safe-area-inset-left))
+    max(0px, env(safe-area-inset-right));
+}
+
+.living-memory-moment {
+  margin-block: clamp(1.25rem, 4vw, 2.5rem);
+  padding: clamp(1rem, 3vw, 1.5rem);
+  border-block: 1px solid color-mix(in srgb, currentColor 16%, transparent);
+}
+
+.living-memory-moment p {
+  margin: 0;
+}
+
+@media (max-width: 430px) {
+  .active-story-contextual-slot,
+  .living-memory-moment {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .active-story-contextual-slot,
+  .living-memory-moment {
+    animation: none;
+    transition: none;
+  }
+}
+
 .alaia-theme-light {
   --bg: #f7f3ec;
   --bg-rgb: 247, 243, 236;

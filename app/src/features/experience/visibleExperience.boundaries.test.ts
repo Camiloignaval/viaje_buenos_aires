@@ -23,7 +23,8 @@ describe("First Visible Experience boundaries", () => {
   it("Isolation: imports the approved composer but never simulator, lower engines or Story rules", () => {
     expect(hook).toContain('from "../firstRealExperience"');
     expect(visibleProduction).not.toMatch(/firstRealExperienceSimulator|features\/dev/);
-    expect(visibleProduction).not.toMatch(/context-engine\/(?:livingContext|decision|companion|editorial|memory)/);
+    expect(visibleProduction).not.toMatch(/context-engine\/(?:livingContext|decision|companion|editorial)(?:\/|"|')/);
+    expect(hook).toContain('import { acceptMemoryCandidate, type MemoryCandidate } from "@/features/context-engine/memory"');
     expect(visibleProduction).not.toMatch(/features\/story\/engine\/(?:storyEngine|progressStore|storyProgress|chapterContent|intelligence)/);
     expect(session.split("\n").filter((line) => line.includes("context-engine/"))).toEqual([
       'import type { CompanionHistoryEntry } from "@/features/context-engine/companion/contracts";',
@@ -62,13 +63,14 @@ describe("First Visible Experience boundaries", () => {
 
   it("emits only frozen category-only events for the complete observability vocabulary", () => {
     const kinds: VisibleExperienceEventKind[] = [
-      "flow_started",
-      "result_layer",
-      "delivery_pending",
+      "adaptive_flow_started",
+      "adaptive_result_layer",
+      "contextual_rendered",
+      "contextual_silence",
+      "memory_persisted",
+      "memory_discarded",
+      "memory_rendered",
       "delivery_expired",
-      "render_success",
-      "dismiss",
-      "silence",
     ];
     const events: VisibleExperienceEvent[] = [];
 

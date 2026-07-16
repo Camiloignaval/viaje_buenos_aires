@@ -39,7 +39,7 @@ export function VisibleCompanionExperience({
   useEffect(() => {
     if (!visible || dismissed || renderedRef.current) return;
     renderedRef.current = true;
-    observeVisibleExperience(observer, "render_success");
+    observeVisibleExperience(observer, "contextual_rendered");
   }, [dismissed, observer, visible]);
 
   if (!viewModel || !visible || dismissed) return null;
@@ -47,13 +47,11 @@ export function VisibleCompanionExperience({
   const dismiss = () => {
     if (dismissedRef.current) return;
     dismissedRef.current = true;
-    let persisted = true;
     try {
-      persisted = onDismiss?.() !== false;
+      onDismiss?.();
     } catch {
-      persisted = false;
+      // Dismiss remains local even when receipt continuity is unavailable.
     }
-    if (persisted) observeVisibleExperience(observer, "dismiss");
     setDismissed(true);
   };
 

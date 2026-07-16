@@ -46,10 +46,10 @@ Chain strategy: feature-branch-chain
 
 ## Phase 4: Adaptive UI, receipts and hierarchy
 
-- [ ] 4.1 **RED:** Test Weather/Light slot, Last Day, Album memory, receipts, observer and silence in `experience/**/*.test.tsx` (S05,S10-S12,S14-S15,S20-S23).
-- [ ] 4.2 **GREEN:** Add `LivingMemoryMoment.tsx`; wire one chapter slot/one `TripAlbum` memory through `Modes.tsx` and `VisibleCompanionExperience.tsx`.
-- [ ] 4.3 **TRIANGULATE:** Complete Last Day persistence, receipt hierarchy, privacy observer, a11y/responsive/reduced-motion/PWA CSS.
-- [ ] 4.4 **REFACTOR:** Enforce literal Editorial copy, one protagonist and `null` silence; persist progress; commit Unit 4.
+- [x] 4.1 **RED:** Test Weather/Light slot, Last Day, Album memory, receipts, observer and silence in `experience/**/*.test.tsx` (S05,S10-S12,S14-S15,S20-S23).
+- [x] 4.2 **GREEN:** Add `LivingMemoryMoment.tsx`; wire one chapter slot/one `TripAlbum` memory through `Modes.tsx` and `VisibleCompanionExperience.tsx`.
+- [x] 4.3 **TRIANGULATE:** Complete Last Day persistence, receipt hierarchy, privacy observer, a11y/responsive/reduced-motion/PWA CSS.
+- [x] 4.4 **REFACTOR:** Enforce literal Editorial copy, one protagonist and `null` silence; persist progress; commit Unit 4.
 
 ## Phase 5: Integration and visual verification
 

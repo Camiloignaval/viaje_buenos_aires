@@ -40,7 +40,7 @@ describe("VisibleCompanionExperience", () => {
     />);
 
     expect(await screen.findByText(VIEW_MODEL.text)).toBeInTheDocument();
-    expect(order).toEqual(["visible", "render_success"]);
+    expect(order).toEqual(["visible", "contextual_rendered"]);
     expect(onVisible).toHaveBeenCalledTimes(1);
   });
 
@@ -69,8 +69,7 @@ describe("VisibleCompanionExperience", () => {
 
     expect(screen.queryByRole("complementary", { name: "Alaia" })).not.toBeInTheDocument();
     expect(observer.mock.calls.map(([event]) => event)).toEqual([
-      { kind: "render_success" },
-      { kind: "dismiss" },
+      { kind: "contextual_rendered" },
     ]);
     expect(VIEW_MODEL).toEqual({ label: "Alaia", text: "Hoy comienza una nueva historia." });
     expect(storageWrite).not.toHaveBeenCalled();
@@ -83,7 +82,7 @@ describe("VisibleCompanionExperience", () => {
 
     await user.click(screen.getByRole("button", { name: "Cerrar mensaje de Alaia" }));
 
-    expect(events).toEqual([{ kind: "render_success" }, { kind: "dismiss" }]);
+    expect(events).toEqual([{ kind: "contextual_rendered" }]);
     expect(events.every(Object.isFrozen)).toBe(true);
     expect(JSON.stringify(events)).not.toContain(VIEW_MODEL.text);
   });
@@ -106,7 +105,7 @@ describe("VisibleCompanionExperience", () => {
 
     expect(screen.queryByText(VIEW_MODEL.text)).not.toBeInTheDocument();
     expect(onDismiss).toHaveBeenCalledTimes(1);
-    expect(observer.mock.calls.map(([event]) => event)).toEqual([{ kind: "render_success" }]);
+    expect(observer.mock.calls.map(([event]) => event)).toEqual([{ kind: "contextual_rendered" }]);
   });
 
   it("Hostile observer: cannot alter visibility or dismissal", async () => {

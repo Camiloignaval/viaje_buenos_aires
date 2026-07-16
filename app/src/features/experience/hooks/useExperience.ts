@@ -614,6 +614,8 @@ export function useExperience(
     lockedChapterNotice,
     showingPreparations,
     preparationCompletedIds,
+    contextualCompanion: null,
+    semanticMemoryScope: null,
     actions,
   };
 
