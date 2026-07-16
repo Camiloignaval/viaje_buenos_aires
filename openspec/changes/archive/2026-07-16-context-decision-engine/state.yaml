@@ -3,7 +3,7 @@ artifact_store: openspec
 execution_mode: automatic
 delivery_strategy: auto-chain
 chain_strategy: feature-branch-chain
-status: ready-for-archive
+status: archived
 phases:
   explore: done
   proposal: done
@@ -12,7 +12,7 @@ phases:
   tasks: done       # strict TDD; four autonomous local review slices
   apply: done         # 14/14 tasks complete across four autonomous review slices
   verify: done        # PASS; 65/65 scenarios, 14/14 tasks, 0 findings
-  archive: pending  # archive Foundation -> Weather -> Decision only after authorization
+  archive: done        # Canonical specs synced; archived 2026-07-16 after Foundation and Weather
 constraints:
   - work only on etapa-7-living-context with local thematic commits; no PR branches or push
   - do not implement UI, delivery, persistence, AI, copy, notifications, geofencing or Experience
