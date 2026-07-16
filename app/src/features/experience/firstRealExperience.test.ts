@@ -1,0 +1,231 @@
+import { describe, expect, it } from "vitest";
+import type { Trip } from "@/features/trips/types";
+import {
+  composeFirstRealExperience,
+  type FirstRealExperienceInput,
+} from "./firstRealExperience";
+
+const LOGICAL_INSTANT = "2026-10-03T15:00:00.000Z";
+
+function trip(overrides: Partial<Trip> = {}): Trip {
+  return {
+    id: "trip-1",
+    title: "Viaje de prueba",
+    destination: {
+      countryCode: "AR",
+      countryName: "Argentina",
+      cityId: "buenos-aires",
+      cityName: "Buenos Aires",
+      latitude: -34.6037,
+      longitude: -58.3816,
+      timezone: "America/Argentina/Buenos_Aires",
+    },
+    baseStoryId: "story-1",
+    status: "active",
+    role: "owner",
+    updatedAt: LOGICAL_INSTANT,
+    startDateTime: "2026-10-03",
+    endDateTime: "2026-10-06",
+    ...overrides,
+  };
+}
+
+function input(overrides: Partial<FirstRealExperienceInput> = {}): FirstRealExperienceInput {
+  return {
+    logicalInstant: LOGICAL_INSTANT,
+    livingContext: { trip: trip() },
+    decision: {
+      tripId: "trip-1",
+      preferences: { enabled: true, beforeTrip: true, duringTrip: true },
+      processedKeys: new Set<string>(),
+      activities: [],
+    },
+    companion: {
+      preferences: { enabled: true },
+      processedKeys: new Set<string>(),
+      history: [],
+    },
+    memory: {
+      scope: { ownerUserId: "user-1", tripId: "trip-1", storyId: "story-1" },
+      facts: { firstChapterAlreadyOpened: false },
+    },
+    ...overrides,
+  };
+}
+
+function expectDeepFrozen(value: unknown, seen = new Set<object>()): void {
+  if (typeof value !== "object" || value === null || seen.has(value)) return;
+  seen.add(value);
+  expect(Object.isFrozen(value)).toBe(true);
+  for (const child of Object.values(value)) expectDeepFrozen(child, seen);
+}
+
+describe("composeFirstRealExperience", () => {
+  it("composes the real five-engine trip-start-today chain with exact lineage", async () => {
+    const result = await composeFirstRealExperience(input());
+
+    expect(result.outcome).toBe("composed");
+    if (result.outcome !== "composed") throw new Error("Expected composed result");
+    expect(result.livingContext.resolvedAt).toBe(LOGICAL_INSTANT);
+    expect(result.action.decision).toEqual(result.decisionRun.selected);
+    expect(result.action.decisionRef.id).toBe(result.decisionRun.selected.id);
+    expect(result.message).toMatchObject({
+      variantId: "today-01",
+      text: "Hoy comienza una nueva historia.",
+      channel: "in_app",
+    });
+    expect(result.message.actionRef.actionId).toBe(result.action.actionId);
+    expect(result.memoryCandidate).toMatchObject({
+      outcome: "candidate",
+      lifecycle: "candidate",
+      type: "trip_started",
+      decisionRef: { id: result.action.decision.id, kind: "trip_start_today" },
+      editorialRef: { catalogVersion: "editorial-v1", variantId: "today-01" },
+    });
+    expect(result.deliveryIntents).toEqual([{
+      destination: "in_app",
+      state: "pending",
+      references: ["editorial_message", "memory_candidate"],
+    }]);
+    expect(result.trace).toEqual([
+      { stage: "living_context", outcome: "resolved", reason: "none" },
+      { stage: "decision_engine", outcome: "selected", reason: "none" },
+      { stage: "companion", outcome: "action", reason: "none" },
+      { stage: "editorial_voice", outcome: "rendered", reason: "none" },
+      { stage: "memory_engine", outcome: "candidate", reason: "trip_started" },
+    ]);
+  });
+
+  it("deeply freezes the successful result and every final value", async () => {
+    const result = await composeFirstRealExperience(input());
+
+    expect(result.outcome).toBe("composed");
+    expectDeepFrozen(result);
+  });
+
+  it("terminates on Decision abstention without later stages or intents", async () => {
+    const result = await composeFirstRealExperience(input({
+      decision: {
+        tripId: "trip-1",
+        preferences: { enabled: false, beforeTrip: true, duringTrip: true },
+        processedKeys: new Set<string>(),
+        activities: [],
+      },
+    }));
+
+    expect(result).toMatchObject({ outcome: "decision_abstain", deliveryIntents: [] });
+    expect(result.trace.map(({ stage }) => stage)).toEqual(["living_context", "decision_engine"]);
+    expect(result.trace.at(-1)).toMatchObject({ outcome: "abstained", reason: "incomplete_context" });
+    expectDeepFrozen(result);
+  });
+
+  it("preserves Companion silence and never renders Editorial or classifies Memory", async () => {
+    const result = await composeFirstRealExperience(input({
+      companion: {
+        preferences: { enabled: false },
+        processedKeys: new Set<string>(),
+        history: [],
+      },
+    }));
+
+    expect(result).toMatchObject({
+      outcome: "companion_silence",
+      silence: { outcome: "silence", reason: "preference_disabled" },
+      deliveryIntents: [],
+    });
+    expect(result.trace.map(({ stage }) => stage)).toEqual(["living_context", "decision_engine", "companion"]);
+    expectDeepFrozen(result);
+  });
+
+  it("preserves a real Memory discard for tomorrow without creating a delivery intent", async () => {
+    const tomorrowTrip = trip({ startDateTime: "2026-10-04", endDateTime: "2026-10-07" });
+    const result = await composeFirstRealExperience(input({ livingContext: { trip: tomorrowTrip } }));
+
+    expect(result).toMatchObject({
+      outcome: "memory_discard",
+      action: { outcome: "action", channel: "timeline", decision: { kind: "trip_start_tomorrow" } },
+      memoryDiscard: { outcome: "discard", reason: "unsupported_kind" },
+      deliveryIntents: [],
+    });
+    expect(result.trace).toEqual([
+      { stage: "living_context", outcome: "resolved", reason: "none" },
+      { stage: "decision_engine", outcome: "selected", reason: "none" },
+      { stage: "companion", outcome: "action", reason: "none" },
+      { stage: "editorial_voice", outcome: "rendered", reason: "none" },
+      { stage: "memory_engine", outcome: "discard", reason: "unsupported_kind" },
+    ]);
+  });
+
+  it("fails closed for invalid input, unsettled required context and invalid lineage", async () => {
+    const invalid = await composeFirstRealExperience(input({ logicalInstant: "not-an-instant" }));
+    const unsettled = await composeFirstRealExperience(input({
+      livingContext: { trip: trip({ startDateTime: undefined }) },
+    }));
+    const lineage = await composeFirstRealExperience(input({
+      decision: {
+        tripId: "another-trip",
+        preferences: { enabled: true, beforeTrip: true, duringTrip: true },
+        processedKeys: new Set<string>(),
+        activities: [],
+      },
+    }));
+
+    expect(invalid).toEqual({
+      outcome: "error",
+      stage: "living_context",
+      errorCode: "invalid_input",
+      deliveryIntents: [],
+      trace: [{ stage: "living_context", outcome: "error", reason: "invalid_input" }],
+    });
+    expect(unsettled).toMatchObject({ outcome: "error", stage: "living_context", errorCode: "unsettled_context", deliveryIntents: [] });
+    expect(unsettled.trace.map(({ stage }) => stage)).toEqual(["living_context"]);
+    expect(lineage).toMatchObject({ outcome: "error", stage: "decision_engine", errorCode: "lineage_error", deliveryIntents: [] });
+    expect(lineage.trace.map(({ stage }) => stage)).toEqual(["living_context", "decision_engine"]);
+  });
+
+  it("categorizes dependency failures without leaking raw errors or continuing", async () => {
+    const hostileLivingContext = Object.defineProperty({}, "trip", {
+      get: () => { throw new Error("kari@example.com token=secret -34.6037"); },
+    });
+    const result = await composeFirstRealExperience(input({
+      livingContext: hostileLivingContext,
+    }));
+    const serialized = JSON.stringify(result);
+
+    expect(result).toMatchObject({ outcome: "error", stage: "living_context", errorCode: "dependency_error", deliveryIntents: [] });
+    expect(result.trace).toEqual([{ stage: "living_context", outcome: "error", reason: "dependency_error" }]);
+    expect(serialized).not.toMatch(/kari@|secret|-34\.6037/);
+  });
+
+  it("keeps observer events categorical and ignores hostile getters and callbacks", async () => {
+    const events: unknown[] = [];
+    const observed = await composeFirstRealExperience(input(), {
+      observer: (event) => {
+        events.push(event);
+        throw new Error("observer must not alter composition");
+      },
+    });
+    const hostileDependencies = Object.defineProperty({}, "observer", {
+      get: () => { throw new Error("observer getter"); },
+    });
+    const withoutObserver = await composeFirstRealExperience(input(), hostileDependencies);
+
+    expect(observed).toEqual(withoutObserver);
+    expect(events).toEqual(observed.trace);
+    expect(events).toHaveLength(5);
+    expect(events.every(Object.isFrozen)).toBe(true);
+    expect(JSON.stringify(events)).not.toMatch(/trip-1|user-1|story-1|2026-|Hoy comienza|payload|@/);
+  });
+
+  it("uses one logical instant across authoritative outputs", async () => {
+    const result = await composeFirstRealExperience(input());
+
+    expect(result.outcome).toBe("composed");
+    if (result.outcome !== "composed") throw new Error("Expected composed result");
+    expect([
+      result.livingContext.resolvedAt,
+      result.decisionRun.selected?.window.effectiveAt,
+      result.memoryCandidate.occurredAt,
+    ]).toEqual([LOGICAL_INSTANT, LOGICAL_INSTANT, LOGICAL_INSTANT]);
+  });
+});

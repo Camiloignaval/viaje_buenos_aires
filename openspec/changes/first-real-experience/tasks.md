@@ -29,10 +29,10 @@ The specification governs terminal behavior: abstention, silence, Memory discard
 
 ## Phase 1: Pure composition (Unit 1)
 
-- [ ] 1.1 **RED:** Create `app/src/features/experience/firstRealExperience.test.ts` with real-engine failures for **Primer día local exitoso**, **Valores finales inmutables**, **Lineage exitoso**, **Intent exitoso** and **Trace exitoso**.
-- [ ] 1.2 **GREEN:** Create `app/src/features/experience/firstRealExperience.ts` with closed frozen result/trace/intent contracts and the single-instant `settled` pipeline; pass each authoritative output unchanged and stop at `MemoryCandidate`.
-- [ ] 1.3 **TRIANGULATE:** Extend the same test for **Abstención de Decision**, **Silencio de Companion**, **Descarte de Memory**, **Resultado terminal**, **Trace terminal**, **Contexto no settled**, **Error de dependencia** and **Lineage inválido**; assert zero later calls, intents and raw errors.
-- [ ] 1.4 **REFACTOR:** Keep only observer injection, categorical allowlists and shared deep-freeze helpers in `firstRealExperience.ts`; run `npm run test:react -- --run src/features/experience/firstRealExperience.test.ts`.
+- [x] 1.1 **RED:** Create `app/src/features/experience/firstRealExperience.test.ts` with real-engine failures for **Primer día local exitoso**, **Valores finales inmutables**, **Lineage exitoso**, **Intent exitoso** and **Trace exitoso**.
+- [x] 1.2 **GREEN:** Create `app/src/features/experience/firstRealExperience.ts` with closed frozen result/trace/intent contracts and the single-instant `settled` pipeline; pass each authoritative output unchanged and stop at `MemoryCandidate`.
+- [x] 1.3 **TRIANGULATE:** Extend the same test for **Abstención de Decision**, **Silencio de Companion**, **Descarte de Memory**, **Resultado terminal**, **Trace terminal**, **Contexto no settled**, **Error de dependencia** and **Lineage inválido**; assert zero later calls, intents and raw errors.
+- [x] 1.4 **REFACTOR:** Keep only observer injection, categorical allowlists and shared deep-freeze helpers in `firstRealExperience.ts`; run `npm run test:react -- --run src/features/experience/firstRealExperience.test.ts`.
 
 ## Phase 2: Internal evidence (Unit 2)
 
