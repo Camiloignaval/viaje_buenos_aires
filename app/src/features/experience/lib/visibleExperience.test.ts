@@ -7,6 +7,7 @@ import {
   type FirstRealExperienceResult,
 } from "../firstRealExperience";
 import {
+  observeVisibleExperience,
   toVisibleCompanionExperience,
   type VisibleExperienceEvent,
 } from "./visibleExperience";
@@ -69,6 +70,14 @@ beforeAll(async () => {
 });
 
 describe("toVisibleCompanionExperience", () => {
+  it.each(["delivery_pending", "delivery_expired"] as const)("allows the frozen categorical event %s", (kind) => {
+    const events: VisibleExperienceEvent[] = [];
+    observeVisibleExperience((event) => events.push(event), kind);
+
+    expect(events).toEqual([{ kind }]);
+    expect(Object.isFrozen(events[0])).toBe(true);
+    expect(Object.keys(events[0])).toEqual(["kind"]);
+  });
   it("Approved moment / Literal copy: projects only label and untouched editorial text", () => {
     const events: VisibleExperienceEvent[] = [];
     const viewModel = project(composed, "active_trip_home", (event) => events.push(event));

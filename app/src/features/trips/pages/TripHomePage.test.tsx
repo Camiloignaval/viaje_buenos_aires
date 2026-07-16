@@ -1,7 +1,7 @@
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { MemoryRouter, Route, Routes } from "react-router-dom";
+import { Link, MemoryRouter, Route, Routes } from "react-router-dom";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { PlatformApiError } from "@/services/platformClient";
 import TripHomePage from "./TripHomePage";
@@ -70,14 +70,14 @@ const trip = (overrides = {}) => ({
   ...overrides,
 });
 
-function renderPortada() {
+function renderPortada(tripsIndex = <div>Mis viajes destino</div>) {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(
     <QueryClientProvider client={queryClient}>
       <MemoryRouter initialEntries={["/trips/trip-1"]}>
         <Routes>
           <Route path="trips/:tripId" element={<TripHomePage />} />
-          <Route path="trips" element={<div>Mis viajes destino</div>} />
+          <Route path="trips" element={tripsIndex} />
         </Routes>
       </MemoryRouter>
     </QueryClientProvider>,
@@ -88,7 +88,10 @@ function preferences(enabled: boolean) {
   return { preferences: { enabled, beforeTrip: true, duringTrip: true, afterTrip: true, futureMemories: true } };
 }
 
-beforeEach(() => getPushPreferences.mockResolvedValue(preferences(false)));
+beforeEach(() => {
+  window.sessionStorage.clear();
+  getPushPreferences.mockResolvedValue(preferences(false));
+});
 
 describe("TripHomePage (Portada del viaje)", () => {
   it("READY: muestra el viaje y el CTA voluntario 'Entrar al viaje' → Experience", async () => {
@@ -167,6 +170,52 @@ describe("TripHomePage (Portada del viaje)", () => {
       "/experience?tripId=trip-1",
     );
     expect(getPushPreferences).toHaveBeenCalled();
+  });
+
+  it("restaura el receipt visible tras un remount equivalente a reload de la pestaña", async () => {
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(new Date("2026-07-18T15:00:00.000Z"));
+    const { demoStoryPackage } = await import("@/features/experience/data/demoStory");
+    getTrip.mockResolvedValue({ trip: trip() });
+    getStory.mockResolvedValue({ story: { storyId: "ba-2026", storyPackage: demoStoryPackage } });
+    getPushPreferences.mockResolvedValue(preferences(true));
+
+    const first = renderPortada();
+    expect(await screen.findByRole("complementary", { name: "Alaia" })).toBeInTheDocument();
+    first.unmount();
+
+    renderPortada();
+    await screen.findByRole("link", { name: "Entrar al viaje" });
+    await vi.waitFor(() => expect(getPushPreferences).toHaveBeenCalledTimes(2));
+    expect(screen.queryByRole("complementary", { name: "Alaia" })).not.toBeInTheDocument();
+  });
+
+  it("aísla el trip scope al navegar y restaura el receipt al volver", async () => {
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(new Date("2026-07-18T15:00:00.000Z"));
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    const { demoStoryPackage } = await import("@/features/experience/data/demoStory");
+    getTrip.mockImplementation(async (tripId: string) => ({ trip: trip({ id: tripId }) }));
+    getStory.mockResolvedValue({ story: { storyId: "ba-2026", storyPackage: demoStoryPackage } });
+    getPushPreferences.mockResolvedValue(preferences(true));
+    const index = (
+      <div>
+        <Link to="/trips/trip-1">Abrir viaje uno</Link>
+        <Link to="/trips/trip-2">Abrir viaje dos</Link>
+      </div>
+    );
+
+    renderPortada(index);
+    expect(await screen.findByRole("complementary", { name: "Alaia" })).toBeInTheDocument();
+    await user.click(screen.getByRole("link", { name: "← Volver a Mis viajes" }));
+    await user.click(await screen.findByRole("link", { name: "Abrir viaje dos" }));
+    expect(await screen.findByRole("complementary", { name: "Alaia" })).toBeInTheDocument();
+    await user.click(screen.getByRole("link", { name: "← Volver a Mis viajes" }));
+    await user.click(await screen.findByRole("link", { name: "Abrir viaje uno" }));
+
+    await screen.findByRole("link", { name: "Entrar al viaje" });
+    await vi.waitFor(() => expect(getPushPreferences).toHaveBeenCalledTimes(3));
+    expect(screen.queryByRole("complementary", { name: "Alaia" })).not.toBeInTheDocument();
   });
 
   it("un terminal silencioso conserva preparativos y no monta wrapper vacio", async () => {

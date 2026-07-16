@@ -44,9 +44,9 @@ Chain strategy: feature-branch-chain
 
 ## Phase 5: Session continuity integration (Unit 5)
 
-- [ ] 5.1 **RED:** Extend hook/page remount tests for **Same-trip continuity**, **Scope switch** and **History projection** across rerender, navigation, return and tab reload; cover user/trip switching and unavailable storage silence.
-- [ ] 5.2 **GREEN:** Update `useFirstVisibleExperience.ts` and `TripHomePage.tsx` to load caller-owned processed keys/history, persist pending, and expose visible/dismiss callbacks keyed by user+trip.
-- [ ] 5.3 **GREEN→REFACTOR:** Update `VisibleCompanionExperience.tsx` and observer allowlist for **Observation**; commit visible before display, dismiss once without engine invocation, and keep hostile observers harmless.
+- [x] 5.1 **RED:** Extend hook/page remount tests for **Same-trip continuity**, **Scope switch** and **History projection** across rerender, navigation, return and tab reload; cover user/trip switching and unavailable storage silence.
+- [x] 5.2 **GREEN:** Update `useFirstVisibleExperience.ts` and `TripHomePage.tsx` to load caller-owned processed keys/history, persist pending, and expose visible/dismiss callbacks keyed by user+trip.
+- [x] 5.3 **GREEN→REFACTOR:** Update `VisibleCompanionExperience.tsx` and observer allowlist for **Observation**; commit visible before display, dismiss once without engine invocation, and keep hostile observers harmless.
 
 ## Phase 6: Consolidated closure (Unit 6)
 

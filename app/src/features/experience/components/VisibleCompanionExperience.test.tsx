@@ -26,6 +26,35 @@ describe("VisibleCompanionExperience", () => {
     expect(container.querySelector(".visible-companion-experience-decoration")).toHaveAttribute("aria-hidden", "true");
   });
 
+  it("commits the visible receipt before exposing editorial content", async () => {
+    const order: string[] = [];
+    const onVisible = vi.fn(() => {
+      expect(screen.queryByText(VIEW_MODEL.text)).not.toBeInTheDocument();
+      order.push("visible");
+      return true;
+    });
+    render(<VisibleCompanionExperience
+      viewModel={VIEW_MODEL}
+      onVisible={onVisible}
+      observer={(event) => order.push(event.kind)}
+    />);
+
+    expect(await screen.findByText(VIEW_MODEL.text)).toBeInTheDocument();
+    expect(order).toEqual(["visible", "render_success"]);
+    expect(onVisible).toHaveBeenCalledTimes(1);
+  });
+
+  it("fails closed without content when visible confirmation fails or throws", () => {
+    const observer = vi.fn();
+    const failed = render(<VisibleCompanionExperience viewModel={VIEW_MODEL} onVisible={() => false} observer={observer} />);
+    expect(screen.queryByText(VIEW_MODEL.text)).not.toBeInTheDocument();
+    expect(observer).not.toHaveBeenCalled();
+    failed.unmount();
+
+    render(<VisibleCompanionExperience viewModel={VIEW_MODEL} onVisible={() => { throw new Error("storage"); }} />);
+    expect(screen.queryByText(VIEW_MODEL.text)).not.toBeInTheDocument();
+  });
+
   it("Keyboard close: dismisses locally and emits exactly once", async () => {
     const user = userEvent.setup();
     const observer = vi.fn();
@@ -57,6 +86,27 @@ describe("VisibleCompanionExperience", () => {
     expect(events).toEqual([{ kind: "render_success" }, { kind: "dismiss" }]);
     expect(events.every(Object.isFrozen)).toBe(true);
     expect(JSON.stringify(events)).not.toContain(VIEW_MODEL.text);
+  });
+
+  it("dismisses once even when receipt persistence fails, without repeating callbacks", async () => {
+    const user = userEvent.setup();
+    const onDismiss = vi.fn(() => false);
+    const observer = vi.fn();
+    const { rerender } = render(<VisibleCompanionExperience
+      viewModel={VIEW_MODEL}
+      onVisible={() => true}
+      onDismiss={onDismiss}
+      observer={observer}
+    />);
+
+    const close = await screen.findByRole("button", { name: "Cerrar mensaje de Alaia" });
+    await user.click(close);
+    close.click();
+    rerender(<VisibleCompanionExperience viewModel={VIEW_MODEL} onVisible={() => true} onDismiss={onDismiss} observer={observer} />);
+
+    expect(screen.queryByText(VIEW_MODEL.text)).not.toBeInTheDocument();
+    expect(onDismiss).toHaveBeenCalledTimes(1);
+    expect(observer.mock.calls.map(([event]) => event)).toEqual([{ kind: "render_success" }]);
   });
 
   it("Hostile observer: cannot alter visibility or dismissal", async () => {

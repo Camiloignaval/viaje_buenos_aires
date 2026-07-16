@@ -37,7 +37,12 @@ function SettledTripHome(props: Readonly<{
 
   const { lifecycle, temporalState } = resolveTripLifecycle(trip, new Date());
   const companionMoment = visible.viewModel
-    ? <VisibleCompanionExperience viewModel={visible.viewModel} observer={visible.observer} />
+    ? <VisibleCompanionExperience
+        viewModel={visible.viewModel}
+        observer={visible.observer}
+        onVisible={visible.onVisible}
+        onDismiss={visible.onDismiss}
+      />
     : null;
 
   return (
@@ -91,6 +96,7 @@ export default function TripHomePage() {
   const storyReady = resolved.kind === "ready";
   return (
     <SettledTripHome
+      key={`${user?.id ?? "anonymous"}\u001f${trip.id}`}
       trip={trip}
       user={user}
       storyPackage={resolved.kind === "ready" ? resolved.storyPackage : null}

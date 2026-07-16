@@ -6,6 +6,8 @@ import type {
 export type VisibleExperienceEventKind =
   | "flow_started"
   | "result_layer"
+  | "delivery_pending"
+  | "delivery_expired"
   | "render_success"
   | "dismiss"
   | "silence";

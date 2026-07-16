@@ -8,29 +8,52 @@ import {
 type VisibleCompanionExperienceProps = Readonly<{
   viewModel: VisibleCompanionExperienceViewModel | null;
   observer?: VisibleExperienceObserver;
+  onVisible?: () => boolean;
+  onDismiss?: () => boolean;
 }>;
 
 export function VisibleCompanionExperience({
   viewModel,
   observer,
+  onVisible,
+  onDismiss,
 }: VisibleCompanionExperienceProps) {
   const headingId = useId();
+  const [visible, setVisible] = useState(false);
   const [dismissed, setDismissed] = useState(false);
+  const visibleAttemptedRef = useRef(false);
   const renderedRef = useRef(false);
   const dismissedRef = useRef(false);
 
   useEffect(() => {
-    if (!viewModel || dismissed || renderedRef.current) return;
+    if (!viewModel || dismissed || visibleAttemptedRef.current) return;
+    visibleAttemptedRef.current = true;
+    try {
+      if (onVisible?.() === false) return;
+      setVisible(true);
+    } catch {
+      // A receipt that cannot be confirmed must never expose editorial content.
+    }
+  }, [dismissed, onVisible, viewModel]);
+
+  useEffect(() => {
+    if (!visible || dismissed || renderedRef.current) return;
     renderedRef.current = true;
     observeVisibleExperience(observer, "render_success");
-  }, [dismissed, observer, viewModel]);
+  }, [dismissed, observer, visible]);
 
-  if (!viewModel || dismissed) return null;
+  if (!viewModel || !visible || dismissed) return null;
 
   const dismiss = () => {
     if (dismissedRef.current) return;
     dismissedRef.current = true;
-    observeVisibleExperience(observer, "dismiss");
+    let persisted = true;
+    try {
+      persisted = onDismiss?.() !== false;
+    } catch {
+      persisted = false;
+    }
+    if (persisted) observeVisibleExperience(observer, "dismiss");
     setDismissed(true);
   };
 

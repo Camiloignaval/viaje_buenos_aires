@@ -6,6 +6,11 @@ import type { User } from "@/features/auth/types";
 import { demoStoryPackage } from "@/features/experience/data/demoStory";
 import type { Trip } from "@/features/trips/types";
 import { VisibleCompanionExperience } from "../components/VisibleCompanionExperience";
+import {
+  buildVisibleDeliverySessionKey,
+  type VisibleDeliveryCompanionSnapshot,
+  type VisibleDeliveryStorage,
+} from "../lib/visibleDeliverySession";
 
 const { getPushPreferences } = vi.hoisted(() => ({ getPushPreferences: vi.fn() }));
 vi.mock("@/features/pwa/pushApi", () => ({ getPushPreferences }));
@@ -52,6 +57,28 @@ const ENABLED_PREFERENCES = {
   afterTrip: true,
   futureMemories: true,
 };
+
+class MemoryStorage implements Storage {
+  readonly values = new Map<string, string>();
+  get length() { return this.values.size; }
+  clear() { this.values.clear(); }
+  getItem(key: string) { return this.values.get(key) ?? null; }
+  key(index: number) { return [...this.values.keys()][index] ?? null; }
+  removeItem(key: string) { this.values.delete(key); }
+  setItem(key: string, value: string) { this.values.set(key, value); }
+}
+
+class ToggleWriteStorage extends MemoryStorage {
+  failDocumentWrites = false;
+  override setItem(key: string, value: string) {
+    if (this.failDocumentWrites && !key.endsWith(":probe")) throw new DOMException("quota");
+    super.setItem(key, value);
+  }
+}
+
+function storageDependency(storage = new MemoryStorage()): VisibleDeliveryStorage {
+  return Object.freeze({ getStorage: () => storage });
+}
 
 afterEach(() => {
   vi.useRealTimers();
@@ -100,6 +127,25 @@ describe("createFirstVisibleExperienceInput", () => {
     expect(first.companion.processedKeys).not.toBe(second.companion.processedKeys);
     expect(first.companion.history).not.toBe(second.companion.history);
   });
+
+  it("maps visible delivery evidence into fresh Decision and Companion inputs", () => {
+    const delivery: VisibleDeliveryCompanionSnapshot = {
+      decisionProcessedKeys: new Set(["visible-key"]),
+      companionProcessedKeys: new Set(["visible-key"]),
+      history: [{ dedupeKey: "visible-key", priority: "high", processedAt: INSTANT }],
+    };
+    const source = { trip: TRIP, user: USER, storyPackage: demoStoryPackage, storyObservedAt: STORY_OBSERVED_AT };
+    const first = createFirstVisibleExperienceInput(source, INSTANT, ENABLED_PREFERENCES, delivery);
+    const second = createFirstVisibleExperienceInput(source, INSTANT, ENABLED_PREFERENCES, delivery);
+
+    expect(first.decision.processedKeys).toEqual(new Set(["visible-key"]));
+    expect(first.companion.processedKeys).toEqual(new Set(["visible-key"]));
+    expect(first.companion.history).toEqual(delivery.history);
+    expect(first.decision.processedKeys).not.toBe(delivery.decisionProcessedKeys);
+    expect(first.companion.processedKeys).not.toBe(delivery.companionProcessedKeys);
+    expect(first.companion.history).not.toBe(delivery.history);
+    expect(first.companion.history).not.toBe(second.companion.history);
+  });
 });
 
 describe("useFirstVisibleExperience", () => {
@@ -114,6 +160,7 @@ describe("useFirstVisibleExperience", () => {
       storyPackage: demoStoryPackage,
       storyObservedAt: STORY_OBSERVED_AT,
       observer: (event: { kind: string }) => events.push(event),
+      storage: storageDependency(),
     };
 
     const { result, rerender } = renderHook(() => useFirstVisibleExperience(props));
@@ -122,7 +169,11 @@ describe("useFirstVisibleExperience", () => {
     await waitFor(() => expect(result.current.status).toBe("settled"));
     expect(result.current.viewModel).toEqual({ label: "Alaia", text: "Hoy comienza una nueva historia." });
     expect(result.current.observer).toBe(props.observer);
-    expect(events).toEqual([{ kind: "flow_started" }, { kind: "result_layer" }]);
+    expect(events).toEqual([
+      { kind: "flow_started" },
+      { kind: "result_layer" },
+      { kind: "delivery_pending" },
+    ]);
 
     vi.setSystemTime(new Date("2026-10-03T20:00:00.000Z"));
     rerender();
@@ -134,7 +185,7 @@ describe("useFirstVisibleExperience", () => {
     vi.useFakeTimers({ toFake: ["Date"] });
     vi.setSystemTime(new Date(INSTANT));
     getPushPreferences.mockResolvedValue({ preferences: { ...ENABLED_PREFERENCES, enabled: false } });
-    const storageWrite = vi.spyOn(Storage.prototype, "setItem");
+    const storage = new MemoryStorage();
     const events: Array<{ kind: string }> = [];
 
     const { result } = renderHook(() => useFirstVisibleExperience({
@@ -143,6 +194,7 @@ describe("useFirstVisibleExperience", () => {
       storyPackage: demoStoryPackage,
       storyObservedAt: STORY_OBSERVED_AT,
       observer: (event) => events.push(event),
+      storage: storageDependency(storage),
     }));
     await act(async () => { await Promise.resolve(); await Promise.resolve(); await Promise.resolve(); });
     await waitFor(() => expect(result.current.status).toBe("settled"));
@@ -153,7 +205,7 @@ describe("useFirstVisibleExperience", () => {
       { kind: "result_layer" },
       { kind: "silence" },
     ]);
-    expect(storageWrite).not.toHaveBeenCalled();
+    expect(storage.getItem(buildVisibleDeliverySessionKey({ userId: USER.id, tripId: TRIP.id }))).toBeNull();
   });
 
   it("settles silent when preferences or required inputs are unavailable", async () => {
@@ -165,6 +217,7 @@ describe("useFirstVisibleExperience", () => {
       storyPackage: demoStoryPackage,
       storyObservedAt: STORY_OBSERVED_AT,
       observer: (event) => events.push(event),
+      storage: storageDependency(),
     }));
 
     await waitFor(() => expect(result.current.status).toBe("settled"));
@@ -186,12 +239,14 @@ describe("useFirstVisibleExperience", () => {
     getPushPreferences.mockResolvedValue({ preferences: ENABLED_PREFERENCES });
     const events: Array<{ kind: string }> = [];
     const observer = (event: { kind: string }) => events.push(event);
+    const storage = new MemoryStorage();
     const { result } = renderHook(() => useFirstVisibleExperience({
       trip: TRIP,
       user: USER,
       storyPackage: demoStoryPackage,
       storyObservedAt: STORY_OBSERVED_AT,
       observer,
+      storage: storageDependency(storage),
     }));
 
     await act(async () => { await Promise.resolve(); await Promise.resolve(); await Promise.resolve(); });
@@ -200,15 +255,197 @@ describe("useFirstVisibleExperience", () => {
     render(createElement(VisibleCompanionExperience, {
       viewModel: result.current.viewModel,
       observer: result.current.observer,
+      onVisible: result.current.onVisible,
+      onDismiss: result.current.onDismiss,
     }));
     await user.click(screen.getByRole("button", { name: "Cerrar mensaje de Alaia" }));
 
     expect(events).toEqual([
       { kind: "flow_started" },
       { kind: "result_layer" },
+      { kind: "delivery_pending" },
       { kind: "render_success" },
       { kind: "dismiss" },
     ]);
     expect(getPushPreferences).toHaveBeenCalledTimes(1);
+    const stored = storage.getItem(buildVisibleDeliverySessionKey({ userId: USER.id, tripId: TRIP.id }));
+    expect(stored && JSON.parse(stored).receipts[0].state).toBe("dismissed");
+  });
+
+  it("preserves same-trip continuity across remount while pending retries before visibility", async () => {
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(new Date(INSTANT));
+    getPushPreferences.mockResolvedValue({ preferences: ENABLED_PREFERENCES });
+    const storage = new MemoryStorage();
+    const props = {
+      trip: TRIP,
+      user: USER,
+      storyPackage: demoStoryPackage,
+      storyObservedAt: STORY_OBSERVED_AT,
+      storage: storageDependency(storage),
+    };
+
+    const pendingMount = renderHook(() => useFirstVisibleExperience(props));
+    await waitFor(() => expect(pendingMount.result.current.viewModel).not.toBeNull());
+    pendingMount.unmount();
+
+    const retryMount = renderHook(() => useFirstVisibleExperience(props));
+    await waitFor(() => expect(retryMount.result.current.viewModel).not.toBeNull());
+    render(createElement(VisibleCompanionExperience, {
+      viewModel: retryMount.result.current.viewModel,
+      observer: retryMount.result.current.observer,
+      onVisible: retryMount.result.current.onVisible,
+      onDismiss: retryMount.result.current.onDismiss,
+    }));
+    expect(await screen.findByRole("complementary", { name: "Alaia" })).toBeInTheDocument();
+    retryMount.unmount();
+
+    const returnMount = renderHook(() => useFirstVisibleExperience(props));
+    await waitFor(() => expect(returnMount.result.current.status).toBe("settled"));
+    expect(returnMount.result.current.viewModel).toBeNull();
+    expect(getPushPreferences).toHaveBeenCalledTimes(3);
+  });
+
+  it("isolates user and trip scopes and restores the original visible receipt", async () => {
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(new Date(INSTANT));
+    getPushPreferences.mockResolvedValue({ preferences: ENABLED_PREFERENCES });
+    const storage = new MemoryStorage();
+    const mount = async (trip: Trip, user: User) => {
+      const hook = renderHook(() => useFirstVisibleExperience({
+        trip,
+        user,
+        storyPackage: demoStoryPackage,
+        storyObservedAt: STORY_OBSERVED_AT,
+        storage: storageDependency(storage),
+      }));
+      await waitFor(() => expect(hook.result.current.status).toBe("settled"));
+      return hook;
+    };
+    const confirm = (hook: Awaited<ReturnType<typeof mount>>) => {
+      expect(hook.result.current.onVisible?.()).toBe(true);
+      hook.unmount();
+    };
+
+    const original = await mount(TRIP, USER);
+    expect(original.result.current.viewModel).not.toBeNull();
+    confirm(original);
+
+    const otherTrip = await mount({ ...TRIP, id: "trip-2" }, USER);
+    expect(otherTrip.result.current.viewModel).not.toBeNull();
+    otherTrip.unmount();
+
+    const otherUser = await mount(TRIP, { ...USER, id: "user-2" });
+    expect(otherUser.result.current.viewModel).not.toBeNull();
+    otherUser.unmount();
+
+    const restored = await mount(TRIP, USER);
+    expect(restored.result.current.viewModel).toBeNull();
+  });
+
+  it.each(["unavailable", "corrupt"] as const)("fails silent before composition when storage is %s", async (mode) => {
+    const storage = new MemoryStorage();
+    const dependencies: VisibleDeliveryStorage = mode === "unavailable"
+      ? { getStorage: () => { throw new Error("blocked private@example.com"); } }
+      : storageDependency(storage);
+    if (mode === "corrupt") {
+      storage.setItem(buildVisibleDeliverySessionKey({ userId: USER.id, tripId: TRIP.id }), "{");
+    }
+    const events: Array<{ kind: string }> = [];
+    const { result } = renderHook(() => useFirstVisibleExperience({
+      trip: TRIP,
+      user: USER,
+      storyPackage: demoStoryPackage,
+      storyObservedAt: STORY_OBSERVED_AT,
+      storage: dependencies,
+      observer: (event) => events.push(event),
+    }));
+
+    await waitFor(() => expect(result.current.status).toBe("settled"));
+    expect(result.current.viewModel).toBeNull();
+    expect(events).toEqual([{ kind: "flow_started" }, { kind: "silence" }]);
+    expect(getPushPreferences).not.toHaveBeenCalled();
+  });
+
+  it("fails silent when pending or visible receipt writes become unavailable", async () => {
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(new Date(INSTANT));
+    getPushPreferences.mockResolvedValue({ preferences: ENABLED_PREFERENCES });
+    const pendingFailure = new ToggleWriteStorage();
+    pendingFailure.failDocumentWrites = true;
+    const pendingEvents: Array<{ kind: string }> = [];
+    const first = renderHook(() => useFirstVisibleExperience({
+      trip: TRIP,
+      user: USER,
+      storyPackage: demoStoryPackage,
+      storyObservedAt: STORY_OBSERVED_AT,
+      storage: storageDependency(pendingFailure),
+      observer: (event) => pendingEvents.push(event),
+    }));
+    await waitFor(() => expect(first.result.current.status).toBe("settled"));
+    expect(first.result.current.viewModel).toBeNull();
+    expect(pendingEvents).toEqual([
+      { kind: "flow_started" },
+      { kind: "result_layer" },
+      { kind: "silence" },
+    ]);
+    first.unmount();
+
+    const visibleFailure = new ToggleWriteStorage();
+    const visibleEvents: Array<{ kind: string }> = [];
+    const second = renderHook(() => useFirstVisibleExperience({
+      trip: TRIP,
+      user: USER,
+      storyPackage: demoStoryPackage,
+      storyObservedAt: STORY_OBSERVED_AT,
+      storage: storageDependency(visibleFailure),
+      observer: (event) => visibleEvents.push(event),
+    }));
+    await waitFor(() => expect(second.result.current.viewModel).not.toBeNull());
+    visibleFailure.failDocumentWrites = true;
+    render(createElement(VisibleCompanionExperience, {
+      viewModel: second.result.current.viewModel,
+      observer: second.result.current.observer,
+      onVisible: second.result.current.onVisible,
+      onDismiss: second.result.current.onDismiss,
+    }));
+    expect(screen.queryByText("Hoy comienza una nueva historia.")).not.toBeInTheDocument();
+    expect(visibleEvents).toEqual([
+      { kind: "flow_started" },
+      { kind: "result_layer" },
+      { kind: "delivery_pending" },
+      { kind: "silence" },
+    ]);
+  });
+
+  it("observes visible receipt expiry categorically and keeps it deduped", async () => {
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(new Date(INSTANT));
+    getPushPreferences.mockResolvedValue({ preferences: ENABLED_PREFERENCES });
+    const storage = new MemoryStorage();
+    const source = {
+      trip: TRIP,
+      user: USER,
+      storyPackage: demoStoryPackage,
+      storyObservedAt: STORY_OBSERVED_AT,
+      storage: storageDependency(storage),
+    };
+    const first = renderHook(() => useFirstVisibleExperience(source));
+    await waitFor(() => expect(first.result.current.viewModel).not.toBeNull());
+    expect(first.result.current.onVisible?.()).toBe(true);
+    first.unmount();
+
+    vi.setSystemTime(new Date("2026-10-05T15:00:00.000Z"));
+    const events: Array<{ kind: string }> = [];
+    const second = renderHook(() => useFirstVisibleExperience({ ...source, observer: (event) => events.push(event) }));
+    await waitFor(() => expect(second.result.current.status).toBe("settled"));
+
+    expect(second.result.current.viewModel).toBeNull();
+    expect(events).toEqual([
+      { kind: "flow_started" },
+      { kind: "delivery_expired" },
+      { kind: "result_layer" },
+      { kind: "silence" },
+    ]);
   });
 });

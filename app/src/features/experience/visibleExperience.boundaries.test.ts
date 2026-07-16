@@ -34,15 +34,19 @@ describe("First Visible Experience boundaries", () => {
     expect(visibleProduction).not.toMatch(/sendDelivery|deliverMessage|timeline|\bemail\b|\bSMS\b|\bsms\b/);
   });
 
-  it("Isolation: dismissal and dedupe add no storage or persistence path", () => {
-    const runtime = [projection, component, hook].join("\n");
-    expect(runtime).not.toMatch(/localStorage|sessionStorage|indexedDB|continuityStore|rememberTrip|persist|repository|database|mongodb/i);
+  it("Isolation: session continuity stays feature-local without durable persistence", () => {
+    const presentation = [projection, component].join("\n");
+    expect(presentation).not.toMatch(/localStorage|sessionStorage|indexedDB|visibleDeliverySession|repository|database|mongodb/i);
+    expect(hook).toContain('from "../lib/visibleDeliverySession"');
+    expect(hook).toContain("window.sessionStorage");
+    expect(hook).not.toMatch(/localStorage|indexedDB|continuityStore|rememberTrip|repository|database|mongodb/i);
     expect(component).toContain("useState(false)");
-    expect(component).toContain('observeVisibleExperience(observer, "dismiss")');
+    expect(component).toContain("onVisible?: () => boolean");
+    expect(component).toContain("onDismiss?: () => boolean");
   });
 
   it("keeps React presentation limited to view model and observer rather than domain inputs", () => {
-    expect(component).toMatch(/type VisibleCompanionExperienceProps = Readonly<\{\s*viewModel: VisibleCompanionExperienceViewModel \| null;\s*observer\?: VisibleExperienceObserver;\s*\}>/s);
+    expect(component).toMatch(/type VisibleCompanionExperienceProps = Readonly<\{\s*viewModel: VisibleCompanionExperienceViewModel \| null;\s*observer\?: VisibleExperienceObserver;\s*onVisible\?: \(\) => boolean;\s*onDismiss\?: \(\) => boolean;\s*\}>/s);
     expect(component).not.toMatch(/\bTrip\b|\bUser\b|StoryPackage|FirstRealExperienceResult|DeliveryIntent|CompanionAction|EditorialMessage|MemoryCandidate/);
     expect(activeHome).toMatch(/companionMoment\?: ReactNode/);
   });

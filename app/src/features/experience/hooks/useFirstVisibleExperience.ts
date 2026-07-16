@@ -13,6 +13,23 @@ import {
   type VisibleCompanionExperienceViewModel,
   type VisibleExperienceObserver,
 } from "../lib/visibleExperience";
+import {
+  createPendingVisibleDeliveryReceipt,
+  readVisibleDeliverySession,
+  toVisibleDeliveryCompanionSnapshot,
+  transitionVisibleDeliveryReceipt,
+  writeVisibleDeliverySession,
+  type DeliveryReceiptState,
+  type DeliveryReceiptV1,
+  type DeliverySessionDocumentV1,
+  type VisibleDeliveryCompanionSnapshot,
+  type VisibleDeliveryScope,
+  type VisibleDeliveryStorage,
+} from "../lib/visibleDeliverySession";
+
+const browserSessionStorage: VisibleDeliveryStorage = Object.freeze({
+  getStorage: () => window.sessionStorage,
+});
 
 export type FirstVisibleExperienceSource = Readonly<{
   trip: Trip;
@@ -20,12 +37,15 @@ export type FirstVisibleExperienceSource = Readonly<{
   storyPackage: StoryPackage | null;
   storyObservedAt: string | null;
   observer?: VisibleExperienceObserver;
+  storage?: VisibleDeliveryStorage;
 }>;
 
 export type FirstVisibleExperienceState = Readonly<{
   status: "loading" | "settled";
   viewModel: VisibleCompanionExperienceViewModel | null;
   observer?: VisibleExperienceObserver;
+  onVisible?: () => boolean;
+  onDismiss?: () => boolean;
 }>;
 
 type AuthorizedSource = FirstVisibleExperienceSource & Readonly<{
@@ -48,6 +68,7 @@ export function createFirstVisibleExperienceInput(
   source: AuthorizedSource,
   logicalInstant: string,
   preferences: PushPreferences,
+  delivery?: VisibleDeliveryCompanionSnapshot,
 ): FirstRealExperienceInput {
   const { trip, user, storyPackage, storyObservedAt } = source;
   return {
@@ -68,13 +89,13 @@ export function createFirstVisibleExperienceInput(
         beforeTrip: preferences.beforeTrip,
         duringTrip: preferences.duringTrip,
       },
-      processedKeys: new Set<string>(),
+      processedKeys: new Set(delivery?.decisionProcessedKeys ?? []),
       activities: [],
     },
     companion: {
       preferences: { enabled: preferences.enabled },
-      processedKeys: new Set<string>(),
-      history: [],
+      processedKeys: new Set(delivery?.companionProcessedKeys ?? []),
+      history: delivery?.history.map((entry) => Object.freeze({ ...entry })) ?? [],
     },
     memory: {
       scope: { ownerUserId: user.id, tripId: trip.id, storyId: storyPackage.storyId },
@@ -86,8 +107,61 @@ export function createFirstVisibleExperienceInput(
 function finalState(
   viewModel: VisibleCompanionExperienceViewModel | null,
   observer: VisibleExperienceObserver | undefined,
+  callbacks?: Readonly<{ onVisible: () => boolean; onDismiss: () => boolean }>,
 ): FirstVisibleExperienceState {
-  return Object.freeze({ status: "settled" as const, viewModel, observer });
+  return Object.freeze({ status: "settled" as const, viewModel, observer, ...callbacks });
+}
+
+function withReceipt(
+  document: DeliverySessionDocumentV1,
+  receipt: DeliveryReceiptV1,
+): DeliverySessionDocumentV1 {
+  const index = document.receipts.findIndex(({ identity }) => identity === receipt.identity);
+  const receipts = index < 0
+    ? [...document.receipts, receipt]
+    : document.receipts.map((current, currentIndex) => currentIndex === index ? receipt : current);
+  return Object.freeze({ version: 1 as const, receipts: Object.freeze(receipts) });
+}
+
+function createReceiptCallbacks(input: Readonly<{
+  document: DeliverySessionDocumentV1;
+  receipt: DeliveryReceiptV1;
+  scope: VisibleDeliveryScope;
+  storage: VisibleDeliveryStorage;
+  observer: VisibleExperienceObserver | undefined;
+}>): Readonly<{ onVisible: () => boolean; onDismiss: () => boolean }> {
+  let document = input.document;
+  let receipt = input.receipt;
+
+  const move = (target: DeliveryReceiptState): boolean => {
+    const transition = transitionVisibleDeliveryReceipt(receipt, target, new Date().toISOString());
+    if (transition.status !== "transitioned") {
+      observeVisibleExperience(input.observer, "silence");
+      return false;
+    }
+    const nextDocument = withReceipt(document, transition.receipt);
+    const write = writeVisibleDeliverySession({
+      dependencies: input.storage,
+      scope: input.scope,
+      document: nextDocument,
+    });
+    if (write.status !== "available") {
+      observeVisibleExperience(input.observer, "silence");
+      return false;
+    }
+    receipt = transition.receipt;
+    document = nextDocument;
+    if (receipt.state === "expired") {
+      observeVisibleExperience(input.observer, "delivery_expired");
+      return false;
+    }
+    return receipt.state === target;
+  };
+
+  return Object.freeze({
+    onVisible: () => move("visible"),
+    onDismiss: () => move("dismissed"),
+  });
 }
 
 export function useFirstVisibleExperience(
@@ -97,7 +171,7 @@ export function useFirstVisibleExperience(
   const [snapshot] = useState(() => source);
   const [observer] = useState(() => snapshot.observer);
   const authorized = isAuthorizedSource(snapshot);
-  const runRef = useRef<Promise<VisibleCompanionExperienceViewModel | null> | null>(null);
+  const runRef = useRef<Promise<FirstVisibleExperienceState> | null>(null);
   const [state, setState] = useState<FirstVisibleExperienceState>(() => (
     authorized
       ? Object.freeze({ status: "loading" as const, viewModel: null, observer })
@@ -113,24 +187,73 @@ export function useFirstVisibleExperience(
       observeVisibleExperience(observer, "flow_started");
       runRef.current = (async () => {
         try {
+          const storage = snapshot.storage ?? browserSessionStorage;
+          const scope = Object.freeze({ userId: snapshot.user.id, tripId: snapshot.trip.id });
+          const stored = readVisibleDeliverySession({
+            dependencies: storage,
+            scope,
+            now: logicalInstant,
+          });
+          if (stored.status !== "available") {
+            observeVisibleExperience(observer, "silence");
+            return finalState(null, observer);
+          }
+          if (stored.document.receipts.some(({ state }) => state === "expired")) {
+            observeVisibleExperience(observer, "delivery_expired");
+          }
+          const delivery = toVisibleDeliveryCompanionSnapshot(stored.document);
           const { preferences } = await getPushPreferences();
           const result = await composeFirstRealExperience(
-            createFirstVisibleExperienceInput(snapshot, logicalInstant, preferences),
+            createFirstVisibleExperienceInput(snapshot, logicalInstant, preferences, delivery),
           );
-          return toVisibleCompanionExperience(result, {
+          const viewModel = toVisibleCompanionExperience(result, {
             surface: "active_trip_home",
             observer,
           });
+          if (!viewModel || result.outcome !== "composed") return finalState(null, observer);
+          const intent = result.deliveryIntents[0];
+          const receipt = createPendingVisibleDeliveryReceipt({
+            scope,
+            actionId: result.action.actionId,
+            destination: "in_app",
+            references: intent.references,
+            dedupeKey: result.decisionRun.selected.dedupeKey,
+            priority: result.decisionRun.selected.priority,
+            pendingAt: logicalInstant,
+            expiryBoundaries: [
+              result.decisionRun.selected.window.validUntil,
+              result.decisionRun.selected.window.expiresAt,
+              ...(typeof snapshot.trip.endDateTime === "string" ? [snapshot.trip.endDateTime] : []),
+            ],
+          });
+          if (!receipt) {
+            observeVisibleExperience(observer, "silence");
+            return finalState(null, observer);
+          }
+          const document = withReceipt(stored.document, receipt);
+          const write = writeVisibleDeliverySession({ dependencies: storage, scope, document });
+          if (write.status !== "available") {
+            observeVisibleExperience(observer, "silence");
+            return finalState(null, observer);
+          }
+          observeVisibleExperience(observer, "delivery_pending");
+          return finalState(viewModel, observer, createReceiptCallbacks({
+            document,
+            receipt,
+            scope,
+            storage,
+            observer,
+          }));
         } catch {
           observeVisibleExperience(observer, "silence");
-          return null;
+          return finalState(null, observer);
         }
       })();
     }
 
     let active = true;
-    void runRef.current.then((viewModel) => {
-      if (active) setState(finalState(viewModel, observer));
+    void runRef.current.then((settled) => {
+      if (active) setState(settled);
     });
 
     return () => { active = false; };
