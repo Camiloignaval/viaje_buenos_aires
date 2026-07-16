@@ -3,7 +3,7 @@ artifact_store: openspec
 execution_mode: automatic
 delivery_strategy: auto-chain
 chain_strategy: feature-branch-chain
-status: verified
+status: archived
 phases:
   explore: done
   proposal: done
@@ -12,7 +12,12 @@ phases:
   tasks: done        # strict TDD; 19/19 complete across six review slices
   apply: done        # companion experience closure implemented and validated
   verify: done       # final closure PASS; prior pre-closure report superseded
-  archive: pending
+  archive: done
+verification:
+  verdict: PASS
+  report: verify-report.md
+  scenarios: 15/15
+  tasks: 19/19
 constraints:
   - preserve all five engines, Story, composer semantics and existing visible behavior
   - sessionStorage only; fail closed; visible receipts alone feed Companion history
