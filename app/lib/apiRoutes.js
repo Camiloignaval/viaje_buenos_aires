@@ -93,6 +93,10 @@ export const apiRoutes = Object.freeze([
     handler: lazyHandler(() => import('../routes/trips/[tripId]/media-upload.js')),
   },
   {
+    path: '/api/trips/:tripId/semantic-memories',
+    handler: lazyHandler(() => import('../routes/trips/[tripId]/semantic-memories.js')),
+  },
+  {
     path: '/api/trips/:tripId/sync',
     handler: lazyHandler(() => import('../routes/trips/[tripId]/sync.js')),
   },

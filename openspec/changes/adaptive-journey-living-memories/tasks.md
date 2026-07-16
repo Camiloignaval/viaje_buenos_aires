@@ -39,10 +39,10 @@ Chain strategy: feature-branch-chain
 
 ## Phase 3: Semantic Memory API
 
-- [ ] 3.1 **RED:** Test latest/read, concurrency, ownership and legacy separation in `platformMemory.test.js` and new semantic route tests (S16-S19).
-- [ ] 3.2 **GREEN:** Extend `platformMemory.js`; add authenticated `routes/trips/[tripId]/semantic-memories.js` GET/POST and `apiRoutes.js` mapping.
-- [ ] 3.3 **TRIANGULATE:** Add exact DTO client/query in `experience/api/semanticMemoryApi.ts`; persist idempotently outside render.
-- [ ] 3.4 **REFACTOR:** Prove allowlist/member scope and failure isolation; persist progress; commit Unit 3.
+- [x] 3.1 **RED:** Test latest/read, concurrency, ownership and legacy separation in `platformMemory.test.js` and new semantic route tests (S16-S19).
+- [x] 3.2 **GREEN:** Extend `platformMemory.js`; add authenticated `routes/trips/[tripId]/semantic-memories.js` GET/POST and `apiRoutes.js` mapping.
+- [x] 3.3 **TRIANGULATE:** Add exact DTO client/query in `experience/api/semanticMemoryApi.ts`; persist idempotently outside render.
+- [x] 3.4 **REFACTOR:** Prove allowlist/member scope and failure isolation; persist progress; commit Unit 3.
 
 ## Phase 4: Adaptive UI, receipts and hierarchy
 

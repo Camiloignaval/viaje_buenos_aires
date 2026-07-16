@@ -20,11 +20,50 @@ function accepted({ ownerUserId, tripId, sourceSlot = 'favorite:place-1' } = {})
   };
 }
 
+function milestoneAccepted({
+  ownerUserId,
+  tripId,
+  storyId = 'story-1',
+  type = 'trip_started',
+  occurredAt = '2026-10-03T15:00:00.000Z',
+} = {}) {
+  const lastDay = type === 'trip_last_day';
+  const decisionKind = lastDay ? 'trip_last_day' : 'trip_start_today';
+  const decisionId = `decision:${decisionKind}:${tripId}`;
+  return {
+    outcome: 'accepted', lifecycle: 'accepted', type, origin: 'companion_editorial', occurredAt,
+    scope: { ownerUserId, tripId, storyId },
+    decisionRef: { id: decisionId, kind: decisionKind },
+    editorialRef: { catalogVersion: 'editorial-v1', variantId: lastDay ? 'last-day-01' : 'today-01' },
+    evidence: [{ kind: 'companion_action', ref: decisionId }],
+    meaning: {
+      code: type,
+      text: lastDay ? 'Hoy es el último día de este viaje.' : 'Hoy comienza una nueva historia.',
+    },
+    retention: { reason: 'trip_milestone', explanation: 'travel_milestone_worth_recalling' },
+    dedupe: { version: 'memory-key-v1', sourceSlot: decisionId },
+  };
+}
+
 function fakeCollection({ failWrite = false, failRead = false } = {}) {
   const documents = new Map();
+  function matches(existing, filter) {
+    if (!existing || existing.recordKind !== filter.recordKind || existing.owner.userId !== filter['owner.userId']) return false;
+    if (filter.legacyId && existing.legacyId !== filter.legacyId) return false;
+    if (filter.memoryKey && existing.memoryKey !== filter.memoryKey) return false;
+    if (filter.storyRef === null && existing.storyRef !== null) return false;
+    if (filter['storyRef.storyId'] && existing.storyRef?.storyId !== filter['storyRef.storyId']) return false;
+    if (filter.state?.$in && !filter.state.$in.includes(existing.state)) return false;
+    if (filter.type?.$in && !filter.type.$in.includes(existing.type)) return false;
+    return true;
+  }
   return {
     documents,
     updateCalls: 0,
+    rememberCalls: 0,
+    latestFilter: null,
+    latestSort: null,
+    latestLimit: null,
     async updateOne(filter, update, options) {
       this.updateCalls += 1;
       if (failWrite) throw new Error('PRIVATE_DATABASE_ERROR');
@@ -36,12 +75,21 @@ function fakeCollection({ failWrite = false, failRead = false } = {}) {
     },
     async findOneAndUpdate(filter, update) {
       if (failRead) throw new Error('PRIVATE_READ_ERROR');
-      const key = `${filter.tripId}:${filter.legacyId}`;
-      const existing = documents.get(key);
-      if (!existing || existing.recordKind !== filter.recordKind || existing.owner.userId !== filter['owner.userId']) return null;
-      if (filter.storyRef === null && existing.storyRef !== null) return null;
-      if (filter['storyRef.storyId'] && existing.storyRef?.storyId !== filter['storyRef.storyId']) return null;
-      if (!filter.state.$in.includes(existing.state)) return null;
+      this.rememberCalls += 1;
+      if (filter.legacyId) {
+        const key = `${filter.tripId}:${filter.legacyId}`;
+        const existing = documents.get(key);
+        if (!existing || existing.recordKind !== filter.recordKind || existing.owner.userId !== filter['owner.userId']) return null;
+        if (filter.storyRef === null && existing.storyRef !== null) return null;
+        if (filter['storyRef.storyId'] && existing.storyRef?.storyId !== filter['storyRef.storyId']) return null;
+        if (!filter.state.$in.includes(existing.state)) return null;
+        const next = { ...existing, ...update.$set };
+        documents.set(key, next);
+        return structuredClone(next);
+      }
+      const entry = [...documents.entries()].find(([, document]) => matches(document, filter));
+      if (!entry) return null;
+      const [key, existing] = entry;
       const next = { ...existing, ...update.$set };
       documents.set(key, next);
       return structuredClone(next);
@@ -53,6 +101,27 @@ function fakeCollection({ failWrite = false, failRead = false } = {}) {
       if (filter.storyRef === null && existing?.storyRef !== null) return null;
       if (filter['storyRef.storyId'] && existing?.storyRef?.storyId !== filter['storyRef.storyId']) return null;
       return existing ? structuredClone(existing) : null;
+    },
+    find(filter) {
+      if (failRead) throw new Error('PRIVATE_READ_ERROR');
+      this.latestFilter = filter;
+      const cursor = {
+        sort: (sort) => {
+          this.latestSort = sort;
+          return cursor;
+        },
+        limit: (limit) => {
+          this.latestLimit = limit;
+          return cursor;
+        },
+        toArray: async () => [...documents.values()]
+          .filter((document) => matches(document, filter))
+          .sort((left, right) => right.occurredAt.localeCompare(left.occurredAt)
+            || right.createdAt.localeCompare(left.createdAt))
+          .slice(0, this.latestLimit ?? undefined)
+          .map((document) => structuredClone(document)),
+      };
+      return cursor;
     },
   };
 }
@@ -199,4 +268,86 @@ test('getAndRemember mantiene story como asociación de scope separada', async (
   assert.equal(await setupResult.repository.getAndRemember(persisted.memoryKey, wrongStory), null);
   const key = `${setupResult.tripId}:semantic-v1:${persisted.memoryKey}`;
   assert.equal(setupResult.collection.documents.get(key).state, 'persisted');
+});
+
+test('getLatestAndRemember devuelve solo el hito semántico más reciente del owner/trip/story y lo recuerda', async () => {
+  const setupResult = setup();
+  const scope = { ownerUserId: String(setupResult.userId), tripId: String(setupResult.tripId), storyId: 'story-1' };
+  await setupResult.repository.persistOnce(milestoneAccepted({
+    ...scope, type: 'trip_started', occurredAt: '2026-10-03T10:00:00.000Z',
+  }));
+  await setupResult.repository.persistOnce(milestoneAccepted({
+    ...scope, type: 'trip_last_day', occurredAt: '2026-10-05T10:00:00.000Z',
+  }));
+  await setupResult.repository.persistOnce(accepted({ ownerUserId: scope.ownerUserId, tripId: scope.tripId }));
+
+  const latest = await setupResult.repository.getLatestAndRemember(scope);
+
+  assert.equal(latest.type, 'trip_last_day');
+  assert.equal(latest.state, 'remembered');
+  assert.deepEqual(setupResult.collection.latestFilter, {
+    tripId: setupResult.tripId,
+    recordKind: 'alaia_memory_record_v1',
+    'owner.userId': scope.ownerUserId,
+    'storyRef.storyId': scope.storyId,
+    state: { $in: ['persisted', 'remembered'] },
+    type: { $in: ['trip_started', 'trip_last_day'] },
+  });
+  assert.deepEqual(setupResult.collection.latestSort, { occurredAt: -1, createdAt: -1 });
+  assert.equal(setupResult.collection.latestLimit, 1);
+});
+
+test('getLatestAndRemember desempata por createdAt, excluye legacy/otros scopes y es idempotente bajo concurrencia', async () => {
+  const setupResult = setup();
+  const scope = { ownerUserId: String(setupResult.userId), tripId: String(setupResult.tripId), storyId: 'story-1' };
+  const first = await setupResult.repository.persistOnce(milestoneAccepted({ ...scope, type: 'trip_started' }));
+  const second = await setupResult.repository.persistOnce(milestoneAccepted({ ...scope, type: 'trip_last_day' }));
+  const secondKey = `${setupResult.tripId}:semantic-v1:${second.memoryKey}`;
+  setupResult.collection.documents.get(secondKey).createdAt = '2026-10-03T15:02:00.000Z';
+  setupResult.collection.documents.set('legacy-visible', {
+    ...structuredClone(setupResult.collection.documents.get(secondKey)),
+    recordKind: 'album_memory_v1',
+    memoryKey: `mk1_${'f'.repeat(64)}`,
+    legacyId: 'album-visible',
+    occurredAt: '2026-10-06T10:00:00.000Z',
+  });
+  setupResult.collection.documents.set('other-story', {
+    ...structuredClone(setupResult.collection.documents.get(secondKey)),
+    memoryKey: `mk1_${'e'.repeat(64)}`,
+    legacyId: `semantic-v1:mk1_${'e'.repeat(64)}`,
+    storyRef: { storyId: 'story-2' },
+    occurredAt: '2026-10-07T10:00:00.000Z',
+  });
+
+  const [left, right] = await Promise.all([
+    setupResult.repository.getLatestAndRemember(scope),
+    setupResult.repository.getLatestAndRemember(structuredClone(scope)),
+  ]);
+
+  assert.equal(first.type, 'trip_started');
+  assert.deepEqual([left.type, right.type], ['trip_last_day', 'trip_last_day']);
+  assert.deepEqual([left.state, right.state], ['remembered', 'remembered']);
+  assert.equal(setupResult.collection.documents.size, 4);
+});
+
+test('getLatestAndRemember valida schema/privacidad antes de remembered y maneja vacío/falla sin filtrar detalles', async () => {
+  const setupResult = setup();
+  const scope = { ownerUserId: String(setupResult.userId), tripId: String(setupResult.tripId), storyId: 'story-1' };
+  assert.equal(await setupResult.repository.getLatestAndRemember(scope), null);
+  assert.equal(setupResult.collection.rememberCalls, 0);
+
+  const persisted = await setupResult.repository.persistOnce(milestoneAccepted({ ...scope, type: 'trip_started' }));
+  const key = `${setupResult.tripId}:semantic-v1:${persisted.memoryKey}`;
+  setupResult.collection.documents.get(key).meaning.text = 'person@example.com';
+  await assert.rejects(
+    () => setupResult.repository.getLatestAndRemember(scope),
+    (error) => codeOf(error) === 'SCHEMA_REJECTED' && !JSON.stringify(error).includes('person@example.com'),
+  );
+  assert.equal(setupResult.collection.documents.get(key).state, 'persisted');
+
+  const failing = setup({ collection: fakeCollection({ failRead: true }), sessionUserId: setupResult.userId, tripId: setupResult.tripId });
+  await assert.rejects(
+    () => failing.repository.getLatestAndRemember(scope),
+    (error) => codeOf(error) === 'REPOSITORY_FAILURE' && !JSON.stringify(error).includes('PRIVATE_READ_ERROR'),
+  );
 });

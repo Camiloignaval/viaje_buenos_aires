@@ -320,5 +320,45 @@ export function createSemanticMemoryRepository(
         throw new MemoryEngineError('REPOSITORY_FAILURE');
       }
     },
+
+    async getLatestAndRemember(scope) {
+      if (containsPrivateData(scope)
+        || !exactKeys(scope, ['ownerUserId', 'tripId', 'storyId'])
+        || !safeId(scope.ownerUserId) || !safeId(scope.tripId)
+        || (scope.storyId !== null && !safeId(scope.storyId))) throw new MemoryEngineError('SCHEMA_REJECTED');
+      await contextFor(scope);
+      let tripObjectId;
+      try {
+        tripObjectId = objectId(tripId, 'tripId');
+      } catch {
+        throw new MemoryEngineError('SCHEMA_REJECTED');
+      }
+      const scopedFilter = {
+        tripId: tripObjectId,
+        recordKind: SEMANTIC_MEMORY_RECORD_KIND,
+        'owner.userId': scope.ownerUserId,
+        ...(scope.storyId === null ? { storyRef: null } : { 'storyRef.storyId': scope.storyId }),
+        state: { $in: ['persisted', 'remembered'] },
+        type: { $in: ['trip_started', 'trip_last_day'] },
+      };
+      try {
+        const memories = await collectionFor();
+        const [current] = await memories.find(scopedFilter)
+          .sort({ occurredAt: -1, createdAt: -1 })
+          .limit(1)
+          .toArray();
+        if (!current) return null;
+        const validated = publicRecord(current);
+        const document = await memories.findOneAndUpdate(
+          { ...scopedFilter, memoryKey: validated.memoryKey },
+          { $set: { state: 'remembered' } },
+          { returnDocument: 'after' },
+        );
+        return document ? publicRecord(document) : null;
+      } catch (error) {
+        if (error instanceof MemoryEngineError) throw error;
+        throw new MemoryEngineError('REPOSITORY_FAILURE');
+      }
+    },
   });
 }
