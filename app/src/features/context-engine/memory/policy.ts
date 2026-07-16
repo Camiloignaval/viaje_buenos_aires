@@ -22,6 +22,7 @@ import {
   isValidMessage,
   isValidScope,
 } from "./validation";
+import { observeMemoryOperation, type MemoryObserverDependencies } from "./observer";
 
 export type { MemoryCompanionAction, MemoryEditorialMessage } from "./contracts";
 
@@ -55,7 +56,7 @@ function pairCandidate(scope: MemoryScope, action: MemoryCompanionAction, messag
   });
 }
 
-export function classifyMemory(
+function classifyMemoryCore(
   scope: MemoryScope,
   input: MemoryInput,
   facts: MemoryClassificationFacts,
@@ -106,4 +107,13 @@ export function classifyMemory(
       : { reason: "first_story_open" as const, explanation: "first_story_step_worth_recalling" as const },
     dedupe: { version: MEMORY_IDENTITY_VERSION, sourceSlot: favorite ? `favorite:${input.event.targetRef}` : "first-chapter" },
   });
+}
+
+export function classifyMemory(
+  scope: MemoryScope,
+  input: MemoryInput,
+  facts: MemoryClassificationFacts,
+  dependencies?: MemoryObserverDependencies,
+): MemoryClassification {
+  return observeMemoryOperation(() => classifyMemoryCore(scope, input, facts), dependencies);
 }

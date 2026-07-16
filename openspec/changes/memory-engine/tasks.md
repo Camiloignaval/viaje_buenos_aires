@@ -40,9 +40,9 @@ Chain strategy: feature-branch-chain
 
 ## Unit 3: Observation and isolation proof
 
-- [ ] 3.1 **RED:** Add `memory/{observer,boundaries}.test.ts` for **Invalid shape, Prohibited datum, Repository failure**: safe outcomes, observer failure, forbidden imports and unchanged upstream. Verify: `npm run test:react -- src/features/context-engine/memory`.
-- [ ] 3.2 **GREEN:** Add `memory/observer.ts`; satisfy 3.1 with best-effort categorical telemetry that preserves discard/error and retains no input. Verify: `npm run test:react -- src/features/context-engine/memory`.
-- [ ] 3.3 **TRIANGULATE:** Execute all 16 named scenarios, prohibited-data table, concurrency and all four meanings; preserve Companion/Editorial safety. Verify: `npm run test:react -- src/features/context-engine/memory src/features/context-engine/companion src/features/context-engine/editorial`.
-- [ ] 3.4 **REFACTOR:** Consolidate fixtures/exports, prove full Node/React/type safety and clean diff. Verify: `npm test`; `npm run test:react`; `npm run typecheck`; `git diff --check`. Never build.
+- [x] 3.1 **RED:** Add `memory/{observer,boundaries}.test.ts` for **Invalid shape, Prohibited datum, Repository failure**: safe outcomes, observer failure, forbidden imports and unchanged upstream. Verify: `npm run test:react -- src/features/context-engine/memory`.
+- [x] 3.2 **GREEN:** Add `memory/observer.ts`; satisfy 3.1 with best-effort categorical telemetry that preserves discard/error and retains no input. Verify: `npm run test:react -- src/features/context-engine/memory`.
+- [x] 3.3 **TRIANGULATE:** Execute all 16 named scenarios, prohibited-data table, concurrency and all four meanings; preserve Companion/Editorial safety. Verify: `npm run test:react -- src/features/context-engine/memory src/features/context-engine/companion src/features/context-engine/editorial`.
+- [x] 3.4 **REFACTOR:** Consolidate fixtures/exports, prove full Node/React/type safety and clean diff. Verify: `npm test`; `npm run test:react`; `npm run typecheck`; `git diff --check`. Never build.
 
 Archive remains pending; do not integrate consumers, push, tag or modify prior stages.
