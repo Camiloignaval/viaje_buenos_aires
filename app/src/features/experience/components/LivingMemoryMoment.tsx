@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { semanticMemoryQueryOptions } from "../api/semanticMemoryApi";
+import { semanticMemoryQueryOptions, type LivingMemoryDTO } from "../api/semanticMemoryApi";
 import {
   observeVisibleExperience,
   type VisibleExperienceObserver,
@@ -11,6 +11,15 @@ type LivingMemoryMomentProps = Readonly<{
   storyId: string;
   observer?: VisibleExperienceObserver;
 }>;
+
+export function LivingMemoryMomentView({ memory }: Readonly<{ memory: LivingMemoryDTO | null }>) {
+  if (!memory) return null;
+  return (
+    <section className="living-memory-moment" aria-label="Recuerdo de Alaia">
+      <p>{memory.text}</p>
+    </section>
+  );
+}
 
 export function LivingMemoryMoment({ tripId, storyId, observer }: LivingMemoryMomentProps) {
   const query = useQuery(semanticMemoryQueryOptions(tripId, storyId));
@@ -23,11 +32,5 @@ export function LivingMemoryMoment({ tripId, storyId, observer }: LivingMemoryMo
     observeVisibleExperience(observer, "memory_rendered");
   }, [memory, observer]);
 
-  if (!memory) return null;
-
-  return (
-    <section className="living-memory-moment" aria-label="Recuerdo de Alaia">
-      <p>{memory.text}</p>
-    </section>
-  );
+  return <LivingMemoryMomentView memory={memory} />;
 }

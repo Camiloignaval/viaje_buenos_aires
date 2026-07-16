@@ -62,7 +62,6 @@ function isMatchingChapterIntent(result: FirstRealExperienceTransientComposed): 
   if (result.deliveryIntents.length !== 1) return false;
   const intent = result.deliveryIntents[0];
   return intent.destination === "in_app"
-    && intent.destination === result.message.channel
     && intent.state === "pending"
     && intent.references.length === 1
     && intent.references[0] === "editorial_message";

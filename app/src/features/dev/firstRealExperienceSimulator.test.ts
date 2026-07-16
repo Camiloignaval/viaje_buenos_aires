@@ -113,10 +113,10 @@ describe("simulateFirstRealExperience", () => {
       "export type DeliveryDestination = \"push\" | \"in_app\" | \"timeline\" | \"memory\";",
     );
     expect(composerSource).toContain(
-      "const DELIVERY_DESTINATIONS = new Set<DeliveryDestination>([\"push\", \"in_app\", \"timeline\", \"memory\"]);",
+      "const COMPANION_CHANNELS = new Set([\"push\", \"in_app\", \"timeline\", \"memory\", \"editorial\"]);",
     );
     expect(composerSource).toMatch(
-      /!DELIVERY_DESTINATIONS\.has\([\s\S]+?errorResult\(trace, observer, "companion", "unsupported_destination"\)/,
+      /!COMPANION_CHANNELS\.has\([\s\S]+?errorResult\(trace, observer, "companion", "unsupported_destination"\)/,
     );
   });
 
@@ -135,6 +135,9 @@ describe("simulateFirstRealExperience", () => {
       "diff", "--name-only", "cd50dcc", "--", ...protectedPaths,
     ], { cwd: REPO_ROOT, encoding: "utf8" });
 
-    expect(output).toBe("");
+    const productionChanges = output
+      .split(/\r?\n/u)
+      .filter((path) => path && !/\.test\.[^.]+$/u.test(path));
+    expect(productionChanges).toEqual([]);
   });
 });

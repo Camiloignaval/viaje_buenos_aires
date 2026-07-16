@@ -53,7 +53,7 @@ Chain strategy: feature-branch-chain
 
 ## Phase 5: Integration and visual verification
 
-- [ ] 5.1 **RED:** Add real Weather/Light/Last-Day/memory/silence fixtures and dev-only states; audit S01-S25 without bypass.
-- [ ] 5.2 **GREEN:** Run focal tests, explicit route tests, full Node/React suites, typecheck, protected-range checks and `git diff --check`; never build.
-- [ ] 5.3 **TRIANGULATE:** Run all eight Playwright projects, reduced-motion and mobile/tablet/desktop/WebKit/PWA inspection when environment permits; report harness failures, no skips.
-- [ ] 5.4 **REFACTOR:** Remove test leakage, preserve trip-sharing/unrelated files, persist 25/25 evidence; commit Unit 5 and leave archive pending.
+- [x] 5.1 **RED:** Add real Weather/Light/Last-Day/memory/silence fixtures and dev-only states; audit S01-S25 without bypass.
+- [x] 5.2 **GREEN:** Run focal tests, explicit route tests, full Node/React suites, typecheck, protected-range checks and `git diff --check`; never build.
+- [x] 5.3 **TRIANGULATE:** Run all eight Playwright projects, reduced-motion and mobile/tablet/desktop/WebKit/PWA inspection when environment permits; report harness failures, no skips.
+- [x] 5.4 **REFACTOR:** Remove test leakage, preserve trip-sharing/unrelated files, persist 25/25 evidence; commit Unit 5 and leave archive pending.

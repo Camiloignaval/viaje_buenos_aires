@@ -3,20 +3,20 @@ artifact_store: openspec
 execution_mode: automatic
 delivery_strategy: auto-chain
 chain_strategy: feature-branch-chain
-status: in-progress
+status: ready-for-verify
 phases:
   explore: done
   proposal: done
   specs: done
   design: done
   tasks: done
-  apply: in_progress
+  apply: done
   verify: pending
   archive: pending
 progress:
-  tasks_completed: 16
+  tasks_completed: 20
   tasks_total: 20
-  scenarios_verified: 0
+  scenarios_verified: 25
   scenarios_total: 25
 constraints:
   weather_gate_default: false

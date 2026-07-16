@@ -15,6 +15,10 @@ const STATES = [
   "trips-list",
   "trip-home",
   "trip-home-chile",
+  "adaptive-weather",
+  "adaptive-light",
+  "adaptive-silence",
+  "living-memory",
   "feedback",
   "create-trip",
   "onboarding-name",
@@ -64,6 +68,44 @@ for (const state of STATES) {
       const flag = state === "trip-home" ? "🇦🇷" : "🇨🇱";
       await expect(page.getByRole("img", { name: country })).toHaveText(flag);
       await expect(page.getByText(state === "trip-home" ? "AR" : "CL", { exact: true })).toHaveCount(0);
+    }
+    if (state === "adaptive-weather" || state === "adaptive-light") {
+      const copy = state === "adaptive-weather"
+        ? "Quizás sea un buen momento para considerar el clima."
+        : "Puede ser un buen momento para disfrutar la luz natural.";
+      const protagonist = page.getByRole("complementary", { name: "Alaia" });
+      await expect(protagonist).toHaveCount(1);
+      await expect(protagonist).toContainText(copy);
+      await expect(page.locator("[aria-live], [role='alert']")).toHaveCount(0);
+      const dismiss = page.getByRole("button", { name: "Cerrar mensaje de Alaia" });
+      const dismissBox = await dismiss.boundingBox();
+      const minimumSize = await dismiss.evaluate((element) => {
+        const style = getComputedStyle(element);
+        return { width: Number.parseFloat(style.minWidth), height: Number.parseFloat(style.minHeight) };
+      });
+      expect(minimumSize).toEqual({ width: 44, height: 44 });
+      expect(dismissBox?.width ?? 0).toBeGreaterThanOrEqual(43.9);
+      expect(dismissBox?.height ?? 0).toBeGreaterThanOrEqual(43.9);
+      if (state === "adaptive-weather") {
+        await page.emulateMedia({ reducedMotion: "reduce" });
+        await expect(protagonist).toHaveCSS("animation-name", "none");
+      }
+    }
+    if (state === "adaptive-silence") {
+      await expect(page.locator(".visible-companion-experience, .active-story-contextual-slot, .living-memory-moment")).toHaveCount(0);
+      await expect(page.getByRole("complementary", { name: "Alaia" })).toHaveCount(0);
+    }
+    if (state === "living-memory") {
+      const memory = page.getByRole("region", { name: "Recuerdo de Alaia" });
+      await expect(memory).toHaveCount(1);
+      await expect(memory).toContainText("Este viaje llega hoy a su último día.");
+      await expect(memory.locator("button, time, [data-memory-id], [aria-live], [role='alert']")).toHaveCount(0);
+    }
+    if (state.startsWith("adaptive-") || state === "living-memory") {
+      const bodyText = await page.locator("body").innerText();
+      expect(bodyText).not.toMatch(/latitude|longitude|provider|precipitation|weather\.provider|trip-|user-|memoryKey|decisionRef|evidence/i);
+      const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+      expect(overflow).toBeLessThanOrEqual(1);
     }
     if (state === "feedback") {
       await page.getByRole("combobox", { name: "Quiero compartir" }).click();

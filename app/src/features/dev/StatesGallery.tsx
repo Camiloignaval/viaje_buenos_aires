@@ -27,6 +27,9 @@ import { InviteDecision } from "@/features/sharing/components/InviteDecision";
 import { InviteWrongEmail } from "@/features/sharing/components/InviteWrongEmail";
 import { InviteStatusScreen } from "@/features/sharing/components/InviteStatusScreen";
 import type { InvitationPreview } from "@/features/sharing/types";
+import { VisibleCompanionExperience } from "@/features/experience/components/VisibleCompanionExperience";
+import { LivingMemoryMomentView } from "@/features/experience/components/LivingMemoryMoment";
+import "@/features/experience/experience.css";
 
 // Galería de estados SOLO-DEV. Renderiza cada pantalla de acceso en aislamiento,
 // sin API/Mongo/login real: los componentes presentacionales reciben props fijas.
@@ -120,6 +123,47 @@ const SAMPLE_INVITATION: InvitationPreview = {
   ownerDisplayName: "Camilo",
   invitedEmailMasked: "k•••@mail.com",
 };
+
+const ADAPTIVE_WEATHER_VIEW = Object.freeze({
+  label: "Alaia" as const,
+  text: "Quizás sea un buen momento para considerar el clima.",
+});
+const ADAPTIVE_LIGHT_VIEW = Object.freeze({
+  label: "Alaia" as const,
+  text: "Puede ser un buen momento para disfrutar la luz natural.",
+});
+const LIVING_MEMORY_VIEW = Object.freeze({
+  type: "trip_last_day" as const,
+  text: "Este viaje llega hoy a su último día.",
+});
+
+function AdaptiveChapterState({
+  viewModel,
+}: Readonly<{ viewModel: typeof ADAPTIVE_WEATHER_VIEW | typeof ADAPTIVE_LIGHT_VIEW | null }>) {
+  return (
+    <TripsFrame title="Un día en Buenos Aires">
+      <section className="adaptive-gallery-chapter" aria-label="Capítulo activo">
+        <p className="personal-message">La historia continúa a su propio ritmo.</p>
+        {viewModel ? (
+          <div className="active-story-contextual-slot">
+            <VisibleCompanionExperience viewModel={viewModel} />
+          </div>
+        ) : null}
+      </section>
+    </TripsFrame>
+  );
+}
+
+function LivingMemoryState() {
+  return (
+    <TripsFrame title="Nuestro Buenos Aires">
+      <section aria-label="Álbum del viaje">
+        <p className="personal-message">Lo que quedó del viaje, tal como decidió quedarse.</p>
+        <LivingMemoryMomentView memory={LIVING_MEMORY_VIEW} />
+      </section>
+    </TripsFrame>
+  );
+}
 
 // Marco de "Mis viajes" idéntico al de TripsPage, para que el estado se vea igual.
 function TripsFrame({ title, account, children }: { title?: string; account?: string; children: ReactNode }) {
@@ -283,6 +327,22 @@ export const GALLERY_STATES: Record<string, GalleryState> = {
         />
       </TripsFrame>
     ),
+  },
+  "adaptive-weather": {
+    label: "Experience · momento Weather",
+    render: () => <AdaptiveChapterState viewModel={ADAPTIVE_WEATHER_VIEW} />,
+  },
+  "adaptive-light": {
+    label: "Experience · momento Light",
+    render: () => <AdaptiveChapterState viewModel={ADAPTIVE_LIGHT_VIEW} />,
+  },
+  "adaptive-silence": {
+    label: "Experience · silencio contextual",
+    render: () => <AdaptiveChapterState viewModel={null} />,
+  },
+  "living-memory": {
+    label: "Experience · recuerdo vivo",
+    render: () => <LivingMemoryState />,
   },
   feedback: {
     label: "Para ustedes",
