@@ -1,8 +1,11 @@
-import { act, renderHook, waitFor } from "@testing-library/react";
+import { act, render, renderHook, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { createElement } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { User } from "@/features/auth/types";
 import { demoStoryPackage } from "@/features/experience/data/demoStory";
 import type { Trip } from "@/features/trips/types";
+import { VisibleCompanionExperience } from "../components/VisibleCompanionExperience";
 
 const { getPushPreferences } = vi.hoisted(() => ({ getPushPreferences: vi.fn() }));
 vi.mock("@/features/pwa/pushApi", () => ({ getPushPreferences }));
@@ -175,5 +178,37 @@ describe("useFirstVisibleExperience", () => {
       storyObservedAt: STORY_OBSERVED_AT,
     }));
     expect(missing.result.current).toMatchObject({ status: "settled", viewModel: null });
+  });
+
+  it("observes the exact visible lifecycle without reinvoking the domain on dismiss", async () => {
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(new Date(INSTANT));
+    getPushPreferences.mockResolvedValue({ preferences: ENABLED_PREFERENCES });
+    const events: Array<{ kind: string }> = [];
+    const observer = (event: { kind: string }) => events.push(event);
+    const { result } = renderHook(() => useFirstVisibleExperience({
+      trip: TRIP,
+      user: USER,
+      storyPackage: demoStoryPackage,
+      storyObservedAt: STORY_OBSERVED_AT,
+      observer,
+    }));
+
+    await act(async () => { await Promise.resolve(); await Promise.resolve(); await Promise.resolve(); });
+    await waitFor(() => expect(result.current.status).toBe("settled"));
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    render(createElement(VisibleCompanionExperience, {
+      viewModel: result.current.viewModel,
+      observer: result.current.observer,
+    }));
+    await user.click(screen.getByRole("button", { name: "Cerrar mensaje de Alaia" }));
+
+    expect(events).toEqual([
+      { kind: "flow_started" },
+      { kind: "result_layer" },
+      { kind: "render_success" },
+      { kind: "dismiss" },
+    ]);
+    expect(getPushPreferences).toHaveBeenCalledTimes(1);
   });
 });
