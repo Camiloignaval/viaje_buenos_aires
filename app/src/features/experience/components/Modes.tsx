@@ -8,7 +8,6 @@ import {
   ActionButton,
   ActivityCard,
   AlbumLink,
-  ChapterAlbum,
   ChapterHero,
   ClosingMessage,
   CollectionItems,
@@ -28,7 +27,8 @@ import { getChapterReferenceDate } from "@/features/story/engine/storyProgress";
 import { ChapterStatus } from "@/features/story/engine/types";
 import type { Chapter, SpecialChapter } from "@/features/story/engine/types";
 import type { Memory } from "@/features/album/data/types";
-import { byCreatedAt, groupMemoriesByActivity, mostRecent } from "../lib/memoryGrouping";
+import { groupMemoriesByActivity, mostRecent } from "../lib/memoryGrouping";
+import { groupMemoriesByChapter } from "../lib/albumGrouping";
 import { photoSlotKey } from "../lib/photoSlot";
 import { formatChapterDate } from "../lib/format";
 
@@ -107,7 +107,6 @@ export function InProgress() {
           <Traditions traditions={chapter.traditions} chapterId={chapter.id} />
           <MicroDiscoveries discoveries={chapter.microDiscoveries} chapterId={chapter.id} />
           <OurMoment ourMoment={chapter.ourMoment} chapterId={chapter.id} />
-          <ChapterAlbum memories={memories} chapterId={chapter.id} />
           <GeneralMemories
             chapterId={chapter.id}
             unassignedSuggestedMemories={content.unassignedSuggestedMemories}
@@ -205,7 +204,7 @@ export function MemoryMode() {
             <p className="letter reveal reveal-2">{letter}</p>
           </>
         )}
-        <AlbumLink label="Ver lo que quedó de Buenos Aires" />
+        <AlbumLink />
       </section>
       <IndexPage />
     </div>
@@ -219,41 +218,30 @@ export function TripAlbum() {
     ...storyPackage.chapters,
     ...(storyPackage.specialChapter ? [storyPackage.specialChapter] : []),
   ];
-  const byChapter = new Map<string, Memory[]>();
-  for (const memory of tripMemories) {
-    if (memory.archived) {
-      continue;
-    }
-    const list = byChapter.get(memory.chapterId) ?? [];
-    list.push(memory);
-    byChapter.set(memory.chapterId, list);
-  }
-
-  const chaptersWithMemories = allChapters.filter(
-    (chapter) => (byChapter.get(chapter.id) ?? []).length > 0,
-  );
+  const chapterById = new Map(allChapters.map((chapter) => [chapter.id, chapter]));
+  const albumGroups = groupMemoriesByChapter(tripMemories, storyPackage);
 
   return (
     <div className="book">
       <section className="book-page page-album">
         <ReadingTopbar />
         <p className="eyebrow reveal reveal-1">{storyPackage.metadata.title}</p>
-        <h1 className="reveal reveal-2">Nuestro Buenos Aires</h1>
-        <p className="open reveal reveal-3">Lo que quedó del viaje, tal como decidió quedarse.</p>
+        <h1 className="reveal reveal-2">Nuestros recuerdos</h1>
+        <p className="open reveal reveal-3">Los momentos que quisimos guardar, tal como quedaron con nosotros.</p>
         {semanticMemoryScope ? <LivingMemoryMoment {...semanticMemoryScope} /> : null}
-        {chaptersWithMemories.length > 0 ? (
-          chaptersWithMemories.map((chapter) => {
-            const { byActivityId, general } = groupMemoriesByActivity(byChapter.get(chapter.id) ?? []);
-            const perActivity = [...byActivityId.values()]
-              .map(mostRecent)
-              .filter((m): m is Memory => m !== null);
-            const cards = [...perActivity, ...general].sort(byCreatedAt);
+        {albumGroups.length > 0 ? (
+          albumGroups.map((group) => {
+            const chapter = chapterById.get(group.chapterId);
             return (
-              <section key={chapter.id} className="album-chapter">
-                <p className="section-title">{chapter.title}</p>
+              <section key={group.chapterId} className="album-chapter">
+                <p className="section-title">{group.title}</p>
                 <ul className="memory-cards">
-                  {cards.map((memory) => (
-                    <MemoryCard key={memory.id} memory={memory} />
+                  {group.memories.map((memory) => (
+                    <MemoryCard
+                      key={memory.id}
+                      memory={memory}
+                      contextLabel={memoryContextLabel(chapter, memory)}
+                    />
                   ))}
                 </ul>
               </section>
@@ -261,11 +249,23 @@ export function TripAlbum() {
           })
         ) : (
           <p className="album-empty">
-            Todavía no hay recuerdos guardados. Buenos Aires igual ya quedó en la historia.
+            Todavía no guardaron ningún momento. Buenos Aires igual ya forma parte de su historia.
           </p>
         )}
       </section>
       <IndexPage returnMode />
     </div>
   );
+}
+
+function memoryContextLabel(chapter: Chapter | undefined, memory: Memory): string | undefined {
+  if (!memory.activityId) return "Un momento del día";
+  const activity = chapter?.activities?.find((candidate) => candidate.id === memory.activityId);
+  if (activity) {
+    return activity.moment ? `${activity.moment}. ${activity.title}` : activity.title;
+  }
+  const prompt = (chapter as SpecialChapter | undefined)?.prompts?.find(
+    (candidate) => candidate.id === memory.activityId,
+  );
+  return prompt?.label;
 }

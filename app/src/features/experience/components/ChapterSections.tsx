@@ -1,13 +1,12 @@
 import { Fragment } from "react";
 import { useExperienceCtx } from "./experienceContext";
 import { Links } from "./Links";
-import { SavedMemory, MemoryInvitation, MemoryCard } from "./Memories";
+import { SavedMemory, MemoryInvitation } from "./Memories";
 import { ChapterTopbar } from "./ReadingTopbar";
 import { formatChapterDate, toRoman } from "../lib/format";
 import { heroImageForChapter } from "../lib/chapterSummary";
-import { FavoriteHeart, PrivateNote } from "./StoryAffinity";
 import { resolveContextualLines } from "../lib/contextualInfo";
-import { byCreatedAt, groupMemoriesByActivity, mostRecent } from "../lib/memoryGrouping";
+import { mostRecent } from "../lib/memoryGrouping";
 import { photoSlotKey } from "../lib/photoSlot";
 import { getChapterReferenceDate } from "@/features/story/engine/storyProgress";
 import { ChapterStatus } from "@/features/story/engine/types";
@@ -172,27 +171,6 @@ export function NightNote({ nightNote, chapterId }: { nightNote?: string; chapte
   );
 }
 
-// Espejo de renderChapterAlbum ("Lo que ya quedó").
-export function ChapterAlbum({ memories, chapterId }: { memories: Memory[]; chapterId: string }) {
-  const { interactive } = useExperienceCtx();
-  if (!interactive) return null;
-  const { byActivityId, general } = groupMemoriesByActivity(memories);
-  const perActivity = [...byActivityId.values()].map(mostRecent).filter((m): m is Memory => m !== null);
-  const visible = [...perActivity, ...general];
-  if (visible.length === 0) return null;
-  const sorted = [...visible].sort(byCreatedAt);
-  return (
-    <section className="chapter-album" data-reveal-on-scroll="" data-reveal-key={`chapter-${chapterId}-album`}>
-      <p className="section-title">Lo que ya quedó</p>
-      <ul className="memory-cards">
-        {sorted.map((memory) => (
-          <MemoryCard key={memory.id} memory={memory} />
-        ))}
-      </ul>
-    </section>
-  );
-}
-
 // Espejo de renderGeneralMemories ("Algo más de hoy").
 export function GeneralMemories({
   chapterId,
@@ -221,7 +199,7 @@ export function GeneralMemories({
       <MemoryInvitation
         chapterId={chapterId}
         activityId={null}
-        question="¿Algo más de hoy que quieras guardar?"
+        question="¿Hay otro momento de hoy que quieran guardar?"
         staged={staged}
       />
     </section>
@@ -229,7 +207,7 @@ export function GeneralMemories({
 }
 
 // Espejo de renderAlbumLink.
-export function AlbumLink({ label = "Ver recuerdos del viaje" }: { label?: string }) {
+export function AlbumLink({ label = "Abrir nuestros recuerdos" }: { label?: string }) {
   const { interactive, actions } = useExperienceCtx();
   if (!interactive) return null;
   return (
@@ -275,15 +253,13 @@ function ActivityMemorySlot({
   if (existingMemory) {
     return <SavedMemory memory={existingMemory} />;
   }
-  const hasHint = suggestedMemories.length > 0;
+  const hint = suggestedMemories.map((memory) => memory.prompt).join(" · ");
   return (
     <MemoryInvitation
       chapterId={chapterId}
       activityId={activity.id}
-      question={hasHint ? "¿Hay algo de esto que quieras guardar?" : ""}
-      hint={hasHint ? suggestedMemories.map((memory) => memory.prompt).join(" · ") : ""}
+      hint={hint}
       staged={staged}
-      quiet={!hasHint}
     />
   );
 }
@@ -309,17 +285,14 @@ export function ActivityCard({
       {activity.image ? (
         <img className="activity-photo" src={`/${activity.image}`} alt={activity.moment ?? activity.title} loading="lazy" />
       ) : null}
-      <div className="activity-title-row">
-        <p className="activity-title">
-          {activity.moment ? (
-            <Fragment>
-              <em>{activity.moment}.</em>{" "}
-            </Fragment>
-          ) : null}
-          {activity.title}
-        </p>
-        <FavoriteHeart targetId={`activity:${activity.id}`} label={activity.title} />
-      </div>
+      <p className="activity-title">
+        {activity.moment ? (
+          <Fragment>
+            <em>{activity.moment}.</em>{" "}
+          </Fragment>
+        ) : null}
+        {activity.title}
+      </p>
       {activity.description ? <p className="activity-description">{activity.description}</p> : null}
       <div className="activity-head">
         {activity.timeWindow ? <span className="time">{activity.timeWindow}</span> : null}
@@ -347,7 +320,6 @@ export function ActivityCard({
         existingMemory={existingMemory}
         staged={staged}
       />
-      <PrivateNote targetId={`activity:${activity.id}`} />
     </li>
   );
 }

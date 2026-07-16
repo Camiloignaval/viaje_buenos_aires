@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { SelectField } from "@/components/inputs/SelectField";
 import { useExperienceCtx } from "./experienceContext";
-import { SavedMemory } from "./Memories";
+import { MemoryInvitation, SavedMemory } from "./Memories";
+import { photoSlotKey } from "../lib/photoSlot";
 import type { EpiloguePrompt, StoryPackage } from "@/features/story/engine/types";
 import type { Memory } from "@/features/album/data/types";
 
@@ -9,32 +10,20 @@ function isPhotoPrompt(prompt: EpiloguePrompt): boolean {
   return prompt.memoryType === "photo" || prompt.sourceCategory === "photo";
 }
 
-// Espejo de renderTextPrompt: degradación con gracia a palabras.
-function TextPrompt({ prompt, chapterId }: { prompt: EpiloguePrompt; chapterId: string }) {
-  const { actions } = useExperienceCtx();
-  const [note, setNote] = useState("");
+function PromptMemoryInvitation({ prompt, chapterId }: { prompt: EpiloguePrompt; chapterId: string }) {
+  const { stagedPhotosBySlot } = useExperienceCtx();
   const question = prompt.creationPrompt ?? prompt.selectionPrompt ?? "";
+  const staged = stagedPhotosBySlot.get(photoSlotKey(chapterId, prompt.id)) ?? [];
   return (
-    <div className="memory-slot memory-slot-invitation">
+    <div className="prompt-memory-invitation">
       <p className="section-title">{prompt.label}</p>
-      <p className="memory-invitation-question">{question}</p>
-      {isPhotoPrompt(prompt) ? (
-        <p className="memory-invitation-hint">Por ahora, esto se guarda con tus palabras.</p>
-      ) : null}
-      <textarea
-        className="memory-note-input"
-        placeholder="Escribe algo que quieras recordar..."
-        value={note}
-        onChange={(event) => setNote(event.target.value)}
+      <MemoryInvitation
+        chapterId={chapterId}
+        activityId={prompt.id}
+        question={question}
+        hint={isPhotoPrompt(prompt) ? "Pueden elegir una foto o acompañar el momento con sus palabras." : ""}
+        staged={staged}
       />
-      <button
-        type="button"
-        data-chapter-id={chapterId}
-        data-activity-id={prompt.id}
-        onClick={() => actions.createMemory(chapterId, prompt.id, note.trim())}
-      >
-        Guardar este recuerdo
-      </button>
     </div>
   );
 }
@@ -54,7 +43,7 @@ function PlacePrompt({
   const places = prompt.sourceCategory === "cafes" ? catalog.cafes ?? [] : catalog.restaurants ?? [];
   const [selected, setSelected] = useState(places[0]?.name ?? "");
   if (places.length === 0) {
-    return <TextPrompt prompt={prompt} chapterId={chapterId} />;
+    return <PromptMemoryInvitation prompt={prompt} chapterId={chapterId} />;
   }
   return (
     <div className="memory-slot memory-slot-invitation">
@@ -74,7 +63,7 @@ function PlacePrompt({
         data-activity-id={prompt.id}
         onClick={() => actions.selectPlace(chapterId, prompt.id, selected)}
       >
-        Quedarme con esta
+        Guardar esta elección
       </button>
     </div>
   );
@@ -83,8 +72,9 @@ function PlacePrompt({
 // Espejo de renderPhotoSelectionPrompt: elige entre las fotos reales del viaje.
 function PhotoSelectionPrompt({ prompt, chapterId }: { prompt: EpiloguePrompt; chapterId: string }) {
   const { availableTripPhotos, photoUrls, actions } = useExperienceCtx();
+  const [selectedPhotoId, setSelectedPhotoId] = useState<string | null>(null);
   if (availableTripPhotos.length === 0) {
-    return <TextPrompt prompt={prompt} chapterId={chapterId} />;
+    return <PromptMemoryInvitation prompt={prompt} chapterId={chapterId} />;
   }
   const question = prompt.selectionPrompt ?? prompt.creationPrompt ?? "";
   return (
@@ -92,20 +82,31 @@ function PhotoSelectionPrompt({ prompt, chapterId }: { prompt: EpiloguePrompt; c
       <p className="section-title">{prompt.label}</p>
       <p className="memory-invitation-question">{question}</p>
       <div className="photo-pick-grid">
-        {availableTripPhotos.map((photoId) => (
+        {availableTripPhotos.map((photoId, index) => (
           <button
             key={photoId}
             type="button"
-            className="photo-pick-option"
+            className={`photo-pick-option${selectedPhotoId === photoId ? " is-selected" : ""}`}
+            aria-label={`Elegir foto ${index + 1} para ${prompt.label}`}
+            aria-pressed={selectedPhotoId === photoId}
             data-chapter-id={chapterId}
             data-activity-id={prompt.id}
             data-photo-id={photoId}
-            onClick={() => actions.selectEpiloguePhoto(chapterId, prompt.id, photoId)}
+            onClick={() => setSelectedPhotoId(photoId)}
           >
-            {photoUrls[photoId] ? <img src={photoUrls[photoId]} alt="" /> : null}
+            {photoUrls[photoId] ? <img src={photoUrls[photoId]} alt={`Foto ${index + 1} del viaje`} /> : null}
           </button>
         ))}
       </div>
+      <button
+        type="button"
+        disabled={!selectedPhotoId}
+        onClick={() => {
+          if (selectedPhotoId) actions.selectEpiloguePhoto(chapterId, prompt.id, selectedPhotoId);
+        }}
+      >
+        Guardar esta elección
+      </button>
     </div>
   );
 }
@@ -136,5 +137,5 @@ export function PromptSlot({
   if (isPhotoPrompt(prompt)) {
     return <PhotoSelectionPrompt prompt={prompt} chapterId={chapterId} />;
   }
-  return <TextPrompt prompt={prompt} chapterId={chapterId} />;
+  return <PromptMemoryInvitation prompt={prompt} chapterId={chapterId} />;
 }

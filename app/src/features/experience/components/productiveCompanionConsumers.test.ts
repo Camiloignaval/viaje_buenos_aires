@@ -19,15 +19,19 @@ describe("productive companion consumer boundaries", () => {
     expect(modes.match(/<VisibleCompanionExperience/g)).toHaveLength(1);
   });
 
-  it("places one quiet semantic memory after album opening copy and before legacy groups", () => {
+  it("places one quiet semantic memory after album opening copy and before album groups", () => {
     const album = modes.indexOf("export function TripAlbum");
     const opening = modes.indexOf('className="open reveal reveal-3"', album);
     const memory = modes.indexOf("<LivingMemoryMoment", opening);
-    const legacy = modes.indexOf("chaptersWithMemories.length", memory);
+    const groups = modes.indexOf("albumGroups.length", memory);
     expect(memory).toBeGreaterThan(opening);
-    expect(legacy).toBeGreaterThan(memory);
+    expect(groups).toBeGreaterThan(memory);
     expect(modes.match(/<LivingMemoryMoment/g)).toHaveLength(1);
     expect(moment).not.toMatch(/aria-live|role="alert"|button|data-memory-id|<time/);
+  });
+
+  it("keeps saved memories contextual instead of duplicating them in a chapter album", () => {
+    expect(modes).not.toContain("<ChapterAlbum");
   });
 
   it("preserves fluid, touch, focus and reduced-motion PWA presentation", () => {
