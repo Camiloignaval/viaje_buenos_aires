@@ -3,7 +3,9 @@ artifact_store: openspec
 execution_mode: automatic
 delivery_strategy: exception-ok
 chain_strategy: size-exception
-status: ready-for-archive
+status: archived
+archived_at: 2026-07-16
+archive_path: openspec/changes/archive/2026-07-16-living-context-foundation
 phases:
   explore: done
   proposal: done
@@ -12,4 +14,4 @@ phases:
   tasks: done
   apply: done
   verify: done
-  archive: pending
+  archive: done
