@@ -1,70 +1,70 @@
-# Proposal: First Visible Experience
+# Proposal: First Visible Experience — Companion Experience Closure
 
 ## Intent
 
-**Hoy:** `first-real-experience` compone el acompañamiento completo y emite un `DeliveryIntent`, pero ninguna superficie productiva lo representa.
+**Hoy:** la experiencia representa correctamente un `DeliveryIntent pending/in_app`, pero cada montaje reinicia historial y dismiss; navegación o recarga pueden reevaluar la acción.
 
-**Propuesto:** mostrar el primer momento real de Alaia dentro de la portada del viaje activo (`/trips/:tripId`), sin trasladar autoridad a la UI ni crear otra capa.
+**Propuesto:** cerrar la continuidad de esa misma capacidad con receipts efímeros de sesión que alimenten las reglas existentes de dedupe y frecuencia de Companion, sin crear dominio, persistencia durable ni nueva arquitectura.
 
 ## Scope
 
 ### In Scope
 
-- Proyección fail-closed de un resultado compuesto: sólo `composed` con un único intent `pending/in_app` produce un view model.
-- Adaptador de aplicación que reúne inputs autorizados e invoca el compositor.
-- Momento editorial en `ActiveTripHome`, responsive, WCAG AA, no modal ni live region.
-- Dismiss visual local y observación best-effort categórica.
+- Utility feature-local sobre `sessionStorage`, defensiva e inyectable, con lifecycle `pending → visible → dismissed → expired`.
+- Records allowlist por usuario, viaje y acción/intent; sólo claves opacas mínimas, categorías y expiración derivada de tiempos existentes.
+- Proyección de receipts a `processedKeys` e historial caller-owned; snapshot fresco por usuario+viaje.
+- Silencio fail-closed ante storage inválido y continuidad en navegación, recarga y cambio de scope.
+- Fixtures reales: hoy visible; mañana, último día y Companion silence sin UI según destinos y reglas vigentes.
 
 ### Out of Scope
 
-- Push, timeline, email, SMS, persistencia, dedupe durable o delivery real.
-- Motores, reglas, providers, Story Package, IA o llamadas del componente a capas inferiores.
-- Convertir dismiss en evento de Memory, Decision o Companion.
+- `localStorage`, IndexedDB, backend, Memory, Timeline o persistencia remota.
+- Push, Web Push, email, SMS, IA, providers, nuevas reglas/canales, engines o Story.
+- Rediseño visual sin evidencia o dismiss como decisión de dominio.
 
 ## Capabilities
 
 ### New Capabilities
 
-- `first-visible-experience`: representación segura del `DeliveryIntent in_app` aprobado en la portada activa.
+- `first-visible-experience`: continuidad efímera de delivery dentro de la capacidad ya propuesta.
 
 ### Modified Capabilities
 
-None. `first-real-experience` y los motores conservan requisitos.
+None. Los motores y `first-real-experience` conservan sus contratos.
 
 ## Approach
 
-`TripHomePage` aporta inputs a un hook que invoca `composeFirstRealExperience`. Una proyección pura acepta sólo resultado e intent autorizados. `AlaiaCompanionMoment` recibe texto editorial y estado visual, sin reconstruir decisiones. Todo terminal, silencio, contrato inválido o intent no representable renderiza nada.
-
-`processedKeys` e historial Companion nacen vacíos: no existe fuente productiva autorizada. No prometen frecuencia ni dedupe entre recargas y no se simularán con storage. El observer admite sólo `flow_started`, `result_layer`, `render_success`, `dismiss` y `silence`, sin copy, IDs, PII, payloads ni errores crudos.
+`visibleDeliverySession.ts` valida receipts en `sessionStorage`. El hook entrega historial/keys a Companion y registra transiciones. El componente sólo notifica visible/dismiss. `TripHomePage` fija identidad por usuario+viaje. Storage inválido produce silencio, nunca fallback en memoria.
 
 ## Affected Areas
 
 | Área | Impacto | Descripción |
 |---|---|---|
-| `app/src/features/experience/{lib,hooks,components}/` | Nuevo | Proyección, hook y presentación |
-| `app/src/features/trips/pages/TripHomePage.tsx` | Modificado | Inputs y montaje |
-| `app/src/features/trips/components/ActiveTripHome.tsx` | Modificado | Ubicación antes del CTA |
-| `app/src/styles/shell.css` | Modificado | Tokens, foco y responsive |
+| `features/experience/lib/visibleDeliverySession.ts` | Nuevo | Receipt, lifecycle, expiry y proyección |
+| `features/experience/hooks/useFirstVisibleExperience.ts` | Modificado | Continuidad fail-closed |
+| `features/experience/components/VisibleCompanionExperience.tsx` | Modificado | Callbacks visuales |
+| `features/trips/pages/TripHomePage.tsx` | Modificado | Scope usuario+viaje |
+| Tests del change | Modificado | Continuidad, destinos y boundaries |
 
 ## Risks
 
 | Riesgo | Probabilidad | Mitigación |
 |---|---|---|
-| Repetición tras recarga | Alta | Declarar límite; no inventar persistencia |
-| UI duplica autoridad | Media | View model mínimo y tests de boundaries |
-| Ruido o layout shift | Baja | Sin placeholder, modal, live region ni animación de altura |
+| Storage bloqueado/corrupto | Media | Silencio fail-closed |
+| Leakage entre scopes | Baja | Snapshot y key por usuario+viaje |
+| Duplicar reglas | Media | Proyectar a Companion; no decidir localmente |
 
 ## Rollback Plan
 
-Retirar montaje, hook, proyección, componente y estilos nuevos. No hay migraciones, datos ni cambios de motores que revertir.
+Retirar utility y cableado; limpiar sólo keys namespaced. Sin migraciones ni cambios de motores.
 
 ## Dependencies
 
-- `composeFirstRealExperience`, preferencias actuales y portada activa verificadas.
+- `sessionStorage` existente y contratos verificados de Companion/DeliveryIntent.
 
 ## Success Criteria
 
-- [ ] El caso exitoso muestra literalmente `EditorialMessage.text` sólo para un intent `pending/in_app`.
-- [ ] Todos los terminales e intents inválidos producen cero nodos visibles.
-- [ ] Dismiss sólo oculta el momento durante el montaje.
-- [ ] Tests cubren pipeline real, accesibilidad, observer hostil, responsive, reduced motion y límites de imports.
+- [ ] Dismiss y receipt visible evitan repetición durante sesión y recarga mediante reglas Companion.
+- [ ] Expiry restaura elegibilidad; cambio de usuario/viaje no filtra estado.
+- [ ] Hoy es visible; mañana, último día y silencio producen cero UI autorizada.
+- [ ] No se almacena copy, PII, payload, error ni dato de dominio.

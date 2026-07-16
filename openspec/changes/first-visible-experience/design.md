@@ -1,74 +1,67 @@
-# Design: First Visible Experience
+# Design: First Visible Experience — Companion Experience Closure
 
 ## Technical Approach
 
-Materializar el `DeliveryIntent` aprobado en la portada activa sin trasladar autoridad a React. `useFirstVisibleExperience` arma un input autorizado y ejecuta el compositor existente; `toVisibleCompanionExperience` valida el resultado fuera de JSX; el componente recibe solo un view model. La portada espera ese cierre antes de su primer render completo, reutilizando `LoadingScreen`, para evitar inserciones tardías y layout shift.
+Evolucionar la experiencia existente, sin nueva capa: `useFirstVisibleExperience` obtiene un snapshot efímero antes de llamar al compositor real; `visibleDeliverySession.ts` proyecta receipts verificados a los `processedKeys/history` caller-owned de Companion; `VisibleCompanionExperience` confirma `visible` y `dismissed`. Todo resultado terminal, destino no `in_app` o storage no verificable retorna `null`.
 
 ## Architecture Decisions
 
-| Decisión | Alternativa descartada | Razón |
+| Elección | Alternativa | Razón |
 |---|---|---|
-| Hook de aplicación en `features/experience/hooks` | Lógica en `TripHomePage` o engines | Aísla el mapeo runtime sin crear autoridad nueva. |
-| Proyección pura nullable | Inspeccionar decisiones/intents en JSX | Hace fail-closed testeable y asegura que terminales no produzcan nodos. |
-| Slot `ReactNode` en `ActiveTripHome` | Importar Experience desde Trips | Mantiene dirección de dependencias; la página compone features. |
-| CSS global en `shell.css` | CSS Module o design system nuevo | La portada ya usa clases globales y tokens de ese archivo. |
-| Dismiss en estado local del componente | storage/dominio | Oculta solo el montaje; no afirma dedupe durable. |
+| Utility feature-local sobre `sessionStorage` | provider, servicio, Memory/backend, `localStorage` | Coincide con navegación y reload de una pestaña sin crear verdad durable. Cross-tab queda explícitamente fuera. |
+| Schema cerrado V1 + hash FNV-1a UTF-8 existente | guardar user/trip/copy o crear otro hash | Minimiza keying y no duplica primitivas. Sólo `visibleDeliverySession.ts` importa `editorial/hash`; React/JSX no importa engines. |
+| Receipts visibles alimentan Companion | dedupe/frecuencia local | Companion conserva autoridad exclusiva. Pending, silencio y error no cuentan como delivery. |
+| Expiry lazy por boundaries existentes | timer, TTL inventado, cron | No agrega regla temporal ni trabajo de fondo. |
+
+## Contracts and Lifecycle
+
+Key: `alaia:visible-delivery:v1:<fnv1a(userId␟tripId)>`. El documento y cada receipt se clonan/congelan y aceptan claves exactas:
+
+```ts
+type DeliveryReceiptV1 = Readonly<{
+  version: 1; identity: `vdr1_${string}`;
+  state: "pending" | "visible" | "dismissed" | "expired";
+  destination: "in_app"; dedupeKey: string;
+  priority: "high" | "normal" | "low";
+  pendingAt: string; processedAt: string | null;
+  dismissedAt: string | null; expiresAt: string;
+}>;
+```
+
+`identity` hashea scope + action id + destination + referencias del intent. No se almacena texto, user/trip separado, payload, PII ni error. `dedupeKey`, prioridad y `processedAt` son los campos mínimos exactos requeridos por Companion.
+
+Transiciones legales: `pending→visible→dismissed`, `pending→expired`, `visible|dismissed→expired`; repetir la misma transición es idempotente, cualquier otra falla cerrada. `processedAt` se fija una sola vez al confirmar visible y sobrevive a `dismissed/expired`. `expiresAt` es el mínimo ISO válido entre `decision.window.validUntil`, `decision.window.expiresAt` y `trip.endDateTime` disponible. Reads/transiciones evalúan expiry; pending expirado se descarta lazy y receipts que fueron visibles conservan evidencia durante la sesión. No hay timers.
+
+Cada acceso inyecta `Storage`, captura getter/get/parse/schema/set/remove/quota y prueba escritura/lectura del namespace. Cualquier fallo devuelve `unavailable`; el hook emite silencio y no compone/renderiza. Registros corruptos o de otra versión se limpian sólo si remover es seguro.
 
 ## Data Flow
 
 ```text
-TripHomePage: session + Trip + Story + PushPreferences
-  -> useFirstVisibleExperience (un instante lógico; processedKeys/history vacíos)
-  -> composeFirstRealExperience (sin cambios)
-  -> toVisibleCompanionExperience
-       composed + exactamente 1 pending/in_app + referencias exactas -> view model
-       cualquier otro caso                                      -> null
-  -> ActiveTripHome slot -> VisibleCompanionExperience
+scope(user,trip) -> read/validate/expire -> Companion snapshot
+  -> real composer -> projection pending/in_app
+  -> persist pending -> component mount -> onVisible -> persist visible -> render
+  -> onDismiss -> persist dismissed -> hide (sin recomponer)
 ```
 
-El hook toma `{trip, user, storyPackage, storyObservedAt}` y captura una sola vez `logicalInstant`. Mapea `livingContext.trip/user/story`, `decision.tripId`, preferencias `enabled/beforeTrip/duringTrip`, `activities: []`, `decision.processedKeys: new Set()`, `companion.preferences.enabled`, `companion.processedKeys: new Set()`, `companion.history: []`, y `memory.scope {ownerUserId:user.id, tripId:trip.id, storyId:storyPackage.storyId}` con `firstChapterAlreadyOpened:false`. `getPushPreferences()` es solo lectura de la preferencia existente; no activa Push. Los conjuntos/historial son caller-owned y vacíos: **no** ofrecen frecuencia ni dedupe durable entre recargas.
+Pending no pre-deduplica el primer render. En retorno/reload, visible/dismissed/expired-after-visible aporta su `dedupeKey` a ambos sets y `{dedupeKey,priority,processedAt}` a history; Companion silencia naturalmente. Pending nunca visible puede recomponerse y completar. Callbacks y writes idempotentes hacen determinista el replay de effects. `SettledTripHome` se keyea por user+trip: cambiar scope reinicia hook; volver relee su receipt.
 
-El observer recibe objetos congelados con una única clave `kind`, allowlist `flow_started | result_layer | render_success | dismiss | silence`. Emisión: inicio una vez por composición; resultado una vez al resolver; silencio una vez si no hay view model; render una vez al montar; dismiss una vez aunque se active nuevamente. Cada llamada es `try/catch`; nunca incluye texto, IDs, fechas, payloads, PII ni errores.
+Observabilidad amplía la allowlist actual sólo con `delivery_pending` y `delivery_expired`; `render_success` equivale a visible y `dismiss` a dismissed. Eventos siguen congelados y exactamente `{kind}`.
 
-## Interfaces / Contracts
+## Integration and Files
 
-```ts
-type VisibleCompanionExperienceViewModel = Readonly<{
-  label: "Alaia";
-  text: string;
-}>;
-
-toVisibleCompanionExperience(result: FirstRealExperienceResult):
-  VisibleCompanionExperienceViewModel | null;
-```
-
-La proyección acepta únicamente `outcome === "composed"`, un solo intent con `destination === "in_app"`, `state === "pending"` y referencias exactas `editorial_message,memory_candidate`; usa literalmente `result.message.text`. El componente nunca recibe Trip, Story, motores, preferencias, resultado o intent.
-
-## UI and Accessibility
-
-`ActiveTripHome` coloca el slot dentro de `.active-trip-home-temporal`, después del countdown y antes del CTA; cuando existe reemplaza la segunda línea emocional, y en silencio conserva `active-trip-home-preparations`. Es un `<aside aria-labelledby>` con `<h3>Alaia</h3>`, texto literal y botón `aria-label="Cerrar mensaje de Alaia"`; decoración `aria-hidden`, sin `role="alert"` ni `aria-live`.
-
-En `shell.css`: ancho `min(100%, 30rem)`, `min-width:0`, padding con `clamp()`, filete `rgba(var(--gold-rgb), ...)`, serif `var(--font-display)`, texto `var(--ivory)`/`--secondary-rgb`, cierre 44×44 y `:focus-visible` con `--focus-ring`. Sin card, sombra, ancho fijo ni overflow. Desktop/tablet/mobile permanecen en flujo; entrada solo `opacity/translateY(0.25rem)` bajo `prefers-reduced-motion:no-preference`; `reduce` fuerza `animation:none` sin cambiar geometría.
-
-## File Changes
-
-| Archivo | Acción |
+| Archivo | Cambio |
 |---|---|
-| `features/experience/lib/visibleExperience.ts` | Crear proyección y observer seguro |
-| `features/experience/hooks/useFirstVisibleExperience.ts` | Crear mapeo/composición fail-closed |
-| `features/experience/components/VisibleCompanionExperience.tsx` | Crear presentación y dismiss local |
-| `features/trips/pages/TripHomePage.tsx` | Montar hook y slot |
-| `features/trips/components/ActiveTripHome.tsx` | Añadir slot in-flow |
-| `styles/shell.css` | Añadir estilos responsive/motion |
-| Tests focales junto a esos módulos | Crear/modificar |
+| `features/experience/lib/visibleDeliverySession.ts` | Crear schema, storage guardado, lifecycle, expiry y snapshot Companion. |
+| `features/experience/hooks/useFirstVisibleExperience.ts` | Scope fresco, inputs con snapshot, pending y callbacks fail-closed. |
+| `features/experience/components/VisibleCompanionExperience.tsx` | Confirmar visible antes de mostrar; dismiss posterior, sin reglas. |
+| `features/experience/lib/visibleExperience.ts` | Agregar dos categorías observer; mantener proyección. |
+| `features/trips/pages/TripHomePage.tsx` | Key user+trip y cableado de callbacks. |
+| Tests focales/boundaries existentes | Extender continuidad y aislamiento. |
 
-## Testing Strategy
+No cambia JSX visual, CSS, accesibilidad ni motion: la auditoría no halló defecto. Un receipt suprimido produce cero nodo/animación y restaura el fallback existente.
 
-Strict TDD: (1) proyección cubre éxito, todos los terminales, intent ausente/múltiple/no soportado/mismatch y copy literal; (2) React cubre render, silencio, dismiss único, observer hostil, semántica, foco, ausencia de alert/live-region y no mutación; (3) `ActiveTripHome` prueba placement/fallback y `TripHomePage` pipeline real, inputs vacíos y cero bypass; (4) test CSS prueba fluidez, 640px, foco y reduced motion; boundaries prohíben simulador, delivery, storage, red adicional, Story rules y cambios a engines. Ejecutar focales, `npm run test:react`, `npm run test`, typecheck y protected-range/diff; nunca build.
+## Strict TDD and Rollback
 
-## Review Slices / Rollout
+Slices RED→GREEN: (1) utility: schema exacto, probe/fallos, scopes, transiciones, expiry e historial; (2) hook/componente: primer render, replay, route/reload, trip/user switch, dismiss sin reinvocación; (3) pipelines reales hoy visible, mañana/último-día silenciosos por sus destinos actuales y Companion silence, más observer/boundaries. Ejecutar focales, suites React/Node, typecheck y diff-check; nunca build.
 
-1. Proyección + componente + tests de accesibilidad.
-2. Hook + integración + CSS + boundaries/tests.
-
-Sin migración, flag ni persistencia. Rollback elimina montaje y archivos nuevos. No hay preguntas abiertas.
+Rollback: retirar utility/cableado y limpiar únicamente keys `alaia:visible-delivery:v1:*`. Motores, Story, compositor, simulator, router, PWA y persistencia durable permanecen protegidos.

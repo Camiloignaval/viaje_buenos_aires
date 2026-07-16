@@ -3,17 +3,19 @@ artifact_store: openspec
 execution_mode: automatic
 delivery_strategy: auto-chain
 chain_strategy: feature-branch-chain
-status: verified
+status: ready-for-apply
 phases:
   explore: done
   proposal: done
-  specs: done       # 19 scenarios
-  design: done
-  tasks: done       # strict TDD; 10 tasks across three review slices
-  apply: done        # 10/10 tasks complete; ready for verify
-  verify: done          # PASS; 19/19 scenarios, focal 49/49, React 887/887, Node 244/244
+  specs: done        # consolidated evolution; 15 scenarios
+  design: done       # companion experience closure
+  tasks: done        # strict TDD; 10/19 complete across six review slices
+  apply: pending     # closure tasks 11-19 remain
+  verify: superseded # prior PASS belongs to the pre-closure baseline
   archive: pending
 constraints:
-  - preserve all five engines, Story, composer semantics and production routes except intended ActiveTripHome integration
-  - no simulator production import, delivery, persistence, new authority, build or Playwright
+  - preserve all five engines, Story, composer semantics and existing visible behavior
+  - sessionStorage only; fail closed; visible receipts alone feed Companion history
+  - no UI redesign unless a failing test proves an objective defect
+  - no delivery execution, durable persistence, timers, build or Playwright
   - use sequential local thematic commits with feature-branch-chain review boundaries

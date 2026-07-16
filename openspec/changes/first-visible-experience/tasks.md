@@ -4,7 +4,7 @@
 
 | Field | Value |
 |---|---|
-| Estimated changed lines | 700-950 |
+| Estimated changed lines | 850-1150 |
 | 400-line budget risk | High |
 | Chained PRs recommended | Yes |
 | Delivery strategy | auto-chain |
@@ -19,25 +19,37 @@ Chain strategy: feature-branch-chain
 
 | Unit | Goal | Review boundary |
 |---|---|---|
-| 1 | Pure projection, presentational moment and CSS contracts | PR 1 base = feature/tracker branch |
-| 2 | Application adapter and active-trip integration | PR 2 base = PR 1 branch |
-| 3 | Consolidated scenario and protected-range proof | PR 3 base = PR 2 branch |
+| 4 | Receipt contract and lifecycle | PR 4 base = feature/tracker branch |
+| 5 | Session continuity integration | PR 5 base = PR 4 branch |
+| 6 | Real-pipeline closure proof | PR 6 base = PR 5 branch |
 
-## Phase 1: Visible contract (Unit 1)
+## Historical delivery: visible experience
 
-- [x] 1.1 **RED:** Create `app/src/features/experience/lib/visibleExperience.test.ts` for **Approved moment**, **Wrong surface**, **Abstention**, **Silence**, **Discard**, **Error**, **Missing intent**, **Unsupported intent**, **Multiple intents**, **Mismatch** and **Literal copy**.
-- [x] 1.2 **GREEN:** Create `app/src/features/experience/lib/visibleExperience.ts` with the nullable frozen view model, exact intent/reference checks and categorical best-effort observer; never mutate copy, infer authority or expose private fields.
-- [x] 1.3 **RED:** Create `app/src/features/experience/components/VisibleCompanionExperience.test.tsx` and CSS contract tests for **Keyboard close**, **Observed lifecycle**, **Hostile observer**, **Viewports**, **Assistive access** and **Motion reduced**.
-- [x] 1.4 **GREEN→REFACTOR:** Add `app/src/features/experience/components/VisibleCompanionExperience.tsx` and scoped rules in `app/src/styles/shell.css`: in-flow aside, literal copy, local one-shot dismiss, 44px control, visible focus, hidden decoration, fluid width and reduced-motion override.
+- [x] 1.1 **RED:** Test projection outcomes and literal copy in `features/experience/lib/visibleExperience.test.ts`.
+- [x] 1.2 **GREEN:** Implement frozen fail-closed projection and categorical observer in `features/experience/lib/visibleExperience.ts`.
+- [x] 1.3 **RED:** Test component lifecycle, access, viewports and motion in `features/experience/components/VisibleCompanionExperience.test.tsx`.
+- [x] 1.4 **GREEN→REFACTOR:** Implement the in-flow moment and scoped CSS without domain authority.
+- [x] 2.1 **RED:** Test authorized snapshots and single composition in `features/experience/hooks/useFirstVisibleExperience.test.ts`.
+- [x] 2.2 **GREEN:** Implement the hook over the real composer with empty caller-owned continuity inputs.
+- [x] 2.3 **RED:** Test active-home placement, silence, CTA and real integration in trip component/page tests.
+- [x] 2.4 **GREEN→REFACTOR:** Wire the moment into `ActiveTripHome.tsx` and `TripHomePage.tsx`.
+- [x] 3.1 **RED→GREEN:** Enforce production isolation in `features/experience/visibleExperience.boundaries.test.ts`.
+- [x] 3.2 **TRIANGULATE→REFACTOR:** Verify the original 19 scenarios, full suites, typecheck and protected ranges.
 
-## Phase 2: Production seam (Unit 2)
+## Phase 4: Session receipt foundation (Unit 4)
 
-- [x] 2.1 **RED:** Create `app/src/features/experience/hooks/useFirstVisibleExperience.test.ts` for **Authorized inputs**, settled fail-closed behavior, one logical instant, empty caller-owned sets/history and no durable dedupe/storage claim.
-- [x] 2.2 **GREEN:** Create `app/src/features/experience/hooks/useFirstVisibleExperience.ts`; map current trip/user/story/preferences into `composeFirstRealExperience`, project its result, and never invoke simulator, delivery or lower-layer rules directly.
-- [x] 2.3 **RED:** Extend `app/src/features/trips/components/ActiveTripHome.test.tsx` and `app/src/features/trips/pages/TripHomePage.test.tsx` for active-home-only placement, silent fallback, unchanged CTA interaction and the real five-engine composer path.
-- [x] 2.4 **GREEN→REFACTOR:** Add a `ReactNode` slot to `app/src/features/trips/components/ActiveTripHome.tsx` and minimal hook/moment composition in `app/src/features/trips/pages/TripHomePage.tsx`; preserve existing preparations when silent and avoid new route/provider/loading authority.
+- [ ] 4.1 **RED:** Create `features/experience/lib/visibleDeliverySession.test.ts` for **Valid record**, **Storage failure**, scope isolation, exact allowlist, corruption/version rejection and lazy expiry without timers.
+- [ ] 4.2 **RED:** Add lifecycle assertions for **Legal lifecycle**, **Illegal transition** and **Pending retry**; pending never enters dedupe/history and transitions are idempotent or fail closed.
+- [ ] 4.3 **GREEN→REFACTOR:** Implement `visibleDeliverySession.ts`: probed `sessionStorage`, versioned scoped identity, earliest-boundary expiry, immutable receipts and visible-only Companion snapshot.
 
-## Phase 3: Consolidated safety (Unit 3)
+## Phase 5: Session continuity integration (Unit 5)
 
-- [x] 3.1 **RED→GREEN:** Add `app/src/features/experience/visibleExperience.boundaries.test.ts` for **Isolation**: forbid simulator production imports, Push/Web Push, timeline, email/SMS, storage, delivery, network, Story/engine rules and component access to domain inputs.
-- [x] 3.2 **TRIANGULATE→REFACTOR:** Map all 19 scenarios to named assertions; run `npm --prefix app run test:react -- --run src/features/experience/lib/visibleExperience.test.ts src/features/experience/components/VisibleCompanionExperience.test.tsx src/features/experience/hooks/useFirstVisibleExperience.test.ts src/features/experience/visibleExperience.boundaries.test.ts src/features/trips/components/ActiveTripHome.test.tsx src/features/trips/pages/TripHomePage.test.tsx`, `npm --prefix app run test:react`, `npm --prefix app test`, `npm --prefix app run typecheck`, `git diff --check`, and `git diff --name-only 0159bc17cf4d628c8e4d6540aa2031244ff1bfaa..HEAD -- app/src/features/context-engine app/src/story app/src/features/experience/firstRealExperience.ts app/src/features/experience/firstRealExperience.test.ts app/src/features/dev/firstRealExperienceSimulator.ts app/src/features/dev/firstRealExperienceSimulator.test.ts app/src/app/router.tsx app/api app/lib`; additionally inspect production route diffs so only intended `TripHomePage.tsx` and `ActiveTripHome.tsx` integration changes. Never build or run Playwright.
+- [ ] 5.1 **RED:** Extend hook/page remount tests for **Same-trip continuity**, **Scope switch** and **History projection** across rerender, navigation, return and tab reload; cover user/trip switching and unavailable storage silence.
+- [ ] 5.2 **GREEN:** Update `useFirstVisibleExperience.ts` and `TripHomePage.tsx` to load caller-owned processed keys/history, persist pending, and expose visible/dismiss callbacks keyed by user+trip.
+- [ ] 5.3 **GREEN→REFACTOR:** Update `VisibleCompanionExperience.tsx` and observer allowlist for **Observation**; commit visible before display, dismiss once without engine invocation, and keep hostile observers harmless.
+
+## Phase 6: Consolidated closure (Unit 6)
+
+- [ ] 6.1 **RED→GREEN:** Prove **Today is visible**, **Existing non-in-app outcomes** and **Rejected result** with the real today/tomorrow/last-day/silence pipeline; verify suppressed receipts create no node or animation.
+- [ ] 6.2 **TRIANGULATE:** Extend UI/boundary tests for **Access and viewports**, **Reduced or suppressed** and **Dependencies**; preserve JSX/CSS unless an objective defect fails a test.
+- [ ] 6.3 **REFACTOR→VERIFY:** Run focal React tests, `npm --prefix app run test:react`, `npm --prefix app test`, `npm --prefix app run typecheck`, `git diff --check`, and protected-range/name-only checks for engines, Story, composer, simulator, router, API and durable storage. Never build or run Playwright.

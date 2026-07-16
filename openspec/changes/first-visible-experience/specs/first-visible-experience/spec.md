@@ -1,138 +1,105 @@
 # First Visible Experience Specification
 
-## Purpose
-
-Define the approved active-trip-home moment.
-
 ## Requirements
 
 ### Requirement: Authorized visibility
+The system MUST show literal EditorialMessage copy only for one matching `pending/in_app` intent on active-trip home. Otherwise it MUST render nothing.
 
-The system MUST render only on the active-trip home for `composed` with one matching `pending/in_app` DeliveryIntent.
+#### Scenario: Today is visible
+- GIVEN real today produces the approved intent
+- WHEN represented on active-trip home
+- THEN one complementary moment appears
 
-#### Scenario: Approved moment
-- GIVEN an active-trip home and one matching pending in-app intent
-- WHEN the composed result is represented
-- THEN one moment shows EditorialMessage text unchanged
-- AND accessible semantics identify non-urgent complementary content
-
-#### Scenario: Wrong surface
-- GIVEN the approved result outside the active-trip home
-- WHEN represented
-- THEN no moment appears
-
-### Requirement: Fail closed
-
-Every unapproved result MUST render no node, placeholder, shell, fallback, or error.
-
-#### Scenario: Abstention
-- GIVEN an abstained result
+#### Scenario: Existing non-in-app outcomes
+- GIVEN real tomorrow/last-day preserves its outcome/destination
 - WHEN represented
 - THEN nothing renders
 
-#### Scenario: Silence
-- GIVEN Companion silence
+#### Scenario: Rejected result
+- GIVEN Companion silence, another terminal, wrong surface, or missing, multiple, unsupported, or mismatched intent
 - WHEN represented
 - THEN nothing renders
 
-#### Scenario: Discard
-- GIVEN Memory discard
-- WHEN represented
-- THEN nothing renders
+### Requirement: Delivery lifecycle
+The system MUST allow exactly `pending -> visible -> dismissed`, `pending -> expired`, and `visible|dismissed -> expired`; it MUST NOT deliver remotely. Expiry MUST use the earliest existing trip/action boundary and be ignored or lazily cleaned without cron. Dismissal MUST change only its receipt/UI, emit once, and cause no domain effects.
 
-#### Scenario: Error
-- GIVEN a pipeline error
-- WHEN represented
-- THEN nothing renders
+#### Scenario: Legal lifecycle
+- GIVEN an approved pending receipt
+- WHEN it visibly commits, is dismissed, or crosses expiry
+- THEN only the applicable transition occurs once
 
-#### Scenario: Missing intent
-- GIVEN composed without intent
-- WHEN represented
-- THEN nothing renders
+#### Scenario: Illegal transition
+- GIVEN any receipt
+- WHEN another transition is attempted
+- THEN it fails closed without delivery
 
-#### Scenario: Unsupported intent
-- GIVEN an intent not both pending and in-app
-- WHEN represented
-- THEN nothing renders
+### Requirement: Session continuity and identity
+Receipts MUST survive rerender, navigation, return, and reload in one tab session. Identity MUST include user, trip, action, and destination. Cross-tab/browser continuity MUST NOT be promised.
 
-#### Scenario: Multiple intents
-- GIVEN composed with multiple intents
-- WHEN represented
-- THEN nothing renders
+#### Scenario: Same-trip continuity
+- GIVEN a visible or dismissed receipt
+- WHEN rerendering, leaving and returning, or reloading its tab
+- THEN the moment remains hidden
 
-#### Scenario: Mismatch
-- GIVEN the sole intent mismatches EditorialMessage
-- WHEN represented
-- THEN nothing renders
+#### Scenario: Pending retry
+- GIVEN a never-visible pending receipt
+- WHEN revisited before expiry
+- THEN visibility MAY complete
 
-### Requirement: Editorial presentation
+#### Scenario: Scope switch
+- GIVEN receipts exist across trips or users
+- WHEN trip or authentication changes and later returns
+- THEN only that user-trip lifecycle is restored
 
-The system MUST show literal copy without mutation or UI rules. It MUST be discreet, non-blocking, and without modal, alert, system-notification, advertising semantics, or layout jump.
+### Requirement: Safe session storage
+Only existing session storage MAY hold a versioned allowlist of categorical receipt data. Copy, PII, payloads, raw errors, local storage, IndexedDB, and remote state MUST NOT be stored.
 
-#### Scenario: Literal copy
-- GIVEN approved visibility
-- WHEN rendered
-- THEN displayed copy equals EditorialMessage text
-- AND page interaction remains available
+#### Scenario: Valid record
+- GIVEN an allowlisted current-version record
+- WHEN loaded
+- THEN only verified categorical data is accepted
 
-### Requirement: Local dismissal
+#### Scenario: Storage failure
+- GIVEN corrupt, unavailable, quota-, read-, or write-failing storage
+- WHEN evaluated
+- THEN silence results without exception
 
-Dismissal MUST remove only the mounted representation and emit `dismiss` once. It MUST NOT mutate or reinvoke Memory, Decision, Companion, results, or storage.
+### Requirement: Companion authority
+Only receipts proven visible, including later dismissed/expired, MUST feed caller-owned processed keys/history. Pending, silence, error, and never-rendered results MUST NOT. Existing Companion dedupe/frequency MUST remain sole authority.
 
-#### Scenario: Keyboard close
-- GIVEN a visible keyboard-focused close control
-- WHEN activated twice
-- THEN the moment disappears and one dismiss emits
-- AND domain and storage state remain unchanged
+#### Scenario: History projection
+- GIVEN visible and never-visible receipts
+- WHEN Companion inputs form
+- THEN only visible receipts supply dedupe keys and visible times
 
 ### Requirement: Safe observation
+Observation MAY cover only categorical pending, visible, dismissed, expired, and silence outcomes. It MUST exclude content, identity, time, payload, PII, and raw errors; observer failure MUST be harmless.
 
-Observation MAY emit only `flow_started`, `result_layer`, `render_success`, `dismiss`, or `silence`. It MUST exclude copy, IDs, trip, user, dates, payloads, PII, and raw errors. Observer failure MUST be harmless.
+#### Scenario: Observation
+- GIVEN a lifecycle and a hostile observer
+- WHEN events emit
+- THEN allowed categories remain ordered and behavior unchanged
 
-#### Scenario: Observed lifecycle
-- GIVEN a successful visible flow
-- WHEN rendered and dismissed
-- THEN only allowed categories emit in lifecycle order
+### Requirement: Accessible responsive presentation
+The moment MUST be discreet, non-blocking, named, WCAG-AA operable, fluid, overflow-safe, decoration-hidden, and free of alert/live-region semantics.
 
-#### Scenario: Hostile observer
-- GIVEN an observer throws or attempts mutation
-- WHEN any flow resolves
-- THEN visibility remains unchanged
+#### Scenario: Access and viewports
+- GIVEN any supported viewport or assistive access
+- WHEN visible
+- THEN named close, visible focus, safe layout, and page interaction remain
 
-### Requirement: Responsive accessibility
+### Requirement: Motion
+Animation MAY avoid layout change, but MUST stop under reduced motion and MUST NOT restart for a suppressed rehydrated receipt.
 
-The moment MUST provide WCAG AA semantics and focus, hide decoration, avoid unnecessary live regions, and prevent fixed-width overflow.
+#### Scenario: Reduced or suppressed
+- GIVEN reduced motion or suppressed rehydration
+- WHEN the route renders
+- THEN no transition runs and geometry remains
 
-#### Scenario: Viewports
-- GIVEN mobile, tablet, and desktop viewports
-- WHEN rendered
-- THEN content remains within each viewport without fixed-width overflow
+### Requirement: Architectural isolation
+Integration MUST NOT add rules, channels, providers, engines, Story logic, simulator imports, Push, Timeline, email, SMS, delivery execution, or durable persistence.
 
-#### Scenario: Assistive access
-- GIVEN a visible moment
-- WHEN inspected by keyboard and assistive technology
-- THEN close is named, focus visible, and decoration hidden
-- AND no alert role or unnecessary `aria-live` exists
-
-### Requirement: Reduced motion
-
-The system MAY transition without changing layout, but MUST remove transition under reduced motion while preserving content and geometry.
-
-#### Scenario: Motion reduced
-- GIVEN reduced motion is requested
-- WHEN the moment appears
-- THEN it appears without transition and unchanged
-
-### Requirement: Existing authority
-
-Integration MAY call the existing composer with current trip/user data and caller-owned empty history. It MUST NOT claim durable dedupe or persistence, add rules, import the production simulator, invoke delivery, or modify engines or Story.
-
-#### Scenario: Authorized inputs
-- GIVEN current trip/user inputs and empty caller-owned history
-- WHEN the active-trip flow starts
-- THEN the composer runs without new rules or persistence
-
-#### Scenario: Isolation
+#### Scenario: Dependencies
 - GIVEN visible-experience code
 - WHEN inspected
-- THEN no simulator, Push, Web Push, timeline, email, SMS, engine-rule, or Story-rule dependency exists
+- THEN only existing authorities and ephemeral session receipts remain
