@@ -3,7 +3,7 @@ artifact_store: openspec
 execution_mode: automatic
 delivery_strategy: auto-chain
 chain_strategy: feature-branch-chain
-status: ready-for-verify
+status: verified
 phases:
   explore: done
   proposal: done
@@ -11,13 +11,16 @@ phases:
   design: done
   tasks: done
   apply: done
-  verify: pending
+  verify: done
   archive: pending
 progress:
   tasks_completed: 20
   tasks_total: 20
   scenarios_verified: 25
   scenarios_total: 25
+verification:
+  verdict: PASS
+  report: verify-report.md
 constraints:
   weather_gate_default: false
   build_forbidden: true
