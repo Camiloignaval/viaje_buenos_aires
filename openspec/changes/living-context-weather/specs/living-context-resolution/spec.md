@@ -49,11 +49,29 @@ Cada módulo **MUST** declarar provenance, instante de observación y freshness 
 - THEN el evento identifica módulo, categoría y razón sanitizada
 - AND omite coordenadas, PII, presupuesto, tokens y payload crudo
 
+### Requirement: Límites de la capability
+
+Esta capability **MUST NOT** crear IA, Companion, notificaciones, UI, feature flags, placeholders, un segundo engine/resolver, registry genérico ni backend agregador. Weather **MAY** usar un provider real solo mediante un contrato reemplazable y localizado; futuras extensiones **MUST** seguir slices explícitos sin anticipar su implementación.
+
+(Previously: se prohibía todo proveedor real y solo se permitían contratos inyectables futuros.)
+
+#### Scenario: Dependencia Weather no configurada
+- GIVEN que no existe provider Weather configurado
+- WHEN se resuelve el contexto
+- THEN el snapshot Foundation sigue siendo válido
+- AND Weather queda unavailable sin crear requests ni capabilities ficticias
+
+## REMOVED Requirements
+
+### Requirement: Semántica de los cuatro módulos
+
+**Reason:** Weather reemplaza la formulación de cuatro módulos por la semántica completa de cinco módulos.
+
+## ADDED Requirements
+
 ### Requirement: Semántica de los cinco módulos
 
 Destination **MUST** resolver identidad, locale y timezone con fallback explícito; temporal **MUST** evaluar fechas en la timezone del destino, incluidos cruces DST; financial **MUST** adaptar solo datos financieros existentes; narrative **MUST** devolver contenido curado literal y sus ids; weather **MUST** usar coordenadas y timezone del Trip y limitarse a su ventana local elegible. Datos ausentes **MUST NOT** ser inventados.
-
-(Previously: la semántica contractual cubría únicamente los cuatro módulos Foundation.)
 
 #### Scenario: Cambio DST
 - GIVEN fechas que cruzan un cambio DST y timezone válida
@@ -69,15 +87,3 @@ Destination **MUST** resolver identidad, locale y timezone con fallback explíci
 - GIVEN una Story con copy curado y ambos ids
 - WHEN se resuelve narrative
 - THEN copy, `storyId` y `baseStoryId` coinciden exactamente con la Story
-
-### Requirement: Límites de la capability
-
-Esta capability **MUST NOT** crear IA, Companion, notificaciones, UI, feature flags, placeholders, un segundo engine/resolver, registry genérico ni backend agregador. Weather **MAY** usar un provider real solo mediante un contrato reemplazable y localizado; futuras extensiones **MUST** seguir slices explícitos sin anticipar su implementación.
-
-(Previously: se prohibía todo proveedor real y solo se permitían contratos inyectables futuros.)
-
-#### Scenario: Dependencia Weather no configurada
-- GIVEN que no existe provider Weather configurado
-- WHEN se resuelve el contexto
-- THEN el snapshot Foundation sigue siendo válido
-- AND Weather queda unavailable sin crear requests ni capabilities ficticias
