@@ -3,7 +3,7 @@ artifact_store: openspec
 execution_mode: automatic
 delivery_strategy: auto-chain
 chain_strategy: feature-branch-chain
-status: verified
+status: archived
 phases:
   explore: done
   proposal: done
@@ -12,7 +12,12 @@ phases:
   tasks: done       # strict TDD; 9 tasks across three review slices
   apply: done        # 9/9 tasks complete
   verify: done          # PASS; 16/16 scenarios, strict TDD
-  archive: pending
+  archive: done
+verification:
+  verdict: PASS
+  report: verify-report.md
+  scenarios: 16/16
+  tasks: 9/9
 constraints:
   - preserve the five engines and production entrypoints byte-unchanged
   - no rules, layers, providers, UI, delivery, persistence, build, push, tags or archive
