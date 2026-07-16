@@ -8,6 +8,9 @@ import type { Trip } from "@/features/trips/types";
 import { VisibleCompanionExperience } from "../components/VisibleCompanionExperience";
 import {
   buildVisibleDeliverySessionKey,
+  createPendingVisibleDeliveryReceipt,
+  transitionVisibleDeliveryReceipt,
+  writeVisibleDeliverySession,
   type VisibleDeliveryCompanionSnapshot,
   type VisibleDeliveryStorage,
 } from "../lib/visibleDeliverySession";
@@ -447,5 +450,53 @@ describe("useFirstVisibleExperience", () => {
       { kind: "result_layer" },
       { kind: "silence" },
     ]);
+  });
+
+  it("lets the real Companion frequency policy silence a recent distinct visible receipt", async () => {
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(new Date(INSTANT));
+    getPushPreferences.mockResolvedValue({ preferences: ENABLED_PREFERENCES });
+    const storage = new MemoryStorage();
+    const dependencies = storageDependency(storage);
+    const scope = { userId: USER.id, tripId: TRIP.id };
+    const pending = createPendingVisibleDeliveryReceipt({
+      scope,
+      actionId: "decision:other-recent-action",
+      destination: "in_app",
+      references: ["editorial_message", "memory_candidate"],
+      dedupeKey: "other-recent-dedupe",
+      priority: "normal",
+      pendingAt: "2026-10-03T14:00:00.000Z",
+      expiryBoundaries: ["2026-10-04T15:00:00.000Z"],
+    });
+    if (!pending) throw new Error("Expected pending frequency fixture");
+    const visible = transitionVisibleDeliveryReceipt(pending, "visible", "2026-10-03T14:30:00.000Z");
+    if (visible.status !== "transitioned") throw new Error("Expected visible frequency fixture");
+    expect(writeVisibleDeliverySession({
+      dependencies,
+      scope,
+      document: { version: 1, receipts: [visible.receipt] },
+    })).toEqual({ status: "available" });
+    const events: Array<{ kind: string }> = [];
+
+    const { result } = renderHook(() => useFirstVisibleExperience({
+      trip: TRIP,
+      user: USER,
+      storyPackage: demoStoryPackage,
+      storyObservedAt: STORY_OBSERVED_AT,
+      storage: dependencies,
+      observer: (event) => events.push(event),
+    }));
+    await waitFor(() => expect(result.current.status).toBe("settled"));
+
+    expect(result.current.viewModel).toBeNull();
+    expect(events).toEqual([
+      { kind: "flow_started" },
+      { kind: "result_layer" },
+      { kind: "silence" },
+    ]);
+    expect(JSON.parse(storage.getItem(buildVisibleDeliverySessionKey(scope)) ?? "{}").receipts)
+      .toEqual([expect.objectContaining({ dedupeKey: "other-recent-dedupe", state: "visible" })]);
+    expect(getPushPreferences).toHaveBeenCalledTimes(1);
   });
 });

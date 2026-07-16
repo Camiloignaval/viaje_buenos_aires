@@ -14,6 +14,7 @@ function source(relativePath: string): string {
 const projection = source("features/experience/lib/visibleExperience.ts");
 const component = source("features/experience/components/VisibleCompanionExperience.tsx");
 const hook = source("features/experience/hooks/useFirstVisibleExperience.ts");
+const session = source("features/experience/lib/visibleDeliverySession.ts");
 const tripHome = source("features/trips/pages/TripHomePage.tsx");
 const activeHome = source("features/trips/components/ActiveTripHome.tsx");
 const visibleProduction = [projection, component, hook, tripHome, activeHome].join("\n");
@@ -24,6 +25,12 @@ describe("First Visible Experience boundaries", () => {
     expect(visibleProduction).not.toMatch(/firstRealExperienceSimulator|features\/dev/);
     expect(visibleProduction).not.toMatch(/context-engine\/(?:livingContext|decision|companion|editorial|memory)/);
     expect(visibleProduction).not.toMatch(/features\/story\/engine\/(?:storyEngine|progressStore|storyProgress|chapterContent|intelligence)/);
+    expect(session.split("\n").filter((line) => line.includes("context-engine/"))).toEqual([
+      'import type { CompanionHistoryEntry } from "@/features/context-engine/companion/contracts";',
+      'import type { DecisionPriority } from "@/features/context-engine/decision";',
+      'import { fnv1aUtf8 } from "@/features/context-engine/editorial/hash";',
+    ]);
+    expect([visibleProduction, session].join("\n")).not.toMatch(/firstRealExperienceSimulator|features\/dev/);
   });
 
   it("Isolation: permits only the established preference read and no Push, delivery or network capability", () => {
@@ -40,6 +47,8 @@ describe("First Visible Experience boundaries", () => {
     expect(hook).toContain('from "../lib/visibleDeliverySession"');
     expect(hook).toContain("window.sessionStorage");
     expect(hook).not.toMatch(/localStorage|indexedDB|continuityStore|rememberTrip|repository|database|mongodb/i);
+    expect(session).not.toMatch(/localStorage|indexedDB|continuityStore|rememberTrip|repository|database|mongodb/i);
+    expect([hook, session].join("\n")).not.toMatch(/setTimeout|setInterval|requestAnimationFrame/);
     expect(component).toContain("useState(false)");
     expect(component).toContain("onVisible?: () => boolean");
     expect(component).toContain("onDismiss?: () => boolean");
@@ -55,6 +64,8 @@ describe("First Visible Experience boundaries", () => {
     const kinds: VisibleExperienceEventKind[] = [
       "flow_started",
       "result_layer",
+      "delivery_pending",
+      "delivery_expired",
       "render_success",
       "dismiss",
       "silence",

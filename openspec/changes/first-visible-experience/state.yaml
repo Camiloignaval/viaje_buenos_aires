@@ -3,14 +3,14 @@ artifact_store: openspec
 execution_mode: automatic
 delivery_strategy: auto-chain
 chain_strategy: feature-branch-chain
-status: ready-for-apply
+status: ready-for-verify
 phases:
   explore: done
   proposal: done
   specs: done        # consolidated evolution; 15 scenarios
   design: done       # companion experience closure
-  tasks: done        # strict TDD; 16/19 complete across six review slices
-  apply: in-progress # session continuity complete; closure tasks 17-19 remain
+  tasks: done        # strict TDD; 19/19 complete across six review slices
+  apply: done        # companion experience closure implemented and validated
   verify: superseded # prior PASS belongs to the pre-closure baseline
   archive: pending
 constraints:

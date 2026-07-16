@@ -50,6 +50,6 @@ Chain strategy: feature-branch-chain
 
 ## Phase 6: Consolidated closure (Unit 6)
 
-- [ ] 6.1 **RED→GREEN:** Prove **Today is visible**, **Existing non-in-app outcomes** and **Rejected result** with the real today/tomorrow/last-day/silence pipeline; verify suppressed receipts create no node or animation.
-- [ ] 6.2 **TRIANGULATE:** Extend UI/boundary tests for **Access and viewports**, **Reduced or suppressed** and **Dependencies**; preserve JSX/CSS unless an objective defect fails a test.
-- [ ] 6.3 **REFACTOR→VERIFY:** Run focal React tests, `npm --prefix app run test:react`, `npm --prefix app test`, `npm --prefix app run typecheck`, `git diff --check`, and protected-range/name-only checks for engines, Story, composer, simulator, router, API and durable storage. Never build or run Playwright.
+- [x] 6.1 **RED→GREEN:** Prove **Today is visible**, **Existing non-in-app outcomes** and **Rejected result** with the real today/tomorrow/last-day/silence pipeline; verify suppressed receipts create no node or animation.
+- [x] 6.2 **TRIANGULATE:** Extend UI/boundary tests for **Access and viewports**, **Reduced or suppressed** and **Dependencies**; preserve JSX/CSS unless an objective defect fails a test.
+- [x] 6.3 **REFACTOR→VERIFY:** Run focal React tests, `npm --prefix app run test:react`, `npm --prefix app test`, `npm --prefix app run typecheck`, `git diff --check`, and protected-range/name-only checks for engines, Story, composer, simulator, router, API and durable storage. Never build or run Playwright.

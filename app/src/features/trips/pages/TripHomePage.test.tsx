@@ -184,10 +184,12 @@ describe("TripHomePage (Portada del viaje)", () => {
     expect(await screen.findByRole("complementary", { name: "Alaia" })).toBeInTheDocument();
     first.unmount();
 
-    renderPortada();
+    const second = renderPortada();
     await screen.findByRole("link", { name: "Entrar al viaje" });
     await vi.waitFor(() => expect(getPushPreferences).toHaveBeenCalledTimes(2));
     expect(screen.queryByRole("complementary", { name: "Alaia" })).not.toBeInTheDocument();
+    expect(second.container.querySelector(".visible-companion-experience")).toBeNull();
+    expect(second.container.querySelector(".active-trip-home-companion-moment")).toBeNull();
   });
 
   it("aísla el trip scope al navegar y restaura el receipt al volver", async () => {
@@ -231,5 +233,26 @@ describe("TripHomePage (Portada del viaje)", () => {
     expect(await screen.findByText(/la historia empieza hoy/i)).toBeInTheDocument();
     expect(container.querySelector(".visible-companion-experience")).toBeNull();
     expect(container.querySelector(".active-trip-home-companion-moment")).toBeNull();
+  });
+
+  it.each([
+    ["trip_start_tomorrow", "2026-07-17T15:00:00.000Z", "timeline"],
+    ["trip_last_day", "2026-07-21T15:00:00.000Z", "memory"],
+  ] as const)("preserva el pipeline real %s/%s sin reescribirlo a in_app", async (_kind, instant, _channel) => {
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(new Date(instant));
+    const { demoStoryPackage } = await import("@/features/experience/data/demoStory");
+    getTrip.mockResolvedValue({ trip: trip() });
+    getStory.mockResolvedValue({ story: { storyId: "ba-2026", storyPackage: demoStoryPackage } });
+    getPushPreferences.mockResolvedValue(preferences(true));
+
+    const { container } = renderPortada();
+    await screen.findByRole("link", { name: "Entrar al viaje" });
+    await vi.waitFor(() => expect(getPushPreferences).toHaveBeenCalledTimes(1));
+
+    expect(container.querySelector(".visible-companion-experience")).toBeNull();
+    expect(container.querySelector(".active-trip-home-companion-moment")).toBeNull();
+    expect([...Array(window.sessionStorage.length)].map((_, index) => window.sessionStorage.key(index)))
+      .not.toEqual(expect.arrayContaining([expect.stringMatching(/^alaia:visible-delivery:/)]));
   });
 });
