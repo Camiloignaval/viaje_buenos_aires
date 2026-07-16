@@ -1,0 +1,19 @@
+change: first-real-experience
+artifact_store: openspec
+execution_mode: automatic
+delivery_strategy: auto-chain
+chain_strategy: feature-branch-chain
+status: ready-for-apply
+phases:
+  explore: done
+  proposal: done
+  specs: done       # 16 scenarios
+  design: done
+  tasks: done       # strict TDD; 9 tasks across three review slices
+  apply: pending    # 0/9 tasks complete
+  verify: pending
+  archive: pending
+constraints:
+  - preserve the five engines and production entrypoints byte-unchanged
+  - no rules, layers, providers, UI, delivery, persistence, build, push, tags or archive
+  - use sequential local thematic commits with feature-branch-chain review boundaries
