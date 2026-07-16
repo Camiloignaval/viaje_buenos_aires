@@ -9,8 +9,8 @@ phases:
   proposal: done
   specs: done        # consolidated evolution; 15 scenarios
   design: done       # companion experience closure
-  tasks: done        # strict TDD; 10/19 complete across six review slices
-  apply: pending     # closure tasks 11-19 remain
+  tasks: done        # strict TDD; 13/19 complete across six review slices
+  apply: in-progress # session receipt foundation complete; closure tasks 14-19 remain
   verify: superseded # prior PASS belongs to the pre-closure baseline
   archive: pending
 constraints:

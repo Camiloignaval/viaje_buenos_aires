@@ -38,9 +38,9 @@ Chain strategy: feature-branch-chain
 
 ## Phase 4: Session receipt foundation (Unit 4)
 
-- [ ] 4.1 **RED:** Create `features/experience/lib/visibleDeliverySession.test.ts` for **Valid record**, **Storage failure**, scope isolation, exact allowlist, corruption/version rejection and lazy expiry without timers.
-- [ ] 4.2 **RED:** Add lifecycle assertions for **Legal lifecycle**, **Illegal transition** and **Pending retry**; pending never enters dedupe/history and transitions are idempotent or fail closed.
-- [ ] 4.3 **GREEN→REFACTOR:** Implement `visibleDeliverySession.ts`: probed `sessionStorage`, versioned scoped identity, earliest-boundary expiry, immutable receipts and visible-only Companion snapshot.
+- [x] 4.1 **RED:** Create `features/experience/lib/visibleDeliverySession.test.ts` for **Valid record**, **Storage failure**, scope isolation, exact allowlist, corruption/version rejection and lazy expiry without timers.
+- [x] 4.2 **RED:** Add lifecycle assertions for **Legal lifecycle**, **Illegal transition** and **Pending retry**; pending never enters dedupe/history and transitions are idempotent or fail closed.
+- [x] 4.3 **GREEN→REFACTOR:** Implement `visibleDeliverySession.ts`: probed `sessionStorage`, versioned scoped identity, earliest-boundary expiry, immutable receipts and visible-only Companion snapshot.
 
 ## Phase 5: Session continuity integration (Unit 5)
 
