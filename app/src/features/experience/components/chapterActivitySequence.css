@@ -1,149 +1,212 @@
-/*
- * Slice Libro Vivo 1 — ritmo editorial del día.
- *
- * La portada abre el capítulo; esta secuencia hace que las actividades se lean
- * como páginas consecutivas, no como tarjetas de una agenda. Todo queda
- * deliberadamente scopeado al componente para no alterar álbum, preparativos ni
- * los motores que deciden qué contenido aparece.
- */
+/* Libro Vivo: estructura tipográfica continua, sin cards, grillas ni módulos. */
 
-.chapter-reading-flow {
+.chapter-reading-flow,
+.page-chapter .chapter-activity-sequence {
   width: 100%;
-  margin-inline: auto;
-}
-
-.chapter-reading-flow-heading {
-  width: min(100%, 54rem);
-  margin: 0 auto clamp(1rem, 3vw, 1.75rem);
-  text-align: left;
-}
-
-.chapter-reading-flow-kicker {
-  margin: 0 0 0.35rem;
-  color: rgba(var(--text-secondary-rgb), 0.68);
-  font-size: 0.68rem;
-  font-weight: 600;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-}
-
-.chapter-reading-flow-heading h2 {
-  margin: 0;
-  color: rgba(var(--text-primary-rgb), 0.94);
-  font-family: var(--font-display);
-  font-size: clamp(1.55rem, 5vw, 2.2rem);
-  font-weight: 400;
-  line-height: 1.12;
-  text-wrap: balance;
-}
-
-.chapter-reading-flow-rule {
-  display: block;
-  width: clamp(3rem, 12vw, 5.5rem);
-  height: 1px;
-  margin-top: 0.9rem;
-  background: color-mix(in srgb, var(--gold) 48%, transparent);
 }
 
 .page-chapter .chapter-activity-sequence {
-  counter-reset: living-book-page;
-  width: min(100%, 64rem);
-  max-width: 64rem;
+  max-width: none;
+  margin: 0;
+}
+
+.page-chapter .chapter-activity-sequence > .activity-page {
+  margin: 0;
+  padding: clamp(4.5rem, 13vw, 8rem) 0 !important;
+  border: 0;
+}
+
+.page-chapter .chapter-activity-sequence > .activity-page:first-child {
+  padding-top: clamp(2.5rem, 8vw, 5rem) !important;
+}
+
+.activity-page-sheet {
+  width: min(100%, 42rem);
   margin-inline: auto;
 }
 
-.page-chapter .chapter-activity-sequence > .activity-card {
-  counter-increment: living-book-page;
-  position: relative;
-  border-bottom: 0;
+.activity-page-opening {
+  margin-bottom: clamp(1.35rem, 4vw, 2.1rem);
 }
 
-.page-chapter .chapter-activity-sequence > .activity-card::before {
-  content: counter(living-book-page, decimal-leading-zero);
+.activity-page-marginalia,
+.activity-page-marginalia .time,
+.activity-page-marginalia .category {
+  color: rgba(var(--text-secondary-rgb), 0.7);
+  font: italic 0.78rem/1.4 var(--font-display);
+  letter-spacing: 0.035em;
+  text-transform: none;
+}
+
+.activity-page-marginalia {
+  margin: 0 0 0.9rem;
+}
+
+.page-chapter .activity-page .activity-title {
+  margin: 0;
+  color: rgba(var(--text-primary-rgb), 0.96);
+  font: 400 clamp(2rem, 8vw, 3.8rem)/1.03 var(--font-display);
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+
+.page-chapter .activity-page .activity-title em {
   display: block;
-  margin-bottom: 0.8rem;
-  color: color-mix(in srgb, var(--gold) 68%, transparent);
+  margin-bottom: 0.38rem;
+  color: rgba(var(--text-primary-rgb), 0.68);
+  font-size: 0.48em;
+  font-weight: 400;
+  line-height: 1.25;
+  letter-spacing: 0;
+}
+
+.page-chapter .activity-page .activity-description,
+.page-chapter .activity-page .recommendation {
+  max-width: 38rem;
+  margin: 0 0 1.25rem;
+  color: rgba(var(--text-primary-rgb), 0.86);
+  font: 400 clamp(1.08rem, 3.6vw, 1.3rem)/1.72 var(--font-display);
+}
+
+.activity-page-illustration {
+  width: min(54rem, calc(100vw - 3rem));
+  margin: clamp(2rem, 7vw, 3.6rem) 50%;
+  transform: translateX(-50%);
+}
+
+.page-chapter .activity-page .activity-photo {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 72svh;
+  margin: 0;
+  border-radius: 0;
+  object-fit: cover;
+  box-shadow: none;
+}
+
+.page-chapter .activity-page .activity-insight {
+  max-width: 32rem;
+  margin: clamp(1.8rem, 6vw, 3rem) 0 clamp(1.8rem, 6vw, 3rem) auto;
+  padding: 0;
+  border: 0;
+  color: rgba(var(--text-primary-rgb), 0.8);
+  font: italic clamp(1rem, 3.4vw, 1.2rem)/1.65 var(--font-display);
+}
+
+.activity-page-notes {
+  max-width: 30rem;
+  margin-top: clamp(1.7rem, 5vw, 2.8rem);
+  color: rgba(var(--text-secondary-rgb), 0.72);
+  font-size: 0.82rem;
+  line-height: 1.55;
+}
+
+.activity-page-notes :is(.recommendation, .location, .contextual-info, .links) {
+  margin: 0.25rem 0;
+  color: inherit;
+}
+
+.activity-page-notes .contextual-info {
+  padding: 0;
+  list-style: none;
+}
+
+.activity-page-notes .contextual-info-line {
+  padding: 0;
+  border: 0;
+}
+
+.activity-page-notes .links a {
+  color: inherit;
+  text-underline-offset: 0.2em;
+}
+
+/* La memoria es una marca sobre la página, no una sección posterior. */
+.activity-page-marks {
+  max-width: 34rem;
+  margin: clamp(2.8rem, 9vw, 5rem) 0 0 auto;
+}
+
+.page-chapter .activity-page-marks .memory-slot {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.activity-page-marks :is(.memory-invitation-question, .memory-note) {
+  margin: 0 0 0.7rem;
+  color: rgba(var(--text-primary-rgb), 0.82);
+  font: italic 400 clamp(1.08rem, 3.7vw, 1.32rem)/1.55 var(--font-display);
+}
+
+.activity-page-marks .memory-invitation-hint {
+  color: rgba(var(--text-secondary-rgb), 0.62);
   font-family: var(--font-display);
-  font-size: 0.78rem;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: 0.14em;
+  font-style: italic;
 }
 
-.page-chapter .chapter-activity-sequence > .activity-card + .activity-card {
-  margin-top: clamp(1.25rem, 5vw, 3.5rem);
-  padding-top: clamp(2.25rem, 7vw, 4.75rem) !important;
-  border-top: 1px solid rgba(var(--text-secondary-rgb), 0.11);
+.page-chapter .activity-page .activity-page-marks textarea {
+  min-height: 3.6rem;
+  margin: 0 0 0.65rem;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: rgba(var(--text-primary-rgb), 0.9);
+  font: italic 1.08rem/1.55 var(--font-display);
+  resize: none;
 }
 
-/* Una actividad sin fotografía conserva una columna de lectura íntima. */
-.page-chapter .chapter-activity-sequence > .activity-card:not(:has(.activity-photo)) {
-  width: min(100%, 44rem);
-  margin-inline: auto;
+.page-chapter .activity-page .activity-page-marks textarea::placeholder {
+  color: rgba(var(--text-secondary-rgb), 0.52);
+}
+
+.page-chapter .activity-page .activity-page-marks textarea:focus-visible {
+  outline: 1px solid rgba(var(--text-secondary-rgb), 0.48);
+  outline-offset: 0.45rem;
+}
+
+.page-chapter .activity-page .activity-page-marks :is(button, .add-photos-label) {
+  min-height: 44px;
+  padding: 0.4rem 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: rgba(var(--text-secondary-rgb), 0.78);
+  font: 400 0.86rem/1.4 var(--font-display);
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+  cursor: pointer;
+}
+
+.page-chapter .activity-page .activity-page-marks button:disabled {
+  cursor: default;
+  opacity: 0.38;
+}
+
+.activity-page-marks .memory-photos {
+  margin-bottom: 1.5rem;
+}
+
+.activity-page-marks .memory-photos img {
+  border-radius: 0;
+  transform: rotate(-0.8deg);
+}
+
+.activity-page-marks .memory-photos img:nth-child(even) {
+  transform: rotate(0.65deg);
 }
 
 @media (max-width: 767px) {
-  .chapter-reading-flow-heading {
-    padding-top: 0.25rem;
-  }
-
-  /* En teléfono la fotografía toca los bordes de la página. El texto vuelve a
-     la columna de lectura: imagen como página, no como thumbnail de una card. */
-  .page-chapter .chapter-activity-sequence > .activity-card > .activity-photo {
+  .activity-page-illustration {
     width: calc(100% + (var(--chapter-page-pad) * 2));
-    max-width: none;
-    height: clamp(235px, 72vw, 340px);
-    margin: 0 calc(var(--chapter-page-pad) * -1) 1.25rem;
-    border-radius: 0;
-  }
-}
-
-@media (min-width: 768px) {
-  .chapter-reading-flow-heading {
-    width: min(100%, 64rem);
-    margin-bottom: clamp(1.4rem, 3vh, 2.4rem);
   }
 
-  .page-chapter .chapter-activity-sequence > .activity-card {
-    padding-block: clamp(2.4rem, 5vh, 4.25rem) !important;
-  }
-
-  .page-chapter .chapter-activity-sequence > .activity-card:has(.activity-photo) {
-    display: grid;
-    grid-template-columns: repeat(12, minmax(0, 1fr));
-    column-gap: clamp(2rem, 4vw, 4.5rem);
-    align-items: start;
-  }
-
-  .page-chapter .chapter-activity-sequence > .activity-card:has(.activity-photo)::before,
-  .page-chapter .chapter-activity-sequence > .activity-card:has(.activity-photo) > :not(.activity-photo) {
-    grid-column: 8 / -1;
-  }
-
-  .page-chapter .chapter-activity-sequence > .activity-card:has(.activity-photo) > .activity-photo {
-    grid-column: 1 / 7;
-    grid-row: 1 / span 10;
-    width: 100%;
-    height: clamp(330px, 36vw, 500px);
-    margin: 0;
-    border-radius: 2px;
-    box-shadow: var(--shadow-cinematic);
-  }
-
-  .page-chapter .chapter-activity-sequence > .activity-card:nth-child(even):has(.activity-photo)::before,
-  .page-chapter .chapter-activity-sequence > .activity-card:nth-child(even):has(.activity-photo) > :not(.activity-photo) {
-    grid-column: 1 / 6;
-  }
-
-  .page-chapter .chapter-activity-sequence > .activity-card:nth-child(even):has(.activity-photo) > .activity-photo {
-    grid-column: 7 / -1;
-  }
-
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .chapter-reading-flow *,
-  .chapter-reading-flow *::before,
-  .chapter-reading-flow *::after {
-    scroll-behavior: auto;
+  .activity-page-marks {
+    margin-left: clamp(1rem, 8vw, 2.4rem);
   }
 }
