@@ -20,6 +20,7 @@ import {
   Traditions,
 } from "./ChapterSections";
 import { MemoryCard } from "./Memories";
+import { ChapterActivitySequence } from "./ChapterActivitySequence";
 import { VisibleCompanionExperience } from "./VisibleCompanionExperience";
 import { LivingMemoryMoment } from "./LivingMemoryMoment";
 import { resolveChapterContent } from "@/features/story/engine/chapterContent";
@@ -91,7 +92,7 @@ export function InProgress() {
               />
             </div>
           ) : null}
-          <ul className="activities">
+          <ChapterActivitySequence chapterTitle={chapter.title}>
             {content.activitiesWithPlaces.map((entry) => (
               <ActivityCard
                 key={entry.activity.id}
@@ -100,7 +101,7 @@ export function InProgress() {
                 memoriesByActivityId={byActivityId}
               />
             ))}
-          </ul>
+          </ChapterActivitySequence>
           <RelatedPlaces places={content.relatedPlaces} chapterId={chapter.id} />
           <PhotoSpots spots={content.photoSpots} chapterId={chapter.id} />
           <CollectionItems items={content.collectionItems} chapterId={chapter.id} />

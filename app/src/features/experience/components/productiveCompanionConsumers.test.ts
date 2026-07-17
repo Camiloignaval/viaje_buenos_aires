@@ -12,7 +12,7 @@ describe("productive companion consumer boundaries", () => {
   it("keeps one contextual protagonist between ChapterHero and activities", () => {
     const start = modes.indexOf("<ChapterHero");
     const companion = modes.indexOf("<VisibleCompanionExperience", start);
-    const activities = modes.indexOf('<ul className="activities">', companion);
+    const activities = modes.indexOf("<ChapterActivitySequence", companion);
     expect(start).toBeGreaterThan(-1);
     expect(companion).toBeGreaterThan(start);
     expect(activities).toBeGreaterThan(companion);
