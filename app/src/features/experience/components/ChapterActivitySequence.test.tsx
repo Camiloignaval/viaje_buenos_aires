@@ -11,13 +11,14 @@ describe("ChapterActivitySequence", () => {
       </ChapterActivitySequence>,
     );
 
-    expect(screen.getByRole("heading", { name: "El día, página a página" })).toBeInTheDocument();
-    const sequence = screen.getByRole("list", {
-      name: "Recorrido de Bienvenidos a Buenos Aires",
-    });
+    expect(
+      screen.getByRole("region", { name: "Recorrido de Bienvenidos a Buenos Aires" }),
+    ).toBeInTheDocument();
+    const sequence = screen.getByRole("list", { name: "Páginas de este día" });
     expect(sequence.tagName).toBe("OL");
     expect(screen.getAllByRole("listitem")).toHaveLength(2);
     expect(sequence).toHaveClass("chapter-activity-sequence");
+    expect(screen.queryByRole("heading")).not.toBeInTheDocument();
   });
 
   it("no agrega una página vacía cuando el Story Package no trae actividades", () => {

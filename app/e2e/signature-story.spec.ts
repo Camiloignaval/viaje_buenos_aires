@@ -56,7 +56,9 @@ test("Buenos Aires · portada, recuerdo, álbum y epílogo conservan el relato r
   await page.goto("/experience", { waitUntil: "domcontentloaded" });
   await dismissOpening(page);
   await expect(page.getByRole("heading", { name: "Bienvenidos a Buenos Aires" })).toBeVisible();
-  await expect(page.getByText("¿Quieren guardar este momento?").first()).toBeVisible();
+  await expect(
+    page.getByRole("complementary", { name: "Marcas que quedaron en esta página" }).first(),
+  ).toBeVisible();
 
   const note = page.getByRole("textbox", { name: "Qué quieren recordar de este momento" }).first();
   const save = page.getByRole("button", { name: "Guardar el momento" }).first();

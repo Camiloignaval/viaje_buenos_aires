@@ -234,8 +234,8 @@ export function ClosingMessage({ view, storyPackage }: { view: import("@/feature
   );
 }
 
-// Espejo de renderActivityMemorySlot.
-function ActivityMemorySlot({
+// La memoria no abre una sección nueva: deja marcas dentro de la misma página.
+function ActivityPageMarks({
   chapterId,
   activity,
   suggestedMemories,
@@ -251,21 +251,27 @@ function ActivityMemorySlot({
   const { interactive } = useExperienceCtx();
   if (!interactive) return null;
   if (existingMemory) {
-    return <SavedMemory memory={existingMemory} />;
+    return (
+      <aside className="activity-page-marks" aria-label="Marcas que quedaron en esta página">
+        <SavedMemory memory={existingMemory} />
+      </aside>
+    );
   }
   const hint = suggestedMemories.map((memory) => memory.prompt).join(" · ");
   return (
-    <MemoryInvitation
-      chapterId={chapterId}
-      activityId={activity.id}
-      hint={hint}
-      staged={staged}
-    />
+    <aside className="activity-page-marks" aria-label="Marcas que quedaron en esta página">
+      <MemoryInvitation
+        chapterId={chapterId}
+        activityId={activity.id}
+        question=""
+        hint={hint}
+        staged={staged}
+      />
+    </aside>
   );
 }
 
-// Espejo de renderActivityCard.
-export function ActivityCard({
+export function ActivityPage({
   entry,
   chapterId,
   memoriesByActivityId,
@@ -281,49 +287,70 @@ export function ActivityCard({
   const existingMemory = mostRecent(memoriesByActivityId.get(activity.id));
   const staged = stagedPhotosBySlot.get(photoSlotKey(chapterId, activity.id)) ?? [];
   return (
-    <li className="activity-card" data-reveal-on-scroll="" data-reveal-key={`chapter-${chapterId}-activity-${activity.id}`}>
-      {activity.image ? (
-        <img className="activity-photo" src={`/${activity.image}`} alt={activity.moment ?? activity.title} loading="lazy" />
-      ) : null}
-      <p className="activity-title">
-        {activity.moment ? (
-          <Fragment>
-            <em>{activity.moment}.</em>{" "}
-          </Fragment>
+    <li className="activity-page">
+      <article className="activity-page-sheet">
+        <header className="activity-page-opening">
+          {activity.timeWindow || activity.category ? (
+            <p className="activity-page-marginalia">
+              {activity.timeWindow ? <span className="time">{activity.timeWindow}</span> : null}
+              {activity.timeWindow && activity.category ? <span aria-hidden="true"> · </span> : null}
+              {activity.category ? <span className="category">{activity.category}</span> : null}
+            </p>
+          ) : null}
+          <h2 className="activity-title">
+            {activity.moment ? (
+              <Fragment>
+                <em>{activity.moment}.</em>{" "}
+              </Fragment>
+            ) : null}
+            {activity.title}
+          </h2>
+        </header>
+
+        {activity.description ? <p className="activity-description">{activity.description}</p> : null}
+        {activity.image ? (
+          <figure className="activity-page-illustration">
+            <img
+              className="activity-photo"
+              src={`/${activity.image}`}
+              alt={activity.moment ?? activity.title}
+              loading="lazy"
+            />
+          </figure>
         ) : null}
-        {activity.title}
-      </p>
-      {activity.description ? <p className="activity-description">{activity.description}</p> : null}
-      <div className="activity-head">
-        {activity.timeWindow ? <span className="time">{activity.timeWindow}</span> : null}
-        {activity.category ? <span className="category">{activity.category}</span> : null}
-      </div>
-      {location?.name ? <p className="location">{location.name}</p> : null}
-      {place?.recommendation ? <p className="recommendation">{place.recommendation}</p> : null}
-      {(() => {
-        const contextualLines = resolveContextualLines(activity.intelligence, place?.intelligence);
-        return contextualLines.length > 0 ? (
-          <ul className="contextual-info" aria-label="Información útil">
-            {contextualLines.map((line) => (
-              <li key={line.id} className="contextual-info-line">
-                {line.text}
-              </li>
-            ))}
-          </ul>
-        ) : null;
-      })()}
-      <Links location={location} websiteUrl={websiteUrl} />
-      <ActivityMemorySlot
-        chapterId={chapterId}
-        activity={activity}
-        suggestedMemories={suggestedMemories}
-        existingMemory={existingMemory}
-        staged={staged}
-      />
+
+        <ActivityPageMarks
+          chapterId={chapterId}
+          activity={activity}
+          suggestedMemories={suggestedMemories}
+          existingMemory={existingMemory}
+          staged={staged}
+        />
+
+        <footer className="activity-page-notes">
+          {place?.recommendation ? <p className="recommendation">{place.recommendation}</p> : null}
+          {location?.name ? <p className="location">{location.name}</p> : null}
+          {(() => {
+            const contextualLines = resolveContextualLines(activity.intelligence, place?.intelligence);
+            return contextualLines.length > 0 ? (
+              <ul className="contextual-info" aria-label="Información útil">
+                {contextualLines.map((line) => (
+                  <li key={line.id} className="contextual-info-line">
+                    {line.text}
+                  </li>
+                ))}
+              </ul>
+            ) : null;
+          })()}
+          <Links location={location} websiteUrl={websiteUrl} />
+        </footer>
+      </article>
     </li>
   );
 }
 
+/** Compatibilidad temporal para consumidores editoriales fuera del runtime. */
+export const ActivityCard = ActivityPage;
 // Espejo de renderChapterHero.
 export function ChapterHero({ chapter, openLine }: { chapter: Chapter; openLine: string }) {
   const { storyPackage } = useExperienceCtx();

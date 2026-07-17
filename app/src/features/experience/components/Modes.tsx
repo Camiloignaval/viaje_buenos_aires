@@ -6,7 +6,7 @@ import { ReadingTopbar } from "./ReadingTopbar";
 import { PromptSlot } from "./EpiloguePrompts";
 import {
   ActionButton,
-  ActivityCard,
+  ActivityPage,
   AlbumLink,
   ChapterHero,
   ClosingMessage,
@@ -94,7 +94,7 @@ export function InProgress() {
           ) : null}
           <ChapterActivitySequence chapterTitle={chapter.title}>
             {content.activitiesWithPlaces.map((entry) => (
-              <ActivityCard
+              <ActivityPage
                 key={entry.activity.id}
                 entry={entry}
                 chapterId={chapter.id}
