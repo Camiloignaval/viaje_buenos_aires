@@ -14,11 +14,11 @@ test("los manifests públicos legados usan la identidad de Alaia y abren la raí
     const manifest = JSON.parse(rawManifest);
 
     assert.equal(manifest.id, "/", manifestPath);
-    assert.equal(manifest.name, "Alaia — Buenos Aires 2026", manifestPath);
+    assert.equal(manifest.name, "Alaia — Historias de viaje", manifestPath);
     assert.equal(manifest.short_name, "Alaia", manifestPath);
     assert.equal(
       manifest.description,
-      "Un compañero de viaje para vivir y recordar Buenos Aires 2026.",
+      "Un compañero para vivir y recordar cada viaje.",
       manifestPath,
     );
     assert.equal(manifest.start_url, "/", manifestPath);

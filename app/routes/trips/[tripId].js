@@ -28,7 +28,7 @@ export default async function handler(req, res) {
       const context = await requireTripRole(req, res, tripId, ['owner']);
       if (!context) return;
 
-      const patch = normalizeTripPatch(readBody(req));
+      const patch = normalizeTripPatch(readBody(req), { currentTrip: context.trip });
       const now = new Date().toISOString();
       const trips = await getTripsCollection();
 

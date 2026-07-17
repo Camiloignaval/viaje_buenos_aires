@@ -6,7 +6,7 @@
 // cuando no hay ?tripId=). En producción la historia SIEMPRE se resuelve desde el
 // catálogo vía el baseStoryId del viaje (useResolvedStory); este package NUNCA es
 // un fallback de un viaje conectado.
-import raw from "@/story/data/story-ba2026.json";
+import raw from "@/content/stories/buenos-aires-2026/story.json";
 import { loadStoryPackage } from "@/features/story/engine/storyPackage";
 
 // `/*#__PURE__*/` le dice a Rollup que esta llamada no tiene efectos observables:

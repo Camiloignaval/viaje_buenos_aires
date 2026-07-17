@@ -88,6 +88,7 @@ export interface ChapterCopy {
 /** Assets asociados a un capítulo o al paquete (imagen hero, etc.). */
 export interface StoryAssets {
   heroImage?: string;
+  introVideo?: string;
   [key: string]: unknown;
 }
 

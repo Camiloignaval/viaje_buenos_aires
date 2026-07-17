@@ -19,7 +19,7 @@ La arquitectura correcta no es “agregar más galerías”. Es construir una l�
 
 | Área | Estado actual | Evidencia |
 |---|---|---|
-| Story Package | Existe un JSON central `story-ba-2026`, schema `1.4`, con metadata, fechas, capítulos, actividades, recuerdos sugeridos, checklist y epílogo. | `app/src/story/data/story-ba2026.json` |
+| Story Package | Existe un paquete editorial autocontenido `buenos-aires-2026`, schema `1.4`, con metadata, fechas, capítulos, actividades, recuerdos sugeridos, checklist y epílogo. | `app/src/content/stories/buenos-aires-2026/` |
 | Fechas del viaje | `travelDates.start = 2026-07-18`, `travelDates.end = 2026-07-21`. No existe `timezone`. | `metadata.travelDates` |
 | Capítulos | Hay 4 capítulos principales. La fecha de cada capítulo se deriva de `travelDates.start + order - 1` salvo que el capítulo tenga `date`. | `storyProgress.js#getChapterReferenceDate` |
 | Epílogo | Existe como `specialChapter`, con `date: 2026-07-22`, `kind: epilogue`, y prompts retrospectivos. | `story-ba2026.json` |

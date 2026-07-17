@@ -41,7 +41,7 @@ Todos nuevos, ninguno reemplaza algo existente:
 | `app/src/story/storyProgress.js` | Calcular el estado de cada capítulo (incluido el epílogo) dado un Story Package + contexto de fechas/progreso. Función pura, sin efectos secundarios. |
 | `app/src/story/storyPackage.test.js` | Pruebas del validador: casos válidos e inválidos. |
 | `app/src/story/storyProgress.test.js` | Pruebas de la máquina de estados: los cuatro escenarios de `07_Business_Rules.md` + el caso del epílogo. |
-| `app/src/story/data/story-ba2026.json` | El Story Package real de Buenos Aires 2026, tal como quedó definido en `STORY_PACKAGE_BA2026.md`. |
+| `app/src/content/stories/buenos-aires-2026/story.json` | El Story Package editorial de Buenos Aires 2026, tal como quedó definido en `STORY_PACKAGE_BA2026.md`. |
 
 ## Qué archivos modificarás
 

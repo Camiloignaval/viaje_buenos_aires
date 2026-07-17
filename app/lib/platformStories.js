@@ -1,95 +1,131 @@
-import { readFile } from 'node:fs/promises';
-import { loadStoryPackage } from '../src/story/storyPackage/storyPackage.js';
+import { readFile } from "node:fs/promises";
+import { STORY_MANIFESTS } from "../src/content/stories/catalog.js";
+import { loadStoryPackage } from "../src/story/storyPackage/storyPackage.js";
 
-export const MVP_BASE_STORY_ID = 'ba-2026';
-export const BASE_STORY_SOURCE = 'base';
-export const BASE_STORY_IMMUTABLE = true;
+const PUBLISHED = "published";
 
-// Catálogo de historias curadas: hace RESOLUBLE una historia por su id canónico
-// (baseStoryId → JSON curado). Sumar una entrada acá NO cambia ExperiencePage, la
-// capa connected ni la API.
-//
-// IMPORTANTE — agregar una historia curada nueva requiere DOS registros coordinados:
-//   1) esta entrada en BASE_STORY_REGISTRY (resolución del contenido), y
-//   2) una regla destino→id en DESTINATION_STORY_MAP (platformTrips.js), para que
-//      los viajes de ese destino reciban el baseStoryId.
-// El guard de arranque de platformTrips valida que (2) solo apunte a ids de (1),
-// así ambos registros no pueden quedar descoordinados.
-const BASE_STORY_ENTRIES = [
-  [MVP_BASE_STORY_ID, { packageUrl: new URL('../src/story/data/story-ba2026.json', import.meta.url) }],
-  // ['rio-2027', { packageUrl: new URL('../src/story/data/story-rio2027.json', import.meta.url) }],
-];
+function nonEmpty(value) {
+  return typeof value === "string" && value.trim().length > 0;
+}
 
-// Un objeto literal colapsa claves duplicadas en silencio, así que construir el
-// registro desde una lista permite detectar el duplicado y fallar ruidosamente
-// en el arranque, sin pisar la entrada original. Exportada para poder testear
-// el rechazo de ids repetidos de forma aislada.
-export function createStoryRegistry(entries) {
-  const registry = new Map();
-  for (const [storyId, config] of entries) {
-    if (registry.has(storyId)) {
-      throw new Error(`Catálogo de historias: id duplicado "${storyId}". Cada historia debe tener un id único.`);
-    }
-    registry.set(storyId, config);
+function assertStoryManifest(manifest, index) {
+  const context = `Catálogo de historias: descriptor[${index}]`;
+  if (!manifest || typeof manifest !== "object") throw new Error(`${context} inválido.`);
+  for (const field of ["catalogId", "storyPackageId", "status", "packageUrl", "selection", "compatibility", "media"]) {
+    if (!(field in manifest)) throw new Error(`${context}: falta ${field}.`);
   }
+  if (!nonEmpty(manifest.catalogId) || !nonEmpty(manifest.storyPackageId)) {
+    throw new Error(`${context}: identidades inválidas.`);
+  }
+  if (!(manifest.packageUrl instanceof URL)) throw new Error(`${context}: packageUrl debe ser URL.`);
+  if (!nonEmpty(manifest.selection?.title) || !nonEmpty(manifest.selection?.destination)) {
+    throw new Error(`${context}: selection incompleta.`);
+  }
+  if (!nonEmpty(manifest.media?.basePath) || !Array.isArray(manifest.media?.required)) {
+    throw new Error(`${context}: media incompleta.`);
+  }
+}
+
+export function createStoryRegistry(manifests) {
+  const registry = new Map();
+  manifests.forEach((manifest, index) => {
+    assertStoryManifest(manifest, index);
+    if (registry.has(manifest.catalogId)) {
+      throw new Error(`Catálogo de historias: id duplicado "${manifest.catalogId}". Cada historia debe tener un id único.`);
+    }
+    registry.set(manifest.catalogId, manifest);
+  });
   return registry;
 }
 
-const BASE_STORY_REGISTRY = createStoryRegistry(BASE_STORY_ENTRIES);
-
-// Cache de packages ya cargados y validados, por id. Reemplaza la única var
-// suelta anterior: ahora convive N historias sin recargar el JSON en cada request.
+const STORY_REGISTRY = createStoryRegistry(STORY_MANIFESTS);
 const packageCache = new Map();
 
-export function isRegisteredBaseStory(storyId) {
-  return BASE_STORY_REGISTRY.has(storyId);
+export function isRegisteredBaseStory(catalogId) {
+  return STORY_REGISTRY.get(catalogId)?.status === PUBLISHED;
 }
 
 export function listBaseStoryIds() {
-  return [...BASE_STORY_REGISTRY.keys()];
+  return [...STORY_REGISTRY.values()]
+    .filter(({ status }) => status === PUBLISHED)
+    .map(({ catalogId }) => catalogId);
 }
 
-async function loadStoryPackageById(storyId) {
-  const entry = BASE_STORY_REGISTRY.get(storyId);
-  if (!entry) return null;
+export function getStoryManifest(catalogId) {
+  return STORY_REGISTRY.get(catalogId) ?? null;
+}
 
-  if (!packageCache.has(storyId)) {
-    const raw = JSON.parse(await readFile(entry.packageUrl, 'utf8'));
-    packageCache.set(storyId, loadStoryPackage(raw));
+function sameText(left, right) {
+  return String(left ?? "").trim().localeCompare(String(right ?? "").trim(), undefined, { sensitivity: "accent" }) === 0;
+}
+
+function datePart(value) {
+  return typeof value === "string" ? value.slice(0, 10) : "";
+}
+
+/** Valida compatibilidad; nunca selecciona historias por destino. */
+export function isBaseStoryCompatibleWithTrip(catalogId, trip) {
+  const manifest = getStoryManifest(catalogId);
+  if (!manifest || manifest.status !== PUBLISHED) return false;
+  const compatibility = manifest.compatibility ?? {};
+  const destination = trip?.destination;
+  if (!destination || typeof destination !== "object") return false;
+
+  if (Array.isArray(compatibility.destinationCountryCodes)
+    && !compatibility.destinationCountryCodes.includes(destination.countryCode)) return false;
+  if (Array.isArray(compatibility.destinationCityNames)
+    && !compatibility.destinationCityNames.some((city) => sameText(city, destination.cityName))) return false;
+  if (compatibility.travelDates) {
+    if (datePart(trip.startDateTime) !== compatibility.travelDates.start
+      || datePart(trip.endDateTime) !== compatibility.travelDates.end) return false;
   }
-  return packageCache.get(storyId);
+  return true;
 }
 
-export function publicBaseStorySummary(storyId, storyPackage) {
+async function loadStoryPackageById(catalogId) {
+  const manifest = STORY_REGISTRY.get(catalogId);
+  if (!manifest || manifest.status !== PUBLISHED) return null;
+
+  if (!packageCache.has(catalogId)) {
+    const raw = JSON.parse(await readFile(manifest.packageUrl, "utf8"));
+    const storyPackage = loadStoryPackage(raw);
+    if (storyPackage.storyId !== manifest.storyPackageId) {
+      throw new Error(`Catálogo de historias: ${catalogId} declara storyPackageId="${manifest.storyPackageId}" pero carga "${storyPackage.storyId}".`);
+    }
+    packageCache.set(catalogId, storyPackage);
+  }
+  return packageCache.get(catalogId);
+}
+
+export function publicBaseStorySummary(manifest, storyPackage) {
   return {
-    storyId,
+    storyId: manifest.catalogId,
     packageStoryId: storyPackage.storyId,
     version: storyPackage.schemaVersion,
-    title: storyPackage.metadata.title,
-    destination: storyPackage.metadata.destination,
-    source: BASE_STORY_SOURCE,
-    immutable: BASE_STORY_IMMUTABLE,
+    title: manifest.selection.title,
+    destination: manifest.selection.destination,
+    status: manifest.status,
+    source: manifest.source,
+    immutable: manifest.immutable,
+    compatibility: manifest.compatibility,
+    mediaBasePath: manifest.media.basePath,
   };
 }
 
 export async function listBaseStories() {
   const summaries = [];
-  for (const storyId of BASE_STORY_REGISTRY.keys()) {
-    const storyPackage = await loadStoryPackageById(storyId);
-    summaries.push(publicBaseStorySummary(storyId, storyPackage));
+  for (const catalogId of listBaseStoryIds()) {
+    const manifest = STORY_REGISTRY.get(catalogId);
+    const storyPackage = await loadStoryPackageById(catalogId);
+    summaries.push(publicBaseStorySummary(manifest, storyPackage));
   }
   return summaries;
 }
 
-// Punto ÚNICO de traducción baseStoryId → StoryPackage. Devuelve `null`
-// explícito (nunca una historia por defecto, nunca una excepción) cuando el id
-// no está registrado: la API lo mapea a 404 y la capa connected a EMPTY honesto.
-export async function getBaseStory(storyId) {
-  const storyPackage = await loadStoryPackageById(storyId);
-  if (!storyPackage) return null;
-
-  return {
-    ...publicBaseStorySummary(storyId, storyPackage),
-    storyPackage,
-  };
+// Traducción única catálogo editorial → Story Package. Nunca usa un default.
+export async function getBaseStory(catalogId) {
+  const manifest = STORY_REGISTRY.get(catalogId);
+  const storyPackage = await loadStoryPackageById(catalogId);
+  if (!manifest || !storyPackage) return null;
+  return { ...publicBaseStorySummary(manifest, storyPackage), storyPackage };
 }

@@ -1,90 +1,74 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { access } from 'node:fs/promises';
+import { resolve } from 'node:path';
+import { buenosAiresStoryManifest } from '../src/content/stories/buenos-aires-2026/manifest.js';
 import {
-  BASE_STORY_IMMUTABLE,
-  MVP_BASE_STORY_ID,
   createStoryRegistry,
   getBaseStory,
+  isBaseStoryCompatibleWithTrip,
   isRegisteredBaseStory,
   listBaseStories,
   listBaseStoryIds,
-  publicBaseStorySummary,
 } from './platformStories.js';
 
-test('listBaseStories expone Buenos Aires como story base immutable', async () => {
-  const stories = await listBaseStories();
+const BA_ID = 'ba-2026';
+const compatibleTrip = {
+  destination: { countryCode: 'AR', cityName: 'Buenos Aires' },
+  startDateTime: '2026-07-18T09:30',
+  endDateTime: '2026-07-21T22:00',
+};
 
-  const ba = stories.find((story) => story.storyId === MVP_BASE_STORY_ID);
-  assert.ok(ba, 'ba-2026 debe estar en el catálogo');
+test('catálogo por manifests expone el paquete editorial publicado', async () => {
+  const stories = await listBaseStories();
+  const ba = stories.find((story) => story.storyId === BA_ID);
   assert.equal(ba.packageStoryId, 'story-ba-2026');
   assert.equal(ba.immutable, true);
   assert.equal(ba.source, 'base');
+  assert.match(ba.mediaBasePath, /buenos-aires-2026\/media/);
 });
 
-test('getBaseStory devuelve el Story Package real para ba-2026', async () => {
-  const story = await getBaseStory(MVP_BASE_STORY_ID);
-
-  assert.equal(story.storyId, MVP_BASE_STORY_ID);
-  assert.equal(story.immutable, BASE_STORY_IMMUTABLE);
+test('getBaseStory traduce catalogId a StoryPackage.storyId sin confundir identidades', async () => {
+  const story = await getBaseStory(BA_ID);
+  assert.equal(story.storyId, BA_ID);
   assert.equal(story.storyPackage.storyId, 'story-ba-2026');
   assert.equal(story.storyPackage.metadata.destination, 'Buenos Aires');
 });
 
-// Punto 8.4 / spec story-catalog "Unknown Identifiers": un id sin registrar
-// devuelve null explícito, sin excepción y sin caer a ninguna historia default.
-test('getBaseStory devuelve null explícito ante un id desconocido (sin default, sin throw)', async () => {
+test('id desconocido devuelve null y nunca usa una historia default', async () => {
   assert.equal(await getBaseStory('destino-inexistente'), null);
   assert.equal(await getBaseStory(undefined), null);
   assert.equal(isRegisteredBaseStory('destino-inexistente'), false);
+  assert.deepEqual(listBaseStoryIds(), [BA_ID]);
 });
 
-test('isRegisteredBaseStory / listBaseStoryIds reflejan el catálogo real', () => {
-  assert.equal(isRegisteredBaseStory(MVP_BASE_STORY_ID), true);
-  assert.deepEqual(listBaseStoryIds(), [MVP_BASE_STORY_ID]);
+test('compatibilidad valida destino y fechas pero no selecciona historias', () => {
+  assert.equal(isBaseStoryCompatibleWithTrip(BA_ID, compatibleTrip), true);
+  assert.equal(isBaseStoryCompatibleWithTrip(BA_ID, { ...compatibleTrip, destination: { countryCode: 'FR', cityName: 'Paris' } }), false);
+  assert.equal(isBaseStoryCompatibleWithTrip(BA_ID, { ...compatibleTrip, startDateTime: '2026-08-01T09:30' }), false);
 });
 
-test('publicBaseStorySummary usa el id de catálogo, no el storyId interno del package', () => {
-  const summary = publicBaseStorySummary('ba-2026', {
-    storyId: 'story-ba-2026',
-    schemaVersion: '1.4',
-    metadata: { title: 'Buenos Aires, 2026', destination: 'Buenos Aires' },
-  });
-
-  assert.deepEqual(summary, {
-    storyId: 'ba-2026',
-    packageStoryId: 'story-ba-2026',
-    version: '1.4',
-    title: 'Buenos Aires, 2026',
-    destination: 'Buenos Aires',
-    source: 'base',
-    immutable: true,
-  });
+test('la media requerida por el paquete existe bajo su namespace editorial', async () => {
+  for (const reference of buenosAiresStoryManifest.media.required) {
+    assert.ok(reference.startsWith(`${buenosAiresStoryManifest.media.basePath}/`));
+    await access(resolve('public', reference));
+  }
 });
 
-// Punto 8.2 / spec story-catalog: el mecanismo de resolución es genérico por id
-// (una lista de entradas), no un `if id === MVP`. Registrar una segunda historia
-// es sumar una entrada — sin tocar la lógica de resolución ni ExperiencePage.
-test('createStoryRegistry resuelve cualquier cantidad de historias por id (catálogo extensible)', () => {
-  const registry = createStoryRegistry([
-    ['ba-2026', { packageUrl: 'ba.json' }],
-    ['rio-2027', { packageUrl: 'rio.json' }],
-  ]);
+function manifest(catalogId) {
+  return {
+    catalogId,
+    storyPackageId: `story-${catalogId}`,
+    status: 'published',
+    packageUrl: new URL(`file:///${catalogId}.json`),
+    selection: { title: catalogId, destination: 'Ejemplo' },
+    compatibility: {},
+    media: { basePath: `content/${catalogId}`, required: [] },
+  };
+}
 
+test('createStoryRegistry es extensible por datos y rechaza ids duplicados', () => {
+  const registry = createStoryRegistry([manifest('story-a'), manifest('story-b')]);
   assert.equal(registry.size, 2);
-  assert.equal(registry.get('ba-2026').packageUrl, 'ba.json');
-  assert.equal(registry.get('rio-2027').packageUrl, 'rio.json');
-  assert.equal(registry.get('inexistente'), undefined);
-});
-
-// Spec story-catalog "Duplicate Identifiers Are Rejected": un id repetido lanza
-// error explícito en el arranque y NO pisa la entrada original.
-test('createStoryRegistry rechaza ids duplicados con error explícito', () => {
-  assert.throws(
-    () =>
-      createStoryRegistry([
-        ['ba-2026', { packageUrl: 'original.json' }],
-        ['ba-2026', { packageUrl: 'impostor.json' }],
-      ]),
-    /id duplicado "ba-2026"/,
-  );
+  assert.throws(() => createStoryRegistry([manifest('story-a'), manifest('story-a')]), /id duplicado/);
 });

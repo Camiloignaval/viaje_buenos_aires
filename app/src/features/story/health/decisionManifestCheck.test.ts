@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import realStory from "@/story/data/story-ba2026.json";
+import realStory from "@/content/stories/buenos-aires-2026/story.json";
 import { checkDecisionManifest, inspectDecisionManifest } from "./decisionManifestCheck";
 import { runHealthCheck } from "./healthCheck";
 

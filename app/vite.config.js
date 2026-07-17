@@ -53,7 +53,7 @@ export default defineConfig({
         // Vite 8/Rolldown rechaza nombres de assets absolutos en un build
         // multi-entry. Estos paths son relativos al `root` de Vite (app/).
         main: "index.html",
-        // Alaia Studio (herramienta de publicación, entrada aparte).
+        // Alaia Studio (herramienta de validación/exportación, entrada aparte).
         admin: "admin.html",
       },
     },
@@ -84,33 +84,11 @@ export default defineConfig({
           "admin.html",
           // Export bruto de íconos: duplica assets ya curados bajo /icons.
           "AppAssets_2026-07-09/**/*",
-          // Copias legacy en la raíz: la historia carga estas fotos desde
-          // /images/*. Fuera del precache para no inflar la primera instalación.
-          "dia1-cena.jpg",
-          "dia1-corrientes.jpg",
-          "dia1-cuartito.jpg",
-          "dia1-rapanui.jpg",
-          "dia2-almuerzo.jpg",
-          "dia2-cafepalermo.jpg",
-          "dia2-cementerio.jpg",
-          "dia2-cena.jpg",
-          "dia2-floralis.jpg",
-          "dia2-puertomadero.jpg",
-          "dia2-rosedal.jpg",
-          "dia3-almuerzo.jpg",
-          "dia3-caminito.jpg",
-          "dia3-dorrego.jpg",
-          "dia3-floreria.jpg",
-          "dia3-mafalda.jpg",
-          "dia3-mercado.jpg",
-          "dia4-almuerzo.jpg",
-          "dia4-ateneo.jpg",
-          "hotel.jpg",
         ],
         // El fallback de navegación (SPA → /index.html) se define dentro del
         // propio Service Worker (src/sw.ts): en modo injectManifest Workbox no
         // acepta navigateFallback en la config.
-        // Assets emocionales (cover-hero.jpg, video_intro_2.mp4) superan el
+        // Algunos paquetes editoriales incluyen media que supera el
         // límite por defecto de Workbox (2 MiB); sin esto el offline completo
         // dejaría afuera la primera impresión.
         maximumFileSizeToCacheInBytes: 50 * 1024 * 1024,
@@ -128,9 +106,9 @@ export default defineConfig({
       ],
       manifest: {
         id: "/",
-        name: "Alaia — Buenos Aires 2026",
+        name: "Alaia — Historias de viaje",
         short_name: "Alaia",
-        description: "Un compañero de viaje para vivir y recordar Buenos Aires 2026.",
+        description: "Un compañero para vivir y recordar cada viaje.",
         start_url: "/",
         scope: "/",
         display: "standalone",

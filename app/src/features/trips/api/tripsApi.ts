@@ -11,6 +11,8 @@ export interface CreateTripInput {
   travelReason: string;
   travelStyle: string[];
   travelBudgetStyle: string;
+  /** Solo herramientas editoriales/bootstrap; el wizard normal no autoasigna Story. */
+  baseStoryId?: string | null;
   accommodation?: TripAccommodation;
   travelContext?: string;
   travelBudget?: TravelBudget;

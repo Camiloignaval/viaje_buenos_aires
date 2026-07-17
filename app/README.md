@@ -11,7 +11,7 @@ Mini app web para vivir el viaje, no solo leerlo: checklists interactivos y un
 > (desde la Épica 5) backend propio de sincronización — vive en `src/story/`,
 > `src/memory/`, `src/experience/`, `src/sync/`, `api/aurora/*` y
 > `lib/aurora*.js`, y se abre desde `experience.html` (más `admin.html` como
-> Aurora Studio, y `debug.html`/`memories.html` como herramientas internas).
+> validador/exportador interno, y `debug.html`/`memories.html` como herramientas internas).
 > Aurora comparte la misma `MONGODB_URI` que el prototipo viejo (una sola
 > variable de entorno) y usa sus propias claves de `localStorage`
 > (`aurora:progress:*`, `aurora:memories:*`) — nunca las del prototipo. Ver
@@ -267,7 +267,7 @@ Comparte la conexión Mongo del backend del prototipo viejo (`MONGODB_URI`, abaj
 |---|---|---|
 | `MONGODB_URI` | Connection string a Mongo Atlas — la misma que usa el prototipo viejo (`lib/mongodb.js`) | Reusada |
 | `CLOUDINARY_CLOUD_NAME` / `CLOUDINARY_API_KEY` / `CLOUDINARY_API_SECRET` | Las fotos de Aurora van a la carpeta `aurora/<storyId>`, en la misma cuenta | Reusada |
-| `AURORA_ADMIN_PASSWORD` | Contraseña para publicar historias desde Aurora Studio (`admin.html`) | Nueva |
+| `AURORA_ADMIN_PASSWORD` | Credencial legacy del endpoint histórico de publicación; Studio ya no la usa | Legacy |
 
 Sin `MONGODB_URI`, `/api/aurora/*` responde `503` (nunca crashea) y Aurora sigue funcionando 100% local — ver `src/sync/README.md`.
 
@@ -286,3 +286,15 @@ Sin `MONGODB_URI`, `/api/aurora/*` responde `503` (nunca crashea) y Aurora sigue
 - [ ] Proyecto importado o listo para `vercel deploy`
 - [ ] Las variables de entorno cargadas en Vercel (4 obligatorias + `UPLOAD_PASSWORD` opcional)
 - [ ] Redeploy hecho después de cargar las variables
+## Arquitectura narrativa vigente
+
+- Los contenidos editoriales viven en `src/content/stories/<package>/`; Buenos Aires
+  es un paquete de ejemplo autocontenido con manifest, Story Package y media namespaced.
+- `src/content/stories/catalog.js` registra manifests. El motor resuelve
+  `Trip.baseStoryId` (identidad de catálogo) a `StoryPackage.storyId` sin confundirlo
+  con `tripId` ni con claves administrativas de bootstrap.
+- Crear un Trip no selecciona una Story por destino. La asociación es explícita y
+  se valida contra compatibilidad editorial; cambiar destino limpia esa asociación.
+- `src/story/storyPackage/storyPackage.js` es el único contrato runtime de validación.
+- Alaia Studio valida y exporta JSON; no publica al catálogo. `/api/alaia/*` se
+  conserva como compatibilidad legacy hasta conocer consumidores externos.

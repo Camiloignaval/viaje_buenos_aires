@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { Trip } from "@/features/trips/types";
 import { createLivingContextResolution, type LivingContextInput, type LivingTravelContext } from "@/features/context-engine/livingContext";
 import type { StoryPackage } from "@/features/story/engine/types";
-import realStory from "@/story/data/story-ba2026.json";
+import realStory from "@/content/stories/buenos-aires-2026/story.json";
 import {
   composeFirstRealExperience,
   type FirstRealExperienceInput,

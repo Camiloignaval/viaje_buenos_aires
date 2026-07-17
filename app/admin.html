@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="robots" content="noindex, nofollow" />
-    <title>Alaia Studio — Publicar una historia</title>
+    <title>Alaia Studio — Validar una historia</title>
     <style>
       body {
         font-family: system-ui, sans-serif;
@@ -71,25 +71,15 @@
     </style>
   </head>
   <body>
-    <h1>Alaia Studio — Publicar una historia</h1>
+    <h1>Alaia Studio — Validar una historia</h1>
     <p class="note">
-      Esto no es la aplicación de Alaia. Es la herramienta para publicar un
-      Story Package en el backend y generar el link/QR de acceso para
-      sincronizar entre dispositivos. Requiere que el backend esté configurado
-      (<code>MONGODB_URI</code>,
-      <code>ALAIA_ADMIN_PASSWORD</code>).
+      Esto no es la aplicación de Alaia ni un CMS. Esta herramienta interna
+      valida el mismo contrato que consume el motor y exporta un JSON listo
+      para incorporarlo a un paquete editorial. No publica al catálogo.
     </p>
 
     <fieldset>
-      <legend>Publicar</legend>
-      <label>
-        Contraseña de administración:
-        <input
-          type="password"
-          id="password-input"
-          autocomplete="current-password"
-        />
-      </label>
+      <legend>Validar</legend>
       <label>
         Story Package (JSON):
         <input type="file" id="file-input" accept="application/json" />
@@ -99,18 +89,15 @@
         rows="12"
         placeholder="Pega aquí el JSON del Story Package, o sube un archivo arriba."
       ></textarea>
-      <p><button type="button" id="publish-button">Publicar</button></p>
+      <p><button type="button" id="publish-button">Validar package</button></p>
       <p class="error" id="error-message"></p>
     </fieldset>
 
     <fieldset class="result" id="result">
-      <legend>Listo</legend>
-      <p>
-        Link de acceso (sincroniza progreso, Memorias y fotos de esta historia):
-      </p>
+      <legend>Package válido</legend>
+      <p>El archivo fue validado. Descargalo para incorporarlo a su paquete editorial.</p>
       <input type="text" id="link-output" readonly />
-      <p><button type="button" id="copy-button">Copiar link</button></p>
-      <div id="qr"></div>
+      <p><button type="button" id="copy-button">Descargar JSON</button></p>
     </fieldset>
 
     <script type="module" src="/src/admin/adminView.js"></script>

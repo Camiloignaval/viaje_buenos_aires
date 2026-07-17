@@ -1,9 +1,8 @@
 import { toObjectId } from './platformMongo.js';
-import { MVP_BASE_STORY_ID, isRegisteredBaseStory } from './platformStories.js';
+import { isBaseStoryCompatibleWithTrip, isRegisteredBaseStory } from './platformStories.js';
 
 // El catálogo (platformStories) es el dueño del id canónico; se re-exporta para
 // no duplicar la constante ni romper importadores existentes.
-export { MVP_BASE_STORY_ID };
 
 export const TRIP_STATUSES = Object.freeze({
   active: 'active',
@@ -213,29 +212,16 @@ function normalizeTravelBudget(budgetStyle, input) {
   return { amount, currency, style: budgetStyle };
 }
 
-// Mapa destino → historia curada. Agregar un destino con historia = sumar una
-// regla acá (primer match gana). Un destino sin regla queda con baseStoryId
-// null: el viaje se crea igual (Experience mostrará el estado honesto "sin
-// historia"), no hace falta IA ni itinerario todavía.
-const DESTINATION_STORY_MAP = [
-  {
-    storyId: MVP_BASE_STORY_ID,
-    match: (d) => d.countryCode === 'AR' && d.cityName.trim().toLowerCase() === 'buenos aires',
-  },
-];
-
-// Invariante de integridad: toda regla debe apuntar a un id que exista en el
-// catálogo. Si alguien agrega un destino con un id sin registrar, esto falla
-// en el arranque en vez de crear trips que nunca resuelven su historia.
-for (const { storyId } of DESTINATION_STORY_MAP) {
-  if (!isRegisteredBaseStory(storyId)) {
-    throw new Error(`DESTINATION_STORY_MAP referencia un storyId inexistente en el catálogo: "${storyId}"`);
+function normalizeBaseStoryId(value, tripShape) {
+  if (value == null || String(value).trim() === '') return null;
+  const baseStoryId = String(value).trim();
+  if (!isRegisteredBaseStory(baseStoryId)) {
+    throw new Error(`La historia "${baseStoryId}" no existe en el catálogo publicado.`);
   }
-}
-
-function deriveBaseStoryId(destination) {
-  const rule = DESTINATION_STORY_MAP.find(({ match }) => match(destination));
-  return rule ? rule.storyId : null;
+  if (!isBaseStoryCompatibleWithTrip(baseStoryId, tripShape)) {
+    throw new Error(`La historia "${baseStoryId}" no es compatible con el destino y las fechas del viaje.`);
+  }
+  return baseStoryId;
 }
 
 export function normalizeTripInput(input = {}) {
@@ -266,7 +252,8 @@ export function normalizeTripInput(input = {}) {
     destination,
     startDateTime,
     endDateTime,
-    baseStoryId: deriveBaseStoryId(destination),
+    // La asociación Trip → Story siempre es explícita. El destino no selecciona contenido.
+    baseStoryId: normalizeBaseStoryId(input.baseStoryId, { destination, startDateTime, endDateTime }),
     travelCompanions,
     expectedTravelers,
     travelReason,
@@ -292,7 +279,7 @@ export function createTripDocument(input, userId, { now = new Date().toISOString
   };
 }
 
-export function normalizeTripPatch(input = {}) {
+export function normalizeTripPatch(input = {}, { currentTrip = {} } = {}) {
   const patch = {};
 
   if ('title' in input) {
@@ -304,11 +291,16 @@ export function normalizeTripPatch(input = {}) {
   }
 
   if ('destination' in input) {
-    const destination = String(input.destination ?? '').trim();
-    if (!destination) {
-      throw new Error('El destino no puede quedar vacío.');
-    }
-    patch.destination = destination;
+    patch.destination = normalizeDestination(input.destination);
+    if (!('baseStoryId' in input)) patch.baseStoryId = null;
+  }
+
+  if ('baseStoryId' in input) {
+    patch.baseStoryId = normalizeBaseStoryId(input.baseStoryId, {
+      destination: patch.destination ?? currentTrip.destination,
+      startDateTime: currentTrip.startDateTime,
+      endDateTime: currentTrip.endDateTime,
+    });
   }
 
   if ('status' in input) {

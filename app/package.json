@@ -38,7 +38,6 @@
     "country-flag-emoji-polyfill": "^0.1.8",
     "framer-motion": "^12.42.2",
     "mongodb": "^7.4.0",
-    "qrcode": "^1.5.4",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "react-hook-form": "^7.81.0",

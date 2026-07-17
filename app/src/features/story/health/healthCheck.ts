@@ -633,23 +633,31 @@ export function runHealthCheck(
   const storyId = isNonEmptyString(rawId) ? rawId : null;
 
   let pkg: StoryPackage;
+  const contractFindings: HealthFinding[] = [];
   try {
     pkg = loadStoryPackage(raw) as StoryPackage;
   } catch (error) {
-    if (error instanceof StoryPackageValidationError) {
-      const findings = [finding("metadata", "critical", "structure.invalid-package", error.message)];
-      return buildReport(storyId, findings);
+    if (error instanceof StoryPackageValidationError || (error instanceof Error && error.name === "StoryPackageValidationError")) {
+      const candidate = asRecord(raw);
+      // Health Check conserva su diagnóstico granular cuando el package tiene
+      // forma inspeccionable, aunque el contrato canónico ya lo haya rechazado.
+      if (!candidate || !asRecord(candidate.metadata) || !Array.isArray(candidate.chapters)) {
+        return buildReport(storyId, [finding("metadata", "critical", "structure.invalid-package", error.message)]);
+      }
+      contractFindings.push(finding("metadata", "critical", "structure.invalid-package", error.message));
+      pkg = raw as StoryPackage;
+    } else {
+      throw error;
     }
-    throw error;
   }
 
-  const findings = [...DEFAULT_CHECKERS, ...extraCheckers].flatMap((checker) => {
+  const findings = [...contractFindings, ...[...DEFAULT_CHECKERS, ...extraCheckers].flatMap((checker) => {
     try {
       return checker(pkg, ctx);
     } catch (error) {
       return [finding("metadata", "warning", "checker.threw", `Un checker lanzó una excepción: ${(error as Error).message}`)];
     }
-  });
+  })];
 
   return buildReport(pkg.storyId ?? storyId, findings);
 }

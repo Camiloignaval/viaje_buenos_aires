@@ -1,5 +1,6 @@
+// LEGACY COMPATIBILITY: este endpoint no alimenta el catálogo conectado actual.
 // GET  /api/alaia/story?storyId=X&token=Y  → devuelve el Story Package publicado
-// POST /api/alaia/story                    → Alaia Studio: publica/actualiza un Story
+// POST /api/alaia/story                    → integración histórica: publica/actualiza un Story
 //                                              Package (protegido por ALAIA_ADMIN_PASSWORD)
 //
 // Republicar un `storyId` que ya existe actualiza su contenido pero CONSERVA el

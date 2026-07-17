@@ -250,7 +250,7 @@ export function TripAlbum() {
           })
         ) : (
           <p className="album-empty">
-            Todavía no guardaron ningún momento. Buenos Aires igual ya forma parte de su historia.
+            Todavía no guardaron ningún momento. Este viaje igual ya forma parte de su historia.
           </p>
         )}
       </section>

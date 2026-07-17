@@ -1,8 +1,8 @@
 {
   "id": "/",
-  "name": "Alaia — Buenos Aires 2026",
+  "name": "Alaia — Historias de viaje",
   "short_name": "Alaia",
-  "description": "Un compañero de viaje para vivir y recordar Buenos Aires 2026.",
+  "description": "Un compañero para vivir y recordar cada viaje.",
   "start_url": "/",
   "scope": "/",
   "icons": [

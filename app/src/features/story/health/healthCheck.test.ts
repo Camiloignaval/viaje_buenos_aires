@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { runHealthCheck, type StoryHealthChecker } from "./healthCheck";
-import realStory from "@/story/data/story-ba2026.json";
+import realStory from "@/content/stories/buenos-aires-2026/story.json";
 
 // Paquete mínimo válido; cada test lo desvía para provocar un hallazgo puntual.
 function validPackage(): Record<string, unknown> {

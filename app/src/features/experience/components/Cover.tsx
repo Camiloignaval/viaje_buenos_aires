@@ -3,6 +3,7 @@ import { IntroParticles } from "./IntroParticles";
 import { IndexPage } from "./IndexPage";
 import { DAY_IN_MS } from "../lib/format";
 import type { NextUnlock } from "@/features/story/engine/types";
+import { resolveStoryMediaUrl } from "@/features/story/engine/storyMedia";
 
 // Espejo de renderTravelLine.
 function TravelLine({ origin, destination }: { origin?: string; destination: string }) {
@@ -63,13 +64,10 @@ function CoverContent() {
 // Espejo de renderStaticCover.
 export function StaticCover() {
   const { storyPackage } = useExperienceCtx();
-  // Fuente de verdad: el hero declarado por el paquete; fallback al asset raíz.
-  const coverImage = storyPackage.assets?.heroImage
-    ? `/${storyPackage.assets.heroImage.replace(/^\//, "")}`
-    : "/cover-hero.jpg";
+  const coverImage = resolveStoryMediaUrl(storyPackage.assets?.heroImage);
   return (
     <section className="book-page cover">
-      <img className="cover-photo" src={coverImage} alt="" />
+      {coverImage ? <img className="cover-photo" src={coverImage} alt="" /> : null}
       <div className="cover-tint" aria-hidden="true" />
       <div className="cover-scrim" aria-hidden="true" />
       <CoverContent />
@@ -95,12 +93,14 @@ export function ReplayIntroButton() {
 // Espejo de renderIntroVideo. El <video> se registra en useExperience (ref) para
 // enganchar los eventos (ended/error/play) — igual que attachIntroVideoEvents.
 function IntroVideo() {
-  const { actions } = useExperienceCtx();
+  const { actions, storyPackage } = useExperienceCtx();
+  const source = resolveStoryMediaUrl(storyPackage.assets?.introVideo);
+  if (!source) return null;
   return (
     <div className="intro-video-shell" aria-label="Introducción de Alaia">
       <video
         className="intro-video"
-        src="/video_intro_2.mp4"
+        src={source}
         muted
         autoPlay
         playsInline

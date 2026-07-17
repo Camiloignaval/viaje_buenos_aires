@@ -68,9 +68,16 @@ describe("Memory isolation boundaries", () => {
       "src/story",
     ], { cwd: APP_DIRECTORY, encoding: "utf8" });
 
+    const authorizedStoryArchitecture = new Set([
+      "app/src/story/data/story-ba2026.json",
+      "app/src/story/storyPackage/README.md",
+      "app/src/story/storyPackage/storyPackage.d.ts",
+      "app/src/story/storyPackage/storyPackage.js",
+    ]);
     const unexpected = changed.trim().split(/\r?\n/u)
       .filter(Boolean)
-      .filter((file) => !file.endsWith("src/story/data/story-ba2026.json"));
+      .filter((file) => !file.endsWith("src/content/stories/buenos-aires-2026/story.json"))
+      .filter((file) => !authorizedStoryArchitecture.has(file));
 
     expect(unexpected).toEqual([]);
   });

@@ -1,16 +1,12 @@
 # storyPackage
 
-**Responsabilidad:** cargar y validar que un objeto tenga la forma mínima de un Story Package, según `STORY_PACKAGE_SCHEMA_v1.4.md`. Si falta algo obligatorio, lanza `StoryPackageValidationError` con un mensaje legible.
+Contrato runtime autoritativo para cargar y validar cualquier Story Package.
+Backend, React, Health Check y Alaia Studio delegan en `storyPackage.js`; la capa
+TypeScript es sólo una proyección tipada del mismo validador.
 
-**Qué NO hace:**
-- No interpreta el contenido (no decide qué mostrar, eso es Story Engine).
-- No calcula estados de capítulo (eso es Story Progress).
-- No valida tipos profundos ni formatos de fecha — solo presencia de campos obligatorios.
-- No sabe qué es "Buenos Aires" ni ninguna otra historia concreta.
-- No toca UI, red, ni almacenamiento.
+Valida estructura raíz, metadata y fechas, capítulos e identidades únicas,
+actividades, capítulo especial y referencias de media. No interpreta contenido,
+no calcula progreso, no conoce destinos y no toca UI, red ni persistencia.
 
-**Dominios que conoce:** únicamente la forma de Story Package.
-
-**Dominios que no debe conocer:** Story Progress, Memory Engine, Story Mood (catálogo), Notification Engine, Presentation, Infrastructure (Mongo/Cloudinary/localStorage). No sabe que existe una UI ni una base de datos.
-
-**Aislamiento:** no depende de React ni de ningún framework. Se prueba con objetos simulados (`storyPackage.test.js`), nunca contra el Story Package real de una historia — reutilizable para cualquier historia futura sin cambios.
+Los tests genéricos viven junto al engine. Las pruebas editoriales de una historia
+concreta viven dentro de su propio paquete bajo `src/content/stories/`.

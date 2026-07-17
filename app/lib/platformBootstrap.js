@@ -1,6 +1,7 @@
 import { getTripsCollection, getUsersCollection, toObjectId } from './platformMongo.js';
 import { normalizeEmail } from './platformAuthCodes.js';
-import { MVP_BASE_STORY_ID, TRIP_ROLES, createTripDocument } from './platformTrips.js';
+import { buenosAiresStoryManifest } from '../src/content/stories/buenos-aires-2026/manifest.js';
+import { TRIP_ROLES, createTripDocument } from './platformTrips.js';
 
 // Clave estable para identificar el viaje semilla. NUNCA se deduplica por título:
 // dos viajes pueden llamarse igual, pero solo uno lleva este bootstrapKey.
@@ -23,6 +24,7 @@ export function buenosAiresTripInput() {
     },
     startDateTime: '2026-07-18T09:30',
     endDateTime: '2026-07-21T22:00',
+    baseStoryId: buenosAiresStoryManifest.catalogId,
     travelCompanions: 'partner',
     expectedTravelers: 2,
     travelReason: 'vacation',
@@ -35,8 +37,8 @@ export function buenosAiresTripInput() {
 // y forma que un viaje real) y verifica el invariante baseStoryId = "ba-2026".
 export function buildBuenosAiresTripDocument(userId, { now = new Date().toISOString() } = {}) {
   const doc = createTripDocument(buenosAiresTripInput(), userId, { now });
-  if (doc.baseStoryId !== MVP_BASE_STORY_ID) {
-    throw new Error(`El viaje semilla debe resolver baseStoryId="${MVP_BASE_STORY_ID}" (obtuvo "${doc.baseStoryId}").`);
+  if (doc.baseStoryId !== buenosAiresStoryManifest.catalogId) {
+    throw new Error(`El viaje semilla debe usar baseStoryId="${buenosAiresStoryManifest.catalogId}" (obtuvo "${doc.baseStoryId}").`);
   }
   return { ...doc, bootstrapKey: BUENOS_AIRES_BOOTSTRAP_KEY };
 }
@@ -76,7 +78,7 @@ export async function bootstrapBuenosAiresTrip({ email, collections = {}, now = 
   // upsert crea el documento y este update separado asegura los campos móviles.
   await trips.updateOne(
     { bootstrapKey: BUENOS_AIRES_BOOTSTRAP_KEY },
-    { $set: { ownerId, baseStoryId: MVP_BASE_STORY_ID, updatedAt: now } },
+    { $set: { ownerId, baseStoryId: buenosAiresStoryManifest.catalogId, updatedAt: now } },
   );
 
   // Asegura al owner en members SIN pisar a otros miembros (solo pushea si falta).

@@ -5,7 +5,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { User } from "@/features/auth/types";
 import type { StoryPackage } from "@/features/story/engine/types";
 import type { Trip } from "@/features/trips/types";
-import realStory from "@/story/data/story-ba2026.json";
+import realStory from "@/content/stories/buenos-aires-2026/story.json";
 import { collectAdaptiveJourneyActivities, useAdaptiveJourney } from "./useAdaptiveJourney";
 
 const { resolveFinancialRate, fetchWeatherContext } = vi.hoisted(() => ({

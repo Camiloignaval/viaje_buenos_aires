@@ -28,7 +28,7 @@
         "open": "No importa cuántas veces viajemos. Siempre voy a recordar este como el viaje en que celebramos tu cumpleaños. Hoy no hay nada planeado todavía — solo la ciudad, esperándonos, y las maletas recién dejadas en el hotel.",
         "close": "Hoy probablemente estaremos cansados. Pero también felices. Hoy comenzó una aventura que llevábamos mucho tiempo esperando. Quizás no recordemos exactamente todo lo que hicimos — pero sí cómo nos sentimos. Y eso siempre será lo más importante."
       },
-      "assets": { "heroImage": "dia1-hero.jpg" },
+      "assets": { "heroImage": "content/stories/buenos-aires-2026/media/dia1-hero.jpg" },
       "activities": [
         {
           "id": "act-1-1",
@@ -36,7 +36,7 @@
           "description": "Aeroparque, migraciones y traslado en Uber hasta el hotel.",
           "timeWindow": "11:20–12:50",
           "category": "logística",
-          "image": "images/hotel.jpg"
+          "image": "content/stories/buenos-aires-2026/media/hotel.jpg"
         },
         {
           "id": "act-1-2",
@@ -47,7 +47,7 @@
           "relatedPlaceId": "cuartito",
           "moment": "La primera comida juntos en la ciudad",
           "insight": "Ahí casi nadie se sienta a esperar — la pizza se come parada, apoyada en el mostrador, mientras se decide qué pedir de más. Es más costumbre que apuro.",
-          "image": "images/dia1-cuartito.jpg"
+          "image": "content/stories/buenos-aires-2026/media/dia1-cuartito.jpg"
         },
         {
           "id": "act-1-3",
@@ -58,7 +58,7 @@
           "location": { "name": "Obelisco de Buenos Aires" },
           "moment": "La primera caminata sin apuro",
           "insight": "Desde la esquina, de costado, antes de quedar de frente, es donde más se nota la escala de la avenida — ahí se entiende por qué le dicen la más ancha del mundo.",
-          "image": "images/dia1-corrientes.jpg",
+          "image": "content/stories/buenos-aires-2026/media/dia1-corrientes.jpg",
           "intelligence": {
             "outdoor": true,
             "indoor": false,
@@ -78,7 +78,7 @@
           "category": "gastronomía",
           "relatedPlaceId": "la-estancia-asador-criollo",
           "moment": "La primera cena porteña de verdad",
-          "image": "images/dia1-cena.jpg"
+          "image": "content/stories/buenos-aires-2026/media/dia1-cena.jpg"
         },
         {
           "id": "act-1-4",
@@ -89,7 +89,7 @@
           "relatedPlaceId": "rapanui",
           "moment": "El primer helado de Buenos Aires",
           "insight": "Casi nadie se sienta a comerlo aquí — se camina despacio con el cono en la mano, como si sentarse cortara la caminata antes de que termine.",
-          "image": "images/dia1-rapanui.jpg"
+          "image": "content/stories/buenos-aires-2026/media/dia1-rapanui.jpg"
         }
       ],
       "traditions": [
@@ -138,7 +138,7 @@
       "id": "chapter-2",
       "order": 2,
       "title": "Buenos Aires se disfruta caminando",
-      "assets": { "heroImage": "dia2-hero.jpg" },
+      "assets": { "heroImage": "content/stories/buenos-aires-2026/media/dia2-hero.jpg" },
       "copy": {
         "open": "Los mejores recuerdos rara vez aparecen cuando uno anda apurado. Hoy no hay una sola parada que valga más que otra — solo un recorrido largo, pensado para caminarlo despacio.",
         "close": "Quizás hoy caminamos más despacio. Quizás nos detuvimos más veces. Pero probablemente también sonreímos mucho más. Y eso hace que este día haya valido completamente la pena."
@@ -157,7 +157,7 @@
           "timeWindow": "10:30–11:40",
           "category": "caminata",
           "location": { "name": "Floralis Genérica" },
-          "image": "images/dia2-floralis.jpg",
+          "image": "content/stories/buenos-aires-2026/media/dia2-floralis.jpg",
           "intelligence": {
             "outdoor": true,
             "indoor": false,
@@ -176,7 +176,7 @@
           "timeWindow": "11:40",
           "category": "cultura",
           "location": { "name": "Cementerio de Recoleta" },
-          "image": "images/dia2-cementerio.jpg"
+          "image": "content/stories/buenos-aires-2026/media/dia2-cementerio.jpg"
         },
         {
           "id": "act-2-4",
@@ -187,7 +187,7 @@
           "relatedPlaceId": "la-biela",
           "moment": "El primer café con medialunas de Kari",
           "insight": "Bajo ese gomero nadie apura la mesa — es de los pocos lugares del viaje donde quedarse un rato de más no necesita excusa.",
-          "image": "images/la-biela.jpg"
+          "image": "content/stories/buenos-aires-2026/media/la-biela.jpg"
         },
         {
           "id": "act-2-5",
@@ -197,7 +197,7 @@
           "category": "gastronomía",
           "relatedPlaceId": "la-cabrera",
           "insight": "La provoleta suele llegar bastante antes que el bife — ese rato de espera, con las guarniciones todavía por venir, es de los pocos momentos lentos que quedan en una parrilla.",
-          "image": "images/dia2-almuerzo.jpg"
+          "image": "content/stories/buenos-aires-2026/media/dia2-almuerzo.jpg"
         },
         {
           "id": "act-2-6",
@@ -206,7 +206,7 @@
           "category": "caminata",
           "location": { "name": "Rosedal de Palermo" },
           "moment": "Caminar sin rumbo, sin mirar el reloj",
-          "image": "images/dia2-rosedal.jpg",
+          "image": "content/stories/buenos-aires-2026/media/dia2-rosedal.jpg",
           "intelligence": {
             "outdoor": true,
             "indoor": false,
@@ -226,7 +226,7 @@
           "timeWindow": "18:30",
           "category": "café",
           "relatedPlaceId": "lattente",
-          "image": "images/dia2-cafepalermo.jpg"
+          "image": "content/stories/buenos-aires-2026/media/dia2-cafepalermo.jpg"
         },
         {
           "id": "act-2-8",
@@ -236,7 +236,7 @@
           "location": { "name": "Puerto Madero" },
           "moment": "La primera noche del viaje en Puerto Madero",
           "insight": "En la mitad del puente, de noche, el agua queda tan quieta que el dique se ve distinto a como se veía de día — vale la pena llegar al restaurante un minuto más tarde por eso.",
-          "image": "images/dia2-puertomadero.jpg",
+          "image": "content/stories/buenos-aires-2026/media/dia2-puertomadero.jpg",
           "intelligence": {
             "outdoor": true,
             "indoor": false,
@@ -256,7 +256,7 @@
           "timeWindow": "20:30",
           "category": "gastronomía",
           "relatedPlaceId": "cabana-las-lilas",
-          "image": "images/dia2-cena.jpg"
+          "image": "content/stories/buenos-aires-2026/media/dia2-cena.jpg"
         }
       ],
       "traditions": [
@@ -323,7 +323,7 @@
       "id": "chapter-3",
       "order": 3,
       "title": "El alma de Buenos Aires",
-      "assets": { "heroImage": "dia3-hero.jpg" },
+      "assets": { "heroImage": "content/stories/buenos-aires-2026/media/dia3-hero.jpg" },
       "copy": {
         "open": "No todas las ciudades se conocen mirando edificios. Algunas se conocen caminando sin rumbo. Hoy toca la Buenos Aires que no está en ningún itinerario oficial — la de las ferias, el tango de casualidad y los bares escondidos.",
         "close": "Hoy probablemente conocimos la Buenos Aires más auténtica. La que tiene historia. La que tiene música. La que tiene olor a café. Y quizás también la que más recordaremos."
@@ -347,7 +347,7 @@
             "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Mercado+de+San+Telmo,+Buenos+Aires"
           },
           "insight": "Lo que más termina gustando casi nunca está en el primer puesto — suele aparecer en el último pasillo, cuando ya se bajó la guardia de estar buscando algo puntual.",
-          "image": "images/dia3-mercado.jpg"
+          "image": "content/stories/buenos-aires-2026/media/dia3-mercado.jpg"
         },
         {
           "id": "act-3-3",
@@ -359,7 +359,7 @@
             "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Escultura+de+Mafalda,+Defensa+700,+San+Telmo,+Buenos+Aires"
           },
           "insight": "Sentarse junto a Mafalda un momento, aunque sea la foto que se sacan todos, tiene algo propio: es una nena de bronce que lleva más de sesenta años preguntando por qué el mundo no funciona mejor — y ahí, en el banco, cuesta no sonreírle de vuelta.",
-          "image": "images/dia3-mafalda.jpg"
+          "image": "content/stories/buenos-aires-2026/media/dia3-mafalda.jpg"
         },
         {
           "id": "act-3-4",
@@ -368,7 +368,7 @@
           "category": "cultura",
           "location": { "name": "Plaza Dorrego" },
           "moment": "El primer tango visto de casualidad",
-          "image": "images/dia3-dorrego.jpg"
+          "image": "content/stories/buenos-aires-2026/media/dia3-dorrego.jpg"
         },
         {
           "id": "act-3-5",
@@ -377,7 +377,7 @@
           "timeWindow": "13:00",
           "category": "cultura",
           "location": { "name": "Caminito, La Boca" },
-          "image": "images/dia3-caminito.jpg",
+          "image": "content/stories/buenos-aires-2026/media/dia3-caminito.jpg",
           "intelligence": {
             "outdoor": true,
             "indoor": false,
@@ -396,7 +396,7 @@
           "timeWindow": "14:00",
           "category": "gastronomía",
           "relatedPlaceId": "desnivel",
-          "image": "images/dia3-almuerzo.jpg"
+          "image": "content/stories/buenos-aires-2026/media/dia3-almuerzo.jpg"
         },
         {
           "id": "act-3-7",
@@ -422,7 +422,7 @@
           "relatedPlaceId": "floreria-atlantico",
           "moment": "La primera vez que entramos a un bar escondido",
           "insight": "Entre las flores, antes de bajar la escalera, hay un segundo de duda que es parte del truco del lugar — de afuera, nadie sabe lo que hay abajo.",
-          "image": "images/dia3-floreria.jpg"
+          "image": "content/stories/buenos-aires-2026/media/dia3-floreria.jpg"
         }
       ],
       "traditions": [
@@ -471,7 +471,7 @@
       "id": "chapter-4",
       "order": 4,
       "title": "El último día siempre llega demasiado rápido",
-      "assets": { "heroImage": "dia4-hero.jpg" },
+      "assets": { "heroImage": "content/stories/buenos-aires-2026/media/dia4-hero.jpg" },
       "copy": {
         "open": "Los mejores viajes no terminan. Simplemente empiezan a convertirse en recuerdos. Todavía queda un día entero por delante — no hace falta que se sienta como una despedida todavía.",
         "close": "Gracias Buenos Aires. Quizás este viaje terminó. Pero ahora comienza otra etapa. Porque desde hoy Buenos Aires ya no será solamente una ciudad — será el lugar donde celebramos un cumpleaños, donde caminamos durante horas, donde nos reímos, donde comimos increíble, y donde escribimos un recuerdo que nos acompañará siempre."
@@ -495,7 +495,7 @@
           "category": "cultura",
           "location": { "name": "El Ateneo Grand Splendid" },
           "insight": "En un lugar así, el libro correcto casi siempre aparece antes de que lo estén buscando — pocas veces es el primero que se mira.",
-          "image": "images/dia4-ateneo.jpg"
+          "image": "content/stories/buenos-aires-2026/media/dia4-ateneo.jpg"
         },
         {
           "id": "act-4-3",
@@ -503,7 +503,7 @@
           "timeWindow": "13:00",
           "category": "gastronomía",
           "relatedPlaceId": "el-correo",
-          "image": "images/dia4-almuerzo.jpg"
+          "image": "content/stories/buenos-aires-2026/media/dia4-almuerzo.jpg"
         },
         {
           "id": "act-4-4",
@@ -1184,7 +1184,8 @@
     "anniversaryMessage": "Hace exactamente un año caminábamos por Buenos Aires. Hoy, volvemos a abrir esta historia para recordarlo."
   },
   "assets": {
-    "heroImage": "cover-hero.jpg"
+    "heroImage": "content/stories/buenos-aires-2026/media/cover-hero.jpg",
+    "introVideo": "content/stories/buenos-aires-2026/media/video_intro_2.mp4"
   },
   "invitationContent": {
     "invitationTitle": "Una historia te está esperando",

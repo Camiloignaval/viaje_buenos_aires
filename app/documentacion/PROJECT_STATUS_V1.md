@@ -10,7 +10,7 @@
 
 | Dominio | Estado | Dónde vive |
 |---|---|---|
-| **Story Package** | Contrato definido (v1.4) + una instancia real (Buenos Aires 2026) | `app/src/story/storyPackage/`, `app/src/story/data/story-ba2026.json` |
+| **Story Package** | Contrato definido (v1.4) + un paquete editorial real (Buenos Aires 2026) | `app/src/story/storyPackage/`, `app/src/content/stories/buenos-aires-2026/` |
 | **Story Progress** | Completo para v1 | `app/src/story/storyProgress/` |
 | **Story Engine** | Completo para v1 | `app/src/story/storyEngine/` |
 | **Synchronization** | Parcial — solo progreso de capítulos, solo local | `app/src/story/progressStore/` |

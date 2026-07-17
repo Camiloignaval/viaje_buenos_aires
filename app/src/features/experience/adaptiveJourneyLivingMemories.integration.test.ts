@@ -3,7 +3,7 @@ import { acceptMemoryCandidate } from "@/features/context-engine/memory";
 import { createLivingContextResolution, type LivingTravelContext } from "@/features/context-engine/livingContext";
 import type { StoryPackage } from "@/features/story/engine/types";
 import type { Trip } from "@/features/trips/types";
-import realStory from "@/story/data/story-ba2026.json";
+import realStory from "@/content/stories/buenos-aires-2026/story.json";
 import { composeFirstRealExperience, type FirstRealExperienceInput, type FirstRealExperienceResult } from "./firstRealExperience";
 import { adaptStoryActivity } from "./lib/adaptiveJourney";
 import {

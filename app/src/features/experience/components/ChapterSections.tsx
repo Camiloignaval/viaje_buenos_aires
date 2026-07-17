@@ -9,6 +9,7 @@ import { resolveContextualLines } from "../lib/contextualInfo";
 import { mostRecent } from "../lib/memoryGrouping";
 import { photoSlotKey } from "../lib/photoSlot";
 import { getChapterReferenceDate } from "@/features/story/engine/storyProgress";
+import { resolveStoryMediaUrl } from "@/features/story/engine/storyMedia";
 import { ChapterStatus } from "@/features/story/engine/types";
 import { useSession } from "@/features/auth/hooks/useSession";
 import { normalizeLegacyMoney } from "@/features/context-engine/money";
@@ -308,11 +309,11 @@ export function ActivityPage({
         </header>
 
         {activity.description ? <p className="activity-description">{activity.description}</p> : null}
-        {activity.image ? (
+        {resolveStoryMediaUrl(activity.image) ? (
           <figure className="activity-page-illustration">
             <img
               className="activity-photo"
-              src={`/${activity.image}`}
+              src={resolveStoryMediaUrl(activity.image) ?? undefined}
               alt={activity.moment ?? activity.title}
               loading="lazy"
             />
@@ -359,7 +360,9 @@ export function ChapterHero({ chapter, openLine }: { chapter: Chapter; openLine:
     <div className="chapter-hero">
       <div className="chapter-hero-frame reveal reveal-1">
         <ChapterTopbar />
-        <img className="chapter-hero-image" src={heroImageForChapter(chapter)} alt="" loading="eager" />
+        {heroImageForChapter(chapter) ? (
+          <img className="chapter-hero-image" src={heroImageForChapter(chapter) ?? undefined} alt="" loading="eager" />
+        ) : null}
         <div className="chapter-hero-copy reveal reveal-2">
           <p className="chapter-hero-kicker">
             CAPÍTULO {toRoman(chapter.order)} · {chapterDate}

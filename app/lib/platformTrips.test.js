@@ -2,7 +2,6 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { ObjectId } from 'mongodb';
 import {
-  MVP_BASE_STORY_ID,
   TRIP_ROLES,
   addMemberIfCapacity,
   createTripDocument,
@@ -13,6 +12,8 @@ import {
   publicTripSummary,
   roleForUser,
 } from './platformTrips.js';
+
+const BA_ID = 'ba-2026';
 
 const BA_DESTINATION = {
   countryCode: 'ar',
@@ -50,11 +51,16 @@ function validInput(overrides = {}) {
   };
 }
 
-test('normalizeTripInput fuerza ba-2026 cuando el destino es Buenos Aires, AR', () => {
+test('normalizeTripInput no autoasigna una historia aunque el destino sea Buenos Aires', () => {
   const normalized = normalizeTripInput(validInput({ title: ' Buenos Aires ' }));
-  assert.equal(normalized.baseStoryId, MVP_BASE_STORY_ID);
+  assert.equal(normalized.baseStoryId, null);
   assert.equal(normalized.destination.countryCode, 'AR');
   assert.equal(normalized.title, 'Buenos Aires');
+});
+
+test('normalizeTripInput acepta una asociación explícita compatible', () => {
+  assert.equal(normalizeTripInput(validInput({ baseStoryId: BA_ID })).baseStoryId, BA_ID);
+  assert.throws(() => normalizeTripInput(validInput({ destination: PARIS_DESTINATION, baseStoryId: BA_ID })), /no es compatible/);
 });
 
 test('normalizeTripInput deja baseStoryId null para destinos sin Story Package', () => {
@@ -222,7 +228,7 @@ test('createTripDocument deja al creador como owner y member owner', () => {
   assert.equal(String(trip.members[0].userId), String(userId));
   assert.equal(trip.members[0].role, 'owner');
   assert.equal(trip.status, 'active');
-  assert.equal(trip.baseStoryId, MVP_BASE_STORY_ID);
+  assert.equal(trip.baseStoryId, null);
   assert.equal(trip.travelCompanions, 'partner');
   assert.equal(trip.expectedTravelers, 2);
 });
@@ -246,11 +252,16 @@ test('roleForUser: el creador es owner; otro usuario no tiene rol (no es miembro
   assert.equal(publicTripSummary(trip, stranger).role, null);
 });
 
-test('normalizeTripPatch permite solo title, destination y status válidos', () => {
+test('normalizeTripPatch conserva Story en cambios neutros y la limpia al cambiar destino', () => {
+  const currentTrip = { ...validInput(), destination: BA_DESTINATION, baseStoryId: BA_ID };
   assert.deepEqual(
-    normalizeTripPatch({ title: ' Nuevo ', destination: ' Córdoba ', status: 'archived', ignored: true }),
-    { title: 'Nuevo', destination: 'Córdoba', status: 'archived' }
+    normalizeTripPatch({ title: ' Nuevo ', status: 'archived', ignored: true }, { currentTrip }),
+    { title: 'Nuevo', status: 'archived' }
   );
+  assert.deepEqual(normalizeTripPatch({ destination: PARIS_DESTINATION }, { currentTrip }), {
+    destination: { ...PARIS_DESTINATION, countryCode: 'FR' },
+    baseStoryId: null,
+  });
   assert.throws(() => normalizeTripPatch({ status: 'deleted' }), /Status de viaje inválido/);
 });
 

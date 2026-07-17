@@ -27,7 +27,7 @@ export const CHAPTER_INDEX_MARKER: Record<ChapterStatusValue, string> = {
 export const CHAPTER_TEASERS = [
   "Todo empieza aquí.",
   "La ciudad se empieza a abrir.",
-  "Buenos Aires ya se siente distinta.",
+  "El viaje ya se siente distinto.",
   "Un último regalo antes de volver.",
 ];
 
