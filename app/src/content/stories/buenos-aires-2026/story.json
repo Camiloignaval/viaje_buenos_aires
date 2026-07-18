@@ -1,42 +1,332 @@
 {
   "storyId": "story-ba-2026",
-  "schemaVersion": "1.4",
+  "schemaVersion": "1.6",
   "metadata": {
     "origin": "Santiago",
     "destination": "Buenos Aires",
     "destinationCountryCode": "AR",
     "title": "Buenos Aires, 2026",
-    "travelDates": { "start": "2026-07-18", "end": "2026-07-21" },
+    "travelDates": {
+      "start": "2026-07-18",
+      "end": "2026-07-21"
+    },
     "travelerNames": ["Camilo", "Kari"],
-    "language": "es"
+    "language": "es",
+    "lastEditorialEnrichment": "2026-07-17",
+    "experienceTimezone": "America/Argentina/Buenos_Aires",
+    "journeyNarrative": {
+      "startsBeforeDestinationArrival": true,
+      "preArrivalTitle": "Hoy nos vamos",
+      "arrivalTitle": "Bienvenidos a Buenos Aires",
+      "manualArrivalFallbackLabel": "Ya llegamos",
+      "privacyNote": "Alaia no consulta la ubicación: abrir el destino es siempre una decisión manual."
+    },
+    "costEditorial": {
+      "baseCurrency": "ARS",
+      "travelerCurrency": "CLP",
+      "travelerCount": 2,
+      "priceReferenceDate": "2026-07-17",
+      "disclaimer": "Montos aproximados y sujetos a cambios, propinas, promociones y consumo real.",
+      "conversionPolicy": "Conservar el monto local en el contenido y convertir a la moneda preferida del usuario al renderizar."
+    }
   },
-  "storyMood": { "primary": "romantic" },
+  "storyMood": {
+    "primary": "romantic"
+  },
   "unlockRulesDefault": {
     "requiresDateReached": true,
-    "requiresPreviousChapterCompleted": true
+    "requiresPreviousChapterCompleted": true,
+    "localTime": "07:00"
   },
   "chapters": [
     {
       "id": "chapter-1",
       "order": 1,
-      "title": "Bienvenidos a Buenos Aires",
+      "title": "Hoy nos vamos",
       "unlockRule": {
         "requiresDateReached": true,
         "requiresPreviousChapterCompleted": false
       },
       "copy": {
-        "open": "No importa cuántas veces viajemos. Siempre voy a recordar este como el viaje en que celebramos tu cumpleaños. Hoy no hay nada planeado todavía — solo la ciudad, esperándonos, y las maletas recién dejadas en el hotel.",
+        "open": "Hoy no despertamos en Buenos Aires. Despertamos con algo todavía más bonito: la certeza de que hoy nos vamos. La ciudad puede esperar unas horas; primero queda guardar la salida, el aeropuerto, el vuelo y ese instante en que todo empieza a sentirse real.",
         "close": "Hoy probablemente estaremos cansados. Pero también felices. Hoy comenzó una aventura que llevábamos mucho tiempo esperando. Quizás no recordemos exactamente todo lo que hicimos — pero sí cómo nos sentimos. Y eso siempre será lo más importante."
       },
-      "assets": { "heroImage": "content/stories/buenos-aires-2026/media/dia1-hero.jpg" },
+      "assets": {
+        "heroImage": "content/stories/buenos-aires-2026/media/dia1-hero.jpg"
+      },
       "activities": [
+        {
+          "id": "act-1-0a",
+          "kind": "instante",
+          "title": "La casa queda atrás",
+          "description": "Última revisión, mochilas listas y salida hacia el aeropuerto. No hace falta que la foto sea perfecta: basta con guardar el primer minuto del viaje.",
+          "timeWindow": "Antes de salir",
+          "category": "inicio del viaje",
+          "narrativePhase": "departure",
+          "moment": "El instante en que dejamos de preparar el viaje y empezamos a vivirlo",
+          "insight": "La primera foto del viaje casi nunca ocurre en el destino. A veces es una puerta cerrándose, dos mochilas en el piso o una mirada antes de subir al auto.",
+          "image": "content/stories/buenos-aires-2026/media/dia1-salida-casa.jpg",
+          "practical": {
+            "checkBeforeLeaving": [
+              "Cédulas a mano",
+              "Tarjetas y algo de efectivo",
+              "Celulares cargados",
+              "Power bank",
+              "Reserva y pasajes disponibles sin conexión"
+            ],
+            "photoCue": "Una foto de las mochilas o de ustedes justo antes de salir.",
+            "estimatedCost": {
+              "type": "free",
+              "note": "Sin costo adicional."
+            }
+          },
+          "bestTime": {
+            "id": "before-departure",
+            "label": "Antes de salir"
+          },
+          "weatherSensitivity": {
+            "level": "low"
+          },
+          "worthIt": {
+            "level": "recommended"
+          },
+          "memoryImportance": "high"
+        },
+        {
+          "id": "act-1-0b",
+          "kind": "instante",
+          "title": "Aeropuerto: el viaje ya empezó",
+          "description": "Check-in, controles y una pausa antes de embarcar. Este tramo no es una espera entre escenas: también forma parte de la historia.",
+          "timeWindow": "Antes del embarque",
+          "category": "aeropuerto",
+          "narrativePhase": "departure",
+          "moment": "La primera espera sin nada más que hacer que imaginar lo que viene",
+          "insight": "Guarden al menos una imagen que tenga algo reconocible del aeropuerto: la pantalla de salidas, la puerta de embarque o los pasajes en la mano. Después será la primera página real del viaje.",
+          "image": "content/stories/buenos-aires-2026/media/dia1-aeropuerto.jpg",
+          "practical": {
+            "keepAccessible": [
+              "Cédulas",
+              "Tarjeta de embarque",
+              "Audífonos",
+              "Cargador o power bank"
+            ],
+            "photoCue": "Una foto frente a la puerta de embarque o con la pantalla del vuelo de fondo.",
+            "memoryCue": "Guardar una captura del vuelo o una foto del pasaje, evitando exponer códigos sensibles si se comparte.",
+            "estimatedCost": {
+              "type": "included",
+              "note": "El acceso al aeropuerto y el embarque están incluidos en el viaje."
+            }
+          },
+          "bestTime": {
+            "id": "before-boarding",
+            "label": "Con tiempo antes del embarque"
+          },
+          "weatherSensitivity": {
+            "level": "low"
+          },
+          "worthIt": {
+            "level": "recommended"
+          },
+          "memoryImportance": "high"
+        },
+        {
+          "id": "act-1-0b2",
+          "kind": "instante",
+          "title": "El primer café del viaje",
+          "description": "Una pausa sencilla antes de embarcar. El vaso, los pasajes y la espera también forman parte de la primera página.",
+          "timeWindow": "Después de pasar los controles",
+          "category": "pequeño ritual",
+          "narrativePhase": "departure",
+          "moment": "El café que todavía sabe a Santiago, pero ya pertenece al viaje",
+          "image": "content/stories/buenos-aires-2026/media/dia1-cafe-aeropuerto.jpg",
+          "practical": {
+            "photoCue": "El café junto a los pasajes o frente a la ventana del aeropuerto.",
+            "memoryCue": "Preguntarse qué momento del viaje imaginan con más ganas.",
+            "optional": true,
+            "estimatedCost": {
+              "type": "range",
+              "basis": "couple",
+              "min": 9000,
+              "max": 16000,
+              "currency": "CLP",
+              "includes": "Dos cafés o infusiones en el aeropuerto",
+              "confidence": "editorial"
+            }
+          },
+          "bestTime": {
+            "id": "after-security",
+            "label": "Después de pasar los controles"
+          },
+          "weatherSensitivity": {
+            "level": "low"
+          },
+          "worthIt": {
+            "level": "optional"
+          },
+          "memoryImportance": "medium"
+        },
+        {
+          "id": "act-1-0b3",
+          "kind": "instante",
+          "title": "El último paso antes de volar",
+          "description": "Puente de embarque, fila o entrada al avión. Ese pequeño trayecto merece una foto porque marca el punto exacto en que ya no hay vuelta atrás.",
+          "timeWindow": "Embarque",
+          "category": "aeropuerto",
+          "narrativePhase": "departure",
+          "moment": "El instante en que la espera se convierte en movimiento",
+          "image": "content/stories/buenos-aires-2026/media/dia1-puente-embarque.jpg",
+          "practical": {
+            "photoCue": "Una toma caminando hacia el avión, sin detener el flujo de embarque.",
+            "optional": true,
+            "estimatedCost": {
+              "type": "included",
+              "note": "Incluido con el pasaje aéreo."
+            }
+          },
+          "bestTime": {
+            "id": "boarding",
+            "label": "Durante el embarque"
+          },
+          "weatherSensitivity": {
+            "level": "low"
+          },
+          "worthIt": {
+            "level": "recommended"
+          },
+          "memoryImportance": "high"
+        },
+        {
+          "id": "act-1-0c",
+          "kind": "instante",
+          "title": "Sobre las nubes",
+          "description": "El tramo en que Santiago queda atrás y Buenos Aires todavía no aparece. Mirar por la ventana también es parte del viaje.",
+          "timeWindow": "Durante el vuelo",
+          "category": "vuelo",
+          "narrativePhase": "departure",
+          "moment": "La pausa suspendida entre una ciudad y otra",
+          "insight": "Antes de aterrizar, guarden una foto hacia afuera aunque el cielo esté gris. No tiene que ser espectacular: su valor estará en recordar exactamente desde dónde venían.",
+          "image": "content/stories/buenos-aires-2026/media/dia1-ventanilla-avion.jpg",
+          "practical": {
+            "photoCue": "Ala, nubes o primera vista de la ciudad desde la ventanilla.",
+            "noteCue": "Escribir una frase corta: “Lo primero que queremos hacer cuando lleguemos es…”",
+            "estimatedCost": {
+              "type": "included",
+              "note": "Incluido con el pasaje aéreo."
+            }
+          },
+          "bestTime": {
+            "id": "in-flight",
+            "label": "Durante el vuelo"
+          },
+          "weatherSensitivity": {
+            "level": "medium"
+          },
+          "worthIt": {
+            "level": "recommended"
+          },
+          "memoryImportance": "high"
+        },
         {
           "id": "act-1-1",
           "title": "Llegada a Buenos Aires",
           "description": "Aeroparque, migraciones y traslado en Uber hasta el hotel.",
           "timeWindow": "11:20–12:50",
           "category": "logística",
-          "image": "content/stories/buenos-aires-2026/media/hotel.jpg"
+          "image": "content/stories/buenos-aires-2026/media/dia1-llegada-aeroparque.jpg",
+          "narrativePhase": "arrival",
+          "moment": "El primer paso en Argentina",
+          "insight": "La llegada no necesita una gran foto. El cartel del aeropuerto, las maletas apareciendo o la primera mirada afuera alcanzan para marcar el momento en que el viaje cambió de país.",
+          "practical": {
+            "steps": [
+              "Migraciones",
+              "Retiro de equipaje",
+              "Revisar conexión móvil",
+              "Pedir transporte al hotel"
+            ],
+            "photoCue": "Primera foto en Argentina, idealmente antes de subir al auto.",
+            "arrivalAction": "Confirmar “Ya llegamos” si la detección automática no aparece.",
+            "estimatedCost": {
+              "type": "range",
+              "basis": "ride",
+              "min": 12000,
+              "max": 22000,
+              "currency": "ARS",
+              "includes": "Uber desde Aeroparque al hotel",
+              "confidence": "editorial"
+            }
+          },
+          "bestTime": {
+            "id": "arrival",
+            "label": "Al terminar migraciones y retirar el equipaje"
+          },
+          "weatherSensitivity": {
+            "level": "medium"
+          },
+          "worthIt": {
+            "level": "must"
+          },
+          "memoryImportance": "high"
+        },
+        {
+          "id": "act-1-1b",
+          "kind": "instante",
+          "title": "La primera mirada desde el auto",
+          "description": "El trayecto desde Aeroparque al hotel será la primera lectura de la ciudad: carteles, avenidas y edificios vistos todavía con ojos de recién llegados.",
+          "timeWindow": "Camino al hotel",
+          "category": "llegada",
+          "narrativePhase": "arrival",
+          "moment": "La primera vez que Buenos Aires aparece al otro lado de una ventana",
+          "image": "content/stories/buenos-aires-2026/media/dia1-primer-uber.jpg",
+          "practical": {
+            "photoCue": "Una foto discreta por la ventana del auto, sin buscar todavía una postal perfecta.",
+            "noteCue": "Anotar la primera palabra que les provoque la ciudad.",
+            "estimatedCost": {
+              "type": "included",
+              "note": "Corresponde al mismo traslado desde Aeroparque."
+            }
+          },
+          "bestTime": {
+            "id": "ride",
+            "label": "Durante el traslado al hotel"
+          },
+          "weatherSensitivity": {
+            "level": "low"
+          },
+          "worthIt": {
+            "level": "recommended"
+          },
+          "memoryImportance": "medium"
+        },
+        {
+          "id": "act-1-1c",
+          "kind": "instante",
+          "title": "Ahora sí estamos aquí",
+          "description": "Dejar las cosas, respirar un minuto y guardar una selfie sencilla antes de salir nuevamente. No es la foto más espectacular; puede terminar siendo una de las más verdaderas.",
+          "timeWindow": "Al llegar al hotel",
+          "category": "llegada",
+          "narrativePhase": "arrival",
+          "moment": "La primera pausa juntos dentro de Buenos Aires",
+          "image": "content/stories/buenos-aires-2026/media/dia1-llegada-hotel.jpg",
+          "practical": {
+            "photoCue": "Una selfie de “ya estamos” antes de ordenar todo.",
+            "estimatedDuration": "5 min",
+            "optional": true,
+            "estimatedCost": {
+              "type": "included",
+              "note": "Incluido con el alojamiento."
+            }
+          },
+          "bestTime": {
+            "id": "hotel-arrival",
+            "label": "Al llegar al hotel"
+          },
+          "weatherSensitivity": {
+            "level": "low"
+          },
+          "worthIt": {
+            "level": "recommended"
+          },
+          "memoryImportance": "high"
         },
         {
           "id": "act-1-2",
@@ -47,15 +337,48 @@
           "relatedPlaceId": "cuartito",
           "moment": "La primera comida juntos en la ciudad",
           "insight": "Ahí casi nadie se sienta a esperar — la pizza se come parada, apoyada en el mostrador, mientras se decide qué pedir de más. Es más costumbre que apuro.",
-          "image": "content/stories/buenos-aires-2026/media/dia1-cuartito.jpg"
+          "image": "content/stories/buenos-aires-2026/media/dia1-cuartito.jpg",
+          "practical": {
+            "suggestedOrder": [
+              "Fugazzeta",
+              "Pizza de jamón",
+              "Una porción de fainá para probar"
+            ],
+            "reservation": "No suele ser necesaria",
+            "experienceTip": "Si hay lugar en el mostrador, comer una porción de pie es parte de la experiencia.",
+            "estimatedDuration": "45–60 min",
+            "estimatedCost": {
+              "type": "range",
+              "basis": "couple",
+              "min": 30000,
+              "max": 50000,
+              "currency": "ARS",
+              "includes": "Pizza, fainá y bebida para dos",
+              "confidence": "editorial"
+            }
+          },
+          "bestTime": {
+            "id": "lunch",
+            "label": "13:00–14:30"
+          },
+          "weatherSensitivity": {
+            "level": "low"
+          },
+          "worthIt": {
+            "level": "must"
+          },
+          "memoryImportance": "high"
         },
         {
           "id": "act-1-3",
           "title": "Caminata: Teatro Colón, Obelisco y Av. Corrientes",
-          "description": "Las mejores conversaciones siempre aparecen caminando.",
-          "timeWindow": "17:00",
+          "description": "Teatro Colón, Obelisco y Av. Corrientes antes de la toma coordinada de las 19:00.",
+          "timeWindow": "16:45–18:20",
           "category": "caminata",
-          "location": { "name": "Obelisco de Buenos Aires" },
+          "location": {
+            "name": "Obelisco de Buenos Aires",
+            "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Obelisco+de+Buenos+Aires"
+          },
           "moment": "La primera caminata sin apuro",
           "insight": "Desde la esquina, de costado, antes de quedar de frente, es donde más se nota la escala de la avenida — ahí se entiende por qué le dicen la más ancha del mundo.",
           "image": "content/stories/buenos-aires-2026/media/dia1-corrientes.jpg",
@@ -69,16 +392,130 @@
             "validFrom": "2026-07-18T19:45:00.000Z",
             "validUntil": "2026-07-18T21:30:00.000Z",
             "timezone": "America/Argentina/Buenos_Aires"
-          }
+          },
+          "practical": {
+            "route": ["Teatro Colón", "Obelisco", "Av. Corrientes"],
+            "photoCue": "Guardar la primera vista del Obelisco y otra foto caminando, no sólo posando.",
+            "weatherNote": "Actividad exterior; acortar el recorrido si el frío o la lluvia pesan después del vuelo.",
+            "estimatedDuration": "90–120 min",
+            "leaveForDroneBy": "18:20",
+            "important": "La toma del Obelisco tiene horario fijo a las 19:00.",
+            "estimatedCost": {
+              "type": "free",
+              "note": "Recorrido exterior sin entrada. La visita guiada al Teatro Colón no está incluida."
+            }
+          },
+          "bestTime": {
+            "id": "golden-hour",
+            "label": "Antes del atardecer"
+          },
+          "weatherSensitivity": {
+            "level": "high"
+          },
+          "worthIt": {
+            "level": "must"
+          },
+          "memoryImportance": "high"
+        },
+        {
+          "id": "act-1-drone-obelisco",
+          "kind": "ceremonia",
+          "title": "El Obelisco desde el aire",
+          "description": "La primera tarde en Buenos Aires termina con una toma coordinada con dron frente al Obelisco. A las 19:00 la ciudad empieza a encenderse y la 9 de Julio se convierte en parte del recuerdo.",
+          "timeWindow": "18:35–19:35",
+          "category": "momento especial",
+          "date": "2026-07-18",
+          "location": {
+            "name": "Obelisco de Buenos Aires, Corrientes y 9 de Julio",
+            "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Obelisco+de+Buenos+Aires,+Corrientes+y+9+de+Julio"
+          },
+          "moment": "La primera gran escena del viaje",
+          "insight": "El plano aéreo mostrará la escala de la avenida, pero conviene guardar también una foto desde el suelo: la espera, el ruido y la emoción de estar recién llegados son parte de la escena.",
+          "image": "content/stories/buenos-aires-2026/media/dia1-obelisco-drone-atardecer.jpg",
+          "intelligence": {
+            "outdoor": true,
+            "indoor": false,
+            "rainFriendly": false,
+            "photoMoment": true
+          },
+          "contextWindow": {
+            "validFrom": "2026-07-18T21:35:00.000Z",
+            "validUntil": "2026-07-18T22:40:00.000Z",
+            "timezone": "America/Argentina/Buenos_Aires"
+          },
+          "practical": {
+            "appointmentTime": "19:00",
+            "arrivalTime": "18:35–18:40 como máximo",
+            "estimatedDuration": "45–60 min",
+            "prepareBeforeLeaving": [
+              "Confirmar el punto exacto de encuentro",
+              "Confirmar que la persona responsable del dron mantiene la coordinación",
+              "Llevar celulares cargados y power bank",
+              "Limpiar las cámaras del celular",
+              "Elegir antes la ropa que quieren usar en la toma",
+              "Revisar viento, lluvia y cualquier cambio de horario"
+            ],
+            "shotIdeas": [
+              "Plano amplio con ambos pequeños frente a la escala de la 9 de Julio",
+              "Movimiento caminando hacia el Obelisco",
+              "Plano circular manteniéndolos como centro",
+              "Toma vertical pensada para el recuerdo mobile de Alaia",
+              "Unos segundos quietos mirando hacia arriba, sin saludar a cámara"
+            ],
+            "groundPhotoCue": "Antes o después de la toma, guardar una foto a nivel de calle de ustedes esperando frente al Obelisco.",
+            "contingency": "Si el clima o la coordinación impiden volar, mantener el momento con una sesión breve a nivel de calle y una nota sobre lo ocurrido.",
+            "important": "La operación, seguridad y permisos del dron corresponden exclusivamente a la persona responsable de realizar la toma.",
+            "estimatedCost": {
+              "type": "alreadyPaid",
+              "note": "Costo coordinado por separado; no se suma al presupuesto diario."
+            }
+          },
+          "bestTime": {
+            "id": "fixed",
+            "label": "18:35–19:35"
+          },
+          "weatherSensitivity": {
+            "level": "high"
+          },
+          "worthIt": {
+            "level": "must"
+          },
+          "memoryImportance": "very-high"
         },
         {
           "id": "act-1-5",
           "title": "Cena en La Estancia, Asador Criollo",
-          "timeWindow": "20:00",
+          "timeWindow": "20:15",
           "category": "gastronomía",
           "relatedPlaceId": "la-estancia-asador-criollo",
           "moment": "La primera cena porteña de verdad",
-          "image": "content/stories/buenos-aires-2026/media/dia1-cena.jpg"
+          "image": "content/stories/buenos-aires-2026/media/dia1-cena.jpg",
+          "description": "Primera cena porteña después de la toma del Obelisco.",
+          "practical": {
+            "suggestedOrder": ["Empanadas criollas", "Asado de fogón"],
+            "reservation": "No imprescindible; conviene llegar temprano",
+            "estimatedDuration": "75–100 min",
+            "estimatedCost": {
+              "type": "range",
+              "basis": "couple",
+              "min": 70000,
+              "max": 105000,
+              "currency": "ARS",
+              "includes": "Entrada, parrilla para compartir y bebidas para dos",
+              "confidence": "editorial"
+            }
+          },
+          "bestTime": {
+            "id": "dinner",
+            "label": "20:00–21:30"
+          },
+          "weatherSensitivity": {
+            "level": "low"
+          },
+          "worthIt": {
+            "level": "recommended"
+          },
+          "memoryImportance": "high"
         },
         {
           "id": "act-1-4",
@@ -89,7 +526,32 @@
           "relatedPlaceId": "rapanui",
           "moment": "El primer helado de Buenos Aires",
           "insight": "Casi nadie se sienta a comerlo aquí — se camina despacio con el cono en la mano, como si sentarse cortara la caminata antes de que termine.",
-          "image": "content/stories/buenos-aires-2026/media/dia1-rapanui.jpg"
+          "image": "content/stories/buenos-aires-2026/media/dia1-rapanui.jpg",
+          "practical": {
+            "suggestedOrder": ["Chocolate", "Dulce de leche", "Frambuesa"],
+            "experienceTip": "Pedir para llevar y seguir caminando por Corrientes.",
+            "estimatedDuration": "20–30 min",
+            "estimatedCost": {
+              "type": "range",
+              "basis": "couple",
+              "min": 14000,
+              "max": 26000,
+              "currency": "ARS",
+              "includes": "Helado para dos",
+              "confidence": "editorial"
+            }
+          },
+          "bestTime": {
+            "id": "night-walk",
+            "label": "Después de cenar"
+          },
+          "weatherSensitivity": {
+            "level": "medium"
+          },
+          "worthIt": {
+            "level": "recommended"
+          },
+          "memoryImportance": "medium"
         }
       ],
       "traditions": [
@@ -106,8 +568,38 @@
       "nightNote": "Si todavía les queda energía, caminen veinte minutos más sin rumbo antes de volver al hotel. No hace falta llegar a ningún lado — las mejores postales del primer día casi nunca están en el itinerario.",
       "planB": "Si el clima no acompaña, la caminata se acorta sin perder nada: Corrientes tiene teatros y cafés a cada paso, no hace falta llegar hasta el final para sentirla. Y si el cansancio del vuelo pesa más de lo esperado, el helado de cierre puede esperar perfectamente hasta otro momento del viaje.",
       "extraTime": "Corrientes no se termina en el Obelisco. Una cuadra más suele alcanzar para encontrar una librería con la luz todavía prendida a esa hora — no hace falta buscarla, casi siempre aparece.",
-      "ourMoment": "Tal vez, cuando piensen en este primer día, vuelva la caminata por Corrientes: el helado a medio comer, la noche todavía abierta y esa sensación de no tener apuro por llegar a ningún lado.",
+      "ourMoment": "Tal vez el primer día termine resumido en unos pocos segundos: recién llegados, ustedes dos frente al Obelisco, la 9 de Julio moviéndose alrededor y una cámara elevándose hasta convertir la ciudad completa en parte del recuerdo.",
       "suggestedMemories": [
+        {
+          "id": "mem-1-0a",
+          "relatedActivityId": "act-1-0a",
+          "type": "photo",
+          "prompt": "Las mochilas listas o una foto juntos justo antes de salir de casa — la imagen donde el viaje deja de ser una idea."
+        },
+        {
+          "id": "mem-1-0b",
+          "relatedActivityId": "act-1-0b",
+          "type": "photo",
+          "prompt": "La puerta de embarque, la pantalla del vuelo o los pasajes en la mano — sin mostrar códigos sensibles si después la comparten."
+        },
+        {
+          "id": "mem-1-0c",
+          "relatedActivityId": "act-1-0c",
+          "type": "photo",
+          "prompt": "El ala del avión, las nubes o la primera vista de Buenos Aires desde la ventanilla."
+        },
+        {
+          "id": "mem-1-0d",
+          "relatedActivityId": "act-1-1",
+          "type": "photo",
+          "prompt": "La primera foto en Argentina: el aeropuerto, las maletas o esa sonrisa de “ahora sí llegamos”."
+        },
+        {
+          "id": "mem-1-0e",
+          "relatedActivityId": "act-1-1",
+          "type": "note",
+          "prompt": "Completen una sola frase al llegar: “Lo primero que sentimos al pisar Buenos Aires fue…”"
+        },
         {
           "id": "mem-1-1",
           "relatedActivityId": "act-1-3",
@@ -131,14 +623,130 @@
           "relatedActivityId": "act-1-4",
           "type": "photo",
           "prompt": "El helado de Rapanui, compartido caminando — un momento simple que va a valer la pena recordar."
+        },
+        {
+          "id": "mem-1-airport-coffee",
+          "relatedActivityId": "act-1-0b2",
+          "type": "photo",
+          "prompt": "El primer café del viaje junto a los pasajes o la pantalla de salidas."
+        },
+        {
+          "id": "mem-1-boarding",
+          "relatedActivityId": "act-1-0b3",
+          "type": "photo",
+          "prompt": "Uno de ustedes caminando hacia el avión por el puente de embarque."
+        },
+        {
+          "id": "mem-1-first-car-view",
+          "relatedActivityId": "act-1-1b",
+          "type": "photo",
+          "prompt": "La primera imagen de Buenos Aires tomada desde el auto rumbo al hotel."
+        },
+        {
+          "id": "mem-1-hotel-selfie",
+          "relatedActivityId": "act-1-1c",
+          "type": "photo",
+          "prompt": "Una selfie sencilla al llegar al hotel: cansados, desordenados y felices."
+        },
+        {
+          "id": "mem-1-first-sound",
+          "relatedActivityId": "act-1-1b",
+          "type": "note",
+          "prompt": "Guardar una frase sobre el primer sonido, olor o detalle de Buenos Aires que les llamó la atención."
+        },
+        {
+          "id": "mem-1-drone-1",
+          "relatedActivityId": "act-1-drone-obelisco",
+          "type": "video",
+          "prompt": "La toma aérea del Obelisco a las 19:00: ustedes pequeños frente a la escala de la avenida y la ciudad comenzando a encenderse."
+        },
+        {
+          "id": "mem-1-drone-2",
+          "relatedActivityId": "act-1-drone-obelisco",
+          "type": "photo",
+          "prompt": "Una foto desde el suelo mientras esperan la toma — el recuerdo de la primera tarde en Buenos Aires antes de ver la ciudad desde arriba."
+        },
+        {
+          "id": "mem-1-drone-3",
+          "relatedActivityId": "act-1-drone-obelisco",
+          "type": "note",
+          "prompt": "Después de grabar, completen una frase: “Nuestra primera tarde en Buenos Aires se veía…”"
         }
-      ]
+      ],
+      "arrivalTitle": "Bienvenidos a Buenos Aires",
+      "narrativePhases": [
+        {
+          "id": "departure",
+          "title": "Hoy nos vamos",
+          "availableFrom": "2026-07-18T00:00:00-04:00",
+          "endsWhen": "arrival-confirmed",
+          "copy": "El viaje empieza mucho antes de ver la ciudad. Empieza con la casa quedando atrás, los documentos revisados por última vez y esa sensación de que, por fin, hoy nos vamos."
+        },
+        {
+          "id": "arrival",
+          "title": "Bienvenidos a Buenos Aires",
+          "startsWhen": "arrival-confirmed",
+          "copy": "Ahora sí. Las maletas están con nosotros, la ciudad quedó del otro lado de la puerta y el viaje que imaginamos durante tanto tiempo acaba de volverse real."
+        }
+      ],
+      "arrivalGate": {
+        "destination": "Buenos Aires",
+        "mode": "manual",
+        "confirmationCopy": "Cuando estén listos, abrimos Buenos Aires.",
+        "confirmLabel": "Abrir Buenos Aires"
+      },
+      "smallMoments": [
+        {
+          "id": "small-1",
+          "label": "Antes de salir",
+          "prompt": "La última foto de las mochilas en Chile."
+        },
+        {
+          "id": "small-2",
+          "label": "Aeropuerto",
+          "prompt": "El primer café, la puerta de embarque o la pantalla del vuelo."
+        },
+        {
+          "id": "small-3",
+          "label": "En el avión",
+          "prompt": "La ventanilla, las nubes y una frase sobre lo que esperan encontrar."
+        },
+        {
+          "id": "small-4",
+          "label": "Primera llegada",
+          "prompt": "El cartel de Argentina, el equipaje o la primera sonrisa al aterrizar."
+        },
+        {
+          "id": "small-5",
+          "label": "Camino al hotel",
+          "prompt": "La primera vista de la ciudad sin intentar convertirla todavía en postal."
+        },
+        {
+          "id": "small-6",
+          "label": "Ya estamos",
+          "prompt": "Una selfie imperfecta antes de volver a salir."
+        }
+      ],
+      "sameDayReminder": {
+        "title": "Hoy hay una escena con hora fija",
+        "showFrom": "15:30",
+        "copy": "A las 19:00 tenemos la toma con dron en el Obelisco. Lleguemos entre 18:35 y 18:40 para no improvisar.",
+        "items": [
+          "Confirmar punto de encuentro y contacto",
+          "Dejar definida la ropa de la toma",
+          "Cargar celulares y power bank",
+          "Limpiar lentes y cámaras",
+          "Revisar pronóstico, viento y posibles cambios"
+        ]
+      }
     },
     {
       "id": "chapter-2",
       "order": 2,
       "title": "Buenos Aires se disfruta caminando",
-      "assets": { "heroImage": "content/stories/buenos-aires-2026/media/dia2-hero.jpg" },
+      "assets": {
+        "heroImage": "content/stories/buenos-aires-2026/media/dia2-hero.jpg"
+      },
       "copy": {
         "open": "Los mejores recuerdos rara vez aparecen cuando uno anda apurado. Hoy no hay una sola parada que valga más que otra — solo un recorrido largo, pensado para caminarlo despacio.",
         "close": "Quizás hoy caminamos más despacio. Quizás nos detuvimos más veces. Pero probablemente también sonreímos mucho más. Y eso hace que este día haya valido completamente la pena."
@@ -149,14 +757,35 @@
           "title": "Desayuno en el hotel",
           "description": "El hotel incluye desayuno — se aprovecha tranquilo antes de salir a recorrer.",
           "timeWindow": "09:00",
-          "category": "gastronomía"
+          "category": "gastronomía",
+          "image": "content/stories/buenos-aires-2026/media/legacy/dia2-desayuno.jpg",
+          "practical": {
+            "estimatedCost": {
+              "type": "included",
+              "note": "Incluido con el alojamiento."
+            }
+          },
+          "bestTime": {
+            "id": "morning",
+            "label": "Antes de salir"
+          },
+          "weatherSensitivity": {
+            "level": "low"
+          },
+          "worthIt": {
+            "level": "recommended"
+          },
+          "memoryImportance": "low"
         },
         {
           "id": "act-2-2",
           "title": "Floralis Genérica y Facultad de Derecho",
           "timeWindow": "10:30–11:40",
           "category": "caminata",
-          "location": { "name": "Floralis Genérica" },
+          "location": {
+            "name": "Floralis Genérica",
+            "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Floralis+Genérica,+Buenos+Aires"
+          },
           "image": "content/stories/buenos-aires-2026/media/dia2-floralis.jpg",
           "intelligence": {
             "outdoor": true,
@@ -168,15 +797,63 @@
             "validFrom": "2026-07-19T13:15:00.000Z",
             "validUntil": "2026-07-19T15:00:00.000Z",
             "timezone": "America/Argentina/Buenos_Aires"
-          }
+          },
+          "practical": {
+            "photoCue": "Buscar el reflejo completo de la Floralis en el espejo de agua.",
+            "estimatedDuration": "60–70 min",
+            "weatherNote": "Exterior; llevar abrigo y evitar depender de que el mecanismo esté funcionando.",
+            "estimatedCost": {
+              "type": "free",
+              "note": "Acceso exterior gratuito."
+            }
+          },
+          "bestTime": {
+            "id": "morning-light",
+            "label": "10:00–11:30"
+          },
+          "weatherSensitivity": {
+            "level": "high"
+          },
+          "worthIt": {
+            "level": "must"
+          },
+          "memoryImportance": "high"
         },
         {
           "id": "act-2-3",
           "title": "Cementerio de Recoleta",
           "timeWindow": "11:40",
           "category": "cultura",
-          "location": { "name": "Cementerio de Recoleta" },
-          "image": "content/stories/buenos-aires-2026/media/dia2-cementerio.jpg"
+          "location": {
+            "name": "Cementerio de Recoleta",
+            "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Cementerio+de+Recoleta,+Buenos+Aires"
+          },
+          "image": "content/stories/buenos-aires-2026/media/dia2-cementerio.jpg",
+          "practical": {
+            "experienceTip": "Entrar sin apuro y mirar también los detalles de las bóvedas, no sólo las tumbas conocidas.",
+            "estimatedDuration": "40–60 min",
+            "estimatedCost": {
+              "type": "range",
+              "basis": "couple",
+              "min": 45000,
+              "max": 55000,
+              "currency": "ARS",
+              "includes": "Entrada para dos turistas internacionales",
+              "confidence": "official",
+              "note": "La tarifa puede actualizarse. Residentes nacionales ingresan gratis."
+            }
+          },
+          "bestTime": {
+            "id": "late-morning",
+            "label": "11:00–12:30"
+          },
+          "weatherSensitivity": {
+            "level": "medium"
+          },
+          "worthIt": {
+            "level": "recommended"
+          },
+          "memoryImportance": "high"
         },
         {
           "id": "act-2-4",
@@ -187,7 +864,32 @@
           "relatedPlaceId": "la-biela",
           "moment": "El primer café con medialunas de Kari",
           "insight": "Bajo ese gomero nadie apura la mesa — es de los pocos lugares del viaje donde quedarse un rato de más no necesita excusa.",
-          "image": "content/stories/buenos-aires-2026/media/la-biela.jpg"
+          "image": "content/stories/buenos-aires-2026/media/la-biela.jpg",
+          "practical": {
+            "suggestedOrder": ["Café con leche", "Medialunas de manteca"],
+            "experienceTip": "Elegir una mesa bajo el gomero si el clima acompaña.",
+            "estimatedDuration": "45–60 min",
+            "estimatedCost": {
+              "type": "range",
+              "basis": "couple",
+              "min": 22000,
+              "max": 38000,
+              "currency": "ARS",
+              "includes": "Café con leche y medialunas para dos",
+              "confidence": "editorial"
+            }
+          },
+          "bestTime": {
+            "id": "coffee",
+            "label": "Después de Recoleta"
+          },
+          "weatherSensitivity": {
+            "level": "medium"
+          },
+          "worthIt": {
+            "level": "recommended"
+          },
+          "memoryImportance": "high"
         },
         {
           "id": "act-2-5",
@@ -197,14 +899,43 @@
           "category": "gastronomía",
           "relatedPlaceId": "la-cabrera",
           "insight": "La provoleta suele llegar bastante antes que el bife — ese rato de espera, con las guarniciones todavía por venir, es de los pocos momentos lentos que quedan en una parrilla.",
-          "image": "content/stories/buenos-aires-2026/media/dia2-almuerzo.jpg"
+          "image": "content/stories/buenos-aires-2026/media/dia2-almuerzo.jpg",
+          "practical": {
+            "suggestedOrder": ["Provoleta", "Bife de chorizo para compartir"],
+            "reservation": "Recomendada",
+            "experienceTip": "Guardar espacio para las guarniciones.",
+            "estimatedDuration": "90–120 min",
+            "estimatedCost": {
+              "type": "range",
+              "basis": "couple",
+              "min": 125000,
+              "max": 185000,
+              "currency": "ARS",
+              "includes": "Provoleta, corte para compartir, guarniciones y bebidas para dos",
+              "confidence": "editorial"
+            }
+          },
+          "bestTime": {
+            "id": "lunch",
+            "label": "13:00–15:00"
+          },
+          "weatherSensitivity": {
+            "level": "low"
+          },
+          "worthIt": {
+            "level": "must"
+          },
+          "memoryImportance": "very-high"
         },
         {
           "id": "act-2-6",
           "title": "Bosques de Palermo y Rosedal",
           "timeWindow": "15:00–17:45",
           "category": "caminata",
-          "location": { "name": "Rosedal de Palermo" },
+          "location": {
+            "name": "Rosedal de Palermo",
+            "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Rosedal+de+Palermo,+Buenos+Aires"
+          },
           "moment": "Caminar sin rumbo, sin mirar el reloj",
           "image": "content/stories/buenos-aires-2026/media/dia2-rosedal.jpg",
           "intelligence": {
@@ -217,7 +948,27 @@
             "validFrom": "2026-07-19T17:45:00.000Z",
             "validUntil": "2026-07-19T21:00:00.000Z",
             "timezone": "America/Argentina/Buenos_Aires"
-          }
+          },
+          "practical": {
+            "photoCue": "Foto caminando en el puente blanco, idealmente en movimiento.",
+            "estimatedDuration": "120–150 min",
+            "weatherNote": "Exterior; acortar sin culpa si hace mucho frío.",
+            "estimatedCost": {
+              "type": "free",
+              "note": "Acceso gratuito al parque y al Rosedal."
+            }
+          },
+          "bestTime": {
+            "id": "afternoon",
+            "label": "15:30–17:30"
+          },
+          "weatherSensitivity": {
+            "level": "high"
+          },
+          "worthIt": {
+            "level": "must"
+          },
+          "memoryImportance": "high"
         },
         {
           "id": "act-2-7",
@@ -226,14 +977,41 @@
           "timeWindow": "18:30",
           "category": "café",
           "relatedPlaceId": "lattente",
-          "image": "content/stories/buenos-aires-2026/media/dia2-cafepalermo.jpg"
+          "image": "content/stories/buenos-aires-2026/media/dia2-cafepalermo.jpg",
+          "practical": {
+            "suggestedOrder": ["Flat white", "Pastelería para compartir"],
+            "estimatedDuration": "30–45 min",
+            "estimatedCost": {
+              "type": "range",
+              "basis": "couple",
+              "min": 22000,
+              "max": 40000,
+              "currency": "ARS",
+              "includes": "Dos cafés y pastelería para compartir",
+              "confidence": "editorial"
+            }
+          },
+          "bestTime": {
+            "id": "afternoon-coffee",
+            "label": "17:30–19:00"
+          },
+          "weatherSensitivity": {
+            "level": "low"
+          },
+          "worthIt": {
+            "level": "recommended"
+          },
+          "memoryImportance": "medium"
         },
         {
           "id": "act-2-8",
           "title": "Caminata nocturna en Puerto Madero",
           "timeWindow": "20:00–20:30",
           "category": "caminata",
-          "location": { "name": "Puerto Madero" },
+          "location": {
+            "name": "Puerto Madero",
+            "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Puerto+Madero,+Buenos+Aires"
+          },
           "moment": "La primera noche del viaje en Puerto Madero",
           "insight": "En la mitad del puente, de noche, el agua queda tan quieta que el dique se ve distinto a como se veía de día — vale la pena llegar al restaurante un minuto más tarde por eso.",
           "image": "content/stories/buenos-aires-2026/media/dia2-puertomadero.jpg",
@@ -247,7 +1025,26 @@
             "validFrom": "2026-07-19T22:45:00.000Z",
             "validUntil": "2026-07-19T23:45:00.000Z",
             "timezone": "America/Argentina/Buenos_Aires"
-          }
+          },
+          "practical": {
+            "photoCue": "Apoyar el celular en la baranda para evitar movimiento y buscar el reflejo del puente.",
+            "estimatedDuration": "25–40 min",
+            "estimatedCost": {
+              "type": "free",
+              "note": "Paseo exterior gratuito."
+            }
+          },
+          "bestTime": {
+            "id": "night",
+            "label": "Después del anochecer"
+          },
+          "weatherSensitivity": {
+            "level": "high"
+          },
+          "worthIt": {
+            "level": "must"
+          },
+          "memoryImportance": "very-high"
         },
         {
           "id": "act-2-9",
@@ -256,7 +1053,32 @@
           "timeWindow": "20:30",
           "category": "gastronomía",
           "relatedPlaceId": "cabana-las-lilas",
-          "image": "content/stories/buenos-aires-2026/media/dia2-cena.jpg"
+          "image": "content/stories/buenos-aires-2026/media/dia2-cena.jpg",
+          "practical": {
+            "reservation": "Recomendada",
+            "experienceTip": "Pedir mesa junto a la ventana si está disponible.",
+            "estimatedDuration": "90–120 min",
+            "estimatedCost": {
+              "type": "range",
+              "basis": "couple",
+              "min": 180000,
+              "max": 280000,
+              "currency": "ARS",
+              "includes": "Cena completa con carne, acompañamientos y bebidas para dos",
+              "confidence": "editorial"
+            }
+          },
+          "bestTime": {
+            "id": "dinner",
+            "label": "20:30–22:30"
+          },
+          "weatherSensitivity": {
+            "level": "low"
+          },
+          "worthIt": {
+            "level": "must"
+          },
+          "memoryImportance": "very-high"
         }
       ],
       "traditions": [
@@ -323,7 +1145,9 @@
       "id": "chapter-3",
       "order": 3,
       "title": "El alma de Buenos Aires",
-      "assets": { "heroImage": "content/stories/buenos-aires-2026/media/dia3-hero.jpg" },
+      "assets": {
+        "heroImage": "content/stories/buenos-aires-2026/media/dia3-hero.jpg"
+      },
       "copy": {
         "open": "No todas las ciudades se conocen mirando edificios. Algunas se conocen caminando sin rumbo. Hoy toca la Buenos Aires que no está en ningún itinerario oficial — la de las ferias, el tango de casualidad y los bares escondidos.",
         "close": "Hoy probablemente conocimos la Buenos Aires más auténtica. La que tiene historia. La que tiene música. La que tiene olor a café. Y quizás también la que más recordaremos."
@@ -334,7 +1158,25 @@
           "title": "Desayuno en el hotel",
           "description": "Otra mañana tranquila con el desayuno incluido, antes de salir a caminar San Telmo.",
           "timeWindow": "09:00",
-          "category": "gastronomía"
+          "category": "gastronomía",
+          "image": "content/stories/buenos-aires-2026/media/dia3-desayuno-hotel.jpg",
+          "practical": {
+            "estimatedCost": {
+              "type": "included",
+              "note": "Incluido con el alojamiento."
+            }
+          },
+          "bestTime": {
+            "id": "morning",
+            "label": "Antes de salir"
+          },
+          "weatherSensitivity": {
+            "level": "low"
+          },
+          "worthIt": {
+            "level": "recommended"
+          },
+          "memoryImportance": "low"
         },
         {
           "id": "act-3-2",
@@ -347,7 +1189,28 @@
             "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Mercado+de+San+Telmo,+Buenos+Aires"
           },
           "insight": "Lo que más termina gustando casi nunca está en el primer puesto — suele aparecer en el último pasillo, cuando ya se bajó la guardia de estar buscando algo puntual.",
-          "image": "content/stories/buenos-aires-2026/media/dia3-mercado.jpg"
+          "image": "content/stories/buenos-aires-2026/media/dia3-mercado.jpg",
+          "practical": {
+            "experienceTip": "Recorrer hasta el último pasillo antes de decidir comprar algo.",
+            "photoCue": "Mirar hacia el techo de hierro y vidrio.",
+            "estimatedDuration": "60–75 min",
+            "estimatedCost": {
+              "type": "variable",
+              "currency": "ARS",
+              "note": "La entrada al mercado es gratuita; compras y comida dependen del consumo."
+            }
+          },
+          "bestTime": {
+            "id": "morning",
+            "label": "10:00–11:00"
+          },
+          "weatherSensitivity": {
+            "level": "low"
+          },
+          "worthIt": {
+            "level": "must"
+          },
+          "memoryImportance": "high"
         },
         {
           "id": "act-3-3",
@@ -359,16 +1222,57 @@
             "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Escultura+de+Mafalda,+Defensa+700,+San+Telmo,+Buenos+Aires"
           },
           "insight": "Sentarse junto a Mafalda un momento, aunque sea la foto que se sacan todos, tiene algo propio: es una nena de bronce que lleva más de sesenta años preguntando por qué el mundo no funciona mejor — y ahí, en el banco, cuesta no sonreírle de vuelta.",
-          "image": "content/stories/buenos-aires-2026/media/dia3-mafalda.jpg"
+          "image": "content/stories/buenos-aires-2026/media/dia3-mafalda.jpg",
+          "practical": {
+            "photoCue": "Foto lateral sentados junto a Mafalda, esperando un momento con menos fila.",
+            "estimatedDuration": "15–25 min",
+            "estimatedCost": {
+              "type": "free",
+              "note": "Acceso gratuito."
+            }
+          },
+          "bestTime": {
+            "id": "low-crowd",
+            "label": "A primera hora o con poca fila"
+          },
+          "weatherSensitivity": {
+            "level": "medium"
+          },
+          "worthIt": {
+            "level": "must"
+          },
+          "memoryImportance": "very-high"
         },
         {
           "id": "act-3-4",
           "title": "Plaza Dorrego",
           "timeWindow": "11:30",
           "category": "cultura",
-          "location": { "name": "Plaza Dorrego" },
+          "location": {
+            "name": "Plaza Dorrego",
+            "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Plaza+Dorrego,+San+Telmo,+Buenos+Aires"
+          },
           "moment": "El primer tango visto de casualidad",
-          "image": "content/stories/buenos-aires-2026/media/dia3-dorrego.jpg"
+          "image": "content/stories/buenos-aires-2026/media/dia3-dorrego.jpg",
+          "practical": {
+            "experienceTip": "Detenerse si aparece tango callejero; no hace falta buscarlo.",
+            "estimatedDuration": "25–40 min",
+            "estimatedCost": {
+              "type": "free",
+              "note": "Acceso gratuito. Puede haber aporte voluntario a artistas callejeros."
+            }
+          },
+          "bestTime": {
+            "id": "late-morning",
+            "label": "11:30–12:30"
+          },
+          "weatherSensitivity": {
+            "level": "high"
+          },
+          "worthIt": {
+            "level": "recommended"
+          },
+          "memoryImportance": "high"
         },
         {
           "id": "act-3-5",
@@ -376,7 +1280,10 @@
           "description": "Permanecer solo dentro del circuito turístico; al terminar, pedir Uber directamente.",
           "timeWindow": "13:00",
           "category": "cultura",
-          "location": { "name": "Caminito, La Boca" },
+          "location": {
+            "name": "Caminito, La Boca",
+            "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Caminito,+La+Boca,+Buenos+Aires"
+          },
           "image": "content/stories/buenos-aires-2026/media/dia3-caminito.jpg",
           "intelligence": {
             "outdoor": true,
@@ -388,7 +1295,27 @@
             "validFrom": "2026-07-20T15:45:00.000Z",
             "validUntil": "2026-07-20T17:30:00.000Z",
             "timezone": "America/Argentina/Buenos_Aires"
-          }
+          },
+          "practical": {
+            "safetyNote": "Mantenerse dentro del circuito turístico y pedir transporte directo al terminar.",
+            "photoCue": "Buscar una esquina colorida con pocos locales de souvenirs en el encuadre.",
+            "estimatedDuration": "45–60 min",
+            "estimatedCost": {
+              "type": "free",
+              "note": "Acceso gratuito al circuito de Caminito; fotos, souvenirs y espectáculos pueden tener costo."
+            }
+          },
+          "bestTime": {
+            "id": "daylight",
+            "label": "Con luz de día"
+          },
+          "weatherSensitivity": {
+            "level": "high"
+          },
+          "worthIt": {
+            "level": "must"
+          },
+          "memoryImportance": "very-high"
         },
         {
           "id": "act-3-6",
@@ -396,14 +1323,63 @@
           "timeWindow": "14:00",
           "category": "gastronomía",
           "relatedPlaceId": "desnivel",
-          "image": "content/stories/buenos-aires-2026/media/dia3-almuerzo.jpg"
+          "image": "content/stories/buenos-aires-2026/media/dia3-almuerzo.jpg",
+          "practical": {
+            "suggestedOrder": ["Milanesa napolitana", "Vacío"],
+            "reservation": "No necesaria",
+            "estimatedDuration": "60–80 min",
+            "estimatedCost": {
+              "type": "range",
+              "basis": "couple",
+              "min": 50000,
+              "max": 80000,
+              "currency": "ARS",
+              "includes": "Milanesa o vacío y bebidas para dos",
+              "confidence": "editorial"
+            }
+          },
+          "bestTime": {
+            "id": "lunch",
+            "label": "13:30–15:00"
+          },
+          "weatherSensitivity": {
+            "level": "low"
+          },
+          "worthIt": {
+            "level": "recommended"
+          },
+          "memoryImportance": "high"
         },
         {
           "id": "act-3-7",
           "title": "Compras en Galerías Pacífico",
           "timeWindow": "17:00",
           "category": "compras",
-          "location": { "name": "Galerías Pacífico" }
+          "location": {
+            "name": "Galerías Pacífico",
+            "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Galerías+Pacífico,+Buenos+Aires"
+          },
+          "image": "content/stories/buenos-aires-2026/media/legacy/dia3-galerias.jpg",
+          "practical": {
+            "experienceTip": "Además de comprar, mirar la cúpula y los murales interiores.",
+            "estimatedDuration": "60–90 min",
+            "estimatedCost": {
+              "type": "variable",
+              "currency": "ARS",
+              "note": "El acceso es gratuito; el gasto depende de las compras."
+            }
+          },
+          "bestTime": {
+            "id": "afternoon",
+            "label": "16:30–18:30"
+          },
+          "weatherSensitivity": {
+            "level": "low"
+          },
+          "worthIt": {
+            "level": "optional"
+          },
+          "memoryImportance": "medium"
         },
         {
           "id": "act-3-8",
@@ -411,7 +1387,30 @@
           "description": "La favorita de Kari — salón belle époque de 1912, cuna histórica del tango.",
           "timeWindow": "19:00",
           "category": "café",
-          "relatedPlaceId": "confiteria-ideal"
+          "relatedPlaceId": "confiteria-ideal",
+          "image": "content/stories/buenos-aires-2026/media/dia3-confiteria-ideal.jpg",
+          "practical": {
+            "estimatedCost": {
+              "type": "range",
+              "basis": "couple",
+              "min": 26000,
+              "max": 48000,
+              "currency": "ARS",
+              "includes": "Café y pastelería para dos",
+              "confidence": "editorial"
+            }
+          },
+          "bestTime": {
+            "id": "coffee",
+            "label": "18:00–20:00"
+          },
+          "weatherSensitivity": {
+            "level": "low"
+          },
+          "worthIt": {
+            "level": "recommended"
+          },
+          "memoryImportance": "high"
         },
         {
           "id": "act-3-9",
@@ -422,7 +1421,33 @@
           "relatedPlaceId": "floreria-atlantico",
           "moment": "La primera vez que entramos a un bar escondido",
           "insight": "Entre las flores, antes de bajar la escalera, hay un segundo de duda que es parte del truco del lugar — de afuera, nadie sabe lo que hay abajo.",
-          "image": "content/stories/buenos-aires-2026/media/dia3-floreria.jpg"
+          "image": "content/stories/buenos-aires-2026/media/dia3-floreria.jpg",
+          "practical": {
+            "suggestedOrder": ["Cóctel de autor de temporada"],
+            "experienceTip": "La entrada por la florería es parte de la experiencia; no apurarse en bajar.",
+            "estimatedDuration": "60–90 min",
+            "estimatedCost": {
+              "type": "range",
+              "basis": "couple",
+              "min": 45000,
+              "max": 85000,
+              "currency": "ARS",
+              "includes": "Uno o dos cócteles por persona",
+              "confidence": "editorial",
+              "note": "Puede subir bastante si agregan comida."
+            }
+          },
+          "bestTime": {
+            "id": "night",
+            "label": "21:00–23:00"
+          },
+          "weatherSensitivity": {
+            "level": "low"
+          },
+          "worthIt": {
+            "level": "recommended"
+          },
+          "memoryImportance": "very-high"
         }
       ],
       "traditions": [
@@ -436,10 +1461,10 @@
         "Florería Atlántico funciona como floristería real durante el día — si vuelven de tarde, antes de que abra el bar, van a ver flores de verdad en la vidriera.",
         "Cerca del mediodía, la luz que entra por el techo de hierro y vidrio del Mercado de San Telmo cambia el lugar por completo — casi nadie mira hacia arriba, solo los puestos."
       ],
-      "nightNote": "Si el bar debajo de la florería los sorprende, no tengan apuro en irse. No hay ninguna razón para cerrar la noche a una hora exacta — quedarse un poco más tarde de lo planeado también es parte del viaje.",
+      "nightNote": "Después de la toma de las 19:00 no hace falta revisar el resultado de inmediato. Guarden el teléfono unos minutos, caminen por Corrientes y dejen que primero quede la sensación; el video podrá verse después.",
       "planB": "Si llueve, no hay mucho que reorganizar: Galerías Pacífico y el mercado están techados, así que el día se sigue disfrutando casi igual. Y si a la noche el cansancio pesa más que la curiosidad, la Florería Atlántico puede quedar pendiente — un bar escondido no pierde nada por esperar.",
       "extraTime": "Si todavía queda energía después de la florería, cruzar de nuevo el Puente de la Mujer de noche no estaba en el plan de hoy, pero tampoco hace falta que lo esté.",
-      "ourMoment": "Si hoy aparece una pareja bailando tango en Plaza Dorrego sin que nadie lo haya planeado, tal vez el día les pida detenerse ahí un minuto, sin comparar ese instante con nada más.",
+      "ourMoment": "Tal vez el lunes termine resumido en unos pocos segundos: ustedes dos frente al Obelisco, la 9 de Julio moviéndose alrededor y una cámara elevándose hasta convertir la ciudad completa en parte del recuerdo.",
       "suggestedMemories": [
         {
           "id": "mem-3-1",
@@ -471,9 +1496,11 @@
       "id": "chapter-4",
       "order": 4,
       "title": "El último día siempre llega demasiado rápido",
-      "assets": { "heroImage": "content/stories/buenos-aires-2026/media/dia4-hero.jpg" },
+      "assets": {
+        "heroImage": "content/stories/buenos-aires-2026/media/dia4-hero.jpg"
+      },
       "copy": {
-        "open": "Los mejores viajes no terminan. Simplemente empiezan a convertirse en recuerdos. Todavía queda un día entero por delante — no hace falta que se sienta como una despedida todavía.",
+        "open": "El último día empieza antes que la ciudad. A las siete, el Obelisco todavía pertenece a la luz fría de la mañana y a quienes llegaron antes que el ruido. Después vendrán el desayuno, los libros y las últimas vueltas. Primero queda guardar este instante irrepetible.",
         "close": "Gracias Buenos Aires. Quizás este viaje terminó. Pero ahora comienza otra etapa. Porque desde hoy Buenos Aires ya no será solamente una ciudad — será el lugar donde celebramos un cumpleaños, donde caminamos durante horas, donde nos reímos, donde comimos increíble, y donde escribimos un recuerdo que nos acompañará siempre."
       },
       "activities": [
@@ -485,7 +1512,33 @@
           "category": "gastronomía",
           "relatedPlaceId": "las-violetas",
           "moment": "El último desayuno con tiempo de sobra",
-          "insight": "Esta medialuna se rompe con las manos, no con el cuchillo — se derrite igual, pero se siente distinto."
+          "insight": "Esta medialuna se rompe con las manos, no con el cuchillo — se derrite igual, pero se siente distinto.",
+          "image": "content/stories/buenos-aires-2026/media/dia4-las-violetas.jpg",
+          "practical": {
+            "suggestedOrder": ["Café con leche", "Medialunas de manteca"],
+            "experienceTip": "Pedir una medialuna extra para guardar el último sabor porteño.",
+            "estimatedDuration": "60–75 min",
+            "estimatedCost": {
+              "type": "range",
+              "basis": "couple",
+              "min": 28000,
+              "max": 50000,
+              "currency": "ARS",
+              "includes": "Café con leche y medialunas para dos",
+              "confidence": "editorial"
+            }
+          },
+          "bestTime": {
+            "id": "breakfast",
+            "label": "09:30–11:00"
+          },
+          "weatherSensitivity": {
+            "level": "low"
+          },
+          "worthIt": {
+            "level": "must"
+          },
+          "memoryImportance": "high"
         },
         {
           "id": "act-4-2",
@@ -493,9 +1546,31 @@
           "description": "Antiguo teatro de 1919 convertido en librería.",
           "timeWindow": "11:30",
           "category": "cultura",
-          "location": { "name": "El Ateneo Grand Splendid" },
+          "location": {
+            "name": "El Ateneo Grand Splendid",
+            "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=El+Ateneo+Grand+Splendid,+Buenos+Aires"
+          },
           "insight": "En un lugar así, el libro correcto casi siempre aparece antes de que lo estén buscando — pocas veces es el primero que se mira.",
-          "image": "content/stories/buenos-aires-2026/media/dia4-ateneo.jpg"
+          "image": "content/stories/buenos-aires-2026/media/dia4-ateneo.jpg",
+          "practical": {
+            "photoCue": "Subir a un palco y fotografiar la sala completa sin flash.",
+            "estimatedDuration": "60–75 min",
+            "estimatedCost": {
+              "type": "free",
+              "note": "Entrada gratuita a la librería. Las compras son variables."
+            }
+          },
+          "bestTime": {
+            "id": "morning",
+            "label": "11:00–12:30"
+          },
+          "weatherSensitivity": {
+            "level": "low"
+          },
+          "worthIt": {
+            "level": "must"
+          },
+          "memoryImportance": "very-high"
         },
         {
           "id": "act-4-3",
@@ -503,7 +1578,31 @@
           "timeWindow": "13:00",
           "category": "gastronomía",
           "relatedPlaceId": "el-correo",
-          "image": "content/stories/buenos-aires-2026/media/dia4-almuerzo.jpg"
+          "image": "content/stories/buenos-aires-2026/media/dia4-almuerzo.jpg",
+          "practical": {
+            "suggestedOrder": ["Sándwich de milanesa", "Tarta salada"],
+            "estimatedDuration": "60–75 min",
+            "estimatedCost": {
+              "type": "range",
+              "basis": "couple",
+              "min": 38000,
+              "max": 62000,
+              "currency": "ARS",
+              "includes": "Almuerzo sencillo y bebidas para dos",
+              "confidence": "editorial"
+            }
+          },
+          "bestTime": {
+            "id": "lunch",
+            "label": "12:30–14:00"
+          },
+          "weatherSensitivity": {
+            "level": "low"
+          },
+          "worthIt": {
+            "level": "recommended"
+          },
+          "memoryImportance": "medium"
         },
         {
           "id": "act-4-4",
@@ -511,14 +1610,66 @@
           "description": "No se trata de apurarse — pensar juntos cuál fue el momento favorito del viaje.",
           "timeWindow": "15:00–17:30",
           "category": "compras",
-          "moment": "La última medialuna del viaje"
+          "moment": "La última medialuna del viaje",
+          "image": "content/stories/buenos-aires-2026/media/legacy/dia4-cafe.jpg",
+          "practical": {
+            "experienceTip": "Elegir sólo una última compra con significado y guardar tiempo para un café.",
+            "estimatedDuration": "120–150 min",
+            "estimatedCost": {
+              "type": "variable",
+              "currency": "ARS",
+              "note": "Depende de las compras y del último café."
+            }
+          },
+          "bestTime": {
+            "id": "afternoon",
+            "label": "15:00–17:30"
+          },
+          "weatherSensitivity": {
+            "level": "medium"
+          },
+          "worthIt": {
+            "level": "optional"
+          },
+          "memoryImportance": "high"
         },
         {
           "id": "act-4-5",
           "title": "Regreso al hotel y traslado a Aeroparque",
           "timeWindow": "18:30–19:00",
           "category": "logística",
-          "insight": "Ese segundo antes de subir al auto, mirando la calle una vez más sin decir nada, es de esos que después se recuerdan más que muchos otros del viaje."
+          "insight": "Ese segundo antes de subir al auto, mirando la calle una vez más sin decir nada, es de esos que después se recuerdan más que muchos otros del viaje.",
+          "image": "content/stories/buenos-aires-2026/media/dia4-regreso-aeroparque.jpg",
+          "practical": {
+            "checkBeforeLeaving": [
+              "Cédulas",
+              "Tarjetas de embarque",
+              "Cargadores",
+              "Compras y recuerdos",
+              "Revisar cajones y baño del hotel"
+            ],
+            "photoCue": "Una última foto desde el auto o antes de entrar al aeropuerto.",
+            "estimatedCost": {
+              "type": "range",
+              "basis": "ride",
+              "min": 10000,
+              "max": 18000,
+              "currency": "ARS",
+              "includes": "Uber desde el hotel a Aeroparque",
+              "confidence": "editorial"
+            }
+          },
+          "bestTime": {
+            "id": "departure",
+            "label": "Con margen antes del vuelo"
+          },
+          "weatherSensitivity": {
+            "level": "medium"
+          },
+          "worthIt": {
+            "level": "must"
+          },
+          "memoryImportance": "high"
         }
       ],
       "traditions": [
@@ -536,6 +1687,24 @@
       "extraTime": "Si el último café deja ganas de una vuelta más, el Jardín Botánico queda cerca y es un cierre tranquilo — pero tampoco hace falta ir a ningún lado más. A veces lo mejor de un último día es no intentar completarlo.",
       "ourMoment": "Tal vez hoy quede suspendido en ese momento justo antes de subir al auto hacia el aeropuerto — cuando el viaje todavía no terminó del todo, pero ya empieza a sentirse como recuerdo.",
       "suggestedMemories": [
+        {
+          "id": "mem-4-0a",
+          "relatedActivityId": "act-4-0",
+          "type": "photo",
+          "prompt": "Una foto de ustedes frente al Obelisco mientras la ciudad todavía está casi vacía, antes o después de la toma aérea."
+        },
+        {
+          "id": "mem-4-0b",
+          "relatedActivityId": "act-4-0",
+          "type": "video",
+          "prompt": "Un video corto de la 9 de Julio despertando: semáforos, colectivos y la luz cambiando alrededor del Obelisco."
+        },
+        {
+          "id": "mem-4-0c",
+          "relatedActivityId": "act-4-0",
+          "type": "note",
+          "prompt": "Una línea para recordar el madrugón: “Valió la pena levantarnos tan temprano porque…”"
+        },
         {
           "id": "mem-4-1",
           "relatedActivityId": "act-4-1",
@@ -566,7 +1735,8 @@
           "type": "photo",
           "prompt": "No importa cuál cafetería. Lo importante es recordar ese momento — una selfie juntos, sin mirar el teléfono, cuando surja durante el viaje."
         }
-      ]
+      ],
+      "nightBeforeNote": "Antes de dormir, dejar lista la ropa abrigada y confirmar el punto exacto de encuentro para la toma de las 07:00 en el Obelisco."
     }
   ],
   "specialChapter": {
@@ -648,136 +1818,396 @@
       {
         "id": "cuartito",
         "name": "El Cuartito",
-        "intelligence": { "reservationRecommended": false },
+        "priceLevel": "$",
+        "intelligence": {
+          "reservationRecommended": false
+        },
         "location": {
           "name": "Talcahuano 937, CABA",
           "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=El+Cuartito,+Talcahuano+937,+CABA,+Buenos+Aires",
           "uberDeepLink": "https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[formatted_address]=Talcahuano+937,+CABA,+Buenos+Aires"
         },
-        "recommendation": "Elegimos El Cuartito a propósito para la primera comida del viaje: pizzería porteña desde 1934, de esas que no cambiaron el mostrador ni el mármol en décadas — mozos de toda la vida, mesas altas, cero pretensión. Pide fugazzeta y una de jamón para compartir. Aquí la pizza se come parada, apoyada en el mostrador — nadie se sienta a esperar."
+        "recommendation": "Elegimos El Cuartito a propósito para la primera comida del viaje: pizzería porteña desde 1934, de esas que no cambiaron el mostrador ni el mármol en décadas — mozos de toda la vida, mesas altas, cero pretensión. Pide fugazzeta y una de jamón para compartir. Aquí la pizza se come parada, apoyada en el mostrador — nadie se sienta a esperar.",
+        "estimatedCost": {
+          "type": "range",
+          "basis": "couple",
+          "min": 30000,
+          "max": 50000,
+          "currency": "ARS",
+          "includes": "Pizza, fainá y bebida para dos",
+          "confidence": "editorial"
+        },
+        "worthIt": {
+          "level": "must"
+        },
+        "memoryImportance": "high",
+        "weatherSensitivity": {
+          "level": "low"
+        }
       },
       {
         "id": "la-estancia-asador-criollo",
         "name": "La Estancia, Asador Criollo",
-        "intelligence": { "reservationRecommended": false },
+        "priceLevel": "$$",
+        "intelligence": {
+          "reservationRecommended": false
+        },
         "location": {
           "name": "Lavalle 941, CABA",
           "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=La+Estancia+Asador+Criollo,+Lavalle+941,+CABA,+Buenos+Aires",
           "uberDeepLink": "https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[formatted_address]=Lavalle+941,+CABA,+Buenos+Aires"
         },
-        "recommendation": "Para la primera noche buscamos algo que se sintiera genuinamente porteño sin depender de una reserva. Este asador tiene el fogón a la vista desde 1962 — se nota que el fuego manda, no el menú. Pide empanadas criollas para empezar y el asado de fogón. Llegando temprano casi no hay espera."
+        "recommendation": "Para la primera noche buscamos algo que se sintiera genuinamente porteño sin depender de una reserva. Este asador tiene el fogón a la vista desde 1962 — se nota que el fuego manda, no el menú. Pide empanadas criollas para empezar y el asado de fogón. Llegando temprano casi no hay espera.",
+        "estimatedCost": {
+          "type": "range",
+          "basis": "couple",
+          "min": 70000,
+          "max": 105000,
+          "currency": "ARS",
+          "includes": "Entrada, parrilla para compartir y bebidas para dos",
+          "confidence": "editorial"
+        },
+        "worthIt": {
+          "level": "recommended"
+        },
+        "memoryImportance": "high",
+        "weatherSensitivity": {
+          "level": "low"
+        }
       },
       {
         "id": "la-cabrera",
         "name": "La Cabrera",
-        "intelligence": { "reservationRecommended": true },
+        "priceLevel": "$$$",
+        "intelligence": {
+          "reservationRecommended": true
+        },
         "location": {
           "name": "José A. Cabrera 5099, Palermo",
           "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=La+Cabrera,+José+A.+Cabrera+5099,+Palermo,+Buenos+Aires",
           "uberDeepLink": "https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[formatted_address]=José+A.+Cabrera+5099,+Palermo,+Buenos+Aires"
         },
-        "recommendation": "Si hay una comida que no se puede saltar en este viaje, es esta. La Cabrera tiene todo lo que se espera de una parrilla porteña — mesas llenas, guarniciones que no paran de llegar — pero sin la fila interminable de otras parrillas famosas. Pide provoleta para empezar y bife de chorizo para compartir. Reserva con unos días de anticipación, y guarda espacio: las guarniciones solas ya llenan."
+        "recommendation": "Si hay una comida que no se puede saltar en este viaje, es esta. La Cabrera tiene todo lo que se espera de una parrilla porteña — mesas llenas, guarniciones que no paran de llegar — pero sin la fila interminable de otras parrillas famosas. Pide provoleta para empezar y bife de chorizo para compartir. Reserva con unos días de anticipación, y guarda espacio: las guarniciones solas ya llenan.",
+        "estimatedCost": {
+          "type": "range",
+          "basis": "couple",
+          "min": 125000,
+          "max": 185000,
+          "currency": "ARS",
+          "includes": "Provoleta, corte para compartir, guarniciones y bebidas para dos",
+          "confidence": "editorial"
+        },
+        "worthIt": {
+          "level": "must"
+        },
+        "memoryImportance": "very-high",
+        "weatherSensitivity": {
+          "level": "low"
+        }
       },
       {
         "id": "cabana-las-lilas",
         "name": "Cabaña Las Lilas",
-        "intelligence": { "reservationRecommended": true },
+        "priceLevel": "$$$$",
+        "intelligence": {
+          "reservationRecommended": true
+        },
         "location": {
           "name": "Av. Alicia M. de Justo 516, Puerto Madero",
           "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Cabaña+Las+Lilas,+Av.+Alicia+M.+de+Justo+516,+Puerto+Madero,+Buenos+Aires",
           "uberDeepLink": "https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[formatted_address]=Av.+Alicia+M.+de+Justo+516,+Puerto+Madero,+Buenos+Aires"
         },
-        "recommendation": "La reservamos para la noche que cierra el día más lindo del viaje: mesa con vista directa al dique de Puerto Madero, carne de cabañas propias. Probablemente sea la cena más especial de los cuatro días. Reserva con tiempo y pide mesa junto a la ventana; las luces del dique de noche valen tanto como el asado."
+        "recommendation": "La reservamos para la noche que cierra el día más lindo del viaje: mesa con vista directa al dique de Puerto Madero, carne de cabañas propias. Probablemente sea la cena más especial de los cuatro días. Reserva con tiempo y pide mesa junto a la ventana; las luces del dique de noche valen tanto como el asado.",
+        "estimatedCost": {
+          "type": "range",
+          "basis": "couple",
+          "min": 180000,
+          "max": 280000,
+          "currency": "ARS",
+          "includes": "Cena completa con carne, acompañamientos y bebidas para dos",
+          "confidence": "editorial"
+        },
+        "worthIt": {
+          "level": "must"
+        },
+        "memoryImportance": "very-high",
+        "weatherSensitivity": {
+          "level": "low"
+        }
       },
       {
         "id": "desnivel",
         "name": "Desnivel",
-        "intelligence": { "reservationRecommended": false },
+        "priceLevel": "$",
+        "intelligence": {
+          "reservationRecommended": false
+        },
         "location": {
           "name": "Defensa 855, San Telmo",
           "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Desnivel+Parrilla,+Defensa+855,+San+Telmo,+Buenos+Aires",
           "uberDeepLink": "https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[formatted_address]=Defensa+855,+San+Telmo,+Buenos+Aires"
         },
-        "recommendation": "Después de una mañana caminando San Telmo, esto es lo opuesto a un restaurante de guía turística: parrilla ruidosa, mesas pegadas, mozos que gritan los pedidos desde 1993. Pide milanesa napolitana o vacío. Si el lugar está lleno y hay que esperar afuera un rato, es buena señal — significa que vale la pena."
+        "recommendation": "Después de una mañana caminando San Telmo, esto es lo opuesto a un restaurante de guía turística: parrilla ruidosa, mesas pegadas, mozos que gritan los pedidos desde 1993. Pide milanesa napolitana o vacío. Si el lugar está lleno y hay que esperar afuera un rato, es buena señal — significa que vale la pena.",
+        "estimatedCost": {
+          "type": "range",
+          "basis": "couple",
+          "min": 50000,
+          "max": 80000,
+          "currency": "ARS",
+          "includes": "Milanesa o vacío y bebidas para dos",
+          "confidence": "editorial"
+        },
+        "worthIt": {
+          "level": "recommended"
+        },
+        "memoryImportance": "high",
+        "weatherSensitivity": {
+          "level": "low"
+        }
       },
       {
         "id": "el-correo",
         "name": "El Correo",
+        "priceLevel": "$$",
+        "intelligence": {
+          "reservationRecommended": false
+        },
         "location": {
           "name": "Cerca del Cementerio de Recoleta",
           "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=El+Correo,+Recoleta,+Buenos+Aires",
           "uberDeepLink": "https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[formatted_address]=El+Correo,+Recoleta,+Buenos+Aires"
         },
-        "recommendation": "Para el último almuerzo elegimos algo tranquilo, lejos de cualquier circuito turístico — un rincón rústico, casi escondido, cerca de Recoleta. Pide un sándwich de milanesa o una tarta salada. Es el tipo de lugar donde da gusto quedarse un rato de más, sin nada más planeado después."
+        "recommendation": "Para el último almuerzo elegimos algo tranquilo, lejos de cualquier circuito turístico — un rincón rústico, casi escondido, cerca de Recoleta. Pide un sándwich de milanesa o una tarta salada. Es el tipo de lugar donde da gusto quedarse un rato de más, sin nada más planeado después.",
+        "estimatedCost": {
+          "type": "range",
+          "basis": "couple",
+          "min": 38000,
+          "max": 62000,
+          "currency": "ARS",
+          "includes": "Almuerzo sencillo y bebidas para dos",
+          "confidence": "editorial"
+        },
+        "worthIt": {
+          "level": "recommended"
+        },
+        "memoryImportance": "medium",
+        "weatherSensitivity": {
+          "level": "low"
+        }
       },
       {
         "id": "floreria-atlantico",
         "name": "Florería Atlántico",
+        "priceLevel": "$$$",
+        "intelligence": {
+          "reservationRecommended": true
+        },
         "location": {
           "name": "Arroyo 872, Recoleta",
           "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Florería+Atlántico,+Arroyo+872,+Buenos+Aires",
           "uberDeepLink": "https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[formatted_address]=Arroyo+872,+Buenos+Aires"
         },
-        "recommendation": "Se entra literalmente por una florería — nadie que pase por la vereda sabe que abajo hay uno de los bares más premiados del mundo. Pide el cóctel de autor de temporada. No hace falta quedarse hasta tarde, pero sí hace falta quedarse un rato — es de esos lugares que se disfrutan más despacio."
+        "recommendation": "Se entra literalmente por una florería — nadie que pase por la vereda sabe que abajo hay uno de los bares más premiados del mundo. Pide el cóctel de autor de temporada. No hace falta quedarse hasta tarde, pero sí hace falta quedarse un rato — es de esos lugares que se disfrutan más despacio.",
+        "estimatedCost": {
+          "type": "range",
+          "basis": "couple",
+          "min": 45000,
+          "max": 85000,
+          "currency": "ARS",
+          "includes": "Uno o dos cócteles por persona",
+          "confidence": "editorial",
+          "note": "Puede subir bastante si agregan comida."
+        },
+        "worthIt": {
+          "level": "recommended"
+        },
+        "memoryImportance": "very-high",
+        "weatherSensitivity": {
+          "level": "low"
+        }
       }
     ],
     "cafes": [
       {
         "id": "rapanui",
         "name": "Rapanui",
+        "priceLevel": "$$",
+        "intelligence": {
+          "reservationRecommended": false
+        },
         "location": {
           "name": "Av. Corrientes, CABA",
           "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Rapanui,+Av.+Corrientes,+CABA,+Buenos+Aires",
           "uberDeepLink": "https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[formatted_address]=Rapanui,+Av.+Corrientes,+CABA,+Buenos+Aires"
         },
-        "recommendation": "Nada elegante, nada de fotos perfectas — solo una heladería de barrio en plena Corrientes, ideal para cerrar la primera caminata. Pide chocolate, dulce de leche y frambuesa. Cómanselo caminando, no hace falta sentarse."
+        "recommendation": "Nada elegante, nada de fotos perfectas — solo una heladería de barrio en plena Corrientes, ideal para cerrar la primera caminata. Pide chocolate, dulce de leche y frambuesa. Cómanselo caminando, no hace falta sentarse.",
+        "estimatedCost": {
+          "type": "range",
+          "basis": "couple",
+          "min": 14000,
+          "max": 26000,
+          "currency": "ARS",
+          "includes": "Helado para dos",
+          "confidence": "editorial"
+        },
+        "worthIt": {
+          "level": "recommended"
+        },
+        "memoryImportance": "medium",
+        "weatherSensitivity": {
+          "level": "medium"
+        }
       },
       {
         "id": "la-biela",
         "name": "La Biela",
+        "priceLevel": "$$",
+        "intelligence": {
+          "reservationRecommended": false
+        },
         "location": {
           "name": "Av. Quintana 596, Recoleta",
           "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=La+Biela,+Av.+Quintana+596,+Recoleta,+Buenos+Aires"
         },
-        "recommendation": "La favorita de Kari, y no por casualidad: mesas bajo un gomero centenario, justo frente a Plaza Francia, en uno de los cafés notables más icónicos de la ciudad. Pide café con leche y medialunas de manteca. Este es el lugar para no mirar el reloj — quedarse una hora de más es, literalmente, el plan."
+        "recommendation": "La favorita de Kari, y no por casualidad: mesas bajo un gomero centenario, justo frente a Plaza Francia, en uno de los cafés notables más icónicos de la ciudad. Pide café con leche y medialunas de manteca. Este es el lugar para no mirar el reloj — quedarse una hora de más es, literalmente, el plan.",
+        "estimatedCost": {
+          "type": "range",
+          "basis": "couple",
+          "min": 22000,
+          "max": 38000,
+          "currency": "ARS",
+          "includes": "Café con leche y medialunas para dos",
+          "confidence": "editorial"
+        },
+        "worthIt": {
+          "level": "recommended"
+        },
+        "memoryImportance": "high",
+        "weatherSensitivity": {
+          "level": "medium"
+        }
       },
       {
         "id": "lattente",
         "name": "Lattente",
+        "priceLevel": "$$",
+        "intelligence": {
+          "reservationRecommended": false
+        },
         "location": {
           "name": "Palermo Soho",
           "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Lattente,+Palermo+Soho,+Buenos+Aires",
           "uberDeepLink": "https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[formatted_address]=Lattente,+Palermo+Soho,+Buenos+Aires"
         },
-        "recommendation": "La otra favorita de Kari, esta vez en Palermo Soho: moderna, con buena pastelería y varios métodos de extracción para elegir. Pide un flat white. Ideal para una pausa corta antes de seguir caminando hacia Puerto Madero."
+        "recommendation": "La otra favorita de Kari, esta vez en Palermo Soho: moderna, con buena pastelería y varios métodos de extracción para elegir. Pide un flat white. Ideal para una pausa corta antes de seguir caminando hacia Puerto Madero.",
+        "estimatedCost": {
+          "type": "range",
+          "basis": "couple",
+          "min": 22000,
+          "max": 40000,
+          "currency": "ARS",
+          "includes": "Dos cafés y pastelería para compartir",
+          "confidence": "editorial"
+        },
+        "worthIt": {
+          "level": "recommended"
+        },
+        "memoryImportance": "medium",
+        "weatherSensitivity": {
+          "level": "low"
+        }
       },
       {
         "id": "confiteria-ideal",
         "name": "Confitería Ideal",
+        "priceLevel": "$$",
+        "intelligence": {
+          "reservationRecommended": false
+        },
         "location": {
           "name": "Suipacha 384, Microcentro",
           "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Confitería+Ideal,+Suipacha+384,+Buenos+Aires",
           "uberDeepLink": "https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[formatted_address]=Suipacha+384,+Buenos+Aires"
         },
-        "recommendation": "Otra favorita de Kari: un salón belle époque de 1912 que fue, literalmente, cuna del tango — todavía se siente. Ventanales enormes, mármoles gastados por más de un siglo de mesas. Pide un café con medialunas o alguna torta clásica. No hace falta saber bailar tango para sentir que el lugar todavía respira esa época."
+        "recommendation": "Otra favorita de Kari: un salón belle époque de 1912 que fue, literalmente, cuna del tango — todavía se siente. Ventanales enormes, mármoles gastados por más de un siglo de mesas. Pide un café con medialunas o alguna torta clásica. No hace falta saber bailar tango para sentir que el lugar todavía respira esa época.",
+        "estimatedCost": {
+          "type": "range",
+          "basis": "couple",
+          "min": 26000,
+          "max": 48000,
+          "currency": "ARS",
+          "includes": "Café y pastelería para dos",
+          "confidence": "editorial"
+        },
+        "worthIt": {
+          "level": "recommended"
+        },
+        "memoryImportance": "high",
+        "weatherSensitivity": {
+          "level": "low"
+        }
       },
       {
         "id": "las-violetas",
         "name": "Las Violetas",
+        "priceLevel": "$$",
+        "intelligence": {
+          "reservationRecommended": false
+        },
         "location": {
           "name": "Av. Rivadavia 3899, Almagro",
           "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Las+Violetas,+Av.+Rivadavia+3899,+Almagro,+Buenos+Aires",
           "uberDeepLink": "https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[formatted_address]=Av.+Rivadavia+3899,+Almagro,+Buenos+Aires"
         },
-        "recommendation": "Los otros días desayunamos en el hotel — el último, vale la pena romper la rutina en esta confitería emblemática desde 1884, con vitrales y mármoles italianos que no cambiaron en más de un siglo. Pide café con leche y medialunas de manteca — están entre las mejores de la ciudad. Es el desayuno con el que conviene despedirse de Buenos Aires."
+        "recommendation": "Los otros días desayunamos en el hotel — el último, vale la pena romper la rutina en esta confitería emblemática desde 1884, con vitrales y mármoles italianos que no cambiaron en más de un siglo. Pide café con leche y medialunas de manteca — están entre las mejores de la ciudad. Es el desayuno con el que conviene despedirse de Buenos Aires.",
+        "estimatedCost": {
+          "type": "range",
+          "basis": "couple",
+          "min": 28000,
+          "max": 50000,
+          "currency": "ARS",
+          "includes": "Café con leche y medialunas para dos",
+          "confidence": "editorial"
+        },
+        "worthIt": {
+          "level": "must"
+        },
+        "memoryImportance": "high",
+        "weatherSensitivity": {
+          "level": "low"
+        }
       }
     ]
   },
   "photoSpots": [
     {
+      "id": "spot-aeropuerto-salida",
+      "title": "El comienzo del viaje",
+      "location": {
+        "name": "Aeropuerto de salida / puerta de embarque"
+      },
+      "bestTime": "Antes de embarcar",
+      "tip": "No busquen una foto perfecta. Incluyan algo que ubique el momento — la puerta, la pantalla o los pasajes — y dejen que la emoción haga el resto. Eviten compartir códigos de reserva o embarque visibles.",
+      "relatedChapterId": "chapter-1",
+      "image": "content/stories/buenos-aires-2026/media/spot-aeropuerto-salida.jpg"
+    },
+    {
+      "id": "spot-ventanilla-vuelo",
+      "title": "Entre Santiago y Buenos Aires",
+      "location": {
+        "name": "Ventanilla del avión"
+      },
+      "bestTime": "Durante el vuelo o antes de aterrizar",
+      "tip": "Incluyan una parte del ala para darle escala a la imagen. Si aparece la ciudad abajo, no hace falta hacer zoom: la sensación de estar llegando se entiende mejor con el cielo alrededor.",
+      "relatedChapterId": "chapter-1",
+      "image": "content/stories/buenos-aires-2026/media/spot-ventanilla-avion.jpg"
+    },
+    {
       "id": "spot-obelisco",
       "title": "Obelisco",
-      "location": { "name": "Corrientes y 9 de Julio, vereda norponiente" },
+      "location": {
+        "name": "Corrientes y 9 de Julio, vereda norponiente"
+      },
       "bestTime": "17:00, hora dorada",
       "tip": "Lo que hace especial esta foto no es el Obelisco — es la escala: la avenida más ancha del mundo achicándolos a los dos. Párense en la vereda norponiente, de cuerpo entero, con el Obelisco detrás. Esperen a que pase un colectivo para que la toma tenga movimiento — quieta, la 9 de Julio no se siente real.",
       "relatedChapterId": "chapter-1"
@@ -785,7 +2215,9 @@
     {
       "id": "spot-floralis",
       "title": "Floralis Genérica",
-      "location": { "name": "Espejo de agua, de frente" },
+      "location": {
+        "name": "Espejo de agua, de frente"
+      },
       "bestTime": "10:30, mañana",
       "tip": "Lo que hace especial esta foto es el reflejo: la flor de acero completa duplicada en el agua, como si hubiera dos. Párense frente al espejo de agua, abrazados si quieren, y agáchense un poco para que el reflejo ocupe la mitad del encuadre. A las 10:30 la luz todavía es suave.",
       "relatedChapterId": "chapter-2"
@@ -793,7 +2225,9 @@
     {
       "id": "spot-rosedal",
       "title": "El Rosedal",
-      "location": { "name": "Puente blanco sobre el lago" },
+      "location": {
+        "name": "Puente blanco sobre el lago"
+      },
       "bestTime": "17:00–18:00, atardecer",
       "tip": "El puente blanco sobre el lago es la postal, pero lo que la hace especial es caminarlo, no solo pararse en él — que les tomen la foto a mitad de camino, en movimiento. Entre las 17:00 y las 18:00 el atardecer le da al lago un color que no dura mucho.",
       "relatedChapterId": "chapter-2"
@@ -801,7 +2235,9 @@
     {
       "id": "spot-puente-mujer",
       "title": "Puente de la Mujer",
-      "location": { "name": "Mitad del puente, mirando hacia Catalinas" },
+      "location": {
+        "name": "Mitad del puente, mirando hacia Catalinas"
+      },
       "bestTime": "20:15, de noche",
       "tip": "De noche, el puente entero se refleja en el agua quieta del dique — esa simetría es lo que hace especial la foto. Párense en la mitad, mirando hacia Catalinas, y apoyen el celular en la baranda para que no salga movida.",
       "relatedChapterId": "chapter-2"
@@ -809,7 +2245,9 @@
     {
       "id": "spot-caminito",
       "title": "Caminito",
-      "location": { "name": "Esquina de las casas multicolores" },
+      "location": {
+        "name": "Esquina de las casas multicolores"
+      },
       "bestTime": "13:00, buscando una esquina tranquila",
       "tip": "Lo que hace especial esta foto es el color, no la pose — las fachadas parecen pintadas para una postal. Busquen una esquina con pocas casas de souvenirs a la vista y esperen un segundo entre grupos de turistas.",
       "relatedChapterId": "chapter-3"
@@ -817,10 +2255,23 @@
     {
       "id": "spot-ateneo",
       "title": "El Ateneo Grand Splendid",
-      "location": { "name": "Primer piso, apoyados en el palco" },
+      "location": {
+        "name": "Primer piso, apoyados en el palco"
+      },
       "bestTime": "Cualquier hora, evitando el mediodía",
       "tip": "Lo que hace especial esta foto es que están parados en lo que era un palco de teatro, en 1919, hoy lleno de libros. Suban al primer piso y apóyense mirando hacia el escenario y la cúpula pintada. La luz interior ya es cálida — sáquenla sin flash.",
       "relatedChapterId": "chapter-4"
+    },
+    {
+      "id": "spot-obelisco-drone-dia1",
+      "title": "Obelisco desde el aire",
+      "location": {
+        "name": "Corrientes y 9 de Julio, punto exacto coordinado para la toma"
+      },
+      "bestTime": "18 de julio de 2026, 19:00",
+      "tip": "Lleguen entre 18:35 y 18:40. Además de la toma aérea, hagan una fotografía a nivel de calle y una versión vertical para guardar la espera y el momento dentro de Alaia.",
+      "relatedChapterId": "chapter-1",
+      "image": "content/stories/buenos-aires-2026/media/spot-obelisco-drone-dia1.jpg"
     }
   ],
   "collections": [
@@ -1024,8 +2475,16 @@
       "category": "Documentos",
       "label": "Cédula o pasaporte vigente"
     },
-    { "id": "doc-2", "category": "Documentos", "label": "Tarjetas de crédito" },
-    { "id": "doc-3", "category": "Documentos", "label": "Tarjeta de débito" },
+    {
+      "id": "doc-2",
+      "category": "Documentos",
+      "label": "Tarjetas de crédito"
+    },
+    {
+      "id": "doc-3",
+      "category": "Documentos",
+      "label": "Tarjeta de débito"
+    },
     {
       "id": "doc-4",
       "category": "Documentos",
@@ -1036,9 +2495,21 @@
       "category": "Documentos",
       "label": "Reserva del hotel a mano"
     },
-    { "id": "eq-1", "category": "Equipaje", "label": "Cargador del celular" },
-    { "id": "eq-2", "category": "Equipaje", "label": "Power bank" },
-    { "id": "eq-3", "category": "Equipaje", "label": "Audífonos" },
+    {
+      "id": "eq-1",
+      "category": "Equipaje",
+      "label": "Cargador del celular"
+    },
+    {
+      "id": "eq-2",
+      "category": "Equipaje",
+      "label": "Power bank"
+    },
+    {
+      "id": "eq-3",
+      "category": "Equipaje",
+      "label": "Audífonos"
+    },
     {
       "id": "eq-4",
       "category": "Equipaje",
@@ -1049,22 +2520,66 @@
       "category": "Equipaje",
       "label": "Medicamentos personales"
     },
-    { "id": "eq-6", "category": "Equipaje", "label": "Chaqueta" },
-    { "id": "eq-7", "category": "Equipaje", "label": "Zapatillas cómodas" },
-    { "id": "eq-8", "category": "Equipaje", "label": "Lentes de sol" },
-    { "id": "eq-9", "category": "Equipaje", "label": "Paraguas pequeño" },
+    {
+      "id": "eq-6",
+      "category": "Equipaje",
+      "label": "Chaqueta"
+    },
+    {
+      "id": "eq-7",
+      "category": "Equipaje",
+      "label": "Zapatillas cómodas"
+    },
+    {
+      "id": "eq-8",
+      "category": "Equipaje",
+      "label": "Lentes de sol"
+    },
+    {
+      "id": "eq-9",
+      "category": "Equipaje",
+      "label": "Paraguas pequeño"
+    },
     {
       "id": "eq-10",
       "category": "Equipaje",
       "label": "Mochila para recorrer la ciudad"
     },
-    { "id": "app-1", "category": "Apps instaladas", "label": "Google Maps" },
-    { "id": "app-2", "category": "Apps instaladas", "label": "Uber" },
-    { "id": "app-3", "category": "Apps instaladas", "label": "Cabify" },
-    { "id": "app-4", "category": "Apps instaladas", "label": "WhatsApp" },
-    { "id": "app-5", "category": "Apps instaladas", "label": "Airalo (eSIM)" },
-    { "id": "app-6", "category": "Apps instaladas", "label": "Google Lens" },
-    { "id": "app-7", "category": "Apps instaladas", "label": "Mercado Pago" },
+    {
+      "id": "app-1",
+      "category": "Apps instaladas",
+      "label": "Google Maps"
+    },
+    {
+      "id": "app-2",
+      "category": "Apps instaladas",
+      "label": "Uber"
+    },
+    {
+      "id": "app-3",
+      "category": "Apps instaladas",
+      "label": "Cabify"
+    },
+    {
+      "id": "app-4",
+      "category": "Apps instaladas",
+      "label": "WhatsApp"
+    },
+    {
+      "id": "app-5",
+      "category": "Apps instaladas",
+      "label": "Airalo (eSIM)"
+    },
+    {
+      "id": "app-6",
+      "category": "Apps instaladas",
+      "label": "Google Lens"
+    },
+    {
+      "id": "app-7",
+      "category": "Apps instaladas",
+      "label": "Mercado Pago"
+    },
     {
       "id": "din-1",
       "category": "Dinero",
@@ -1085,7 +2600,11 @@
       "category": "Dinero",
       "label": "Guardar el efectivo en dos lugares distintos"
     },
-    { "id": "lug-1", "category": "Lugares visitados", "label": "El Cuartito" },
+    {
+      "id": "lug-1",
+      "category": "Lugares visitados",
+      "label": "El Cuartito"
+    },
     {
       "id": "lug-2",
       "category": "Lugares visitados",
@@ -1101,7 +2620,11 @@
       "category": "Lugares visitados",
       "label": "Cementerio de Recoleta"
     },
-    { "id": "lug-5", "category": "Lugares visitados", "label": "La Cabrera" },
+    {
+      "id": "lug-5",
+      "category": "Lugares visitados",
+      "label": "La Cabrera"
+    },
     {
       "id": "lug-6",
       "category": "Lugares visitados",
@@ -1117,8 +2640,16 @@
       "category": "Lugares visitados",
       "label": "Mercado de San Telmo"
     },
-    { "id": "lug-9", "category": "Lugares visitados", "label": "Mafalda" },
-    { "id": "lug-10", "category": "Lugares visitados", "label": "Caminito" },
+    {
+      "id": "lug-9",
+      "category": "Lugares visitados",
+      "label": "Mafalda"
+    },
+    {
+      "id": "lug-10",
+      "category": "Lugares visitados",
+      "label": "Caminito"
+    },
     {
       "id": "lug-11",
       "category": "Lugares visitados",
@@ -1175,7 +2706,13 @@
       "label": "Un rato en El Ateneo sin el celular"
     }
   ],
-  "budget": { "currency": "ARS" },
+  "budget": {
+    "currency": "ARS",
+    "travelerCurrency": "CLP",
+    "travelerCount": 2,
+    "showConvertedEstimate": true,
+    "conversionLabel": "aprox."
+  },
   "baseCopy": {
     "welcomeMessage": "Este no es solo un viaje. Es un recuerdo que comenzamos a escribir juntos.",
     "dailyOpenTemplate": "Buenos días. Hoy comienza un nuevo capítulo de este viaje.",
@@ -1192,5 +2729,53 @@
     "invitationMessage": "Escaneá este código cuando estemos por llegar a Buenos Aires.",
     "qrLandingCopy": "Antes de instalar nada, respirá un segundo. Esto no es una app. Es el comienzo de un recuerdo.",
     "installPromptCopy": "Agregá esto a tu pantalla de inicio. Va a estar ahí durante todo el viaje."
+  },
+  "memoryPrompts": {
+    "philosophy": "No son tareas ni una checklist. Son pequeñas oportunidades de guardar escenas que normalmente se perderían.",
+    "displayMode": "contextual-and-optional",
+    "prompts": [
+      {
+        "id": "journey-first-door",
+        "chapterId": "chapter-1",
+        "prompt": "La puerta cerrándose o las mochilas listas: el punto exacto donde comenzó el viaje."
+      },
+      {
+        "id": "journey-first-sign",
+        "chapterId": "chapter-1",
+        "prompt": "El primer cartel que confirme que ya están viajando."
+      },
+      {
+        "id": "journey-first-view",
+        "chapterId": "chapter-1",
+        "prompt": "La primera vista de Buenos Aires, aunque sea desde una ventana o un auto."
+      },
+      {
+        "id": "journey-first-coffee",
+        "chapterId": "chapter-1",
+        "prompt": "El primer café o comida del viaje antes de llegar a la ciudad."
+      },
+      {
+        "id": "journey-last-look",
+        "chapterId": "chapter-4",
+        "prompt": "La última mirada a la calle antes de volver al aeropuerto."
+      }
+    ]
+  },
+  "contentSemantics": {
+    "estimatedCost": {
+      "types": ["range", "free", "included", "alreadyPaid", "variable"],
+      "basis": ["person", "couple", "total", "ticket", "ride", "variable"],
+      "confidence": ["official", "editorial", "variable"],
+      "renderingRule": "Mostrar primero la moneda local y debajo, si existe tasa, la conversión aproximada a la moneda preferida del usuario."
+    },
+    "worthIt": {
+      "levels": ["must", "recommended", "optional"]
+    },
+    "memoryImportance": {
+      "levels": ["low", "medium", "high", "very-high"]
+    },
+    "weatherSensitivity": {
+      "levels": ["low", "medium", "high"]
+    }
   }
 }

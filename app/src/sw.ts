@@ -15,6 +15,39 @@ cleanupOutdatedCaches();
 // generateSW, pero explícito porque usamos injectManifest).
 registerRoute(new NavigationRoute(createHandlerBoundToURL("/index.html")));
 
+// Media editorial visitada: cache-first acotado. Evita convertir los más de
+// 100 MiB de public/ en requisito de instalación y conserva imágenes ya vistas
+// durante conectividad débil. Los videos quedan fuera: los requests Range
+// requieren una política propia y no deben llenar la cuota móvil a escondidas.
+const STORY_IMAGE_CACHE = "alaia-story-images-v1";
+const MAX_STORY_IMAGES = 80;
+
+async function cacheStoryImage(request: Request): Promise<Response> {
+  const cache = await caches.open(STORY_IMAGE_CACHE);
+  const cached = await cache.match(request);
+  if (cached) return cached;
+
+  const response = await fetch(request);
+  if (response.ok && response.status === 200) {
+    await cache.put(request, response.clone());
+    const keys = await cache.keys();
+    await Promise.all(keys.slice(0, Math.max(0, keys.length - MAX_STORY_IMAGES)).map((key) => cache.delete(key)));
+  }
+  return response;
+}
+
+self.addEventListener("fetch", (event) => {
+  const url = new URL(event.request.url);
+  if (
+    event.request.method === "GET"
+    && event.request.destination === "image"
+    && url.origin === self.location.origin
+    && url.pathname.startsWith("/content/stories/")
+  ) {
+    event.respondWith(cacheStoryImage(event.request));
+  }
+});
+
 const SAFE_PATH = /^\/trips(?:\/[^/?#]+)?$/;
 const FALLBACK_PATH = "/trips";
 

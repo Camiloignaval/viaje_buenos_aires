@@ -9,13 +9,17 @@ const experienceCss = readFileSync(join(root, "features/experience/experience.cs
 const shellCss = readFileSync(join(root, "styles/shell.css"), "utf8");
 
 describe("productive companion consumer boundaries", () => {
-  it("keeps one contextual protagonist between ChapterHero and activities", () => {
+  it("keeps one contextual protagonist inside the relevant activity passage", () => {
     const start = modes.indexOf("<ChapterHero");
-    const companion = modes.indexOf("<VisibleCompanionExperience", start);
-    const activities = modes.indexOf("<ChapterActivitySequence", companion);
+    const activities = modes.indexOf("<ChapterActivitySequence", start);
+    const companionSlot = modes.indexOf("companion={", activities);
+    const companion = modes.indexOf("<VisibleCompanionExperience", companionSlot);
+    const end = modes.indexOf("</ChapterActivitySequence>", companion);
     expect(start).toBeGreaterThan(-1);
-    expect(companion).toBeGreaterThan(start);
-    expect(activities).toBeGreaterThan(companion);
+    expect(activities).toBeGreaterThan(start);
+    expect(companionSlot).toBeGreaterThan(activities);
+    expect(companion).toBeGreaterThan(companionSlot);
+    expect(end).toBeGreaterThan(companion);
     expect(modes.match(/<VisibleCompanionExperience/g)).toHaveLength(1);
   });
 

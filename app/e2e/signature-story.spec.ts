@@ -2,7 +2,7 @@ import { expect, test, type Page } from "@playwright/test";
 
 const STORY_SCOPE = "story-ba-2026";
 const CHAPTER_TITLES = [
-  "Bienvenidos a Buenos Aires",
+  "Hoy nos vamos",
   "Buenos Aires se disfruta caminando",
   "El alma de Buenos Aires",
   "El último día siempre llega demasiado rápido",
@@ -27,8 +27,11 @@ async function expectNoHorizontalOverflow(page: Page) {
 
 test.beforeEach(async ({ page }) => {
   await page.addInitScript((scope) => {
-    window.localStorage.clear();
-    window.sessionStorage.clear();
+    if (!window.localStorage.getItem("alaia:e2e:signature-initialized")) {
+      window.localStorage.clear();
+      window.sessionStorage.clear();
+      window.localStorage.setItem("alaia:e2e:signature-initialized", "1");
+    }
     const now = new Date();
     const dayKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
     window.localStorage.setItem(
@@ -55,23 +58,24 @@ test("Buenos Aires · portada, recuerdo, álbum y epílogo conservan el relato r
   await setStoryDate(page, "2026-07-18");
   await page.goto("/experience", { waitUntil: "domcontentloaded" });
   await dismissOpening(page);
-  await expect(page.getByRole("heading", { name: "Bienvenidos a Buenos Aires" })).toBeVisible();
-  await expect(
-    page.getByRole("complementary", { name: "Marcas que quedaron en esta página" }).first(),
-  ).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Hoy nos vamos" })).toBeVisible();
+  await page.getByRole("button", { name: "Abrir este día" }).click();
+  await expect(page.locator(".activity-page").first()).toBeVisible();
 
-  const note = page.getByRole("textbox", { name: "Qué quieren recordar de este momento" }).first();
-  const save = page.getByRole("button", { name: "Guardar el momento" }).first();
+  await page.getByRole("button", { name: "Volver al índice" }).click();
+  await expect(page.getByRole("heading", { name: "Capítulos" })).toBeVisible();
+  await page.getByRole("button", { name: "← Volver al capítulo" }).click();
+  await expect(page.locator(".activity-page").first()).toBeVisible();
+
+  const emptyMemory = page.getByRole("button", { name: "Escribir un recuerdo de este momento" }).first();
+  await emptyMemory.click();
+  const note = page.getByRole("textbox", { name: "Escribir lo que quieren recordar de este momento" }).first();
   await expect(page.getByLabel("Elegir fotos para este recuerdo").first()).toBeAttached();
-  await expect(save).toBeDisabled();
   await note.fill("La primera caminata por Corrientes.");
-  await expect(save).toBeEnabled();
-  await save.click();
 
   await expect(page.getByText("La primera caminata por Corrientes.")).toBeVisible();
-  await expect(
-    page.getByRole("button", { name: "Guardar entre nuestros recuerdos favoritos" }),
-  ).toHaveAttribute("aria-pressed", "false");
+  await expect(page.getByRole("button", { name: "Opciones del recuerdo" })).toBeVisible();
+  await expect(page.locator(".memory-wax-seal")).toHaveCount(0);
   await expect(page.getByRole("button", { name: "Dejar aparte" })).toHaveCount(0);
   await expectNoHorizontalOverflow(page);
 
@@ -83,15 +87,16 @@ test("Buenos Aires · portada, recuerdo, álbum y epílogo conservan el relato r
   await setStoryDate(page, "2026-07-22");
   await page.goto("/experience", { waitUntil: "domcontentloaded" });
   await dismissOpening(page);
-  for (const chapterTitle of CHAPTER_TITLES) {
-    await expect(page.getByRole("heading", { name: chapterTitle })).toBeVisible();
-    await page.getByRole("button", { name: "Abrir este día" }).click();
-    await page.getByRole("button", { name: "Dejar el día así" }).click();
-    await page.getByRole("button", { name: "Sí, cerrar por hoy" }).click();
-  }
+  await page.evaluate(({ scope, chapterIds }) => {
+    window.localStorage.setItem(
+      `alaia:progress:${scope}`,
+      JSON.stringify(Object.fromEntries(chapterIds.map((chapterId) => [chapterId, "completed"]))),
+    );
+  }, { scope: STORY_SCOPE, chapterIds: CHAPTER_TITLES.map((_, index) => `chapter-${index + 1}`) });
+  await page.reload({ waitUntil: "domcontentloaded" });
+  await dismissOpening(page);
   await expect(page.getByRole("heading", { name: "Feliz cumpleaños" })).toBeVisible();
   await expect(page.getByText("Reflexión final")).toBeVisible();
-  await expect(page.getByLabel("Elegir fotos para este recuerdo").first()).toBeAttached();
-  await expect(page.getByRole("button", { name: "Guardar el momento" }).first()).toBeDisabled();
+  await expect(page.getByRole("button", { name: "Escribir un recuerdo de este momento" }).first()).toBeVisible();
   await expectNoHorizontalOverflow(page);
 });

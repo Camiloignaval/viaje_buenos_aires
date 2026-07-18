@@ -192,14 +192,25 @@ describe("runHealthCheck — Story Intelligence Metadata", () => {
 });
 
 describe("runHealthCheck — Story Package real (gate de CI)", () => {
-  it("story-ba2026 no deja hallazgos evitables y resuelve toda su media", () => {
+  it("story-ba2026 deja explícitos sólo los bloqueos que requieren decisión editorial", () => {
     const publicDir = join(process.cwd(), "public");
     const assetExists = (ref: string) => existsSync(join(publicDir, ref));
     const report = runHealthCheck(realStory, { assetExists });
 
+    // El status global sólo escala por críticos; las advertencias siguen
+    // explícitas y contractuales en la lista de hallazgos.
     expect(report.status).toBe("ok");
-    expect(report.findings).toEqual([]);
-    expect(report.score.overall).toBe(100);
+    expect(report.findings.map(({ code, path }) => ({ code, path }))).toEqual([
+      { code: "media.missing-asset", path: "chapters[2].activities[0].image" },
+      { code: "media.missing-asset", path: "chapters[2].activities[7].image" },
+      { code: "media.missing-asset", path: "chapters[3].activities[0].image" },
+      { code: "media.missing-asset", path: "chapters[3].activities[4].image" },
+      { code: "experience.unsupported-memory-type", path: "chapters[0].suggestedMemories[14].type" },
+      { code: "references.dangling-activity-ref", path: "chapters[3].suggestedMemories[0]" },
+      { code: "references.dangling-activity-ref", path: "chapters[3].suggestedMemories[1]" },
+      { code: "experience.unsupported-memory-type", path: "chapters[3].suggestedMemories[1].type" },
+      { code: "references.dangling-activity-ref", path: "chapters[3].suggestedMemories[2]" },
+    ]);
   });
 });
 

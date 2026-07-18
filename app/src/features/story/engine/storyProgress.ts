@@ -16,6 +16,8 @@ export type { ChapterStatusValue };
 
 const DAY_IN_MS = 24 * 60 * 60 * 1000;
 const CALENDAR_DATE_PATTERN = /^(\d{4})-(\d{2})-(\d{2})/;
+const LOCAL_DATE_TIME_PATTERN = /^(\d{4})-(\d{2})-(\d{2})(?:T(\d{2})(?::(\d{2}))?(?::\d{2}(?:\.\d+)?)?)?$/;
+const LOCAL_TIME_PATTERN = /^(\d{2}):(\d{2})$/;
 
 function toDate(value: Date | string): Date {
   return value instanceof Date ? value : new Date(value);
@@ -23,6 +25,94 @@ function toDate(value: Date | string): Date {
 
 function pad2(value: number): string {
   return String(value).padStart(2, "0");
+}
+
+function validTimezone(timezone?: string): timezone is string {
+  if (!timezone) return false;
+  try {
+    new Intl.DateTimeFormat("en", { timeZone: timezone }).format(0);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+interface NarrativeDateTimeParts {
+  year: number;
+  month: number;
+  day: number;
+  hour: number;
+  minute: number;
+}
+
+function literalDateTimeParts(value: string): NarrativeDateTimeParts | null {
+  const match = LOCAL_DATE_TIME_PATTERN.exec(value);
+  if (!match) return null;
+  return {
+    year: Number(match[1]),
+    month: Number(match[2]),
+    day: Number(match[3]),
+    hour: match[4] === undefined ? 12 : Number(match[4]),
+    minute: match[5] === undefined ? 0 : Number(match[5]),
+  };
+}
+
+function zonedDateTimeParts(value: Date | string, timezone?: string): NarrativeDateTimeParts {
+  if (typeof value === "string") {
+    const literal = literalDateTimeParts(value);
+    if (literal) return literal;
+  }
+
+  const date = toDate(value);
+  if (validTimezone(timezone)) {
+    const parts = new Intl.DateTimeFormat("en-CA", {
+      timeZone: timezone,
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      hourCycle: "h23",
+    }).formatToParts(date);
+    const read = (type: Intl.DateTimeFormatPartTypes) => Number(parts.find((part) => part.type === type)?.value);
+    return { year: read("year"), month: read("month"), day: read("day"), hour: read("hour"), minute: read("minute") };
+  }
+  return {
+    year: date.getFullYear(),
+    month: date.getMonth() + 1,
+    day: date.getDate(),
+    hour: date.getHours(),
+    minute: date.getMinutes(),
+  };
+}
+
+export function resolveStoryTimezone(storyPackage: StoryPackage, override?: string): string | undefined {
+  const candidate = override ?? storyPackage.metadata.experienceTimezone ?? storyPackage.metadata.livingContext?.timezone;
+  return validTimezone(candidate) ? candidate : undefined;
+}
+
+/** Convierte el valor de Director Mode, entendido como hora local del destino, a un instante real. */
+export function narrativeNowFrom(value: string, timezone?: string): Date | null {
+  const literal = literalDateTimeParts(value);
+  if (!literal) {
+    const parsed = new Date(value);
+    return Number.isNaN(parsed.getTime()) ? null : parsed;
+  }
+  if (!validTimezone(timezone)) {
+    const parsed = new Date(`${value}${value.includes("T") ? "" : "T12:00:00"}`);
+    return Number.isNaN(parsed.getTime()) ? null : parsed;
+  }
+
+  const targetMinutes = calendarOrdinal(`${literal.year}-${pad2(literal.month)}-${pad2(literal.day)}`) * 1440
+    + literal.hour * 60 + literal.minute;
+  let candidate = new Date(Date.UTC(literal.year, literal.month - 1, literal.day, literal.hour, literal.minute));
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    const actual = zonedDateTimeParts(candidate, timezone);
+    const actualMinutes = calendarOrdinal(`${actual.year}-${pad2(actual.month)}-${pad2(actual.day)}`) * 1440
+      + actual.hour * 60 + actual.minute;
+    candidate = new Date(candidate.getTime() + (targetMinutes - actualMinutes) * 60_000);
+  }
+  return candidate;
 }
 
 function calendarDateParts(calendarDate: string): [number, number, number] {
@@ -34,15 +124,21 @@ function calendarDateParts(calendarDate: string): [number, number, number] {
 }
 
 /** Fecha calendario percibida: YYYY-MM-DD, sin horas ni conversión UTC. */
-export function calendarDateFrom(value: Date | string): string {
+export function calendarDateFrom(value: Date | string, timezone?: string): string {
   if (typeof value === "string") {
-    const match = CALENDAR_DATE_PATTERN.exec(value);
-    if (!match) {
+    const literal = literalDateTimeParts(value);
+    if (literal) return `${literal.year}-${pad2(literal.month)}-${pad2(literal.day)}`;
+    if (!validTimezone(timezone)) {
+      const match = CALENDAR_DATE_PATTERN.exec(value);
+      if (match) return `${match[1]}-${match[2]}-${match[3]}`;
       throw new Error(`Fecha calendario inválida: ${value}`);
     }
-    return `${match[1]}-${match[2]}-${match[3]}`;
   }
-  return `${value.getFullYear()}-${pad2(value.getMonth() + 1)}-${pad2(value.getDate())}`;
+  const parts = zonedDateTimeParts(value, timezone);
+  if (![parts.year, parts.month, parts.day].every(Number.isFinite)) {
+    throw new Error(`Fecha calendario inválida: ${String(value)}`);
+  }
+  return `${parts.year}-${pad2(parts.month)}-${pad2(parts.day)}`;
 }
 
 export function calendarOrdinal(calendarDate: string): number {
@@ -59,12 +155,22 @@ export function addCalendarDays(date: Date | string, days: number): string {
   return calendarDateFromOrdinal(calendarOrdinal(calendarDateFrom(date)) + days);
 }
 
-export function calendarDaysBetween(start: Date | string, end: Date | string): number {
-  return calendarOrdinal(calendarDateFrom(end)) - calendarOrdinal(calendarDateFrom(start));
+export function calendarDaysBetween(start: Date | string, end: Date | string, timezone?: string): number {
+  return calendarOrdinal(calendarDateFrom(end, timezone)) - calendarOrdinal(calendarDateFrom(start, timezone));
 }
 
-function isCalendarOnOrAfter(now: Date | string, referenceDate: Date | string): boolean {
-  return calendarDaysBetween(referenceDate, now) >= 0;
+function isCalendarOnOrAfter(now: Date | string, referenceDate: Date | string, timezone?: string): boolean {
+  return calendarDaysBetween(referenceDate, now, timezone) >= 0;
+}
+
+function isLocalUnlockReached(now: Date | string, referenceDate: string, localTime: string, timezone?: string): boolean {
+  const match = LOCAL_TIME_PATTERN.exec(localTime);
+  if (!match) return isCalendarOnOrAfter(now, referenceDate, timezone);
+  const nowParts = zonedDateTimeParts(now, timezone);
+  const nowMinutes = calendarOrdinal(`${nowParts.year}-${pad2(nowParts.month)}-${pad2(nowParts.day)}`) * 1440
+    + nowParts.hour * 60 + nowParts.minute;
+  const targetMinutes = calendarOrdinal(referenceDate) * 1440 + Number(match[1]) * 60 + Number(match[2]);
+  return nowMinutes >= targetMinutes;
 }
 
 /**
@@ -120,6 +226,7 @@ interface ChapterStatusArgs {
   now: Date | string;
   previousChapterCompleted: boolean;
   priorStatus?: ChapterStatusValue;
+  timezone?: string;
 }
 
 /**
@@ -133,6 +240,7 @@ export function getChapterStatus({
   now,
   previousChapterCompleted,
   priorStatus,
+  timezone,
 }: ChapterStatusArgs): ChapterStatusValue {
   if (
     priorStatus === ChapterStatus.STARTED ||
@@ -145,7 +253,9 @@ export function getChapterStatus({
   const referenceDate = getChapterReferenceCalendarDate(chapter, storyPackage);
 
   const dateSatisfied =
-    !unlockRule.requiresDateReached || isCalendarOnOrAfter(now, referenceDate);
+    !unlockRule.requiresDateReached || (unlockRule.localTime
+      ? isLocalUnlockReached(now, referenceDate, unlockRule.localTime, timezone)
+      : isCalendarOnOrAfter(now, referenceDate, timezone));
   const previousSatisfied =
     !unlockRule.requiresPreviousChapterCompleted ||
     previousChapterCompleted === true;
@@ -160,8 +270,9 @@ export function getChapterStatus({
  */
 export function getStoryProgress(
   storyPackage: StoryPackage,
-  { now, chapterStatuses = {} }: StoryContext,
+  { now, chapterStatuses = {}, timezone: timezoneOverride }: StoryContext,
 ): ChapterStatuses {
+  const timezone = resolveStoryTimezone(storyPackage, timezoneOverride);
   const orderedChapters = [...storyPackage.chapters].sort(
     (a, b) => a.order - b.order,
   );
@@ -175,6 +286,7 @@ export function getStoryProgress(
       now,
       previousChapterCompleted,
       priorStatus: chapterStatuses[chapter.id],
+      timezone,
     });
     progress[chapter.id] = status;
     previousChapterCompleted = status === ChapterStatus.COMPLETED;
@@ -187,6 +299,7 @@ export function getStoryProgress(
       now,
       previousChapterCompleted,
       priorStatus: chapterStatuses[storyPackage.specialChapter.id],
+      timezone,
     });
   }
 

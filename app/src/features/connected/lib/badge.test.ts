@@ -14,17 +14,11 @@ describe("describeBadge", () => {
     });
   });
 
-  it('aparece "Viaje conectado" cuando ready (y también en partial/empty)', () => {
-    expect(describeBadge({ status: ReadinessStatus.READY, error: null })).toEqual({
-      text: "Viaje conectado",
-      tone: "success",
-    });
-    expect(describeBadge({ status: ReadinessStatus.PARTIAL, error: null })?.tone).toBe(
-      "success",
-    );
-    expect(describeBadge({ status: ReadinessStatus.EMPTY, error: null })?.tone).toBe(
-      "success",
-    );
+  it("se retira en silencio cuando ya está conectado (ready/partial/empty)", () => {
+    // Una vez conectado no hay nada accionable: la insignia no flota sobre la lectura.
+    expect(describeBadge({ status: ReadinessStatus.READY, error: null })).toBe(null);
+    expect(describeBadge({ status: ReadinessStatus.PARTIAL, error: null })).toBe(null);
+    expect(describeBadge({ status: ReadinessStatus.EMPTY, error: null })).toBe(null);
   });
 
   it("aparece error cuando falla", () => {

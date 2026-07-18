@@ -24,7 +24,7 @@ const EVIDENCE = [
   ["S19", "Memory falla segura", "src/features/experience/components/LivingMemoryMoment.test.tsx", "query and hostile observer failures"],
   ["S20", "Consumidor estable", "src/features/experience/hooks/useAdaptiveJourney.test.tsx", "mantiene un instante por scope"],
   ["S21", "Observer hostil", "src/features/experience/adaptiveJourneyLivingMemories.integration.test.ts", "hostile failures"],
-  ["S22", "Superficies jerárquicas", "src/features/experience/components/productiveCompanionConsumers.test.ts", "between ChapterHero and activities"],
+  ["S22", "Superficies jerárquicas", "src/features/experience/components/productiveCompanionConsumers.test.ts", "inside the relevant activity passage"],
   ["S23", "Silencio total", "src/features/dev/StatesGallery.adaptive.test.tsx", "no contextual node"],
   ["S24", "Weather falla y temporal continúa", "src/features/experience/adaptiveJourneyLivingMemories.integration.test.ts", "valid temporal branch"],
   ["S25", "Contrato terminal", "src/features/experience/adaptiveJourneyLivingMemories.integration.test.ts", "invalid"],

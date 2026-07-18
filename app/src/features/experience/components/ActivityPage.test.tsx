@@ -42,13 +42,11 @@ describe("ActivityPage", () => {
     expect(container.querySelector(".activity-card")).toBeNull();
   });
 
-  it("integra la captura como una marca de la página, sin abrir un bloque Recuerdo", () => {
+  it("integra la captura como una lámina en la página, sin abrir un bloque Recuerdo", () => {
     renderPage(true);
 
-    expect(
-      screen.getByRole("complementary", { name: "Marcas que quedaron en esta página" }),
-    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Escribir un recuerdo de este momento" })).toBeInTheDocument();
     expect(screen.queryByText(/^Recuerdo$/i)).not.toBeInTheDocument();
-    expect(screen.getByRole("textbox", { name: /qué quieren recordar/i })).toBeInTheDocument();
+    expect(screen.queryByRole("textbox")).toBeNull();
   });
 });

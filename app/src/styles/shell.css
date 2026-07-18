@@ -12,19 +12,21 @@
    ───────────────────────────────────────────────────────────────────────── */
 
 :root {
-  --bg: #0f0e0d;
-  --bg-rgb: 15, 14, 13;
-  --surface-rgb: 23, 21, 20;
-  --ivory: #f6f2eb;
-  --ivory-rgb: 246, 242, 235;
-  --secondary-rgb: 221, 210, 196;
-  --taupe: #a99d8f;
-  --taupe-rgb: 169, 157, 143;
-  --gold: #d6b98a;
-  --gold-rgb: 214, 185, 138;
-  --gold-soft: #b99561;
+  /* Espejo de la atmósfera oscura de experience.css (noche azul, Fase 8): el
+     umbral de entrada habla el mismo idioma desde el primer frame. */
+  --bg: #14161d;
+  --bg-rgb: 20, 22, 29;
+  --surface-rgb: 29, 33, 48;
+  --ivory: #ece9e0;
+  --ivory-rgb: 236, 233, 224;
+  --secondary-rgb: 176, 181, 194;
+  --taupe: #6c7280;
+  --taupe-rgb: 108, 114, 128;
+  --gold: #c6a25a;
+  --gold-rgb: 198, 162, 90;
+  --gold-soft: #a8874a;
   --error: #e2a293;
-  --focus-ring: rgba(214, 185, 138, 0.52);
+  --focus-ring: rgba(198, 162, 90, 0.52);
   --font-display: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
   --font-body: -apple-system, "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }

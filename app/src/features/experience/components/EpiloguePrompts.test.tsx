@@ -33,7 +33,8 @@ const storyPackage = { placesCatalog: {} } as StoryPackage;
 describe("epilogue memory surface", () => {
   beforeEach(() => vi.clearAllMocks());
 
-  it("uses the regular memory surface when a creation prompt needs a new photo", () => {
+  it("uses the regular in-situ memory surface when a creation prompt needs a new photo", async () => {
+    const user = userEvent.setup();
     const prompt: EpiloguePrompt = {
       id: "birthday-photo",
       label: "El cumpleaños",
@@ -53,8 +54,9 @@ describe("epilogue memory surface", () => {
 
     expect(screen.getByText("El cumpleaños")).toBeInTheDocument();
     expect(screen.getByText("Un momento de hoy, sin pose.")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Sumar una foto a este momento" }));
     expect(screen.getByLabelText("Elegir fotos para este recuerdo")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Guardar el momento" })).toBeDisabled();
+    expect(screen.queryByRole("button", { name: "Guardar el momento" })).toBeNull();
   });
 
   it("names photo choices and saves only after an explicit confirmation", async () => {

@@ -94,7 +94,7 @@ describe("DateTimeFields editorial", () => {
       <DateTimeFields {...BASE_PROPS} value="2026-07-18T09:30" min="2026-07-18" onChange={() => {}} />,
     );
     await user.click(screen.getByRole("button", { name: "Cambiar fecha →" }));
-    expect(screen.getByRole("gridcell", { name: "Viernes, 17 de julio de 2026" })).toBeDisabled();
+    expect(screen.getByRole("gridcell", { name: /Viernes, 17 de julio de 2026(?:, hoy)?/ })).toBeDisabled();
     expect(screen.getByRole("gridcell", { name: "Sábado, 18 de julio de 2026" })).toBeEnabled();
   });
 

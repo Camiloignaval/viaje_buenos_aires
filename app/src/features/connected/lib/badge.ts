@@ -21,7 +21,9 @@ export function describeBadge(readinessState: ReadinessState): BadgeView | null 
   if (readinessState.status === ReadinessStatus.ERROR) {
     return { text: "No pudimos conectar este viaje", tone: "error" };
   }
-  // ready, partial y empty son variantes de "conectado sin error" — la insignia
-  // es deliberadamente discreta, no expone esa distinción técnica.
-  return { text: "Viaje conectado", tone: "success" };
+  // ready, partial y empty son variantes de "conectado sin error": una vez que el
+  // viaje quedó conectado no hay nada accionable que decir, así que la insignia se
+  // retira en silencio. No flota un pill "Viaje conectado" sobre la lectura; solo
+  // sobreviven los estados transitorios o accionables (loading y error).
+  return null;
 }

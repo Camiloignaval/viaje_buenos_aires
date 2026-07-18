@@ -32,7 +32,7 @@ describe("DepartureStep", () => {
     renderDeparture();
     await user.click(screen.getByRole("button", { name: "Elegir fecha →" }));
     expect(screen.getByRole("gridcell", { name: /^Viernes, 17 de julio de 2026/ })).toBeDisabled();
-    expect(screen.getByRole("gridcell", { name: "Sábado, 18 de julio de 2026" })).toBeEnabled();
+    expect(screen.getByRole("gridcell", { name: /^Sábado, 18 de julio de 2026/ })).toBeEnabled();
   });
 
   it("muestra un mensaje humano si el regreso no es posterior a la llegada", () => {

@@ -1,0 +1,1566 @@
+/* El Día Vivido: capa de composición editorial. No altera stores, rutas ni motor. */
+:root {
+  --didone: "Bodoni 72", Didot, "Bodoni MT", Georgia, serif;
+  --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  --plaque: Copperplate, "Copperplate Gothic Light", "Times New Roman", serif;
+  --hand: "Segoe Script", "Snell Roundhand", "Bradley Hand", cursive;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  /* La identidad del Día Vivido es la NOCHE AZUL: contemporánea, no sepia antigua.
+     Estos custom props son locales al libro (no tocan los tokens globales). Alaia
+     entera comparte el metal —el oro— y la calma nocturna; el libro se distingue
+     por su fondo azul profundo. El único color que no es oro es la tinta humana. */
+  --paper: var(--bg);
+  --paper-2: var(--bg-secondary);
+  --mat: var(--surface-elevated);
+  --ink: var(--text-primary);
+  --ink-soft: var(--text-secondary);
+  --ink-faint: var(--text-muted);
+  --brass: var(--gold);
+  --filete: var(--gold);
+  --cobalt: #8ba6cf;
+}
+
+/* Noche azul: el fondo profundo que da la calma de viaje. Oro como único metal. */
+.alaia-theme-dark {
+  --paper: #14161d;
+  --paper-2: #0e1016;
+  --mat: #1d2130;
+  --ink: #ece9e0;
+  --ink-soft: #b0b5c2;
+  --ink-faint: #6c7280;
+  --brass: #c6a25a;
+  --filete: #c6a25a;
+  --cobalt: #8ba6cf;
+}
+
+/* Día azul: papel frío y contemporáneo, nunca crema sepia. Tinta e ilustración azules. */
+.alaia-theme-light {
+  --paper: #eaecf1;
+  --paper-2: #dfe2e9;
+  --mat: #f5f6f9;
+  --ink: #1b2334;
+  --ink-soft: #4a5566;
+  --ink-faint: #868d9c;
+  --brass: #9c7c3d;
+  --filete: #9c7c3d;
+  --cobalt: #2c4a7a;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.alaia-experience .book {
+  scroll-snap-type: none;
+  /* EL papel del libro vive acá, de borde a borde: grano + un halo tenue arriba,
+     sobre el papel oscuro. Es una única superficie continua a lo ancho de la
+     pantalla — no hay panel central, no hay rectángulo recortado del fondo. */
+  background:
+    radial-gradient(150% 55% at 50% -12%, color-mix(in srgb, var(--mat) 50%, var(--paper)) 0%, transparent 50%),
+    var(--paper);
+}
+
+/* La hoja no tiene fondo propio: es solo la columna de lectura sobre el papel
+   full-bleed del .book. Sin borde, sin sombra, sin superficie distinta — el texto
+   descansa sobre el mismo papel que llega hasta los márgenes de la pantalla.
+   min-height:0 anula el min-height:100dvh heredado: el capítulo termina donde
+   termina el contenido, sin una pantalla vacía extra. */
+.alaia-experience .page-chapter {
+  --chapter-page-pad: clamp(1.2rem, 4vw, 3rem);
+  width: 100%;
+  max-width: 74rem;
+  min-height: 0;
+  margin-inline: auto;
+  padding: clamp(1.6rem, 4vw, 3.25rem) var(--chapter-page-pad) clamp(3rem, 7vw, 5rem);
+  color: var(--ink);
+  background: transparent;
+}
+
+/* El capítulo es una lectura larga y CONTINUA: el scroll-snap obligatorio (pensado
+   para páginas fijas de un viewport) peleaba con el scroll y dejaba una pantalla
+   negra de snap al final. Se desactiva el snap solo para la lectura del día — el
+   índice y la portada conservan el suyo. Un único scroll, natural, de arriba a
+   abajo, que se detiene exactamente en el final del contenido. */
+.alaia-experience .book:has(.page-chapter) {
+  scroll-snap-type: none;
+}
+
+.day-masthead {
+  position: relative;
+  width: min(100%, 68rem);
+  margin: 0 auto;
+  padding: clamp(1rem, 3vw, 1.75rem) 0 clamp(3.5rem, 9vw, 6.5rem);
+  text-align: center;
+}
+
+.day-masthead .chapter-topbar {
+  position: static;
+  min-height: 2.75rem;
+  margin: 0 0 clamp(3rem, 9vw, 6rem);
+  padding: 0;
+  background: none;
+}
+
+.day-masthead .chapter-topbar :is(.book-back-link, .theme-switch) {
+  color: var(--ink-soft);
+  border-color: color-mix(in srgb, var(--ink-soft) 28%, transparent);
+  text-shadow: none;
+}
+
+.day-masthead-kicker,
+.memory-date-stamp,
+.marginal-label,
+.practical-fold summary {
+  font-family: var(--plaque);
+  font-size: 0.69rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.day-masthead-kicker {
+  margin: 0 0 1rem;
+  color: var(--brass);
+}
+
+.day-masthead h1 {
+  max-width: 12ch;
+  margin: 0 auto 1.25rem;
+  color: var(--ink);
+  font: 400 clamp(3rem, 8vw, 5.7rem)/0.95 var(--didone);
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+
+.day-masthead-open {
+  max-width: 38rem;
+  margin: 0 auto clamp(2.5rem, 7vw, 4.75rem);
+  color: var(--ink-soft);
+  font: italic clamp(1.05rem, 2.2vw, 1.35rem)/1.7 var(--serif);
+}
+
+.day-masthead > .reference-lamina {
+  width: min(100%, 68rem);
+  aspect-ratio: 16 / 9;
+  height: auto;
+  margin: 0 auto;
+  transform: rotate(-0.7deg);
+}
+
+/* La separación entre escenas: un filete dorado fino a cada lado + el ornamento
+   infinito al centro (── ∞ ──). La pausa editorial entre recuerdos, rodeada de
+   aire — nunca un borde duro que corta la hoja. */
+.scene-filete {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(0.9rem, 3vw, 1.5rem);
+  width: min(100%, 34rem);
+  margin: clamp(3rem, 8vw, 5rem) auto 0;
+  color: var(--filete);
+}
+
+/* Los dos filetes que flanquean el símbolo: hairline dorado que se desvanece
+   hacia los extremos. Ahora hay línea + ∞ + línea. */
+.scene-filete-line {
+  flex: 1 1 auto;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--filete) 44%, transparent) 26%,
+    color-mix(in srgb, var(--filete) 44%, transparent) 74%,
+    transparent
+  );
+}
+
+/* El carácter REAL U+221E en serif — un infinito acostado, inequívoco. No un
+   floreo ni dos óvalos: el símbolo ∞ tal cual, reconocible al instante. */
+.scene-filete-mark {
+  flex: 0 0 auto;
+  font-family: Georgia, "Iowan Old Style", Palatino, "Times New Roman", serif;
+  font-size: 1.55rem;
+  line-height: 1;
+  color: var(--filete);
+  opacity: 0.92;
+}
+
+.chapter-reading-flow,
+.page-chapter .chapter-activity-sequence {
+  width: 100%;
+  max-width: 64rem;
+  margin: 0 auto;
+}
+
+.page-chapter .chapter-activity-sequence {
+  padding: 0;
+  list-style: none;
+}
+
+.page-chapter .chapter-activity-sequence > .activity-page {
+  margin: 0;
+  padding: 0 !important;
+  border: 0;
+}
+
+.day-passage {
+  width: 100%;
+  margin: 0;
+  /* Aire generoso entre escenas: el libro respira, no comprime. Cada pasaje llega
+     después de una pausa larga — se lee pausado, nunca denso. */
+  padding: clamp(3.75rem, 8.5vw, 6.75rem) 0 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.day-passage-pleno {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 12.5rem;
+  gap: 2.4rem;
+  align-items: start;
+}
+
+.day-passage-caminado .passage-main {
+  max-width: 46rem;
+  margin: 0 auto;
+}
+
+.day-passage-pausa {
+  max-width: 30rem;
+  margin-inline: auto;
+  text-align: center;
+}
+
+.day-passage-centered {
+  display: block;
+  max-width: 44rem;
+  margin-inline: auto;
+  text-align: center;
+}
+
+/* Instante: una respiración entre escenas. Página angosta, callada, sin filete
+   ni datos prácticos. Menos aire arriba que un pasaje pleno — un latido, no una
+   parada. */
+.day-passage-instante {
+  display: block;
+  max-width: 26rem;
+  margin-inline: auto;
+  padding-top: clamp(1.8rem, 4.5vw, 3rem);
+  text-align: center;
+}
+
+.day-passage-instante .instante-title {
+  margin: 0;
+  color: var(--ink-soft);
+  font: 400 clamp(1.15rem, 2.4vw, 1.5rem)/1.2 var(--didone);
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+.day-passage-instante .instante-line {
+  margin: 0.55rem 0 0;
+  color: var(--ink-faint);
+  font: italic 400 clamp(0.98rem, 1.9vw, 1.1rem)/1.6 var(--serif);
+  text-wrap: pretty;
+}
+
+/* La foto de un instante es un apunte, no una lámina protagonista. */
+.day-passage-instante .reference-lamina {
+  width: 7.6rem;
+  height: 9rem;
+  margin: clamp(1.2rem, 3vw, 1.8rem) auto 0;
+  transform: rotate(-1.4deg);
+}
+
+.day-passage-instante .activity-page-marks {
+  margin-top: clamp(1.2rem, 3.5vw, 2rem);
+}
+
+/* Ceremonia: el pico cinematográfico del día. Hereda el centrado del clímax y le
+   suma presencia — antetítulo en versalitas, título mayor, lámina grande. Es LA
+   escena, no una actividad más. */
+.day-passage-ceremonia {
+  max-width: 48rem;
+  padding-top: clamp(4rem, 9vw, 7rem);
+}
+
+.ceremonia-kicker {
+  margin: 0 0 0.9rem;
+  color: var(--brass);
+  font-family: var(--plaque);
+  font-size: 0.66rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.day-passage-ceremonia .passage-heading h2 {
+  font-size: clamp(2.1rem, 4.6vw, 3.4rem);
+}
+
+.page-chapter .activity-page .day-passage-ceremonia .reference-lamina {
+  width: min(44rem, 94%);
+  height: auto;
+  aspect-ratio: 3 / 2;
+  transform: rotate(-0.6deg);
+}
+
+/* Umbral de llegada: el instante de abrir el destino. Editorial, nunca un modal;
+   vive en el flujo del día como una página más. */
+.arrival-threshold-page,
+.phase-title-page {
+  list-style: none;
+}
+
+.arrival-threshold {
+  max-width: 32rem;
+  margin: clamp(3rem, 8vw, 6rem) auto;
+  text-align: center;
+}
+
+.arrival-threshold-copy {
+  margin: clamp(1.4rem, 4vw, 2.4rem) 0 1.6rem;
+  color: var(--ink);
+  font: 400 clamp(1.3rem, 3vw, 1.9rem)/1.3 var(--didone);
+  text-wrap: balance;
+}
+
+.arrival-threshold-open {
+  appearance: none;
+  border: 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--brass) 55%, transparent);
+  background: transparent;
+  padding: 0.3rem 0.15rem;
+  color: var(--brass);
+  font: 400 1.05rem/1.4 var(--serif);
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+.arrival-threshold-open:hover,
+.arrival-threshold-open:focus-visible {
+  border-bottom-color: var(--brass);
+  outline: none;
+}
+
+/* Portada de fase cruzada: "Bienvenidos a Buenos Aires" abre el destino dentro
+   del mismo día, como una nueva portada del libro. */
+.phase-title {
+  max-width: 34rem;
+  margin: clamp(2.4rem, 7vw, 5rem) auto clamp(1rem, 3vw, 2rem);
+  text-align: center;
+}
+
+.phase-title h2 {
+  margin: 1.2rem 0 0;
+  color: var(--ink);
+  font: 400 clamp(1.8rem, 4.2vw, 3rem)/1.08 var(--didone);
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.phase-title p {
+  margin: 0.9rem auto 0;
+  max-width: 30rem;
+  color: var(--ink-soft);
+  font: italic 400 clamp(1.02rem, 2vw, 1.18rem)/1.7 var(--serif);
+  text-wrap: pretty;
+}
+
+.day-passage-umbral-cierre .passage-main {
+  max-width: 37rem;
+}
+
+.passage-heading {
+  margin-bottom: clamp(1.9rem, 4vw, 2.9rem);
+}
+
+.passage-moment {
+  margin: 0 0 0.45rem;
+  color: var(--cobalt);
+  font: 400 clamp(1rem, 2.2vw, 1.22rem)/1.35 var(--hand);
+  transform: rotate(-0.4deg);
+}
+
+.passage-heading h2 {
+  margin: 0;
+  color: var(--ink);
+  /* Subordinado al masthead del día (que llega a 5.7rem): el título del día
+     domina, el título de escena acompaña. */
+  font: 400 clamp(1.75rem, 3.8vw, 2.85rem)/1.04 var(--didone);
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+
+/* Franja de hechos: hora · lugar · duración. Versalitas discretas bajo el
+   título; ni caja ni chips. Lectura de un vistazo, también en móvil. */
+.passage-facts {
+  margin: 0.7rem 0 0;
+  color: var(--ink-faint);
+  font: 400 0.72rem/1.5 var(--plaque);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.passage-facts .fact-sep {
+  color: color-mix(in srgb, var(--brass) 70%, transparent);
+}
+
+.day-passage-pausa .passage-facts,
+.day-passage-centered .passage-facts {
+  text-align: center;
+}
+
+.passage-voice {
+  margin: 0;
+  color: var(--ink-soft);
+  font: 400 clamp(1.05rem, 2vw, 1.22rem)/1.78 var(--serif);
+}
+
+.day-passage:not(.day-passage-pausa) .passage-voice::first-letter {
+  float: left;
+  margin: 0.08em 0.1em 0 0;
+  color: var(--filete);
+  font: 400 3.25em/0.78 var(--didone);
+}
+
+.day-passage-pausa .passage-voice {
+  font-style: italic;
+  font-size: clamp(1.18rem, 2.7vw, 1.48rem);
+}
+
+/* El consejo de quien ya estuvo: qué pedir, el imperdible, el detalle práctico
+   del lugar. Aparte editorial en la columna principal (regla dorada), distinto de
+   la voz narrativa y de la marginalia. Es el valor de viaje, integrado — sin widget. */
+.passage-counsel {
+  margin: clamp(2rem, 4vw, 2.8rem) 0 0;
+  color: var(--ink-soft);
+  font: italic 400 clamp(1.02rem, 1.9vw, 1.14rem)/1.78 var(--serif);
+}
+
+/* Un pequeño floreo abre el consejo en vez de una regla: el detalle de quien ya
+   estuvo llega como una anotación al pie del texto, no como una cita con barra. */
+.passage-counsel::before {
+  content: "❧";
+  display: block;
+  margin-bottom: 0.5rem;
+  color: color-mix(in srgb, var(--brass) 78%, transparent);
+  font: 1.1rem/1 var(--serif);
+}
+
+.day-passage-pausa .passage-counsel::before,
+.day-passage-centered .passage-counsel::before {
+  text-align: center;
+}
+
+.reference-lamina,
+.memory-lamina {
+  position: relative;
+  display: block;
+  box-sizing: border-box;
+  width: 12rem;
+  aspect-ratio: 4 / 5;
+  height: auto;
+  padding: 0.6rem;
+  border: 0;
+  border-radius: 0;
+  background: var(--mat);
+  color: var(--ink-soft);
+  box-shadow: 0 1rem 1.9rem -1.15rem color-mix(in srgb, var(--ink) 52%, transparent);
+}
+
+.reference-lamina {
+  margin: clamp(2.6rem, 6vw, 4rem) auto;
+  transform: rotate(-1.7deg);
+}
+
+/* Romper apenas la simetría perfecta: las láminas cuelgan a un lado y a otro,
+   como fotografías pegadas a mano. Sutil, casi imperceptible — pero deja de
+   sentirse generado automáticamente. translateX es visual: no reordena la hoja. */
+.activity-page:nth-child(even) .reference-lamina {
+  transform: rotate(1.5deg) translateX(0.55rem);
+}
+
+.activity-page:nth-child(3n) .reference-lamina {
+  transform: rotate(-2.6deg) translateX(-0.6rem);
+}
+
+.reference-lamina-panoramic {
+  width: min(16.25rem, 100%);
+  height: 9.4rem;
+  transform: rotate(0.8deg);
+}
+
+.reference-lamina img,
+.memory-lamina img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.lamina-corner {
+  position: absolute;
+  z-index: 3;
+  width: 1rem;
+  height: 1rem;
+  border-color: var(--brass);
+  opacity: 0.72;
+}
+
+.lamina-corner-tl { top: 0.28rem; left: 0.28rem; border-top: 1px solid; border-left: 1px solid; }
+.lamina-corner-tr { top: 0.28rem; right: 0.28rem; border-top: 1px solid; border-right: 1px solid; }
+.lamina-corner-bl { bottom: 0.28rem; left: 0.28rem; border-bottom: 1px solid; border-left: 1px solid; }
+.lamina-corner-br { right: 0.28rem; bottom: 0.28rem; border-right: 1px solid; border-bottom: 1px solid; }
+
+.passage-marginalia {
+  align-self: start;
+  padding-top: 4.8rem;
+  color: var(--ink-soft);
+}
+
+.marginal-note + .marginal-note {
+  margin-top: 1.45rem;
+}
+
+.marginal-note p,
+.marginal-note .money-line {
+  margin: 0;
+  font: 400 0.83rem/1.55 var(--serif);
+}
+
+.marginal-note .marginal-label {
+  margin-bottom: 0.35rem;
+  color: var(--brass);
+  font-family: var(--plaque);
+  font-size: 0.62rem;
+  line-height: 1.35;
+}
+
+.marginal-note .links {
+  margin-top: 0.35rem;
+}
+
+.passage-companion .visible-companion-experience {
+  margin: clamp(1.8rem, 5vw, 3rem) 0;
+  padding: 0 0 0 1.45rem;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  color: var(--cobalt);
+  font-family: var(--hand);
+}
+
+.passage-companion .visible-companion-experience h3 {
+  font-family: var(--plaque);
+  color: inherit;
+}
+
+/* Los datos prácticos no son un componente: son la última página de la escena.
+   Sin regla que la corte, separada solo por aire. El rótulo es un pequeño título
+   de sección de libro, no la cabecera de un acordeón. */
+.practical-fold {
+  max-width: min(44rem, 100%);
+  margin: clamp(3rem, 7vw, 5rem) 0 0;
+  color: var(--ink-soft);
+}
+
+.practical-fold summary {
+  min-height: 44px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.3rem 0.7rem;
+  cursor: pointer;
+  list-style: none;
+}
+
+.practical-fold summary::-webkit-details-marker {
+  display: none;
+}
+
+/* Un floreo abre la sección en vez de un chevron. Deja de oler a interfaz. */
+.practical-fold-label {
+  color: var(--brass);
+  font-family: var(--plaque);
+  font-size: 0.66rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.practical-fold-label::before {
+  content: "❦";
+  margin-right: 0.5rem;
+  font-family: var(--serif);
+  text-transform: none;
+  opacity: 0.85;
+}
+
+.practical-fold-preview {
+  color: var(--ink-faint);
+  font: italic 400 0.92rem/1.4 var(--serif);
+}
+
+.practical-fold[open] .practical-fold-preview {
+  display: none;
+}
+
+.practical-fold summary:focus-visible,
+.memory-lamina:focus-visible,
+.memory-reach-affordance:focus-visible {
+  outline: 2px solid var(--brass);
+  outline-offset: 3px;
+}
+
+/* Dos columnas: la postal y cómo llegar a la izquierda; las notas editoriales
+   (costo, qué pedir, reserva, clima, consejo) a la derecha. Aprovecha el ancho
+   en vez de dejar aire muerto, y sigue leyéndose como página, no como ficha. */
+.practical-fold-body {
+  display: grid;
+  grid-template-columns: minmax(0, 21rem) minmax(0, 1fr);
+  gap: clamp(1.6rem, 4vw, 3.5rem);
+  align-items: start;
+  padding: 1.2rem 0 0.4rem;
+  font: 400 0.95rem/1.65 var(--serif);
+}
+
+.practical-fold-place {
+  min-width: 0;
+}
+
+.practical-fold-place .links {
+  margin-top: 0.85rem;
+}
+
+/* Cómo llegar: marcas del libro, no enlaces HTML. Glifo monocromático + etiqueta
+   en versalitas doradas, sin subrayado ni color de enlace. */
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.35rem;
+}
+
+.page-chapter .links a.book-link,
+.marginal-note .links a.book-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.42rem;
+  color: var(--brass);
+  text-decoration: none;
+  font-family: var(--plaque);
+  font-size: 0.62rem;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  transition: opacity 0.18s ease;
+}
+
+.book-link:hover,
+.book-link:focus-visible {
+  opacity: 0.68;
+  text-decoration: none;
+  outline: none;
+}
+
+.book-link:focus-visible {
+  outline: 2px solid var(--brass);
+  outline-offset: 3px;
+}
+
+.link-glyph {
+  height: 0.82rem;
+  width: auto;
+  fill: currentColor;
+  flex: none;
+}
+
+@media (max-width: 640px) {
+  .practical-fold-body {
+    grid-template-columns: 1fr;
+    gap: 1.3rem;
+  }
+}
+
+/* Cada dato es una pequeña nota editorial: rótulo tenue arriba, texto debajo.
+   Ni columnas ni bordes ni chips — nada de ficha administrativa. Se lee como una
+   anotación al margen de un cuaderno de viaje. */
+.practical-facts {
+  margin: 0.5rem 0 0;
+}
+
+.practical-fact {
+  margin-top: 1.2rem;
+}
+
+.practical-fact:first-child {
+  margin-top: 0;
+}
+
+.practical-fact dt {
+  margin-bottom: 0.12rem;
+  color: var(--brass);
+  font-family: var(--plaque);
+  font-size: 0.58rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.practical-fact dd {
+  margin: 0;
+  color: var(--ink-soft);
+}
+
+/* Costo: el monto local manda; la conversión aproximada y el "incluye" susurran
+   debajo, en itálica — una nota de viaje, no una fila de precios. */
+.practical-fact .money-line-local {
+  color: var(--ink);
+}
+
+.practical-fact .money-line-context {
+  display: block;
+  margin-top: 0.1rem;
+}
+
+.practical-fact .money-line-converted {
+  color: var(--ink-faint);
+  font-size: 0.88em;
+}
+
+.cost-aside {
+  display: block;
+  margin-top: 0.24rem;
+  color: var(--ink-faint);
+  font: italic 400 0.82rem/1.4 var(--serif);
+}
+
+.practical-address {
+  margin: 0 0 0.9rem;
+  color: var(--ink);
+  font: italic 400 1rem/1.55 var(--serif);
+}
+
+/* Mini mapa: una postal impresa del lugar, pegada a mano en la hoja. Papel, grano
+   y tinta — nunca un mapa interactivo ni un componente. Abre Google Maps. */
+.map-postcard {
+  position: relative;
+  display: block;
+  width: min(21rem, 100%);
+  margin: 0.3rem 0 1.1rem;
+  padding: 0.5rem 0.5rem 0.42rem;
+  background: linear-gradient(158deg, color-mix(in srgb, var(--mat) 86%, var(--paper)), var(--mat));
+  box-shadow: 0 1rem 1.9rem -1rem color-mix(in srgb, var(--ink) 58%, transparent);
+  text-decoration: none;
+  transform: rotate(-0.7deg);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.map-postcard:hover,
+.map-postcard:focus-visible {
+  transform: translateY(-2px) rotate(-0.7deg);
+  box-shadow: 0 1.25rem 2.2rem -1rem color-mix(in srgb, var(--ink) 64%, transparent);
+}
+
+.map-postcard:focus-visible {
+  outline: 2px solid var(--brass);
+  outline-offset: 3px;
+}
+
+.map-postcard-art {
+  display: block;
+  width: 100%;
+  height: auto;
+  /* Papel impreso: grano fino + un keyline de tinta dorada, como una lámina. */
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)' opacity='0.05'/%3E%3C/svg%3E"),
+    color-mix(in srgb, var(--paper-2) 62%, var(--mat));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--brass) 22%, transparent);
+}
+
+.map-street {
+  fill: none;
+  stroke: color-mix(in srgb, var(--ink-faint) 42%, transparent);
+  stroke-width: 1.4;
+}
+
+.map-plot {
+  fill: color-mix(in srgb, var(--brass) 12%, transparent);
+}
+
+.map-pin path {
+  fill: var(--brass);
+}
+
+.map-pin circle {
+  fill: var(--paper);
+}
+
+.map-postcard-label {
+  display: block;
+  margin-top: 0.4rem;
+  padding: 0 0.2rem 0.15rem;
+  color: var(--ink-soft);
+  font-family: var(--plaque);
+  font-size: 0.6rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+/* El recuerdo del usuario se acerca a la lámina editorial que lo precede: juntos
+   son una sola composición — la foto que preparó el momento y la que prueba que
+   estuvimos ahí, casi pegadas. */
+.activity-page-marks {
+  width: min(100%, 21rem);
+  margin: clamp(1.4rem, 3.5vw, 2.4rem) auto 0;
+}
+
+.day-memory-coda,
+.day-passage-our-moment .memory-slot {
+  width: min(100%, 21rem);
+  margin: clamp(2.8rem, 7vw, 4.5rem) auto 0;
+}
+
+/* El recuerdo no vive en una caja: sin fondo, sin borde, sin sombra de tarjeta
+   (anula el panel heredado de experience.css). Es parte de la hoja. */
+.alaia-experience .page-chapter .memory-slot {
+  position: relative;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+button.memory-lamina {
+  appearance: none;
+  font: inherit;
+  cursor: pointer;
+}
+
+/* Un espacio reservado en la hoja para un recuerdo — NO un campo de formulario.
+   Sin rayas: papel apenas más cálido, un marco tenue de puntos dorados y, en el
+   centro, la promesa escrita a mano. Se siente un lugar donde algo va a vivir. */
+/* La HOJA: una superficie de papel apenas más cálida — LA MISMA en espera y
+   mientras se escribe. Sin borde de caja. Tocar "escribir" no abre un contenedor
+   nuevo: la misma hoja gana un cursor. La altura la fija el contenido, nunca un
+   mínimo grande — cero píxeles vacíos. */
+.alaia-experience .page-chapter .memory-hoja {
+  width: min(100%, 26rem);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(0.85rem, 3vw, 1.25rem);
+  padding: clamp(1.1rem, 4vw, 1.7rem) 1.2rem clamp(0.85rem, 2.5vw, 1.2rem);
+  border-radius: 0;
+  background:
+    radial-gradient(110% 76% at 50% 16%, color-mix(in srgb, var(--brass) 7%, transparent), transparent 72%),
+    linear-gradient(90deg, transparent, color-mix(in srgb, var(--mat) 18%, transparent), transparent);
+}
+
+.memory-empty-whisper {
+  margin: 0;
+  color: color-mix(in srgb, var(--brass) 62%, var(--ink-faint));
+  font: 400 1.08rem/1.45 var(--hand);
+  text-align: center;
+}
+
+/* Los cues son ACCIONES táctiles reales (≥44px), no adornos: cada uno hace
+   exactamente lo que dice (escribir → línea de tinta; foto → selector). */
+.memory-hoja-cues {
+  display: inline-flex;
+  gap: clamp(0.7rem, 3vw, 1.2rem);
+  align-items: center;
+}
+
+/* El prefijo .memory-slot-invitation sube la especificidad a (0,2,0) para ganarle
+   a la regla legacy `.memory-slot-invitation button` (0,1,1) de experience.css —
+   así estos botones hablan navy/latón, no los tokens viejos (--input-bg). */
+.memory-slot-invitation .memory-cue {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.42rem;
+  min-height: 44px;
+  padding: 0.4rem 0.9rem;
+  border: 1px solid color-mix(in srgb, var(--brass) 26%, transparent);
+  border-radius: 999px;
+  background: transparent;
+  color: color-mix(in srgb, var(--brass) 80%, var(--ink-faint));
+  font: 400 0.72rem/1 var(--plaque);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-decoration: none;
+  box-shadow: none;
+  transform: none;
+  cursor: pointer;
+  transition: color 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+}
+
+.memory-slot-invitation .memory-cue:hover,
+.memory-slot-invitation .memory-cue:focus-visible {
+  color: var(--brass);
+  border-color: color-mix(in srgb, var(--brass) 52%, transparent);
+  background: color-mix(in srgb, var(--brass) 10%, transparent);
+  box-shadow: none;
+  transform: none;
+}
+
+.memory-slot-invitation .memory-cue:focus-visible {
+  outline: 1px solid color-mix(in srgb, var(--brass) 55%, transparent);
+  outline-offset: 2px;
+}
+
+.memory-cue-glyph {
+  font-size: 1.02rem;
+  color: var(--brass);
+}
+
+/* Estado de escritura: la misma hoja, ahora con la línea de tinta a lo ancho. */
+.memory-hoja-composing {
+  align-items: stretch;
+}
+
+/* Barra de acciones del editor: "sumar una foto" (discreta, minúscula editorial)
+   y "cerrar" (visible, sale sin guardar). Ambas táctiles ≥44px. */
+.memory-hoja-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  width: 100%;
+}
+
+.memory-slot-invitation .memory-hoja-add,
+.memory-slot-invitation .memory-hoja-close {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 44px;
+  padding: 0.3rem 0.5rem;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  cursor: pointer;
+  font-family: var(--plaque);
+  letter-spacing: 0.06em;
+  transition: color 0.2s ease;
+}
+
+.memory-slot-invitation .memory-hoja-add {
+  color: var(--brass);
+  font-size: 0.82rem;
+}
+
+.memory-slot-invitation .memory-hoja-close {
+  color: color-mix(in srgb, var(--ink-faint) 85%, var(--brass));
+  font-size: 0.82rem;
+}
+
+.memory-slot-invitation .memory-hoja-add:hover,
+.memory-slot-invitation .memory-hoja-add:focus-visible,
+.memory-slot-invitation .memory-hoja-close:hover,
+.memory-slot-invitation .memory-hoja-close:focus-visible {
+  color: var(--brass);
+}
+
+.memory-slot-invitation .memory-hoja-add:focus-visible,
+.memory-slot-invitation .memory-hoja-close:focus-visible {
+  outline: 1px solid color-mix(in srgb, var(--brass) 55%, transparent);
+  outline-offset: 2px;
+}
+
+.memory-invitation-hint {
+  max-width: 30rem;
+  margin: 0.85rem auto 0;
+  color: var(--ink-faint);
+  font: 400 0.8rem/1.5 var(--hand);
+  text-align: center;
+}
+
+/* La LÍNEA DE TINTA: caligrafía cobalto sobre el papel, un único filete dorado
+   por debajo como renglón. Ni recuadro ni relleno de formulario. La altura la
+   fija el contenido (autogrow en JS); recién al llegar al máximo aparece scroll. */
+.page-chapter .memory-slot .memory-note-input,
+.memory-note-editing {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 2.4rem;
+  margin: 0;
+  padding: 0.4rem 0.2rem 0.55rem;
+  border: 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--brass) 32%, transparent);
+  border-radius: 0;
+  background: transparent;
+  color: color-mix(in srgb, var(--cobalt) 55%, var(--ink));
+  font: 400 1.22rem/1.6 var(--hand);
+  text-align: center;
+  resize: none;
+  overflow-y: auto;
+}
+
+.page-chapter .memory-slot .memory-note-input::placeholder {
+  color: color-mix(in srgb, var(--brass) 46%, var(--ink-faint));
+  opacity: 1;
+}
+
+/* El foco engrosa y aclara el renglón — el nib apoyándose. Indicador visible
+   (a11y) sin devolver la caja del formulario. */
+.memory-note-input:focus-visible {
+  outline: none;
+  border-bottom-width: 2px;
+  border-bottom-color: var(--brass);
+}
+
+.memory-settling-status {
+  margin: 0.75rem 0 0;
+  color: var(--ink-faint);
+  font: 400 0.76rem/1.45 var(--serif);
+  text-align: center;
+}
+
+.is-settling .memory-lamina-composing {
+  animation: memory-settle 420ms ease-out both;
+}
+
+@keyframes memory-settle {
+  from { transform: translateY(-0.25rem) rotate(-0.7deg); opacity: 0.75; }
+  to { transform: translateY(0) rotate(0); opacity: 1; }
+}
+
+.staged-photos {
+  position: relative;
+  min-height: 6rem;
+  margin: 0.7rem 0;
+  padding: 0;
+  list-style: none;
+}
+
+.staged-photo {
+  position: absolute;
+  inset: 0 auto auto 50%;
+  width: 5rem;
+  transform: translateX(-50%) rotate(4deg);
+  text-align: center;
+}
+
+.staged-photo:nth-child(2) { transform: translateX(-38%) rotate(8deg); }
+.staged-photo:nth-child(3) { transform: translateX(-64%) rotate(-5deg); }
+.staged-photo.is-primary { z-index: 2; transform: translateX(-50%) rotate(-2deg); }
+.staged-photo img { width: 4.6rem; height: 5.2rem; object-fit: cover; }
+.staged-photo button { display: block; min-height: 32px; padding: 0; border: 0; background: none; color: var(--ink-faint); font: 0.65rem var(--serif); }
+
+.photo-staging .add-photos-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.42rem;
+  min-height: 44px;
+  margin-top: 0.3rem;
+  color: var(--brass);
+  font: 400 0.72rem/1 var(--plaque);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.photo-staging .add-photos-label::before {
+  content: "＋";
+  font-size: 1.02rem;
+  line-height: 1;
+}
+
+.memory-object {
+  position: relative;
+  width: 10.5rem;
+  margin: 0 auto;
+}
+
+/* Cuando hay pliego, el objeto se ensancha para dar aire a la composición. */
+.alaia-experience .memory-object:has(.memory-pliego) {
+  width: min(100%, 22rem);
+}
+
+/* El PLIEGO: retícula editorial determinista de las fotos. La hero manda (3:2 a
+   lo ancho), las secundarias en 1:1. Fotos como POSITIVOS apoyados: borde de copia
+   cálido y sombra tenue. Ninguna se oculta antes del límite; «+N» solo en 7+. */
+.memory-pliego {
+  display: grid;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.pliego-tile {
+  position: relative;
+  display: block;
+  padding: 0;
+  border: 0;
+  border-radius: 1px;
+  overflow: hidden;
+  cursor: pointer;
+  background: #f5efe2;
+  box-shadow: 0 0.9rem 1.8rem -0.95rem color-mix(in srgb, black 60%, transparent);
+  aspect-ratio: 1;
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.pliego-tile:nth-child(1) { transform: rotate(-0.7deg); }
+.pliego-tile:nth-child(2) { transform: rotate(0.55deg); }
+.pliego-tile:nth-child(3) { transform: rotate(-0.45deg); }
+.pliego-tile:nth-child(4) { transform: rotate(0.35deg); }
+.pliego-tile:nth-child(5) { transform: rotate(-0.3deg); }
+.pliego-tile:nth-child(6) { transform: rotate(0.45deg); }
+
+.pliego-tile:hover {
+  transform: translateY(-2px) rotate(0deg);
+  box-shadow: 0 1.15rem 2rem -0.9rem color-mix(in srgb, black 64%, transparent);
+}
+
+.pliego-tile img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border: 3px solid #f5efe2;
+  box-sizing: border-box;
+  border-radius: 1px;
+}
+
+.pliego-tile:focus-visible {
+  outline: 2px solid var(--brass);
+  outline-offset: 2px;
+}
+
+.pliego-1 { grid-template-columns: 1fr; }
+.pliego-2 { grid-template-columns: 1fr 1fr; }
+.pliego-3 { grid-template-columns: 1fr 1fr; }
+.pliego-4,
+.pliego-6,
+.pliego-7 { grid-template-columns: repeat(3, 1fr); }
+
+/* La hero: primera lámina a lo ancho, en 3:2 (salvo el dúo, que va emparejado). */
+.pliego-1 .pliego-tile,
+.pliego-3 .pliego-tile:first-child,
+.pliego-4 .pliego-tile:first-child,
+.pliego-6 .pliego-tile:first-child,
+.pliego-7 .pliego-tile:first-child {
+  grid-column: 1 / -1;
+  aspect-ratio: 3 / 2;
+}
+
+.pliego-2 .pliego-tile { aspect-ratio: 4 / 5; }
+
+/* Una sola foto se apoya como un positivo suelto, con una inclinación leve. */
+.pliego-1 .pliego-tile { transform: rotate(-1deg); }
+
+/* «+N»: SOLO en 7+, sobre la última lámina visible (estilo Apple Photos). */
+.pliego-more::after {
+  content: "+" attr(data-more);
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: color-mix(in srgb, var(--bg) 66%, transparent);
+  color: color-mix(in srgb, var(--paper) 96%, white);
+  font: 500 1.2rem/1 Georgia, "Iowan Old Style", Palatino, serif;
+}
+
+/* ── El estuche: "marcas del editor" ─────────────────────────────────────────
+   Los tres puntos "···" + enlaces de texto se retiran. Ahora: un ancla discreta
+   (marcas de latón) que despliega una CINTA de glifos line-art. */
+.memory-reach-affordance svg,
+.memory-mark svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  display: block;
+}
+
+.alaia-experience .memory-reach-affordance {
+  color: color-mix(in srgb, var(--brass) 70%, var(--ink-faint));
+}
+
+.alaia-experience .memory-whisper-ribbon {
+  display: inline-flex;
+  padding: 0.25rem;
+  border: 1px solid color-mix(in srgb, var(--brass) 30%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--mat) 22%, var(--paper));
+  box-shadow: 0 0.8rem 1.7rem -0.9rem color-mix(in srgb, black 55%, transparent);
+}
+
+.memory-marks {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.1rem;
+}
+
+.memory-mark {
+  width: 2.6rem;
+  height: 2.6rem;
+  min-width: 44px;
+  min-height: 44px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--brass);
+  cursor: pointer;
+  transition: background 0.18s ease;
+}
+
+.memory-mark:hover,
+.memory-mark:focus-visible {
+  background: color-mix(in srgb, var(--brass) 14%, transparent);
+}
+
+.memory-mark:focus-visible {
+  outline: 1px solid color-mix(in srgb, var(--brass) 55%, transparent);
+  outline-offset: 1px;
+}
+
+/* La nota larga deja la manuscrita (acento) y pasa a serif de LECTURA: legible,
+   a lo ancho, sin rotación. La manuscrita queda para las notas cortas. */
+.memory-slot-saved .memory-note-long {
+  width: min(100%, 30rem);
+  margin: 0.9rem auto 0;
+  transform: none;
+  font-family: Georgia, "Iowan Old Style", Palatino, "Times New Roman", serif;
+  font-size: 1rem;
+  line-height: 1.72;
+  font-style: normal;
+  text-align: left;
+}
+
+.memory-note-long .memory-note-accent {
+  color: var(--brass);
+  font: 400 1.15rem/1.45 var(--hand);
+}
+
+.memory-note-long .memory-note-body {
+  color: var(--ink);
+  font-family: Georgia, "Iowan Old Style", Palatino, "Times New Roman", serif;
+}
+
+.memory-object .memory-lamina {
+  z-index: 3;
+  transform: rotate(-1.4deg);
+}
+
+/* La foto del usuario es un POSITIVO REVELADO recién pegado en la hoja: papel de
+   copia cálido, inclinación más marcada, peso físico. La lámina oficial es una
+   placa editorial (mat + esquineros de oro); esta es un recuerdo que se acaba de
+   incorporar. Misma familia, distinto origen — se distinguen sin gritar. */
+.memory-lamina-written {
+  border: 1px solid color-mix(in srgb, var(--ink-faint) 22%, transparent);
+  background: var(--mat);
+}
+
+.memory-note,
+.memory-note-editing {
+  position: relative;
+  z-index: 4;
+  width: 12rem;
+  margin: 0.9rem 0 0 50%;
+  color: var(--cobalt);
+  font: 400 1rem/1.45 var(--hand);
+  transform: translateX(-50%) rotate(-1deg);
+  text-align: center;
+}
+
+/* La fecha no es un dato: es un sello estampado en el margen de la copia. */
+.memory-date-stamp {
+  position: relative;
+  z-index: 4;
+  margin: 0.7rem 0 0;
+  color: color-mix(in srgb, var(--brass) 70%, var(--ink-faint));
+  text-align: center;
+  transform: rotate(-1.6deg);
+}
+
+/* El clímax del día: la fotografía principal del capítulo. Lámina de revista —
+   ancha (≈60% del ancho editorial), cinematográfica en 3:2, apenas inclinada. */
+.activity-page .day-passage-centered .reference-lamina {
+  width: min(40rem, 92%);
+  aspect-ratio: 3 / 2;
+  height: auto;
+  transform: rotate(-0.7deg);
+}
+
+.day-passage-centered .activity-page-marks {
+  width: min(100%, 22rem);
+}
+
+.memory-reach-affordance {
+  display: block;
+  min-width: 44px;
+  min-height: 44px;
+  margin: 0.35rem auto 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ink-faint);
+  font-size: 1rem;
+  opacity: 0.18;
+  cursor: pointer;
+  transition: opacity 160ms ease;
+}
+
+.memory-slot-saved:hover .memory-reach-affordance,
+.memory-reach-affordance:focus-visible,
+.memory-reach-affordance[aria-expanded="true"] {
+  opacity: 0.8;
+}
+
+.memory-whisper {
+  position: relative;
+  z-index: 20;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.35rem 0.7rem;
+  width: min(100%, 25rem);
+  margin: 0.6rem auto 0;
+  padding: 0.85rem 0;
+  color: var(--ink-soft);
+  font: 400 0.82rem/1.5 var(--hand);
+  text-align: center;
+}
+
+.memory-whisper p {
+  flex-basis: 100%;
+  margin: 0 0 0.5rem;
+}
+
+/* Las acciones no son botones de app: son opciones escritas al margen, en
+   itálica callada, que solo aparecen cuando se estira la mano. Sin subrayado fijo
+   ni aspecto de menú; la línea aparece recién al pasar por encima o enfocar. */
+.memory-whisper button {
+  min-height: 44px;
+  padding: 0.2rem 0.1rem;
+  border: 0;
+  border-bottom: 1px solid transparent;
+  background: none;
+  color: var(--ink-soft);
+  font: italic 400 0.95rem/1.4 var(--serif);
+  cursor: pointer;
+  transition: color 160ms ease, border-color 160ms ease;
+}
+
+.memory-whisper button:hover,
+.memory-whisper button:focus-visible {
+  color: var(--cobalt);
+  border-bottom-color: color-mix(in srgb, var(--cobalt) 45%, transparent);
+}
+
+.memory-whisper-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.day-passage-our-moment {
+  margin-top: clamp(3rem, 8vw, 5rem);
+  padding-block: clamp(1.75rem, 4.5vw, 3rem);
+}
+
+.day-memory-coda {
+  margin-block: clamp(3rem, 8vw, 5rem);
+}
+
+/* Rótulo editorial que anuncia cada bloque de recuerdo, como el título de una
+   sección en un libro: versalitas en latón, centrado, con aire debajo. Da la
+   retícula — «Nuestro momento», «Lo que queremos guardar». */
+.memory-rotulo {
+  margin: 0 auto clamp(1.1rem, 3vw, 1.7rem);
+  color: color-mix(in srgb, var(--brass) 88%, var(--ink-faint));
+  font: 400 0.72rem/1.4 var(--plaque);
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.day-passage-closing {
+  max-width: 38rem;
+  margin: clamp(4rem, 11vw, 7rem) auto 0;
+  padding: 0;
+  text-align: center;
+}
+
+.day-passage-closing .scene-filete {
+  margin-top: 0;
+}
+
+.closing-line {
+  margin: clamp(2rem, 6vw, 3.5rem) auto;
+  color: var(--ink);
+  font: italic 400 clamp(1.35rem, 3.2vw, 2rem)/1.45 var(--didone);
+}
+
+.day-folio {
+  margin: 0;
+  color: var(--ink-faint);
+  font: 400 0.78rem var(--plaque);
+  letter-spacing: 0.14em;
+}
+
+.page-chapter .actions,
+.page-chapter .album-link,
+.page-chapter .index-return-link {
+  max-width: 30rem;
+  margin: 2.5rem auto 0;
+  text-align: center;
+}
+
+/* La vuelta al índice es la más callada del pie: acento tenue, no de bronce. */
+.page-chapter .index-return-link {
+  margin-top: 1.5rem;
+}
+
+.page-chapter .actions button,
+.page-chapter .album-link button,
+.page-chapter .index-return-link button {
+  min-height: 44px;
+  padding: 0.35rem;
+  border: 0;
+  background: none;
+  color: var(--brass);
+  font: 400 0.86rem var(--plaque);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: underline;
+  text-underline-offset: 0.32em;
+  cursor: pointer;
+}
+
+.page-chapter .index-return-link button {
+  color: var(--ink-faint);
+  text-decoration: none;
+}
+
+/* El final del capítulo como cierre de libro: un floreo dorado y, debajo, las dos
+   salidas —abrir los recuerdos, volver al índice— juntas y calladas. No es una
+   barra de navegación: es el colofón de estas páginas. */
+.chapter-colophon {
+  margin-top: clamp(4rem, 10vw, 7rem);
+  text-align: center;
+}
+
+.chapter-colophon .scene-filete {
+  margin: 0 auto clamp(1.8rem, 4.5vw, 2.8rem);
+}
+
+.chapter-colophon .album-link {
+  margin-top: 0;
+}
+
+.chapter-colophon .index-return-link {
+  margin-top: 0.6rem;
+}
+
+.memory-card-favorite svg {
+  width: 0.9rem;
+  height: 0.9rem;
+  fill: var(--brass);
+}
+
+.page-chapter-sealed .day-masthead {
+  min-height: calc(100dvh - 7rem);
+}
+
+.sealed-line {
+  margin: 0 auto 1rem;
+  color: var(--ink-faint);
+  font: italic 1.2rem var(--serif);
+  text-align: center;
+}
+
+@media (max-width: 640px) {
+  .alaia-experience .page-chapter {
+    --chapter-page-pad: clamp(1rem, 5vw, 1.4rem);
+    max-width: 100%;
+    box-shadow: none;
+  }
+
+  .day-masthead .chapter-topbar {
+    margin-bottom: 3.5rem;
+  }
+
+  .day-masthead > .reference-lamina {
+    width: min(100%, 34rem);
+    aspect-ratio: 4 / 3;
+  }
+
+  .day-passage-pleno {
+    display: block;
+  }
+
+  .passage-marginalia {
+    max-width: 27rem;
+    margin: 2.6rem 0 0 clamp(1rem, 7vw, 2rem);
+    padding: 0 0 0 1.1rem;
+    /* En móvil la marginalia cuelga bajo el texto; la insinúa una hendidura tenue,
+       no una barra. */
+    border-left: 1px solid color-mix(in srgb, var(--brass) 18%, transparent);
+  }
+
+  .day-passage-centered {
+    text-align: left;
+  }
+
+  .reference-lamina,
+  .memory-object,
+  .memory-lamina {
+    max-width: calc(100vw - 4rem);
+  }
+
+  .memory-whisper {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1000;
+    width: auto;
+    margin: 0;
+    padding: 1.2rem max(1rem, env(safe-area-inset-right)) max(1.2rem, env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left));
+    background: var(--paper-2);
+    box-shadow: 0 -1rem 2.5rem -2rem color-mix(in srgb, var(--ink) 65%, transparent);
+  }
+
+  .memory-whisper button {
+    flex-basis: 100%;
+  }
+
+  .alaia-experience .memory-whisper-ribbon {
+    right: max(0.75rem, env(safe-area-inset-right));
+    bottom: max(0.75rem, env(safe-area-inset-bottom));
+    left: auto;
+    width: auto;
+    padding: 0.25rem;
+    border-radius: 999px;
+  }
+
+  .memory-whisper-ribbon .memory-mark {
+    flex-basis: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .is-settling .memory-lamina-composing,
+  .memory-reach-affordance,
+  .pliego-tile {
+    animation: none;
+    transition: none;
+  }
+}

@@ -5,6 +5,7 @@ import {
   loadMemories,
   toggleFavorite,
   archiveMemory,
+  updateMemory,
   promotePhotoUrl,
   replaceAllMemories,
 } from "./memoryStore";
@@ -140,6 +141,46 @@ describe("memoryStore", () => {
     const [updated] = loadMemories("story-a", storage);
     expect(updated.photos).toEqual(["https://cloudinary.example/foo.jpg"]);
     expect(updated.updatedAt).toBe(memory.updatedAt);
+  });
+
+  it("updateMemory edita la nota sin tocar las fotos y actualiza updatedAt", () => {
+    const storage = fakeStorage();
+    const memory = createNoteMemory("story-a", "chapter-1", "act-1", "Nota vieja.", {
+      photos: ["photo-1"],
+      storage,
+    });
+    const updated = updateMemory("story-a", memory.id, { note: "Nota nueva." }, storage) as Memory;
+    expect(updated.note).toBe("Nota nueva.");
+    expect(updated.photos).toEqual(["photo-1"]);
+    expect(updated.updatedAt >= memory.updatedAt).toBe(true);
+  });
+
+  it("updateMemory agrega fotos conservando el orden (la primera sigue siendo la principal)", () => {
+    const storage = fakeStorage();
+    const memory = createNoteMemory("story-a", "chapter-1", "act-1", "Con fotos.", {
+      photos: ["photo-1"],
+      storage,
+    });
+    updateMemory("story-a", memory.id, { photos: ["photo-1", "photo-2", "photo-3"] }, storage);
+    const [stored] = loadMemories("story-a", storage);
+    expect(stored.photos).toEqual(["photo-1", "photo-2", "photo-3"]);
+  });
+
+  it("updateMemory quita una foto individual y deja el resto intacto", () => {
+    const storage = fakeStorage();
+    const memory = createNoteMemory("story-a", "chapter-1", "act-1", "Con fotos.", {
+      photos: ["photo-1", "photo-2", "photo-3"],
+      storage,
+    });
+    updateMemory("story-a", memory.id, { photos: ["photo-1", "photo-3"] }, storage);
+    const [stored] = loadMemories("story-a", storage);
+    expect(stored.photos).toEqual(["photo-1", "photo-3"]);
+  });
+
+  it("updateMemory sobre un id inexistente no rompe y devuelve null", () => {
+    const storage = fakeStorage();
+    createNoteMemory("story-a", "chapter-1", null, "Una nota.", { storage });
+    expect(updateMemory("story-a", "no-existe", { note: "x" }, storage)).toBe(null);
   });
 
   it("Épica 5: replaceAllMemories sobreescribe todo con el resultado de la fusión", () => {

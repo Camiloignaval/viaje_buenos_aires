@@ -120,6 +120,33 @@ export function archiveMemory(
 }
 
 /**
+ * Edita una Memoria ya guardada reusando el MISMO storage (no crea persistencia
+ * nueva): permite cambiar la nota y/o la lista de fotos (agregar o quitar). La
+ * primera del array sigue siendo la principal. Toca `updatedAt` porque es una
+ * edición real del usuario. Devuelve la Memoria actualizada, o null si no existe.
+ */
+export function updateMemory(
+  storyId: string,
+  memoryId: string,
+  patch: { note?: string; photos?: string[] },
+  storage: KeyValueStorage = getDefaultStorage(),
+): Memory | null {
+  const memories = loadRaw(storyId, storage);
+  const updated = memories.map((memory) =>
+    memory.id === memoryId
+      ? {
+          ...memory,
+          ...(patch.note !== undefined ? { note: patch.note } : {}),
+          ...(patch.photos !== undefined ? { photos: patch.photos } : {}),
+          updatedAt: new Date().toISOString(),
+        }
+      : memory,
+  );
+  saveRaw(storyId, updated, storage);
+  return updated.find((memory) => memory.id === memoryId) ?? null;
+}
+
+/**
  * Reemplaza el id local de una foto (IndexedDB) por su URL remota definitiva una
  * vez subida a Cloudinary. No toca `updatedAt` (no es una edición real).
  */

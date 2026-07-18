@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import {
   getStoryView,
   StoryMode,
@@ -13,9 +14,18 @@ import {
   createNoteMemory,
   toggleFavorite,
   archiveMemory,
+  updateMemory,
 } from "@/features/album/data/memoryStore";
 import { savePhotoBlob } from "@/features/album/data/photoStore";
 import { syncNow, extractTokenFromUrl, saveSyncToken } from "@/features/sync/syncClient";
+import {
+  calendarDateFrom,
+  calendarDaysBetween,
+  getChapterReferenceCalendarDate,
+  narrativeNowFrom,
+  resolveStoryTimezone,
+  ChapterStatus,
+} from "@/features/story/engine/storyProgress";
 import type { ChapterStatuses, StoryPackage, StoryView } from "@/features/story/engine/types";
 import type { Memory } from "@/features/album/data/types";
 import { collectPhotoIds, resolvePhotoUrls, tripWidePhotoIds } from "../lib/photoUrls";
@@ -38,6 +48,7 @@ export interface UseExperienceResult {
 export function useExperience(
   storyPackage: StoryPackage,
   scopeId: string = storyPackage.storyId,
+  tripTimezone?: string,
 ): UseExperienceResult {
   // Scope de persistencia: progreso, recuerdos, fotos, intro y tema se keyean
   // por acá. Para un trip conectado es su tripId; para el demo local, el id del
@@ -47,7 +58,22 @@ export function useExperience(
   const themeStorageKey = `alaia:${scope}:theme`;
   const introSeenKey = `alaia:intro-video-2-seen:${scope}`;
 
-  const [now] = useState(() => new Date());
+  // Modo director (SOLO-DEV): `?now=YYYY-MM-DD` congela un "hoy" simulado para
+  // previsualizar días que todavía no llegaron. El desbloqueo por fecha compara
+  // este `now` contra la fecha de referencia de cada capítulo (ver storyProgress),
+  // así que adelantarlo revela los capítulos futuros sin tocar el progreso real.
+  // En producción `import.meta.env.DEV` es `false` y el override desaparece del
+  // build por dead-code elimination: siempre queda `new Date()`.
+  const [searchParams] = useSearchParams();
+  const nowOverride = import.meta.env.DEV ? searchParams.get("now") : null;
+  const narrativeTimezone = resolveStoryTimezone(storyPackage, tripTimezone);
+  const now = useMemo(() => {
+    if (nowOverride) {
+      const simulated = narrativeNowFrom(nowOverride, narrativeTimezone);
+      if (simulated) return simulated;
+    }
+    return new Date();
+  }, [nowOverride, narrativeTimezone]);
   const [themePref, setThemePref] = useState<Theme>(() => {
     try {
       return localStorage.getItem(themeStorageKey) === "light" ? "light" : "dark";
@@ -84,9 +110,32 @@ export function useExperience(
   const bumpMemories = useCallback(() => setMemoriesVersion((v) => v + 1), []);
 
   // ---- Story view ----
+  // Modo director (SOLO-DEV): al simular una fecha, los capítulos gatean por fecha
+  // Y por "capítulo previo completado" (ver unlockRulesDefault). Para previsualizar
+  // un día futuro tal como se vería, marcamos como completados —solo en la vista, sin
+  // persistir— los capítulos cuya fecha ya pasó en el tiempo simulado. Así el
+  // encadenado se abre y el día simulado queda visible. Respeta el progreso real:
+  // un capítulo ya iniciado/completado nunca se pisa.
+  const chapterStatusesForView = useMemo<ChapterStatuses>(() => {
+    if (!nowOverride) return chapterStatuses;
+    const simulatedDay = calendarDateFrom(now, narrativeTimezone);
+    const overlay: ChapterStatuses = { ...chapterStatuses };
+    const allChapters = storyPackage.specialChapter
+      ? [...storyPackage.chapters, storyPackage.specialChapter]
+      : storyPackage.chapters;
+    for (const chapter of allChapters) {
+      if (overlay[chapter.id]) continue; // progreso real es pegajoso
+      const referenceDay = getChapterReferenceCalendarDate(chapter, storyPackage);
+      if (calendarDaysBetween(referenceDay, simulatedDay) > 0) {
+        overlay[chapter.id] = ChapterStatus.COMPLETED;
+      }
+    }
+    return overlay;
+  }, [nowOverride, now, chapterStatuses, storyPackage, narrativeTimezone]);
+
   const view: StoryView = useMemo(
-    () => getStoryView(storyPackage, { now, chapterStatuses }),
-    [storyPackage, now, chapterStatuses],
+    () => getStoryView(storyPackage, { now, chapterStatuses: chapterStatusesForView, timezone: narrativeTimezone }),
+    [storyPackage, now, chapterStatusesForView, narrativeTimezone],
   );
 
   // ---- Memorias (localStorage, sincrónico) ----
@@ -540,6 +589,44 @@ export function useExperience(
         archiveMemory(scope, memoryId);
         bumpMemories();
       },
+      editMemoryNote(memoryId, note) {
+        updateMemory(scope, memoryId, { note });
+        bumpMemories();
+      },
+      async addPhotosToMemory(memoryId, files) {
+        const existing = loadMemories(scope).find((memory) => memory.id === memoryId);
+        if (!existing) return;
+        const newIds: string[] = [];
+        for (const file of Array.from(files)) {
+          newIds.push(await savePhotoBlob(file));
+        }
+        if (newIds.length === 0) return;
+        updateMemory(scope, memoryId, { photos: [...existing.photos, ...newIds] });
+        bumpMemories();
+      },
+      removeMemoryPhoto(memoryId, photoId) {
+        // Solo quita la referencia — nunca destruye el blob (mismo criterio que
+        // archiveMemory: el dato subyacente se conserva).
+        const existing = loadMemories(scope).find((memory) => memory.id === memoryId);
+        if (!existing) return;
+        updateMemory(scope, memoryId, {
+          photos: existing.photos.filter((id) => id !== photoId),
+        });
+        bumpMemories();
+      },
+      reorderMemoryPhotos(memoryId, photoIds) {
+        const existing = loadMemories(scope).find((memory) => memory.id === memoryId);
+        if (!existing) return;
+
+        const existingIds = new Set(existing.photos);
+        const orderedIds = photoIds.filter(
+          (photoId, index) => existingIds.has(photoId) && photoIds.indexOf(photoId) === index,
+        );
+        const remainingIds = existing.photos.filter((photoId) => !orderedIds.includes(photoId));
+
+        updateMemory(scope, memoryId, { photos: [...orderedIds, ...remainingIds] });
+        bumpMemories();
+      },
       openAlbum() {
         setShowingTripAlbum(true);
         setIndexNavigationOpen(false);
@@ -596,6 +683,7 @@ export function useExperience(
     storyPackage,
     scopeId: scope,
     view,
+    chapterStatuses: chapterStatusesForView,
     now,
     interactive: true,
     theme,

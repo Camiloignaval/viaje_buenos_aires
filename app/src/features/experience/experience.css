@@ -3,29 +3,32 @@
 
 :root {
   /* Alaia no tiene "dark mode" y "light mode": tiene dos atmósferas del
-     mismo libro. Estos tokens son la fuente de verdad para toda la UI. */
-  --bg: #0f0e0d;
-  --bg-rgb: 15, 14, 13;
-  --bg-secondary: #131211;
-  --bg-secondary-rgb: 19, 18, 17;
-  --bg-elevated: #1c1a18;
-  --bg-elevated-rgb: 28, 26, 24;
-  --surface: #171514;
-  --surface-rgb: 23, 21, 20;
-  --surface-elevated: #1c1a18;
-  --surface-elevated-rgb: 28, 26, 24;
+     mismo libro. Estos tokens son la fuente de verdad para toda la UI.
+     Identidad unificada (Fase 8): noche azul profunda — la misma que respira la
+     Experience —, para que login, viajes, índice, álbum y modales pertenezcan al
+     mismo libro y no a una aplicación aparte. */
+  --bg: #14161d;
+  --bg-rgb: 20, 22, 29;
+  --bg-secondary: #0e1016;
+  --bg-secondary-rgb: 14, 16, 22;
+  --bg-elevated: #232838;
+  --bg-elevated-rgb: 35, 40, 56;
+  --surface: #1d2130;
+  --surface-rgb: 29, 33, 48;
+  --surface-elevated: #232838;
+  --surface-elevated-rgb: 35, 40, 56;
   --surface-secondary: var(--surface-elevated);
   --surface-secondary-rgb: var(--surface-elevated-rgb);
   --shadow-rgb: 0, 0, 0;
   --surface-hover: rgba(var(--text-secondary-rgb), 0.08);
 
-  --text-primary: #f6f2eb;
-  --text-primary-rgb: 246, 242, 235;
-  --text-secondary: #ddd2c4;
-  --text-secondary-rgb: 221, 210, 196;
-  --text-muted: #a99d8f;
-  --text-muted-rgb: 169, 157, 143;
-  --text-inverse: #2e241d;
+  --text-primary: #ece9e0;
+  --text-primary-rgb: 236, 233, 224;
+  --text-secondary: #b0b5c2;
+  --text-secondary-rgb: 176, 181, 194;
+  --text-muted: #6c7280;
+  --text-muted-rgb: 108, 114, 128;
+  --text-inverse: #14161d;
 
   --border-soft: rgba(var(--gold-rgb), 0.1);
   --border: rgba(var(--gold-rgb), 0.18);
@@ -33,10 +36,10 @@
   --divider: rgba(255, 255, 255, 0.08);
   --separator: var(--divider);
 
-  --gold: #d6b98a;
-  --gold-rgb: 214, 185, 138;
-  --gold-soft: #b99561;
-  --gold-soft-rgb: 185, 149, 97;
+  --gold: #c6a25a;
+  --gold-rgb: 198, 162, 90;
+  --gold-soft: #a8874a;
+  --gold-soft-rgb: 168, 135, 74;
   --accent: var(--gold);
 
   --photo-overlay-top: rgba(var(--bg-rgb), 0.14);
@@ -146,28 +149,29 @@
 }
 
 .alaia-theme-light {
-  --bg: #f7f3ec;
-  --bg-rgb: 247, 243, 236;
-  --bg-secondary: #f2ece3;
-  --bg-secondary-rgb: 242, 236, 227;
-  --bg-elevated: #efe6da;
-  --bg-elevated-rgb: 239, 230, 218;
-  --surface: #fbf8f3;
-  --surface-rgb: 251, 248, 243;
-  --surface-elevated: #efe6da;
-  --surface-elevated-rgb: 239, 230, 218;
+  /* Atmósfera clara: papel frío contemporáneo (no sepia antiguo), mismo libro. */
+  --bg: #eaecf1;
+  --bg-rgb: 234, 236, 241;
+  --bg-secondary: #dfe2e9;
+  --bg-secondary-rgb: 223, 226, 233;
+  --bg-elevated: #d6dae4;
+  --bg-elevated-rgb: 214, 218, 228;
+  --surface: #f5f6f9;
+  --surface-rgb: 245, 246, 249;
+  --surface-elevated: #d6dae4;
+  --surface-elevated-rgb: 214, 218, 228;
   --surface-secondary: var(--surface-elevated);
   --surface-secondary-rgb: var(--surface-elevated-rgb);
-  --shadow-rgb: 46, 36, 29;
+  --shadow-rgb: 27, 35, 52;
   --surface-hover: rgba(var(--text-primary-rgb), 0.05);
 
-  --text-primary: #2e241d;
-  --text-primary-rgb: 46, 36, 29;
-  --text-secondary: #55453a;
-  --text-secondary-rgb: 85, 69, 58;
-  --text-muted: #7a695b;
-  --text-muted-rgb: 122, 105, 91;
-  --text-inverse: #f5f1ea;
+  --text-primary: #1b2334;
+  --text-primary-rgb: 27, 35, 52;
+  --text-secondary: #4a5566;
+  --text-secondary-rgb: 74, 85, 102;
+  --text-muted: #868d9c;
+  --text-muted-rgb: 134, 141, 156;
+  --text-inverse: #eaecf1;
 
   --border-soft: rgba(var(--text-primary-rgb), 0.08);
   --border: rgba(var(--text-primary-rgb), 0.12);
@@ -175,10 +179,10 @@
   --divider: rgba(var(--text-primary-rgb), 0.08);
   --separator: var(--divider);
 
-  --gold: #b58d54;
-  --gold-rgb: 181, 141, 84;
-  --gold-soft: #b58d54;
-  --gold-soft-rgb: 181, 141, 84;
+  --gold: #9c7c3d;
+  --gold-rgb: 156, 124, 61;
+  --gold-soft: #9c7c3d;
+  --gold-soft-rgb: 156, 124, 61;
   --accent: var(--gold);
 
   --photo-overlay-top: rgba(var(--bg-rgb), 0.06);
@@ -315,6 +319,12 @@ body:has(.alaia-theme-light) {
   max-width: none;
   width: 100%;
   height: 100dvh;
+  /* `overflow-x: hidden` de #app forzaba `overflow-y` a computar `auto` (regla CSS:
+     un eje hidden convierte el otro visible en auto). Eso hacía de #app un SEGUNDO
+     scroller anidado sobre `.book` → doble scroll + zona muerta al final del
+     capítulo. Al fijar overflow en ambos ejes, #app recorta y `.book` es el ÚNICO
+     dueño del scroll. */
+  overflow: hidden;
   background: var(--bg);
 }
 
@@ -1083,7 +1093,6 @@ body:has(.cover-index-stage.is-index-writing) {
   font-style: italic;
 }
 
-
 /* El ritual de apertura de capítulo: la imagen es la portada real. El texto vive
    dentro de la fotografía, apoyado por un degradado cálido, no como una tarjeta. */
 .chapter-hero {
@@ -1218,7 +1227,6 @@ body:has(.cover-index-stage.is-index-writing) {
   text-wrap: balance;
   text-shadow: 0 9px 26px rgba(var(--shadow-rgb, 0, 0, 0), 0.56);
 }
-
 
 .activity-title {
   font-family: var(--font-display);
@@ -1357,7 +1365,6 @@ body:has(.cover-index-stage.is-index-writing) {
   color: rgba(var(--text-secondary-rgb), 0.72);
 }
 
-
 .page-chapter .activity-title,
 .page-chapter .place-name,
 .page-chapter .spot-title,
@@ -1425,6 +1432,49 @@ body:has(.cover-index-stage.is-index-writing) {
   font-style: italic;
   font-weight: 400;
   line-height: 1.55;
+}
+
+/* Voz de Alaia — un lenguaje visual compartido. El acento dorado al margen y la
+   serif itálica marcan cuándo habla quien ya conoce el lugar: el detalle secreto
+   de una actividad (.activity-insight) y cómo flexiona el día (.day-note) son la
+   misma voz, a distinta escala. Nunca una ficha, nunca un widget. */
+.activity-insight {
+  margin: 0 0 0.4rem;
+  padding-left: 0.85rem;
+  border-left: 2px solid color-mix(in srgb, var(--gold) 55%, transparent);
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--color-ink);
+}
+
+.day-note {
+  text-align: left;
+  margin-bottom: 1.5rem;
+  padding-left: 1rem;
+  border-left: 2px solid color-mix(in srgb, var(--gold) 45%, transparent);
+}
+
+.day-note .section-title {
+  margin-bottom: 0.5rem;
+}
+
+.day-note-copy {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: clamp(1rem, 3.4vw, 1.12rem);
+  line-height: 1.62;
+  color: var(--color-ink);
+}
+
+/* Contraste dentro del capítulo (fondo cálido oscuro): la misma corrección que
+   ya reciben descripción y recomendación. El borde dorado se conserva. */
+.page-chapter .activity-insight,
+.page-chapter .day-note-copy {
+  color: rgba(var(--text-primary-rgb), 0.86);
+  line-height: 1.62;
 }
 
 .page-chapter .links a,
@@ -1584,7 +1634,6 @@ body:has(.cover-index-stage.is-index-writing) {
     margin-top: clamp(1.1rem, 3vh, 2rem);
   }
 
-
   .page-chapter .activity-title {
     font-size: clamp(1.25rem, 1.6vw, 1.48rem);
   }
@@ -1704,25 +1753,190 @@ body:has(.cover-index-stage.is-index-writing) {
 
 /* Media & Álbum (Épica 3): capturar y ver fotos, siempre cálido, nunca una galería técnica. */
 .memory-photos {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 0.4rem;
   margin-bottom: 0.6rem;
 }
 
 .memory-photo-primary {
+  grid-column: 1 / -1;
   width: 100%;
-  max-height: 220px;
+  aspect-ratio: 16 / 10;
+  max-height: none;
   object-fit: cover;
-  border-radius: calc(var(--radius-soft) - 4px);
-  box-shadow: var(--shadow-soft);
+  border-radius: 2px;
+  box-shadow: 0 0.7rem 1.4rem -1.1rem rgba(var(--shadow-rgb, 0, 0, 0), 0.72);
 }
 
 .memory-photo-thumb {
-  width: 64px;
-  height: 64px;
+  width: 100%;
+  aspect-ratio: 1;
   object-fit: cover;
-  border-radius: 8px;
+  border-radius: 2px;
+}
+
+/* ------------------------------------------------------------------ */
+/* Recuerdo guardado: una unidad editorial compacta para volver a mirar */
+/* ------------------------------------------------------------------ */
+
+.memory-slot-saved {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+/* CSS heredado retirado (Fase 1 del remaster de recuerdos): la galería de
+   miniaturas, la toolbar/favorito de pastilla, las acciones de texto y el cuadro
+   de confirmación pertenecían a la versión ANTIGUA del recuerdo guardado. El
+   markup actual (memory-object / memory-pliego / memory-whisper,
+   estilado en dayLived.css) las dejó sin uso. Se eliminan .memory-gallery(-item),
+   .memory-thumb(-remove), .memory-toolbar, .memory-favorite, .memory-actions/
+   .memory-action(-remove), .memory-edit-actions, .memory-confirm(-actions/-question)
+   — todas verificadas sin markup vivo. */
+
+/* ------------------------------------------------------------------ */
+/* Visor de fotos (lightbox) accesible                                 */
+/* ------------------------------------------------------------------ */
+
+.memory-lightbox-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: rgba(0, 0, 0, 0.82);
+}
+
+.memory-lightbox {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  max-width: 100%;
+  outline: none;
+}
+
+.memory-lightbox-figure {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.memory-lightbox-image {
+  max-width: 90vw;
+  max-height: 78vh;
+  object-fit: contain;
+  border-radius: 6px;
+}
+
+.memory-lightbox-counter {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.82rem;
+  letter-spacing: 0.04em;
+}
+
+.memory-lightbox-close {
+  align-self: flex-end;
+  font-family: inherit;
+  font-size: 0.8rem;
+  padding: 0.35rem 0.9rem;
+  min-height: 44px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 999px;
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+}
+
+.memory-lightbox-nav {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.memory-lightbox-nav button {
+  font-family: inherit;
+  font-size: 0.8rem;
+  padding: 0.4rem 1rem;
+  min-height: 44px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 999px;
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+}
+
+.memory-lightbox-manage {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.25rem;
+  border: 1px solid rgba(198, 162, 90, 0.5);
+  border-radius: 999px;
+  background: rgba(20, 22, 29, 0.88);
+}
+
+.memory-lightbox-manage-action {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: #d6b46a;
+  cursor: pointer;
+}
+
+.memory-lightbox-manage-action:hover,
+.memory-lightbox-manage-action:focus-visible {
+  background: rgba(198, 162, 90, 0.16);
+}
+
+.memory-lightbox-manage-action:focus-visible {
+  outline: 2px solid #d6b46a;
+  outline-offset: 1px;
+}
+
+.memory-lightbox-manage-action:disabled {
+  opacity: 0.28;
+  cursor: default;
+}
+
+.memory-lightbox-manage-action svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.memory-lightbox-manage-action:first-child svg {
+  fill: none;
+}
+
+/* Reduced motion: la aparición del visor no anima. */
+@media (prefers-reduced-motion: no-preference) {
+  .memory-lightbox-backdrop {
+    animation: memory-lightbox-fade 160ms ease-out;
+  }
+}
+
+@keyframes memory-lightbox-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .photo-staging {
@@ -1843,18 +2057,21 @@ body:has(.cover-index-stage.is-index-writing) {
 /* Página de álbum, no tarjeta de dashboard (E-6): sombra suave, aire generoso. */
 .memory-card {
   position: relative;
-  background: var(--color-ivory);
-  border-radius: var(--radius-soft);
-  box-shadow: var(--shadow-soft);
+  background: color-mix(in srgb, var(--surface) 48%, transparent);
+  border: 1px solid color-mix(in srgb, var(--gold) 20%, transparent);
+  border-radius: 2px;
+  box-shadow: 0 1rem 2rem -1.6rem rgba(var(--shadow-rgb, 0, 0, 0), 0.86);
   padding: var(--space-2);
   transition:
     transform 0.3s ease,
-    box-shadow 0.3s ease;
+    box-shadow 0.3s ease,
+    border-color 0.3s ease;
 }
 
 .memory-card:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-lift);
+  transform: translateY(-1px);
+  border-color: color-mix(in srgb, var(--gold) 38%, transparent);
+  box-shadow: 0 1.25rem 2.4rem -1.7rem rgba(var(--shadow-rgb, 0, 0, 0), 0.92);
 }
 
 .memory-card-favorite {
@@ -1869,7 +2086,7 @@ body:has(.cover-index-stage.is-index-writing) {
   font-family: var(--font-display);
   font-style: italic;
   font-size: 0.85rem;
-  color: var(--color-ink);
+  color: var(--text-secondary);
   margin: 0.4rem 0 0;
 }
 
@@ -2097,35 +2314,37 @@ body:has(.cover-index-stage.is-index-writing) {
 }
 
 .page-index {
-  --bg: #0f0e0d;
-  --bg-rgb: 15, 14, 13;
-  --bg-secondary: #131211;
-  --bg-secondary-rgb: 19, 18, 17;
-  --bg-elevated: #1c1a18;
-  --bg-elevated-rgb: 28, 26, 24;
-  --surface: #171514;
-  --surface-rgb: 23, 21, 20;
-  --surface-elevated: #1c1a18;
-  --surface-elevated-rgb: 28, 26, 24;
+  --bg: #0e1016;
+  --bg-rgb: 14, 16, 22;
+  --bg-secondary: #14161d;
+  --bg-secondary-rgb: 20, 22, 29;
+  --bg-elevated: #1d2130;
+  --bg-elevated-rgb: 29, 33, 48;
+  --surface: #141822;
+  --surface-rgb: 20, 24, 34;
+  --surface-elevated: #1d2130;
+  --surface-elevated-rgb: 29, 33, 48;
   --surface-secondary: var(--surface-elevated);
   --surface-secondary-rgb: var(--surface-elevated-rgb);
   --shadow-rgb: 0, 0, 0;
-  --text-primary: #f6f2eb;
-  --text-primary-rgb: 246, 242, 235;
-  --text-secondary: #ddd2c4;
-  --text-secondary-rgb: 221, 210, 196;
-  --text-muted: #a99d8f;
-  --text-muted-rgb: 169, 157, 143;
-  --gold: #d6b98a;
-  --gold-rgb: 214, 185, 138;
-  --gold-soft: #b99561;
-  --gold-soft-rgb: 185, 149, 97;
+  --text-primary: #ece9e0;
+  --text-primary-rgb: 236, 233, 224;
+  --text-secondary: #b0b5c2;
+  --text-secondary-rgb: 176, 181, 194;
+  --text-muted: #7f8798;
+  --text-muted-rgb: 127, 135, 152;
+  --gold: #c6a25a;
+  --gold-rgb: 198, 162, 90;
+  --gold-soft: #b18a43;
+  --gold-soft-rgb: 177, 138, 67;
   --border: rgba(var(--gold-rgb), 0.18);
   --divider: rgba(255, 255, 255, 0.08);
-  --page-gradient: linear-gradient(180deg, var(--surface) 0%, var(--bg) 48%, var(--bg) 100%), var(--bg);
+  --page-gradient:
+    radial-gradient(105% 56% at 50% -12%, rgba(75, 91, 130, 0.18), transparent 68%),
+    linear-gradient(180deg, #191d28 0%, var(--bg) 52%, #0c0f15 100%);
   --index-atmosphere:
-    linear-gradient(180deg, rgba(var(--surface-rgb), 0.5), rgba(var(--bg-rgb), 0.86)),
-    linear-gradient(135deg, rgba(var(--gold-rgb), 0.04), transparent 52%),
+    linear-gradient(180deg, rgba(var(--surface-rgb), 0.2), rgba(var(--bg-rgb), 0.7)),
+    linear-gradient(135deg, rgba(var(--gold-rgb), 0.07), transparent 52%),
     var(--bg);
   --color-ivory: var(--text-primary);
   --color-sand: var(--surface);
@@ -2136,6 +2355,9 @@ body:has(.cover-index-stage.is-index-writing) {
   --color-ink: var(--text-secondary);
   --color-line: var(--border);
   position: relative;
+  min-height: 100dvh;
+  height: auto;
+  overflow-y: auto;
   gap: clamp(0.55rem, 1.8dvh, 1rem);
   padding-block: clamp(1.35rem, 4dvh, var(--space-4));
   color: var(--color-ivory);
@@ -2197,10 +2419,10 @@ body:has(.cover-index-stage.is-index-writing) {
  * frase cuatro veces.
  */
 .page-index-title {
-  font-family: var(--font-display);
+  font-family: var(--didone, var(--font-display));
   font-weight: 500;
-  font-size: clamp(1.08rem, 3.4dvh, 1.45rem);
-  margin: clamp(0.25rem, 1dvh, 0.6rem) 0 clamp(0.85rem, 2.7dvh, 1.45rem);
+  font-size: clamp(1.7rem, 4dvh, 2.4rem);
+  margin: clamp(0.5rem, 1.4dvh, 0.9rem) 0 clamp(1.1rem, 3dvh, 1.8rem);
   color: var(--color-ivory);
 }
 
@@ -2208,7 +2430,8 @@ body:has(.cover-index-stage.is-index-writing) {
   display: flex;
   flex-direction: column;
   gap: clamp(0.78rem, 2.8dvh, 1.35rem);
-  max-width: 360px;
+  width: min(100%, 34rem);
+  max-width: 34rem;
 }
 
 .preparation-index-entry {
@@ -2294,9 +2517,11 @@ body:has(.cover-index-stage.is-index-writing) {
 .page-index .chapter-index-item {
   flex-direction: column;
   align-items: center;
-  gap: 0.22rem;
-  padding: 0;
-  border-bottom: none;
+  gap: 0.28rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid color-mix(in srgb, var(--gold) 15%, transparent);
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--surface) 42%, transparent);
   text-align: center;
 }
 
@@ -2307,8 +2532,8 @@ body:has(.cover-index-stage.is-index-writing) {
   flex-direction: column;
   align-items: center;
   gap: 0.3rem;
-  margin: -0.24rem -0.45rem;
-  padding: 0.24rem 0.45rem;
+  margin: -0.4rem -0.65rem;
+  padding: 0.4rem 0.65rem;
   cursor: pointer;
   transition:
     color 0.25s ease,
@@ -2319,6 +2544,12 @@ body:has(.cover-index-stage.is-index-writing) {
 .chapter-index-lock:hover,
 .chapter-index-open:hover {
   transform: translateY(-1px);
+}
+
+.page-index .chapter-index-item:has(.chapter-index-lock:hover),
+.page-index .chapter-index-item:has(.chapter-index-open:hover) {
+  border-color: color-mix(in srgb, var(--gold) 38%, transparent);
+  background: color-mix(in srgb, var(--surface-elevated) 52%, transparent);
 }
 
 .chapter-index-lock:focus-visible,

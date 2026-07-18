@@ -2,6 +2,7 @@ import { Link, Navigate } from "react-router-dom";
 import { ExperienceContext, useExperienceCtx } from "../components/experienceContext";
 import { ExperienceView, experienceUsesReadingTopbar } from "../components/ExperienceView";
 import { ExperienceUnavailable } from "../components/ExperienceUnavailable";
+import { DirectorPanel } from "../components/DirectorPanel";
 import { ConnectedStatusBadge } from "@/features/connected/components/ConnectedStatusBadge";
 import { LoadingScreen } from "@/components/feedback/LoadingScreen";
 import { RequireAuth } from "@/features/auth/components/RequireAuth";
@@ -18,6 +19,7 @@ import type { StoryPackage } from "@/features/story/engine/types";
 import type { Trip } from "@/features/trips/types";
 import type { User } from "@/features/auth/types";
 import "../experience.css";
+import "../dayLived.css";
 
 function ExperienceTripsNavigation() {
   const experience = useExperienceCtx();
@@ -42,13 +44,15 @@ function ExperienceTripsNavigation() {
 function ExperienceRuntime({
   storyPackage,
   scopeId,
+  tripTimezone,
   contextualCompanion = null,
 }: {
   storyPackage: StoryPackage;
   scopeId?: string;
+  tripTimezone?: string;
   contextualCompanion?: ProductiveAdaptiveJourneyState | null;
 }) {
-  const { value, appRef, revealSignature } = useExperience(storyPackage, scopeId);
+  const { value, appRef, revealSignature } = useExperience(storyPackage, scopeId, tripTimezone);
   const productiveValue = scopeId ? {
     ...value,
     contextualCompanion,
@@ -66,6 +70,9 @@ function ExperienceRuntime({
         <ExperienceContext.Provider value={productiveValue}>
           {scopeId ? <ExperienceTripsNavigation /> : null}
           <ExperienceView />
+          {/* Modo director: dev-only. En prod `import.meta.env.DEV` es `false` y
+              Rollup elimina el panel del build por dead-code elimination. */}
+          {import.meta.env.DEV ? <DirectorPanel /> : null}
         </ExperienceContext.Provider>
       </div>
       <ConnectedStatusBadge />
@@ -89,6 +96,7 @@ function ProductiveExperienceRuntime({
     <ExperienceRuntime
       storyPackage={storyPackage}
       scopeId={scopeId}
+      tripTimezone={typeof trip.destination === "string" ? undefined : trip.destination.timezone}
       contextualCompanion={contextualCompanion}
     />
   );

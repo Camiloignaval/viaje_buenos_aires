@@ -1,100 +1,148 @@
-import type { ReactNode } from "react";
-import { render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import type { ExperienceActions, ExperienceContextValue } from "../experienceTypes";
 import type { Memory } from "@/features/album/data/types";
-import type { ExperienceContextValue } from "../experienceTypes";
 import { ExperienceContext } from "./experienceContext";
 import { MemoryInvitation, SavedMemory } from "./Memories";
 
-const actions = {
-  createMemory: vi.fn(),
-  addStagedPhotos: vi.fn(),
-  removeStagedPhoto: vi.fn(),
-  setPrimaryPhoto: vi.fn(),
-  favoriteMemory: vi.fn(),
-};
-
-function renderWithExperience(ui: ReactNode) {
+function renderWithExperience(ui: React.ReactNode) {
+  const actions: Partial<ExperienceActions> = {
+    createMemory: vi.fn(),
+    addStagedPhotos: vi.fn(),
+    removeStagedPhoto: vi.fn(),
+    setPrimaryPhoto: vi.fn(),
+    favoriteMemory: vi.fn(),
+    archiveMemory: vi.fn(),
+    editMemoryNote: vi.fn(),
+    addPhotosToMemory: vi.fn(),
+    removeMemoryPhoto: vi.fn(),
+    reorderMemoryPhotos: vi.fn(),
+  };
   const value = {
-    actions,
     photoUrls: {},
+    stagedPhotosBySlot: new Map(),
+    actions,
   } as unknown as ExperienceContextValue;
-  return render(<ExperienceContext.Provider value={value}>{ui}</ExperienceContext.Provider>);
+  return { actions: actions as ExperienceActions, ...render(<ExperienceContext.Provider value={value}>{ui}</ExperienceContext.Provider>) };
 }
 
-const memory: Memory = {
-  id: "memory-1",
-  storyId: "story-1",
-  chapterId: "chapter-1",
-  activityId: "activity-1",
-  note: "La caminata sin apuro.",
-  photos: [],
-  videos: [],
-  favorite: false,
-  archived: false,
-  createdAt: "2026-07-16T10:00:00.000Z",
-  updatedAt: "2026-07-16T10:00:00.000Z",
-};
+afterEach(() => vi.useRealTimers());
 
-describe("unified memory surface", () => {
-  beforeEach(() => vi.clearAllMocks());
-
-  it("offers the same note, photo and save controls with or without an editorial suggestion", () => {
-    const first = renderWithExperience(
-      <MemoryInvitation chapterId="chapter-1" activityId="activity-1" />,
-    );
-
-    expect(screen.getByText("¿Quieren guardar este momento?")).toBeInTheDocument();
-    expect(screen.getByRole("textbox", { name: "Qué quieren recordar de este momento" })).toBeInTheDocument();
-    expect(screen.getByLabelText("Elegir fotos para este recuerdo")).not.toHaveAttribute("hidden");
-    expect(screen.getByRole("button", { name: "Guardar el momento" })).toBeDisabled();
-    first.unmount();
-
-    renderWithExperience(
-      <MemoryInvitation
-        chapterId="chapter-1"
-        activityId="activity-2"
-        hint="La luz de la tarde sobre el Obelisco."
-      />,
-    );
-
-    expect(screen.getByText("La luz de la tarde sobre el Obelisco.")).toBeInTheDocument();
-    expect(screen.getByRole("textbox", { name: "Qué quieren recordar de este momento" })).toBeInTheDocument();
-    expect(screen.getByLabelText("Elegir fotos para este recuerdo")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Guardar el momento" })).toBeDisabled();
-  });
-
-  it("keeps save unavailable while empty and creates one memory after writing", async () => {
-    const user = userEvent.setup();
+describe("ceremonia editorial del recuerdo", () => {
+  it("empieza como una hoja en espera con dos acciones claras, no como formulario", () => {
     renderWithExperience(<MemoryInvitation chapterId="chapter-1" activityId="activity-1" />);
-    const save = screen.getByRole("button", { name: "Guardar el momento" });
-
-    expect(save).toBeDisabled();
-    await user.type(
-      screen.getByRole("textbox", { name: "Qué quieren recordar de este momento" }),
-      "La risa en Corrientes.",
-    );
-    expect(save).toBeEnabled();
-    await user.click(save);
-
-    expect(actions.createMemory).toHaveBeenCalledWith(
-      "chapter-1",
-      "activity-1",
-      "La risa en Corrientes.",
-    );
+    expect(screen.getByRole("button", { name: "Escribir un recuerdo de este momento" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Sumar una foto a este momento" })).toBeInTheDocument();
+    expect(screen.getByText("Aquí vivirá uno de nuestros recuerdos")).toBeInTheDocument();
+    expect(screen.queryByRole("textbox")).toBeNull();
+    expect(screen.queryByRole("button", { name: /Guardar el momento/i })).toBeNull();
   });
 
-  it("exposes only the reversible favorite action on a saved memory", async () => {
-    const user = userEvent.setup();
-    renderWithExperience(<SavedMemory memory={memory} />);
-    const favorite = screen.getByRole("button", {
-      name: "Guardar entre nuestros recuerdos favoritos",
-    });
+  it("se vuelve escribible in situ y se asienta sola después de una línea", () => {
+    vi.useFakeTimers();
+    const { actions } = renderWithExperience(<MemoryInvitation chapterId="chapter-1" activityId="activity-1" />);
+    fireEvent.click(screen.getByRole("button", { name: "Escribir un recuerdo de este momento" }));
+    const line = screen.getByRole("textbox", { name: "Escribir lo que quieren recordar de este momento" });
+    fireEvent.change(line, { target: { value: "  La caminata sin apuro.  " } });
+    expect(screen.queryByRole("button", { name: /^guardar/i })).toBeNull();
+    act(() => vi.advanceTimersByTime(901));
+    expect(actions.createMemory).toHaveBeenCalledWith("chapter-1", "activity-1", "La caminata sin apuro.");
+  });
 
-    expect(favorite).toHaveAttribute("aria-pressed", "false");
-    expect(screen.queryByRole("button", { name: "Dejar aparte" })).not.toBeInTheDocument();
-    await user.click(favorite);
-    expect(actions.favoriteMemory).toHaveBeenCalledWith("memory-1");
+  it("se puede cerrar sin guardar y vuelve a la hoja en espera", () => {
+    const { actions } = renderWithExperience(<MemoryInvitation chapterId="chapter-1" activityId="activity-1" />);
+    fireEvent.click(screen.getByRole("button", { name: "Escribir un recuerdo de este momento" }));
+    expect(screen.getByRole("textbox", { name: "Escribir lo que quieren recordar de este momento" })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Cerrar sin guardar" }));
+    expect(screen.queryByRole("textbox")).toBeNull();
+    expect(screen.getByRole("button", { name: "Escribir un recuerdo de este momento" })).toBeInTheDocument();
+    expect(actions.createMemory).not.toHaveBeenCalled();
+  });
+
+  it("retira la estrella y los controles heredados del recuerdo guardado", () => {
+    const memory: Memory = {
+      id: "memory-1",
+      storyId: "story-1",
+      chapterId: "chapter-1",
+      activityId: "activity-1",
+      note: "La caminata sin apuro.",
+      photos: [],
+      videos: [],
+      favorite: false,
+      archived: false,
+      createdAt: "2026-07-16T10:00:00Z",
+      updatedAt: "2026-07-16T10:00:00Z",
+    };
+    const { container } = renderWithExperience(<SavedMemory memory={memory} />);
+    expect(container.querySelector(".memory-wax-seal")).toBeNull();
+    expect(container.querySelector(".memory-toolbar")).toBeNull();
+    expect(screen.queryByRole("button", { name: /Marcar entre los que no queremos olvidar/i })).toBeNull();
+  });
+});
+
+describe("pliego multi-foto determinista", () => {
+  function renderSavedWithPhotos(count: number) {
+    const photos = Array.from({ length: count }, (_, i) => `p${i}`);
+    const photoUrls = Object.fromEntries(photos.map((id) => [id, `blob:${id}`]));
+    const memory: Memory = {
+      id: "m1",
+      storyId: "s",
+      chapterId: "c",
+      activityId: "a",
+      note: "",
+      photos,
+      videos: [],
+      favorite: false,
+      archived: false,
+      createdAt: "2026-07-16T10:00:00Z",
+      updatedAt: "2026-07-16T10:00:00Z",
+    };
+    const actions: Partial<ExperienceActions> = {
+      favoriteMemory: vi.fn(),
+      archiveMemory: vi.fn(),
+      editMemoryNote: vi.fn(),
+      addPhotosToMemory: vi.fn(),
+      removeMemoryPhoto: vi.fn(),
+      reorderMemoryPhotos: vi.fn(),
+    };
+    const value = { photoUrls, stagedPhotosBySlot: new Map(), actions } as unknown as ExperienceContextValue;
+    return render(
+      <ExperienceContext.Provider value={value}>
+        <SavedMemory memory={memory} />
+      </ExperienceContext.Provider>,
+    );
+  }
+
+  it("muestra TODAS las fotos hasta 6, sin ocultar ninguna ni mostrar +N", () => {
+    const layouts = ["single", "duo", "hero-two", "hero-row-three", "hero-grid", "hero-grid"];
+    for (const n of [1, 2, 3, 4, 5, 6]) {
+      const { container, unmount } = renderSavedWithPhotos(n);
+      const pliego = container.querySelector(".memory-pliego");
+      expect(container.querySelectorAll(".pliego-tile")).toHaveLength(n);
+      expect(container.querySelector(".pliego-more")).toBeNull();
+      expect(pliego?.className).toContain(`pliego-${n <= 4 ? n : 6}`);
+      expect(pliego).toHaveAttribute("data-layout", layouts[n - 1]);
+      expect(pliego).toHaveAttribute("data-visible-count", String(n));
+      expect(pliego).toHaveAttribute("data-overflow", "0");
+      unmount();
+    }
+  });
+
+  it("desde la 7.ª muestra hero + 3 y +N con las fotos que realmente sobran", () => {
+    const { container } = renderSavedWithPhotos(9);
+    expect(container.querySelectorAll(".pliego-tile")).toHaveLength(4);
+    const more = container.querySelector(".pliego-more");
+    expect(more).not.toBeNull();
+    expect(more?.getAttribute("data-more")).toBe("5");
+    expect(container.querySelector(".memory-pliego")?.className).toContain("pliego-7");
+  });
+
+  it("el +N abre la primera fotografía fuera del límite visible", async () => {
+    const user = userEvent.setup();
+    renderSavedWithPhotos(7);
+    await user.click(screen.getByRole("button", { name: "Ver 3 fotos adicionales, 7 en total" }));
+    expect(screen.getByRole("dialog", { name: "Foto del recuerdo, en grande" })).toBeInTheDocument();
+    expect(screen.getByText("5 / 7")).toBeInTheDocument();
   });
 });

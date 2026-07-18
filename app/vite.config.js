@@ -78,7 +78,9 @@ export default defineConfig({
       registerType: "autoUpdate",
       injectRegister: null, // registro manual desde React (main.tsx)
       injectManifest: {
-        globPatterns: ["**/*.{js,css,html,svg,png,jpg,mp4,webmanifest,ico}"],
+        // El precache es el shell instalable, NO la biblioteca editorial. Las
+        // imágenes de historias se guardan bajo demanda desde sw.ts.
+        globPatterns: ["**/*.{js,css,html,svg,webmanifest,ico}"],
         globIgnores: [
           // Studio no es la app instalable.
           "admin.html",
@@ -88,10 +90,7 @@ export default defineConfig({
         // El fallback de navegación (SPA → /index.html) se define dentro del
         // propio Service Worker (src/sw.ts): en modo injectManifest Workbox no
         // acepta navigateFallback en la config.
-        // Algunos paquetes editoriales incluyen media que supera el
-        // límite por defecto de Workbox (2 MiB); sin esto el offline completo
-        // dejaría afuera la primera impresión.
-        maximumFileSizeToCacheInBytes: 50 * 1024 * 1024,
+        maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
       },
       includeAssets: [
         "icons/Web/favicon.ico",
@@ -103,6 +102,7 @@ export default defineConfig({
         "icons/Web/icon-maskable-192x192.png",
         "icons/Web/icon-maskable-512x512.png",
         "icons/Web/og.png",
+        "logo_original.png",
       ],
       manifest: {
         id: "/",

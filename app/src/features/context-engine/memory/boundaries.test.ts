@@ -73,6 +73,9 @@ describe("Memory isolation boundaries", () => {
       "app/src/story/storyPackage/README.md",
       "app/src/story/storyPackage/storyPackage.d.ts",
       "app/src/story/storyPackage/storyPackage.js",
+      // Paridad temporal del motor legacy: la zona narrativa por viaje también
+      // debe aplicarse a consumidores que aún importan este adapter JS.
+      "app/src/story/storyProgress/storyProgress.js",
     ]);
     const unexpected = changed.trim().split(/\r?\n/u)
       .filter(Boolean)

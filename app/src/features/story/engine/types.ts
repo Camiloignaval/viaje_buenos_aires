@@ -29,6 +29,8 @@ export type StoryModeValue = (typeof StoryMode)[keyof typeof StoryMode];
 export interface UnlockRule {
   requiresDateReached?: boolean;
   requiresPreviousChapterCompleted?: boolean;
+  /** Hora local del destino (HH:mm) a partir de la que el día queda disponible. */
+  localTime?: string;
 }
 
 export interface PlaceLocation {
@@ -45,6 +47,14 @@ export interface Place {
   websiteUrl?: string;
   recommendation?: string;
   relatedChapterId?: string;
+  /**
+   * Nivel de precio editorial (banda estable, nunca monto exacto): "$", "$$",
+   * "$$$", "$$$$". Curado a partir de la naturaleza conocida del lugar; se
+   * mantiene consistente entre historias y no envejece como un precio.
+   */
+  priceLevel?: string;
+  /** Costo aproximado editorial del lugar (comida, entrada, etc.). */
+  estimatedCost?: EstimatedCost;
   /** Metadata de significado (opcional): reserva, tipo de comida, etc. */
   intelligence?: StoryIntelligence;
 }
@@ -62,12 +72,72 @@ export interface SuggestedMemory {
   prompt: string;
 }
 
+/**
+ * Costo aproximado editorial. `type` decide cómo se muestra:
+ * - "range" / "fixed": monto(s) en `currency` (ARS o CLP), con conversión
+ *   aproximada a la moneda del usuario si hay tasa.
+ * - "free": "Entrada gratuita". "included": "Incluido". "variable": "Costo
+ *   variable". "alreadyPaid": "Coordinado aparte".
+ * Nunca un monto exacto que envejezca: es una franja curada. `basis` (couple/
+ * person/…) e `includes` dan contexto humano.
+ */
+export interface EstimatedCost {
+  type: string;
+  basis?: string;
+  min?: number;
+  max?: number;
+  amount?: number;
+  currency?: string;
+  includes?: string;
+  note?: string;
+  confidence?: string;
+}
+
+/**
+ * Datos prácticos de viaje de una actividad (texto curado, todo opcional). No es
+ * ficha técnica ni tarjeta: alimenta la franja editorial de hechos (hora·lugar·
+ * duración) y el pliegue "Cómo llegar y datos prácticos". Los campos aquí
+ * tipados son los que hoy se renderizan; el resto de cues curados (foto, memoria,
+ * pasos) conviven vía la firma de índice sin obligar a enumerarlos.
+ */
+export interface ActivityPractical {
+  /** Duración aproximada en texto libre (ej. "45–60 min"). */
+  estimatedDuration?: string;
+  /** Qué pedir, para lugares gastronómicos (ej. ["Fugazzeta", "Pizza de jamón"]). */
+  suggestedOrder?: string[];
+  /** Reserva en texto curado (ej. "Recomendada", "No suele ser necesaria"). */
+  reservation?: string;
+  /** Nota de clima / compatibilidad con lluvia. */
+  weatherNote?: string;
+  /** Consejo puntual de quien ya estuvo ahí. */
+  experienceTip?: string;
+  /** Secuencia o ruta del recorrido. */
+  route?: string[];
+  /** Nivel de precio editorial de la actividad, si no viene del Place. */
+  priceLevel?: string;
+  /** Costo aproximado de la actividad (entrada, transporte, comida sin place). */
+  estimatedCost?: EstimatedCost;
+  [key: string]: unknown;
+}
+
 export interface Activity {
   id: string;
   title: string;
   order?: number;
+  /**
+   * Tratamiento narrativo especial (reutilizable por cualquier historia):
+   * - "instante": una respiración, no una actividad. Página pequeña y callada,
+   *   sin datos prácticos ni marginalia — solo el momento y, si acaso, una foto.
+   * - "ceremonia": el pico cinematográfico del día (ej. la toma con dron).
+   * Ausente = pasaje normal.
+   */
+  kind?: "instante" | "ceremonia";
+  /** Fase narrativa del día (ej. "departure" antes de llegar, "arrival" al aterrizar). */
+  narrativePhase?: string;
   moment?: string;
   description?: string;
+  /** Detalle editorial que solo conoce alguien que ya estuvo ahí; voz de Alaia, nunca ficha técnica. */
+  insight?: string;
   timeWindow?: string;
   category?: string;
   location?: PlaceLocation;
@@ -78,6 +148,8 @@ export interface Activity {
   intelligence?: StoryIntelligence;
   /** Structured curated window for contextual decisions; never derived from `timeWindow`. */
   contextWindow?: ContextWindow;
+  /** Datos prácticos de viaje (qué pedir, reserva, duración, clima, consejo…). */
+  practical?: ActivityPractical;
 }
 
 export interface ChapterCopy {
@@ -97,6 +169,24 @@ export interface Tradition {
   body: string;
 }
 
+/** Fase narrativa de un día (departure/arrival…), con su copy editorial. */
+export interface NarrativePhase {
+  id: string;
+  title?: string;
+  copy?: string;
+  availableFrom?: string;
+  startsWhen?: string;
+  endsWhen?: string;
+}
+
+/** Umbral manual de llegada; nunca depende de sensores ni permisos del dispositivo. */
+export interface ArrivalGate {
+  destination?: string;
+  mode?: "manual";
+  confirmationCopy?: string;
+  confirmLabel?: string;
+}
+
 export interface Chapter {
   id: string;
   order: number;
@@ -109,8 +199,18 @@ export interface Chapter {
   microDiscoveries?: string[];
   nightNote?: string;
   ourMoment?: string;
+  /** Cómo flexiona el día si el clima o el cansancio cambian el plan (contingencia autoral, ya escrita). */
+  planB?: string;
+  /** Qué hacer si el día da para más de lo previsto. */
+  extraTime?: string;
   suggestedMemories?: SuggestedMemory[];
   assets?: StoryAssets;
+  /** Fases del día (departure/arrival) y su copy, si el día tiene umbral de llegada. */
+  narrativePhases?: NarrativePhase[];
+  /** Umbral de llegada al destino (opcional). */
+  arrivalGate?: ArrivalGate;
+  /** Título de la fase de llegada (ej. "Bienvenidos a Buenos Aires"). */
+  arrivalTitle?: string;
   [key: string]: unknown;
 }
 
@@ -147,6 +247,10 @@ export interface PhotoSpot {
   relatedChapterId?: string;
   bestTime?: string;
   tip?: string;
+  /** Dónde pararse para la toma (texto curado). */
+  location?: PlaceLocation;
+  /** Fotografía de referencia del spot, si existe. */
+  image?: string;
 }
 
 export interface CollectionItem {
@@ -192,6 +296,8 @@ export interface StoryMetadata {
   destinationCountryCode?: string;
   /** Idioma predominante del destino (ISO 639-1), si difiere del contenido. */
   destinationLanguage?: string;
+  /** Zona IANA que gobierna el calendario narrativo de este package. */
+  experienceTimezone?: string;
   /** Metadata curada opcional para Living Context; ausente en packages legacy. */
   livingContext?: {
     countryCode?: string;
@@ -244,6 +350,8 @@ export type ChapterStatuses = Record<string, ChapterStatusValue>;
 export interface StoryContext {
   now: Date | string;
   chapterStatuses?: ChapterStatuses;
+  /** Zona IANA del Trip conectado; prevalece sobre la metadata del package. */
+  timezone?: string;
 }
 
 export type VisibleChapter = Chapter & { status: ChapterStatusValue };

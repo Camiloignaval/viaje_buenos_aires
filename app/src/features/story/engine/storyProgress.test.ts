@@ -3,6 +3,7 @@ import {
   calendarDaysBetween,
   countdownAnchorForCalendarDate,
   getStoryProgress,
+  narrativeNowFrom,
   ChapterStatus,
 } from "./storyProgress";
 import type { StoryPackage } from "./types";
@@ -161,5 +162,66 @@ describe("getStoryProgress", () => {
       chapterStatuses: { "chapter-1": ChapterStatus.COMPLETED },
     });
     expect(progress["chapter-epilogue"]).toBe(ChapterStatus.LOCKED);
+  });
+});
+
+describe("getStoryProgress — calendario narrativo por viaje", () => {
+  function buenosAiresPackage(): StoryPackage {
+    return twoChapterPackage({
+      metadata: {
+        destination: "Buenos Aires",
+        title: "Buenos Aires, 2026",
+        language: "es",
+        travelDates: { start: "2026-07-18", end: "2026-07-19" },
+        experienceTimezone: "America/Argentina/Buenos_Aires",
+      },
+      unlockRulesDefault: {
+        requiresDateReached: true,
+        requiresPreviousChapterCompleted: true,
+        localTime: "07:00",
+      },
+    });
+  }
+
+  it("no abre por la fecha UTC si todavía es la noche anterior en Buenos Aires", () => {
+    const progress = getStoryProgress(buenosAiresPackage(), { now: "2026-07-18T02:30:00.000Z" });
+    expect(progress["chapter-1"]).toBe(ChapterStatus.LOCKED);
+  });
+
+  it("abre a la mañana local del destino aunque el dispositivo siga en horario de Chile", () => {
+    const progress = getStoryProgress(buenosAiresPackage(), { now: "2026-07-18T06:30:00-04:00" });
+    expect(progress["chapter-1"]).toBe(ChapterStatus.AVAILABLE);
+  });
+
+  it("respeta exactamente el borde de las 07:00 en Argentina", () => {
+    expect(getStoryProgress(buenosAiresPackage(), { now: "2026-07-18T09:59:00.000Z" })["chapter-1"])
+      .toBe(ChapterStatus.LOCKED);
+    expect(getStoryProgress(buenosAiresPackage(), { now: "2026-07-18T10:00:00.000Z" })["chapter-1"])
+      .toBe(ChapterStatus.AVAILABLE);
+  });
+
+  it("la timezone explícita del Trip prevalece sobre la del package", () => {
+    const pkg = buenosAiresPackage();
+    pkg.metadata.experienceTimezone = "Asia/Tokyo";
+    const progress = getStoryProgress(pkg, {
+      now: "2026-07-18T10:00:00.000Z",
+      timezone: "America/Argentina/Buenos_Aires",
+    });
+    expect(progress["chapter-1"]).toBe(ChapterStatus.AVAILABLE);
+  });
+
+  it("Director Mode interpreta now como pared horaria del destino", () => {
+    expect(narrativeNowFrom("2026-07-18T07:00", "America/Argentina/Buenos_Aires")?.toISOString())
+      .toBe("2026-07-18T10:00:00.000Z");
+    expect(narrativeNowFrom("2026-07-18", "America/Argentina/Buenos_Aires")?.toISOString())
+      .toBe("2026-07-18T15:00:00.000Z");
+  });
+
+  it("un capítulo iniciado sigue abierto al recargar con otra hora o zona del dispositivo", () => {
+    const progress = getStoryProgress(buenosAiresPackage(), {
+      now: "2026-07-17T23:00:00-10:00",
+      chapterStatuses: { "chapter-1": ChapterStatus.STARTED },
+    });
+    expect(progress["chapter-1"]).toBe(ChapterStatus.STARTED);
   });
 });

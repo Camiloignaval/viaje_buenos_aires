@@ -1,7 +1,7 @@
 // Tipos compartidos por el árbol de componentes de la experience.
 
 import type { Memory } from "@/features/album/data/types";
-import type { StoryPackage, StoryView } from "@/features/story/engine/types";
+import type { ChapterStatuses, StoryPackage, StoryView } from "@/features/story/engine/types";
 import type { Theme } from "./lib/format";
 import type { StagedPhoto } from "./lib/photoSlot";
 import type { LockedChapterNotice } from "./lib/lockedChapter";
@@ -48,6 +48,10 @@ export interface ExperienceActions {
   setPrimaryPhoto(chapterId: string, activityId: string | null, tempId: string): void;
   favoriteMemory(memoryId: string): void;
   archiveMemory(memoryId: string): void;
+  editMemoryNote(memoryId: string, note: string): void;
+  addPhotosToMemory(memoryId: string, files: FileList): void;
+  removeMemoryPhoto(memoryId: string, photoId: string): void;
+  reorderMemoryPhotos(memoryId: string, photoIds: string[]): void;
   openAlbum(): void;
   closeAlbum(): void;
   installApp(): void;
@@ -63,6 +67,8 @@ export interface ExperienceContextValue {
   /** Scope de persistencia por viaje (tripId; en demo, el id del package). */
   scopeId: string;
   view: StoryView;
+  /** Estados de progreso por id (incluye claves sintéticas como `${chapterId}::arrival`). */
+  chapterStatuses: ChapterStatuses;
   now: Date;
   interactive: boolean;
   theme: Theme;

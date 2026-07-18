@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getPwaCapabilities } from "./capabilities";
 import { deletePushSubscription, getPushPreferences, savePushPreferences, sendPushTest, subscribeForPush, type PushPreferences } from "./pushApi";
+import { PlatformApiError } from "@/services/platformClient";
 
 const initial: PushPreferences = { enabled: false, beforeTrip: true, duringTrip: true, afterTrip: true, futureMemories: false };
 
@@ -21,7 +22,11 @@ export function PushCompanion({ eligible }: { eligible: boolean }) {
       await subscribeForPush({ pushManager: true, notifications: true, standalone: capabilities.standalone });
       const next = { ...preferences, enabled: true };
       setPreferences((await savePushPreferences(next)).preferences); setMessage("Acompañamiento activado.");
-    } catch { setMessage("No pudimos activar el acompañamiento ahora. Inténtalo más tarde."); }
+    } catch (error) {
+      if (error instanceof PlatformApiError && error.status === 401) setMessage("Inicia sesión antes de activar el acompañamiento.");
+      else if (error instanceof PlatformApiError && error.status === 503) setMessage("El acompañamiento aún no está configurado en el servidor. Vuelve a intentarlo más tarde.");
+      else setMessage("No pudimos activar el acompañamiento ahora. Inténtalo más tarde.");
+    }
     finally { setBusy(false); }
   }
   async function revoke() {
