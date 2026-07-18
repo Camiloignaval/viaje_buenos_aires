@@ -17,7 +17,14 @@ import {
   updateMemory,
 } from "@/features/album/data/memoryStore";
 import { savePhotoBlob } from "@/features/album/data/photoStore";
-import { syncNow, extractTokenFromUrl, saveSyncToken } from "@/features/sync/syncClient";
+import {
+  syncNow,
+  extractTokenFromUrl,
+  saveSyncToken,
+  getSyncToken,
+  isRemotePhotoUrl,
+} from "@/features/sync/syncClient";
+import { loadPhotoStatuses } from "@/features/sync/uploadStatusStore";
 import {
   calendarDateFrom,
   calendarDaysBetween,
@@ -36,7 +43,12 @@ import type { LockedChapterNotice } from "../lib/lockedChapter";
 import { normalizeTheme } from "../lib/format";
 import type { Theme } from "../lib/format";
 import { getChecklistMemories, upsertChecklistMemory } from "../lib/checklistStore";
-import type { CoverIntroState, ExperienceActions, ExperienceContextValue } from "../experienceTypes";
+import type {
+  CoverIntroState,
+  ExperienceActions,
+  ExperienceContextValue,
+  PhotoSyncStatus,
+} from "../experienceTypes";
 import { prefersReducedMotion } from "@/lib/prefersReducedMotion";
 
 export interface UseExperienceResult {
@@ -156,6 +168,31 @@ export function useExperience(
   }, [scope, needsTripWide, memoriesVersion]);
 
   const availableTripPhotos = useMemo(() => tripWidePhotoIds(tripMemories), [tripMemories]);
+
+  // ---- Estado de sincronización por foto (hotfix Épica 5) ----
+  // Solo tiene sentido con un accessToken guardado; sin él la app es puramente
+  // local y no hay "subida" que mostrar. Regla de verdad: URL remota ⇒ uploaded;
+  // id local ⇒ el estado persistido (uploading/failed) o "pending" por defecto.
+  const syncEnabled = useMemo(() => {
+    try {
+      return Boolean(getSyncToken(scope));
+    } catch {
+      return false;
+    }
+    // memoriesVersion refresca tras guardar el token desde ?token= y tras cada sync
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [scope, memoriesVersion]);
+
+  const photoStatuses = useMemo<Record<string, PhotoSyncStatus>>(() => {
+    if (!syncEnabled) return {};
+    const persisted = loadPhotoStatuses(scope);
+    const statuses: Record<string, PhotoSyncStatus> = {};
+    for (const id of collectPhotoIds([memories, tripMemories])) {
+      statuses[id] = isRemotePhotoUrl(id) ? "uploaded" : persisted[id] ?? "pending";
+    }
+    return statuses;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [scope, syncEnabled, memories, tripMemories, memoriesVersion]);
 
   const preparationCompletedIds = useMemo<string[]>(() => {
     if (view.currentMode !== StoryMode.PRE_TRIP) return [];
@@ -380,25 +417,47 @@ export function useExperience(
   });
 
   // ---- Sync en segundo plano (Épica 5) ----
+  // `onProgress` = bumpMemories: refresca la UI en cada cambio de estado de foto
+  // (Subiendo…/Sincronizada/Falló) sin esperar a que termine toda la corrida.
+  // Siempre se bumpea al final para que un fallo también quede visible.
   const trySyncInBackground = useCallback(async () => {
     if (syncingRef.current) return;
     syncingRef.current = true;
     try {
-      const merged = await syncNow(scope);
+      const merged = await syncNow(scope, bumpMemories);
       if (merged) {
         setChapterStatuses(loadProgress(scope));
-        bumpMemories();
       }
     } finally {
       syncingRef.current = false;
+      bumpMemories();
     }
   }, [scope, bumpMemories]);
 
+  // Refetch: al montar, al volver online, al recuperar foco/visibilidad y con un
+  // polling discreto (20 s) SOLO mientras la página está visible. Sin WebSocket/SSE,
+  // sin polling agresivo — reusa el mismo camino local-first de sync.
   useEffect(() => {
     void trySyncInBackground();
     const onOnline = () => void trySyncInBackground();
+    const onFocus = () => void trySyncInBackground();
+    const onVisibility = () => {
+      if (document.visibilityState === "visible") void trySyncInBackground();
+    };
     window.addEventListener("online", onOnline);
-    return () => window.removeEventListener("online", onOnline);
+    window.addEventListener("focus", onFocus);
+    document.addEventListener("visibilitychange", onVisibility);
+
+    const intervalId = window.setInterval(() => {
+      if (document.visibilityState === "visible") void trySyncInBackground();
+    }, 20_000);
+
+    return () => {
+      window.removeEventListener("online", onOnline);
+      window.removeEventListener("focus", onFocus);
+      document.removeEventListener("visibilitychange", onVisibility);
+      window.clearInterval(intervalId);
+    };
   }, [trySyncInBackground]);
 
   // ---- Helpers de scroll (espejo de scrollToReadingPage/scrollCurrentBookTo) ----
@@ -628,6 +687,9 @@ export function useExperience(
         updateMemory(scope, memoryId, { photos: [...orderedIds, ...remainingIds] });
         bumpMemories();
       },
+      retryPhotoSync() {
+        void trySyncInBackground();
+      },
       openAlbum() {
         setShowingTripAlbum(true);
         setIndexNavigationOpen(false);
@@ -664,6 +726,7 @@ export function useExperience(
     scheduleIndexUnlock,
     scrollToReadingPage,
     registerIntroVideo,
+    trySyncInBackground,
   ]);
 
   // ---- Tema final (espejo del cálculo de theme en renderExperience) ----
@@ -692,6 +755,8 @@ export function useExperience(
     confirmingClose,
     justTransformed,
     photoUrls,
+    photoStatuses,
+    syncEnabled,
     stagedPhotosBySlot,
     availableTripPhotos,
     showingTripAlbum,

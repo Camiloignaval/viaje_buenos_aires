@@ -10,27 +10,35 @@ import { applyCors } from '../../lib/cors.js';
 
 export default async function handler(req, res) {
   if (applyCors(req, res)) return;
-  if (!isAlaiaBackendConfigured() || !isCloudinaryConfigured()) {
-    return res.status(503).json({ error: 'Alaia no tiene backend de fotos configurado.' });
+  // Config faltante ⇒ 503 con `code` explícito para que el cliente distinga
+  // "no configurado" de un fallo real de subida (nunca se imprime el secreto).
+  if (!isAlaiaBackendConfigured()) {
+    return res.status(503).json({ error: 'Alaia no tiene backend configurado (falta MONGODB_URI).', code: 'backend_not_configured' });
+  }
+  if (!isCloudinaryConfigured()) {
+    return res.status(503).json({
+      error: 'Alaia no tiene Cloudinary configurado (falta CLOUDINARY_CLOUD_NAME / CLOUDINARY_API_KEY / CLOUDINARY_API_SECRET).',
+      code: 'cloudinary_not_configured',
+    });
   }
   if (req.method !== 'POST') {
     res.setHeader('Allow', ['POST']);
-    return res.status(405).json({ error: 'Método no permitido' });
+    return res.status(405).json({ error: 'Método no permitido', code: 'method_not_allowed' });
   }
 
   try {
     const { storyId, accessToken, image } = req.body || {};
     if (!storyId || !accessToken) {
-      return res.status(400).json({ error: "Faltan 'storyId' y/o 'accessToken'." });
+      return res.status(400).json({ error: "Faltan 'storyId' y/o 'accessToken'.", code: 'missing_fields' });
     }
     if (!image || typeof image !== 'string' || !image.startsWith('data:image/')) {
-      return res.status(400).json({ error: 'Imagen inválida o faltante.' });
+      return res.status(400).json({ error: 'Imagen inválida o faltante.', code: 'invalid_image' });
     }
 
     const storiesCol = await getStoryPackagesCollection();
     const story = await storiesCol.findOne({ storyId, accessToken });
     if (!story) {
-      return res.status(403).json({ error: 'accessToken inválido para esta historia.' });
+      return res.status(403).json({ error: 'accessToken inválido para esta historia.', code: 'invalid_token' });
     }
 
     const cloudinary = getCloudinary();
@@ -39,9 +47,15 @@ export default async function handler(req, res) {
       resource_type: 'image',
     });
 
-    return res.status(200).json({ url: result.secure_url });
+    // Se conserva la info útil de Cloudinary (antes se descartaba public_id/asset_id):
+    // el cliente solo considera "subida" una respuesta con `url` HTTPS válida.
+    return res.status(200).json({
+      url: result.secure_url,
+      publicId: result.public_id,
+      assetId: result.asset_id ?? null,
+    });
   } catch (err) {
-    console.error('api/alaia/photo-upload error:', err);
-    return res.status(500).json({ error: 'No se pudo subir la imagen', detail: err.message });
+    console.error('api/alaia/photo-upload error:', err.message);
+    return res.status(500).json({ error: 'No se pudo subir la imagen', code: 'upload_failed', detail: err.message });
   }
 }

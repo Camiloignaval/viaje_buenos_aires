@@ -81,6 +81,76 @@ describe("ceremonia editorial del recuerdo", () => {
   });
 });
 
+describe("estado visual de sincronización (hotfix Épica 5)", () => {
+  function renderWithStatus({
+    photos,
+    photoStatuses,
+    syncEnabled,
+  }: {
+    photos: string[];
+    photoStatuses: Record<string, string>;
+    syncEnabled: boolean;
+  }) {
+    const memory: Memory = {
+      id: "m1",
+      storyId: "s",
+      chapterId: "c",
+      activityId: "a",
+      note: "",
+      photos,
+      videos: [],
+      favorite: false,
+      archived: false,
+      createdAt: "2026-07-16T10:00:00Z",
+      updatedAt: "2026-07-16T10:00:00Z",
+    };
+    const retryPhotoSync = vi.fn();
+    const value = {
+      photoUrls: Object.fromEntries(photos.map((id) => [id, `blob:${id}`])),
+      photoStatuses,
+      syncEnabled,
+      stagedPhotosBySlot: new Map(),
+      actions: { retryPhotoSync } as unknown as ExperienceActions,
+    } as unknown as ExperienceContextValue;
+    return {
+      retryPhotoSync,
+      ...render(
+        <ExperienceContext.Provider value={value}>
+          <SavedMemory memory={memory} />
+        </ExperienceContext.Provider>,
+      ),
+    };
+  }
+
+  it("muestra 'Subiendo…' mientras una foto local está en curso", () => {
+    renderWithStatus({ photos: ["uuid-1"], photoStatuses: { "uuid-1": "uploading" }, syncEnabled: true });
+    expect(screen.getByText("Subiendo…")).toBeInTheDocument();
+  });
+
+  it("muestra 'Sincronizada' cuando todas las fotos son URL remota", () => {
+    const url = "https://res.cloudinary.com/x/y.jpg";
+    renderWithStatus({ photos: [url], photoStatuses: { [url]: "uploaded" }, syncEnabled: true });
+    expect(screen.getByText("Sincronizada")).toBeInTheDocument();
+  });
+
+  it("Caso B/G: muestra 'No se pudo subir' con 'Reintentar' que dispara retryPhotoSync", () => {
+    const { retryPhotoSync } = renderWithStatus({
+      photos: ["uuid-1"],
+      photoStatuses: { "uuid-1": "failed" },
+      syncEnabled: true,
+    });
+    expect(screen.getByText("No se pudo subir")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Reintentar" }));
+    expect(retryPhotoSync).toHaveBeenCalledTimes(1);
+  });
+
+  it("sin sync habilitado no muestra ningún estado (app puramente local)", () => {
+    renderWithStatus({ photos: ["uuid-1"], photoStatuses: { "uuid-1": "failed" }, syncEnabled: false });
+    expect(screen.queryByText("No se pudo subir")).toBeNull();
+    expect(screen.queryByRole("button", { name: "Reintentar" })).toBeNull();
+  });
+});
+
 describe("pliego multi-foto determinista", () => {
   function renderSavedWithPhotos(count: number) {
     const photos = Array.from({ length: count }, (_, i) => `p${i}`);

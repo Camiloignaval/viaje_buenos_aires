@@ -106,6 +106,43 @@ function MemoryPliego({ photos, onOpen }: { photos: { id: string; url: string }[
   );
 }
 
+// Estado de sincronización de las fotos de un recuerdo (hotfix Épica 5). Una foto
+// se considera COMPARTIDA solo cuando su valor ya es una URL remota; hasta entonces
+// muestra "Subiendo…" y, si el backend/red falló, "No se pudo subir — Reintentar".
+// Solo aparece con sync habilitado (hay accessToken) y si el recuerdo tiene fotos.
+function MemorySyncStatus({ memory }: { memory: Memory }) {
+  const { photoStatuses, syncEnabled, actions } = useExperienceCtx();
+  const photos = memory.photos ?? [];
+  if (!syncEnabled || photos.length === 0) return null;
+
+  const statuses = photos.map((id) => photoStatuses[id] ?? "pending");
+  const hasFailed = statuses.includes("failed");
+  const inFlight = statuses.some((status) => status === "uploading" || status === "pending");
+
+  if (hasFailed) {
+    return (
+      <p className="memory-sync-status memory-sync-failed" role="status">
+        <span>No se pudo subir</span>
+        <button type="button" className="memory-sync-retry" onClick={() => actions.retryPhotoSync()}>
+          Reintentar
+        </button>
+      </p>
+    );
+  }
+  if (inFlight) {
+    return (
+      <p className="memory-sync-status memory-sync-uploading" role="status" aria-live="polite">
+        Subiendo…
+      </p>
+    );
+  }
+  return (
+    <p className="memory-sync-status memory-sync-synced" role="status">
+      Sincronizada
+    </p>
+  );
+}
+
 type SavedMemoryMode = "view" | "editing" | "confirming-delete";
 
 export function SavedMemory({ memory, dateLabel }: { memory: Memory; dateLabel?: string }) {
@@ -260,6 +297,7 @@ export function SavedMemory({ memory, dateLabel }: { memory: Memory; dateLabel?:
           <MemoryNote note={memory.note} />
         ) : null}
         <p className="memory-date-stamp"><span aria-hidden="true">—</span> {memoryStamp} <span aria-hidden="true">—</span></p>
+        <MemorySyncStatus memory={memory} />
       </div>
 
       <button

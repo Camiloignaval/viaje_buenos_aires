@@ -19,6 +19,13 @@
   --brass: var(--gold);
   --filete: var(--gold);
   --cobalt: #8ba6cf;
+
+  /* Ancho editorial máximo de una composición fotográfica del libro. Un solo
+     lenguaje para TODAS las fotos: nunca al 100% de la pantalla, siempre centradas
+     y enmarcadas. El pliego de recuerdos se rige por este tope. La lámina simple
+     (12rem) queda por debajo; el masthead de capítulo es la única excepción
+     deliberada, más ancho por ser la portada del día. */
+  --editorial-photo-max: 18rem;
 }
 
 /* Noche azul: el fondo profundo que da la calma de viaje. Oro como único metal. */
@@ -1083,9 +1090,11 @@ button.memory-lamina {
   margin: 0 auto;
 }
 
-/* Cuando hay pliego, el objeto se ensancha para dar aire a la composición. */
+/* Cuando hay pliego, el objeto se ensancha para dar aire a la composición, pero
+   nunca más allá del ancho editorial compartido: mismo lenguaje que el resto de
+   las fotos del libro, centrado y enmarcado, jamás al 100% de la pantalla. */
 .alaia-experience .memory-object:has(.memory-pliego) {
-  width: min(100%, 22rem);
+  width: min(100%, var(--editorial-photo-max));
 }
 
 /* El PLIEGO: retícula editorial determinista de las fotos. La hero manda (3:2 a
@@ -1288,6 +1297,46 @@ button.memory-lamina {
   color: color-mix(in srgb, var(--brass) 70%, var(--ink-faint));
   text-align: center;
   transform: rotate(-1.6deg);
+}
+
+/* Estado de sincronización de las fotos del recuerdo (hotfix Épica 5). Discreto,
+   misma familia de placa que el sello de fecha; el fallo es el único acento. */
+.memory-sync-status {
+  position: relative;
+  z-index: 4;
+  margin: 0.45rem 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-family: var(--plaque);
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--brass) 55%, var(--ink-faint));
+}
+
+.memory-sync-uploading {
+  opacity: 0.85;
+}
+
+.memory-sync-failed {
+  color: color-mix(in srgb, #c2453b 75%, var(--ink-faint));
+}
+
+.memory-sync-retry {
+  font: inherit;
+  cursor: pointer;
+  padding: 0.15rem 0.55rem;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+}
+
+.memory-sync-retry:hover,
+.memory-sync-retry:focus-visible {
+  background: color-mix(in srgb, currentColor 12%, transparent);
 }
 
 /* El clímax del día: la fotografía principal del capítulo. Lámina de revista —

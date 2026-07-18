@@ -10,6 +10,9 @@ import type { VisibleExperienceObserver } from "./lib/visibleExperience";
 
 export type CoverIntroState = "idle" | "video" | "revealing" | "done";
 
+/** Estado de subida/sincronización de una foto, resuelto para la UI. */
+export type PhotoSyncStatus = "uploaded" | "uploading" | "pending" | "failed";
+
 export interface InstallBannerState {
   platform: "ios" | "android";
 }
@@ -52,6 +55,8 @@ export interface ExperienceActions {
   addPhotosToMemory(memoryId: string, files: FileList): void;
   removeMemoryPhoto(memoryId: string, photoId: string): void;
   reorderMemoryPhotos(memoryId: string, photoIds: string[]): void;
+  /** Reintenta subir las fotos pendientes/fallidas y volver a sincronizar. */
+  retryPhotoSync(): void;
   openAlbum(): void;
   closeAlbum(): void;
   installApp(): void;
@@ -76,6 +81,10 @@ export interface ExperienceContextValue {
   confirmingClose: boolean;
   justTransformed: boolean;
   photoUrls: Record<string, string>;
+  /** Estado de sincronización por id de foto (para el estado visual de cada recuerdo). */
+  photoStatuses: Record<string, PhotoSyncStatus>;
+  /** Hay un accessToken de sync guardado ⇒ tiene sentido mostrar estado de subida. */
+  syncEnabled: boolean;
   stagedPhotosBySlot: Map<string, StagedPhoto[]>;
   availableTripPhotos: string[];
   showingTripAlbum: boolean;

@@ -54,7 +54,7 @@ describe("useExperience — scope de persistencia (Decisión D3)", () => {
     renderHook(() => useExperience(demoStoryPackage, "trip-abc-123"), { wrapper: MemoryRouter });
 
     expect(loadProgress).toHaveBeenCalledWith("trip-abc-123");
-    expect(syncNow).toHaveBeenCalledWith("trip-abc-123");
+    expect(syncNow).toHaveBeenCalledWith("trip-abc-123", expect.any(Function));
     expect(saveSyncToken).toHaveBeenCalledWith("trip-abc-123", "token-abc");
 
     // Blindaje: NUNCA cae al storyId interno del package cuando hay scope.
