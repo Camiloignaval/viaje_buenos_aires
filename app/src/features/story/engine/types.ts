@@ -352,6 +352,15 @@ export interface StoryContext {
   chapterStatuses?: ChapterStatuses;
   /** Zona IANA del Trip conectado; prevalece sobre la metadata del package. */
   timezone?: string;
+  /**
+   * Inicio real del viaje (`trip.startDateTime`): wall-clock local del destino,
+   * sin offset (ej. "2026-07-18T09:00"). Cuando está presente, gobierna EN
+   * EXCLUSIVA el gate del PRIMER capítulo: este queda disponible al alcanzarse
+   * ese instante —resuelto en `timezone`—, sin heredar el `localTime` editorial
+   * y sin depender de la fecha local del dispositivo. Ausente ⇒ fallback a 00:00
+   * de `travelDates.start`. No afecta a los capítulos 2..N ni a la llegada.
+   */
+  tripStartDateTime?: string;
 }
 
 export type VisibleChapter = Chapter & { status: ChapterStatusValue };

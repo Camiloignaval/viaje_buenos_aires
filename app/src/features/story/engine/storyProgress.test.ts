@@ -193,10 +193,20 @@ describe("getStoryProgress — calendario narrativo por viaje", () => {
     expect(progress["chapter-1"]).toBe(ChapterStatus.AVAILABLE);
   });
 
-  it("respeta exactamente el borde de las 07:00 en Argentina", () => {
+  it("el Capítulo I (gate de inicio) abre a las 00:00 del día en el destino, sin esperar las 07:00", () => {
+    // 06:59 en Buenos Aires del día de inicio (09:59Z). El gate de entrada ya está
+    // abierto —a diferencia de los capítulos 2..N— porque el inicio del viaje no
+    // hereda el localTime editorial (ver gate de inicio del viaje, abajo).
     expect(getStoryProgress(buenosAiresPackage(), { now: "2026-07-18T09:59:00.000Z" })["chapter-1"])
+      .toBe(ChapterStatus.AVAILABLE);
+  });
+
+  it("el Capítulo II respeta exactamente el borde de las 07:00 en Argentina", () => {
+    const chapterStatuses = { "chapter-1": ChapterStatus.COMPLETED };
+    // Día 2 = 2026-07-19. 06:59 BA (09:59Z) → bloqueado; 07:00 BA (10:00Z) → disponible.
+    expect(getStoryProgress(buenosAiresPackage(), { now: "2026-07-19T09:59:00.000Z", chapterStatuses })["chapter-2"])
       .toBe(ChapterStatus.LOCKED);
-    expect(getStoryProgress(buenosAiresPackage(), { now: "2026-07-18T10:00:00.000Z" })["chapter-1"])
+    expect(getStoryProgress(buenosAiresPackage(), { now: "2026-07-19T10:00:00.000Z", chapterStatuses })["chapter-2"])
       .toBe(ChapterStatus.AVAILABLE);
   });
 
@@ -220,6 +230,136 @@ describe("getStoryProgress — calendario narrativo por viaje", () => {
   it("un capítulo iniciado sigue abierto al recargar con otra hora o zona del dispositivo", () => {
     const progress = getStoryProgress(buenosAiresPackage(), {
       now: "2026-07-17T23:00:00-10:00",
+      chapterStatuses: { "chapter-1": ChapterStatus.STARTED },
+    });
+    expect(progress["chapter-1"]).toBe(ChapterStatus.STARTED);
+  });
+});
+
+// El Capítulo I es el gate de INICIO del viaje: abre al alcanzarse
+// `trip.startDateTime` (instante real del destino), sin heredar el `localTime`
+// editorial de las 07:00. Los capítulos 2..N conservan su ritmo diario. La
+// llegada física sigue siendo un umbral manual aparte (ver ArrivalThreshold).
+describe("getStoryProgress — gate de inicio del viaje (Capítulo I por trip.startDateTime)", () => {
+  const TZ = "America/Argentina/Buenos_Aires";
+
+  function tripPackage(): StoryPackage {
+    return twoChapterPackage({
+      metadata: {
+        destination: "Buenos Aires",
+        title: "Buenos Aires, 2026",
+        language: "es",
+        travelDates: { start: "2026-07-18", end: "2026-07-19" },
+        experienceTimezone: TZ,
+      },
+      unlockRulesDefault: {
+        requiresDateReached: true,
+        requiresPreviousChapterCompleted: true,
+        localTime: "07:00",
+      },
+    });
+  }
+
+  it("Caso A: un minuto antes del startDateTime, el Capítulo I sigue bloqueado", () => {
+    const progress = getStoryProgress(tripPackage(), {
+      now: "2026-07-18T08:59:00-03:00",
+      timezone: TZ,
+      tripStartDateTime: "2026-07-18T09:00",
+    });
+    expect(progress["chapter-1"]).toBe(ChapterStatus.LOCKED);
+  });
+
+  it("Caso B: exactamente en el startDateTime, el Capítulo I queda disponible", () => {
+    const progress = getStoryProgress(tripPackage(), {
+      now: "2026-07-18T09:00:00-03:00",
+      timezone: TZ,
+      tripStartDateTime: "2026-07-18T09:00",
+    });
+    expect(progress["chapter-1"]).toBe(ChapterStatus.AVAILABLE);
+  });
+
+  it("Caso C: viaje iniciado ⇒ Capítulo I accesible y sin marcar llegada (engine no crea la clave de arribo)", () => {
+    const progress = getStoryProgress(tripPackage(), {
+      now: "2026-07-18T09:00:00-03:00",
+      timezone: TZ,
+      tripStartDateTime: "2026-07-18T09:00",
+    });
+    expect(progress["chapter-1"]).toBe(ChapterStatus.AVAILABLE);
+    // La bienvenida de llegada vive en la sub-clave `chapter-1::arrival`, que solo
+    // se marca por confirmación manual — el desbloqueo del capítulo nunca la crea.
+    expect(progress["chapter-1::arrival"]).toBeUndefined();
+  });
+
+  it("Caso E: sin startDateTime válido, el Capítulo I abre desde las 00:00 del día de inicio (NO espera las 07:00)", () => {
+    const progress = getStoryProgress(tripPackage(), {
+      now: "2026-07-18T00:30:00-03:00", // madrugada del día de inicio, antes de las 07:00
+      timezone: TZ,
+      // sin tripStartDateTime → fallback a 00:00 de travelDates.start
+    });
+    expect(progress["chapter-1"]).toBe(ChapterStatus.AVAILABLE);
+  });
+
+  it("Caso E (borde): la víspera del día de inicio sigue bloqueado con el fallback", () => {
+    const progress = getStoryProgress(tripPackage(), {
+      now: "2026-07-17T23:30:00-03:00",
+      timezone: TZ,
+    });
+    expect(progress["chapter-1"]).toBe(ChapterStatus.LOCKED);
+  });
+
+  it("Caso F: el Capítulo II conserva el umbral editorial de las 07:00 (startDateTime no lo afecta)", () => {
+    const pkg = tripPackage();
+    const before7 = getStoryProgress(pkg, {
+      now: "2026-07-19T06:00:00-03:00",
+      timezone: TZ,
+      tripStartDateTime: "2026-07-18T09:00",
+      chapterStatuses: { "chapter-1": ChapterStatus.COMPLETED },
+    });
+    expect(before7["chapter-2"]).toBe(ChapterStatus.LOCKED);
+
+    const after7 = getStoryProgress(pkg, {
+      now: "2026-07-19T07:00:00-03:00",
+      timezone: TZ,
+      tripStartDateTime: "2026-07-18T09:00",
+      chapterStatuses: { "chapter-1": ChapterStatus.COMPLETED },
+    });
+    expect(after7["chapter-2"]).toBe(ChapterStatus.AVAILABLE);
+  });
+
+  it("Caso G: el Capítulo II sigue bloqueado si el anterior no está completo, aunque llegue su fecha", () => {
+    const progress = getStoryProgress(tripPackage(), {
+      now: "2026-07-19T08:00:00-03:00",
+      timezone: TZ,
+      tripStartDateTime: "2026-07-18T09:00",
+      // chapter-1 disponible pero NO completado
+    });
+    expect(progress["chapter-1"]).toBe(ChapterStatus.AVAILABLE);
+    expect(progress["chapter-2"]).toBe(ChapterStatus.LOCKED);
+  });
+
+  it("Caso H: la comparación es por instante real; usa el startDateTime del destino, no la fecha local del dispositivo (origen en -04:00)", () => {
+    // startDateTime 09:00 en Buenos Aires (UTC-3) = 12:00Z. El dispositivo en
+    // Santiago (UTC-4) marca 08:00 en ese mismo instante.
+    const locked = getStoryProgress(tripPackage(), {
+      now: "2026-07-18T07:59:00-04:00", // 11:59Z, aún no es 09:00 en destino
+      timezone: TZ,
+      tripStartDateTime: "2026-07-18T09:00",
+    });
+    expect(locked["chapter-1"]).toBe(ChapterStatus.LOCKED);
+
+    const available = getStoryProgress(tripPackage(), {
+      now: "2026-07-18T08:00:00-04:00", // 12:00Z, ya son las 09:00 en destino
+      timezone: TZ,
+      tripStartDateTime: "2026-07-18T09:00",
+    });
+    expect(available["chapter-1"]).toBe(ChapterStatus.AVAILABLE);
+  });
+
+  it("un Capítulo I ya iniciado nunca vuelve a bloquearse aunque el startDateTime parezca futuro", () => {
+    const progress = getStoryProgress(tripPackage(), {
+      now: "2026-07-18T06:00:00-03:00",
+      timezone: TZ,
+      tripStartDateTime: "2026-07-18T09:00",
       chapterStatuses: { "chapter-1": ChapterStatus.STARTED },
     });
     expect(progress["chapter-1"]).toBe(ChapterStatus.STARTED);

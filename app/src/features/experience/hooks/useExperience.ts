@@ -49,6 +49,7 @@ export function useExperience(
   storyPackage: StoryPackage,
   scopeId: string = storyPackage.storyId,
   tripTimezone?: string,
+  tripStartDateTime?: string,
 ): UseExperienceResult {
   // Scope de persistencia: progreso, recuerdos, fotos, intro y tema se keyean
   // por acá. Para un trip conectado es su tripId; para el demo local, el id del
@@ -134,8 +135,8 @@ export function useExperience(
   }, [nowOverride, now, chapterStatuses, storyPackage, narrativeTimezone]);
 
   const view: StoryView = useMemo(
-    () => getStoryView(storyPackage, { now, chapterStatuses: chapterStatusesForView, timezone: narrativeTimezone }),
-    [storyPackage, now, chapterStatusesForView, narrativeTimezone],
+    () => getStoryView(storyPackage, { now, chapterStatuses: chapterStatusesForView, timezone: narrativeTimezone, tripStartDateTime }),
+    [storyPackage, now, chapterStatusesForView, narrativeTimezone, tripStartDateTime],
   );
 
   // ---- Memorias (localStorage, sincrónico) ----

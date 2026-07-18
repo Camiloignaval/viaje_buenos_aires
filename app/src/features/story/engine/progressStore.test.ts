@@ -86,4 +86,26 @@ describe("progressStore", () => {
       ChapterStatus.COMPLETED,
     );
   });
+
+  // Caso D: la llegada se persiste en su propia sub-clave (`chapter-1::arrival`),
+  // independiente del estado del capítulo. Confirmarla y recargar (nuevo
+  // loadProgress sobre el mismo storage) la conserva, sin mezclarse con el
+  // desbloqueo del capítulo.
+  it("Caso D: la llegada confirmada sobrevive al reload y no se mezcla con el estado del capítulo", () => {
+    const storage = fakeStorage();
+    const scope = "trip-abc";
+    markChapterStarted(scope, "chapter-1", storage); // capítulo abierto
+    markChapterStarted(scope, "chapter-1::arrival", storage); // llegada confirmada (botón manual)
+
+    const afterReload = loadProgress(scope, storage);
+    expect(afterReload["chapter-1"]).toBe(ChapterStatus.STARTED);
+    expect(afterReload["chapter-1::arrival"]).toBe(ChapterStatus.STARTED);
+  });
+
+  it("Caso C (persistencia): abrir el Capítulo I no marca la llegada", () => {
+    const storage = fakeStorage();
+    const scope = "trip-xyz";
+    markChapterStarted(scope, "chapter-1", storage);
+    expect(loadProgress(scope, storage)["chapter-1::arrival"]).toBeUndefined();
+  });
 });

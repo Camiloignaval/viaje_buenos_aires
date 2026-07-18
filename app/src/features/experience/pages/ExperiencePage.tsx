@@ -45,14 +45,16 @@ function ExperienceRuntime({
   storyPackage,
   scopeId,
   tripTimezone,
+  tripStartDateTime,
   contextualCompanion = null,
 }: {
   storyPackage: StoryPackage;
   scopeId?: string;
   tripTimezone?: string;
+  tripStartDateTime?: string;
   contextualCompanion?: ProductiveAdaptiveJourneyState | null;
 }) {
-  const { value, appRef, revealSignature } = useExperience(storyPackage, scopeId, tripTimezone);
+  const { value, appRef, revealSignature } = useExperience(storyPackage, scopeId, tripTimezone, tripStartDateTime);
   const productiveValue = scopeId ? {
     ...value,
     contextualCompanion,
@@ -97,6 +99,7 @@ function ProductiveExperienceRuntime({
       storyPackage={storyPackage}
       scopeId={scopeId}
       tripTimezone={typeof trip.destination === "string" ? undefined : trip.destination.timezone}
+      tripStartDateTime={trip.startDateTime}
       contextualCompanion={contextualCompanion}
     />
   );

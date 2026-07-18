@@ -174,6 +174,31 @@ function isLocalUnlockReached(now: Date | string, referenceDate: string, localTi
 }
 
 /**
+ * Gate del PRIMER capítulo = inicio real del viaje, separado del ritmo editorial
+ * diario de los capítulos 2..N. Fuente de verdad: `tripStartDateTime` (wall-clock
+ * del destino) resuelto a instante real y comparado contra `now`. Así el Capítulo I
+ * abre al alcanzarse la hora de inicio del viaje aunque el usuario siga en el
+ * origen, sin depender de la fecha local del dispositivo (ver Caso H) y SIN heredar
+ * el `localTime` de las 07:00. Sin `tripStartDateTime` válido (viaje legacy, demo),
+ * cae a 00:00 del día de referencia en la timezone de la experiencia — nunca a las
+ * 07:00. No decide la llegada: eso sigue siendo un umbral manual aparte.
+ */
+function isEntryUnlockReached(
+  now: Date | string,
+  referenceDate: string,
+  tripStartDateTime: string | undefined,
+  timezone?: string,
+): boolean {
+  if (tripStartDateTime) {
+    const startInstant = narrativeNowFrom(tripStartDateTime, timezone);
+    if (startInstant) {
+      return toDate(now).getTime() >= startInstant.getTime();
+    }
+  }
+  return isCalendarOnOrAfter(now, referenceDate, timezone);
+}
+
+/**
  * Date estable para presentación: mediodía UTC del día calendario.
  * No representa una hora real del viaje; evita que `formatChapterDate` cambie de día
  * por el timezone local del navegador o del servidor.
@@ -227,6 +252,10 @@ interface ChapterStatusArgs {
   previousChapterCompleted: boolean;
   priorStatus?: ChapterStatusValue;
   timezone?: string;
+  /** El primer capítulo usa el gate de inicio del viaje, no el `localTime` diario. */
+  isEntryChapter?: boolean;
+  /** Inicio real del viaje (`trip.startDateTime`); solo aplica al capítulo de entrada. */
+  tripStartDateTime?: string;
 }
 
 /**
@@ -241,6 +270,8 @@ export function getChapterStatus({
   previousChapterCompleted,
   priorStatus,
   timezone,
+  isEntryChapter = false,
+  tripStartDateTime,
 }: ChapterStatusArgs): ChapterStatusValue {
   if (
     priorStatus === ChapterStatus.STARTED ||
@@ -253,9 +284,13 @@ export function getChapterStatus({
   const referenceDate = getChapterReferenceCalendarDate(chapter, storyPackage);
 
   const dateSatisfied =
-    !unlockRule.requiresDateReached || (unlockRule.localTime
-      ? isLocalUnlockReached(now, referenceDate, unlockRule.localTime, timezone)
-      : isCalendarOnOrAfter(now, referenceDate, timezone));
+    !unlockRule.requiresDateReached
+      ? true
+      : isEntryChapter
+        ? isEntryUnlockReached(now, referenceDate, tripStartDateTime, timezone)
+        : unlockRule.localTime
+          ? isLocalUnlockReached(now, referenceDate, unlockRule.localTime, timezone)
+          : isCalendarOnOrAfter(now, referenceDate, timezone);
   const previousSatisfied =
     !unlockRule.requiresPreviousChapterCompleted ||
     previousChapterCompleted === true;
@@ -270,7 +305,7 @@ export function getChapterStatus({
  */
 export function getStoryProgress(
   storyPackage: StoryPackage,
-  { now, chapterStatuses = {}, timezone: timezoneOverride }: StoryContext,
+  { now, chapterStatuses = {}, timezone: timezoneOverride, tripStartDateTime }: StoryContext,
 ): ChapterStatuses {
   const timezone = resolveStoryTimezone(storyPackage, timezoneOverride);
   const orderedChapters = [...storyPackage.chapters].sort(
@@ -279,7 +314,7 @@ export function getStoryProgress(
   const progress: ChapterStatuses = {};
   let previousChapterCompleted = true; // no existe capítulo anterior al primero
 
-  for (const chapter of orderedChapters) {
+  for (const [index, chapter] of orderedChapters.entries()) {
     const status = getChapterStatus({
       chapter,
       storyPackage,
@@ -287,6 +322,10 @@ export function getStoryProgress(
       previousChapterCompleted,
       priorStatus: chapterStatuses[chapter.id],
       timezone,
+      // Solo el primer capítulo ordenado es el gate de inicio del viaje. El resto
+      // conserva su ritmo editorial diario (localTime + capítulo previo completado).
+      isEntryChapter: index === 0,
+      tripStartDateTime,
     });
     progress[chapter.id] = status;
     previousChapterCompleted = status === ChapterStatus.COMPLETED;
