@@ -1525,6 +1525,12 @@ button.memory-lamina {
     max-width: calc(100vw - 4rem);
   }
 
+  /* La lámina de referencia es el masthead: comparte el ancho útil del capítulo,
+     no el tope más estrecho reservado para recuerdos apoyados. */
+  .day-masthead > .reference-lamina {
+    max-width: 100%;
+  }
+
   .memory-whisper {
     position: fixed;
     right: 0;
